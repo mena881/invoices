@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>تسجيل الدخول - نظام استلام الفواتير</title>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .login-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+            width: 100%;
+            max-width: 450px;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .login-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .login-header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .login-header p {
+            opacity: 0.9;
+            font-size: 14px;
+        }
+
+        .login-form {
+            padding: 40px;
+        }
+
+        .input-group {
+            margin-bottom: 25px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102,126,234,0.1);
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .login-btn:active {
+            transform: translateY(0);
+        }
+
+        .error-message {
+            background: #fee;
+            color: #c33;
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+            display: none;
+        }
+
+        @media (max-width: 480px) {
+            .login-header { padding: 30px; }
+            .login-form { padding: 25px; }
+            .login-header h1 { font-size: 24px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-header">
+            <h1>📋 نظام استلام الفواتير</h1>
+            <p>تسجيل الدخول إلى النظام</p>
+        </div>
+        <div class="login-form">
+            <div class="error-message" id="errorMessage"></div>
+            <div class="input-group">
+                <label>👤 اسم المستخدم</label>
+                <input type="text" id="username" placeholder="أدخل اسم المستخدم" autocomplete="off">
+            </div>
+            <div class="input-group">
+                <label>🔒 كلمة المرور</label>
+                <input type="password" id="password" placeholder="أدخل كلمة المرور">
+            </div>
+            <button class="login-btn" onclick="login()">تسجيل الدخول</button>
+        </div>
+    </div>
+
+    <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyB7TgP9zI6LEc6yqfUyZqWYBqJyqL8oGxs",
+            authDomain: "exams-fab0f.firebaseapp.com",
+            databaseURL: "https://exams-fab0f-default-rtdb.firebaseio.com",
+            projectId: "exams-fab0f",
+            storageBucket: "exams-fab0f.firebasestorage.app",
+            messagingSenderId: "123456789012",
+            appId: "1:123456789012:web:abc123def456"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        // Admin default account
+        const defaultAdmin = {
+            username: "admin",
+            password: "admin123",
+            role: "admin",
+            fullName: "مدير النظام"
+        };
+
+        // Ensure admin exists
+        function initAdmin() {
+            const adminRef = database.ref('users/admin');
+            adminRef.once('value', (snapshot) => {
+                if (!snapshot.exists()) {
+                    adminRef.set(defaultAdmin);
+                }
+            });
+        }
+        initAdmin();
+
+        async function login() {
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
+            const errorDiv = document.getElementById('errorMessage');
+
+            if (!username || !password) {
+                showError('يرجى إدخال اسم المستخدم وكلمة المرور');
+                return;
+            }
+
+            try {
+                // Check admin first
+                if (username === 'admin') {
+                    const adminSnapshot = await database.ref('users/admin').once('value');
+                    if (adminSnapshot.exists() && adminSnapshot.val().password === password) {
+                        localStorage.setItem('currentUser', JSON.stringify({
+                            username: 'admin',
+                            role: 'admin',
+                            fullName: 'مدير النظام'
+                        }));
+                        window.location.href = 'admin-dashboard.html';
+                        return;
+                    }
+                }
+
+                // Check employees
+                const usersSnapshot = await database.ref('users').once('value');
+                let found = false;
+                usersSnapshot.forEach((childSnapshot) => {
+                    const user = childSnapshot.val();
+                    if (user.username === username && user.password === password && user.role === 'employee') {
+                        found = true;
+                        localStorage.setItem('currentUser', JSON.stringify({
+                            id: childSnapshot.key,
+                            username: user.username,
+                            role: user.role,
+                            fullName: user.fullName
+                        }));
+                        window.location.href = 'user-dashboard.html';
+                    }
+                });
+
+                if (!found) {
+                    showError('اسم المستخدم أو كلمة المرور غير صحيحة');
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                showError('حدث خطأ في تسجيل الدخول');
+            }
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+            setTimeout(() => {
+                errorDiv.style.display = 'none';
+            }, 3000);
+        }
+
+        // Enter key support
+        document.getElementById('password').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') login();
+        });
+        document.getElementById('username').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') document.getElementById('password').focus();
+        });
+    </script>
+</body>
+</html>
