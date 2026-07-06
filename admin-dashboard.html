@@ -992,7 +992,15 @@
             object-fit: cover;
             cursor: pointer;
         }
-
+/* التأكد من أن القائمة الجانبية تظهر بشكل صحيح على جميع الأجهزة */
+@media (max-width: 992px) {
+    .sidebar.hidden {
+        transform: translateX(100%);
+    }
+    .sidebar.visible {
+        transform: translateX(0);
+    }
+}
         .history-item {
             padding: 8px 0;
             border-bottom: 1px solid var(--gray-light);
@@ -3519,12 +3527,58 @@
         }
 
         function toggleSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            const mainContent = document.getElementById('mainContent');
-            sidebar.classList.toggle('hidden');
-            sidebar.classList.toggle('visible');
-            mainContent.classList.toggle('sidebar-hidden');
+    const sidebar = document.getElementById('sidebar');
+    const mainContent = document.getElementById('mainContent');
+    sidebar.classList.toggle('hidden');
+    sidebar.classList.toggle('visible');
+    mainContent.classList.toggle('sidebar-hidden');
+}
+
+// إضافة وظيفة لإغلاق القائمة عند النقر خارجها
+function closeSidebarOnClickOutside(event) {
+    const sidebar = document.getElementById('sidebar');
+    const menuToggle = document.querySelector('.menu-toggle');
+    const mainContent = document.getElementById('mainContent');
+    
+    // التحقق مما إذا كانت القائمة ظاهرة على الشاشات الصغيرة
+    const isSidebarVisible = sidebar.classList.contains('visible') && !sidebar.classList.contains('hidden');
+    
+    if (isSidebarVisible) {
+        // التحقق مما إذا كان النقر خارج القائمة الجانبية وليس على زر القائمة
+        const isClickInsideSidebar = sidebar.contains(event.target);
+        const isClickOnMenuToggle = menuToggle && menuToggle.contains(event.target);
+        
+        if (!isClickInsideSidebar && !isClickOnMenuToggle) {
+            // إغلاق القائمة
+            sidebar.classList.add('hidden');
+            sidebar.classList.remove('visible');
+            mainContent.classList.remove('sidebar-hidden');
         }
+    }
+}
+
+// إضافة مستمع الحدث عند تحميل الصفحة
+document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('click', closeSidebarOnClickOutside);
+});
+
+// إضافة مستمع عند تغيير حجم الشاشة - إعادة ضبط القائمة على الشاشات الكبيرة
+window.addEventListener('resize', function() {
+    const sidebar = document.getElementById('sidebar');
+    const mainContent = document.getElementById('mainContent');
+    
+    if (window.innerWidth > 992) {
+        // على الشاشات الكبيرة، القائمة ظاهرة دائماً
+        sidebar.classList.remove('hidden');
+        sidebar.classList.remove('visible');
+        mainContent.classList.remove('sidebar-hidden');
+    } else {
+        // على الشاشات الصغيرة، القائمة مخفية افتراضياً
+        sidebar.classList.add('hidden');
+        sidebar.classList.remove('visible');
+        mainContent.classList.add('sidebar-hidden');
+    }
+});
 
         function logout() {
             localStorage.removeItem('currentUser');
