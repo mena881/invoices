@@ -266,6 +266,7 @@
       margin: 12px 0 16px;
       width: fit-content;
       border: 1px solid #e2e9f2;
+      flex-wrap: wrap;
     }
 
     .mode-toggle-dash label {
@@ -383,6 +384,18 @@
       background: #f8faff;
       border-color: #a0b3cc;
       transform: translateY(-2px);
+    }
+
+    .btn-dash-color-summary {
+      background: #6b3fa0;
+      color: white;
+      box-shadow: 0 6px 18px rgba(107, 63, 160, 0.25);
+    }
+
+    .btn-dash-color-summary:hover {
+      background: #553081;
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px rgba(107, 63, 160, 0.35);
     }
 
     /* ===== PROGRESS / ALERT ===== */
@@ -790,6 +803,17 @@
       background: #0a4d36;
     }
 
+    .old-order-url {
+      font-size: 11px;
+      color: #1a3a5e;
+      max-width: 150px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      display: inline-block;
+      direction: ltr;
+    }
+
     /* ===== IMAGE MODAL ===== */
     .image-modal-dash {
       display: none;
@@ -882,6 +906,13 @@
         padding: 5px 12px;
         font-size: 12px;
       }
+      .mode-toggle-dash {
+        flex-wrap: wrap;
+      }
+      .mode-toggle-dash label {
+        padding: 6px 14px;
+        font-size: 12px;
+      }
     }
 
     @media (max-width: 480px) {
@@ -892,8 +923,8 @@
         grid-template-columns: 1fr 1fr;
       }
       .mode-toggle-dash label {
-        padding: 6px 14px;
-        font-size: 12px;
+        padding: 4px 10px;
+        font-size: 11px;
       }
       .preview-grid-dash .info-grid {
         grid-template-columns: 1fr;
@@ -960,10 +991,11 @@
       </div>
     </div>
 
-    <!-- MODE TOGGLE -->
+    <!-- MODE TOGGLE - 3 Modes -->
     <div class="mode-toggle-dash">
       <label><input type="radio" name="modeDash" value="rows" checked /> 📋 تفصيل</label>
       <label><input type="radio" name="modeDash" value="summary" /> 📊 ملخص</label>
+      <label><input type="radio" name="modeDash" value="colorSummary" /> 🎨 ملخص بالألوان</label>
       <span class="mode-hint-dash" id="modeHintDash">كل لون ومقاس = صف منفصل</span>
     </div>
 
@@ -1037,9 +1069,9 @@
       </div>
       <div class="old-wrapper-dash" id="oldOrdersWrapperDash">
         <table>
-          <thead><tr><th>#</th><th>الفرع</th><th>التاريخ</th><th>القطع</th><th>الإجمالي</th><th>التفاصيل</th><th>تصدير</th></tr></thead>
+          <thead><tr><th>#</th><th>الفرع</th><th>التاريخ</th><th>القطع</th><th>الإجمالي</th><th>الرابط</th><th>التفاصيل</th><th>تصدير</th></tr></thead>
           <tbody id="oldOrdersBodyDash">
-            <tr><td colspan="7" class="empty-table-msg">جاري تحميل الفواتير القديمة...</td></tr>
+            <tr><td colspan="8" class="empty-table-msg">جاري تحميل الفواتير القديمة...</td></tr>
           </tbody>
         </table>
       </div>
@@ -1180,14 +1212,15 @@
         calculateTotalValue(rows) { let t = 0;
           rows.forEach(r => { t += r.total || 0; }); return t; },
 
-        // Firebase: save invoice
-        saveInvoiceToFirebase(branchName, tableData, callback) {
+        // Firebase: save invoice with product URL
+        saveInvoiceToFirebase(branchName, tableData, productUrl, callback) {
           if (!database) { if (callback) callback('⚠️ Firebase غير مهيأ'); return; }
           const invoice = {
             branch: branchName || 'فرع غير محدد',
             totalPieces: Utils.calculateTotalPieces(tableData),
             totalValue: Utils.calculateTotalValue(tableData),
             itemsCount: tableData.length,
+            productUrl: productUrl || '',
             items: tableData.map(row => ({ name: row.name, color: row.color || '', size: row.size || '',
               sku: row.sku || '', qty: row.qty || 0, unitPrice: row.unitPrice || 0, total: row.total ||
               0 })),
@@ -1268,6 +1301,7 @@
             const data = [
               [`فاتورة: ${invoice.branch || 'فرع غير محدد'}`],
               [`التاريخ: ${new Date(invoice.createdAt).toLocaleDateString('ar-EG')}`],
+              [`الرابط: ${invoice.productUrl || '—'}`],
               [],
               headers
             ];
@@ -1397,31 +1431,68 @@
           }
           return Utils.sortTableData(rows);
         },
+
         generateSummary(product, seriesQty, userSku) {
           const colors = product.colors.length ? product.colors : [''];
           const sizes = product.sizes.length ? product.sizes : [''];
           const variantsCount = colors.length * sizes.length;
           return { name: product.name, colors: colors.join(', '), sizes: sizes.join(', '), seriesQty: seriesQty,
-            sku: userSku || product.sku || '', variantsCount: variantsCount, unitPrice: product.price || 0,
+            sku: userSku || product.sku || '', totalPieces: variantsCount * seriesQty, unitPrice: product.price || 0,
             total: variantsCount * seriesQty * (product.price || 0) };
         },
+
+        // NEW: Color Summary - each color in one row with all sizes
+        generateColorSummary(product, seriesQty, userSku) {
+          const rows = [];
+          const colors = product.colors.length ? product.colors : [''];
+          const sizes = product.sizes.length ? product.sizes : [''];
+          
+          colors.forEach(color => {
+            // For each color, get all sizes in one row
+            const allSizes = sizes.join(', ');
+            const variantsCount = sizes.length;
+            const totalPieces = variantsCount * seriesQty;
+            const unitPrice = product.price || 0;
+            
+            rows.push({
+              name: product.name,
+              sku: userSku || product.sku || '',
+              color: color || '—',
+              sizes: allSizes || '—',
+              seriesQty: seriesQty,
+              totalPieces: totalPieces,
+              unitPrice: unitPrice,
+              total: totalPieces * unitPrice,
+              image: product.mainImage || (product.images && product.images.length ? product.images[0] : '')
+            });
+          });
+          
+          return rows;
+        },
+
         toExcel(rowsData, mode, sheetName = 'Sheet1') {
           const wb = XLSX.utils.book_new();
           let data = [];
-          if (mode === 'rows') { data.push(['Name', 'Color', 'Size', 'SKU', 'Qty', 'Pieces', 'Unit Price',
-              'Total'
-            ]);
+          
+          if (mode === 'rows') {
+            data.push(['Name', 'Color', 'Size', 'SKU', 'Qty', 'Pieces', 'Unit Price', 'Total']);
             rowsData.forEach(r => { data.push([r.name, r.color, r.size, r.sku, r.qty, r.qty, r.unitPrice, r
-                .total]); }); } else { data.push(['Name', 'Colors', 'Sizes', 'Series Qty', 'SKU', 'Variants',
-              'Total Pieces', 'Unit Price', 'Total'
-            ]);
-            rowsData.forEach(r => { data.push([r.name, r.colors, r.sizes, r.seriesQty, r.sku, r.variantsCount,
-                r.variantsCount * r.seriesQty, r.unitPrice, r.total
-              ]); }); }
+                .total]); });
+          } else if (mode === 'summary') {
+            data.push(['Name', 'Colors', 'Sizes', 'Series Qty', 'SKU', 'Total Pieces', 'Unit Price', 'Total']);
+            rowsData.forEach(r => { data.push([r.name, r.colors, r.sizes, r.seriesQty, r.sku, r.totalPieces, r
+                .unitPrice, r.total]); });
+          } else if (mode === 'colorSummary') {
+            data.push(['Name', 'SKU', 'Color', 'Sizes', 'Series Qty', 'Total Pieces', 'Unit Price', 'Total']);
+            rowsData.forEach(r => { data.push([r.name, r.sku, r.color, r.sizes, r.seriesQty, r.totalPieces, r
+                .unitPrice, r.total]); });
+          }
+          
           const ws = XLSX.utils.aoa_to_sheet(data);
           XLSX.utils.book_append_sheet(wb, ws, sheetName);
           return wb;
         },
+
         fromTableData(tableData, sheetName = 'Sheet1') {
           const wb = XLSX.utils.book_new();
           const data = [
@@ -1444,6 +1515,7 @@
           branch: document.getElementById('branchNameDash'),
           modeRows: document.querySelector('input[name="modeDash"][value="rows"]'),
           modeSummary: document.querySelector('input[name="modeDash"][value="summary"]'),
+          modeColorSummary: document.querySelector('input[name="modeDash"][value="colorSummary"]'),
           generateBtn: document.getElementById('generateBtnDash'),
           addToTableBtn: document.getElementById('addToTableBtnDash'),
           exportTableBtn: document.getElementById('exportTableBtnDash'),
@@ -1484,6 +1556,7 @@
         },
 
         _lastProduct: null,
+        _lastProductUrl: '',
         _tableData: [],
         _currentViewMode: 'rows',
         _isSyncing: false,
@@ -1495,13 +1568,25 @@
           this.elements.sku.value = Storage.get('sku', '');
           this.elements.branch.value = Storage.get('branch', '');
           const mode = Storage.get('mode', 'rows');
-          if (mode === 'summary') { this.elements.modeSummary.checked = true;
+          if (mode === 'summary') {
+            this.elements.modeSummary.checked = true;
             this.elements.modeRows.checked = false;
+            this.elements.modeColorSummary.checked = false;
             this.updateModeHint('summary');
-            this._currentViewMode = 'summary'; } else { this.elements.modeRows.checked = true;
+            this._currentViewMode = 'summary';
+          } else if (mode === 'colorSummary') {
+            this.elements.modeColorSummary.checked = true;
+            this.elements.modeRows.checked = false;
             this.elements.modeSummary.checked = false;
+            this.updateModeHint('colorSummary');
+            this._currentViewMode = 'colorSummary';
+          } else {
+            this.elements.modeRows.checked = true;
+            this.elements.modeSummary.checked = false;
+            this.elements.modeColorSummary.checked = false;
             this.updateModeHint('rows');
-            this._currentViewMode = 'rows'; }
+            this._currentViewMode = 'rows';
+          }
 
           const saved = Storage.get('tableData', []);
           if (Array.isArray(saved) && saved.length) { this._tableData = saved;
@@ -1526,10 +1611,19 @@
           this.elements.branch.addEventListener('change', () => this.saveAll());
 
           document.querySelectorAll('input[name="modeDash"]').forEach(el => {
-            el.addEventListener('change', () => { this.updateModeHint(el.value);
-              this._currentViewMode = el.value;
+            el.addEventListener('change', () => {
+              const mode = el.value;
+              if (mode === 'colorSummary') {
+                this.updateModeHint('colorSummary');
+              } else if (mode === 'summary') {
+                this.updateModeHint('summary');
+              } else {
+                this.updateModeHint('rows');
+              }
+              this._currentViewMode = mode;
               this.saveAll();
-              this.renderTable(); });
+              this.renderTable();
+            });
           });
 
           this.elements.generateBtn.addEventListener('click', () => this.handleGenerate());
@@ -1560,21 +1654,32 @@
             this.loadOldInvoices(); }
         },
 
-        updateModeHint(mode) { this.elements.modeHint.textContent = mode === 'rows' ? 'كل لون ومقاس = صف منفصل' :
-            'صف واحد يلخص كل الألوان والمقاسات'; },
+        updateModeHint(mode) {
+          if (mode === 'colorSummary') {
+            this.elements.modeHint.textContent = 'كل لون في صف منفصل مع جميع المقاسات';
+          } else if (mode === 'summary') {
+            this.elements.modeHint.textContent = 'صف واحد يلخص كل الألوان والمقاسات';
+          } else {
+            this.elements.modeHint.textContent = 'كل لون ومقاس = صف منفصل';
+          }
+        },
 
         saveAll() {
           Storage.set('url', this.elements.url.value);
           Storage.set('series', this.elements.series.value);
           Storage.set('sku', this.elements.sku.value);
           Storage.set('branch', this.elements.branch.value);
-          const mode = this.elements.modeRows.checked ? 'rows' : 'summary';
+          const mode = this.getMode();
           Storage.set('mode', mode);
           Storage.set('tableData', this._tableData);
           if (this._lastProduct) Storage.set('cachedProduct', this._lastProduct);
         },
 
-        getMode() { return this.elements.modeRows.checked ? 'rows' : 'summary'; },
+        getMode() {
+          if (this.elements.modeColorSummary.checked) return 'colorSummary';
+          if (this.elements.modeSummary.checked) return 'summary';
+          return 'rows';
+        },
 
         setStatus(msg, progress = -1) {
           this.elements.statusMsg.textContent = msg;
@@ -1592,6 +1697,7 @@
 
         showPreview(product) {
           this._lastProduct = product;
+          this._lastProductUrl = this.elements.url.value.trim();
           this.elements.previewSection.classList.add('show');
           this.elements.dataSource.textContent = product.dataSource || 'JSON';
           this.elements.pName.textContent = product.name || '—';
@@ -1610,13 +1716,12 @@
         async autoExtract() {
           const url = this.elements.url.value.trim();
           if (!url) {
-            // امسح الكاش لو الرابط فارغ
             this._lastProduct = null;
+            this._lastProductUrl = '';
             Storage.set('cachedProduct', null);
             this.elements.previewSection.classList.remove('show');
             return;
           }
-          // تجاهل الكاش المؤقت واجلب البيانات الجديدة
           try {
             this.setStatus('⏳ جاري التحميل ...', 20);
             this.elements.storeStatus.textContent = '⏳ جاري التحميل';
@@ -1630,6 +1735,7 @@
               this.setStatus('🔄 استخراج ...', 60);
               product = ProductParser.parseFromHTML(html); }
             this.setStatus('✅ جاهز', 100);
+            this._lastProductUrl = url;
             this.showPreview(product);
           } catch (err) { this.setStatus('❌ فشل', 0);
             this.showAlert('⚠️ ' + err.message, 'error');
@@ -1724,7 +1830,72 @@
                 this.showAlert('✅ تم حذف المنتج', 'success');
               });
             });
+          } else if (mode === 'colorSummary') {
+            // Color Summary View
+            const map = new Map();
+            this._tableData.forEach(row => {
+              const key = row.name + '|' + row.sku + '|' + row.color;
+              if (!map.has(key)) {
+                map.set(key, { name: row.name, sku: row.sku, color: row.color || '—', sizes: new Set(),
+                  unitPrice: row.unitPrice, image: row.image, totalQty: 0, total: 0 });
+              }
+              const s = map.get(key);
+              if (row.size) s.sizes.add(row.size);
+              s.totalQty += row.qty || 0;
+              s.total += row.total || 0;
+            });
+            let html = '',
+              idx = 0,
+              grandPieces = 0,
+              grandValue = 0;
+            for (const [key, s] of map) {
+              idx++;
+              const sizes = [...s.sizes].filter(sz => sz).join(', ') || '—';
+              const totalPieces = s.totalQty;
+              const hasImage = s.image && s.image.length > 0;
+              grandPieces += totalPieces;
+              grandValue += s.total;
+              html += `
+                <tr class="summary-row">
+                  <td>${idx}</td>
+                  <td>${this.escapeHtml(s.name)}</td>
+                  <td>${this.escapeHtml(s.color)}</td>
+                  <td>${this.escapeHtml(sizes)}</td>
+                  <td>${this.escapeHtml(s.sku)}</td>
+                  <td>—</td>
+                  <td class="highlight">${totalPieces}</td>
+                  <td>${Utils.formatCurrency(s.unitPrice)}</td>
+                  <td>${Utils.formatCurrency(s.total)}</td>
+                  <td>${hasImage ? `<button class="row-btn-dash eye" onclick="window.UI.openModal('${this.escapeHtml(s.image)}')">👁️</button>` : '—'}</td>
+                  <td>
+                    <div class="row-actions-dash">
+                      <button class="row-btn-dash delete" data-key="${key}">✕</button>
+                    </div>
+                  </td>
+                </tr>`;
+            }
+            tbody.innerHTML = html;
+            count.textContent = `${map.size} منتج (ملخص بالألوان)`;
+            count2.textContent = `${map.size} منتج (ملخص بالألوان)`;
+            totalP.textContent = `🧮 ${grandPieces} قطعة`;
+            totalP2.textContent = `🧮 ${grandPieces} قطعة`;
+            this.elements.statsBar.style.display = 'flex';
+            this.elements.statTotalPieces.textContent = grandPieces;
+            this.elements.statTotalValue.textContent = Utils.formatCurrency(grandValue) + ' LE';
+            this.elements.statProducts.textContent = map.size;
+
+            tbody.querySelectorAll('.row-btn-dash.delete[data-key]').forEach(btn => {
+              btn.addEventListener('click', (e) => {
+                const key = e.target.dataset.key;
+                this._tableData = this._tableData.filter(row => (row.name + '|' + row.sku + '|' + (row.color || '')) !== key);
+                this.renderTable();
+                this.saveAll();
+                this.syncTableToFirebase();
+                this.showAlert('✅ تم حذف اللون', 'success');
+              });
+            });
           } else {
+            // Rows mode (detailed)
             const sorted = Utils.sortTableData(this._tableData);
             let html = '',
               grandPieces = 0,
@@ -1780,15 +1951,16 @@
           }
         },
 
-        // تقفيل الفاتورة بالكامل (جميع الصفوف)
+        // تقفيل الفاتورة بالكامل مع حفظ رابط المنتج
         closeFullInvoice() {
           if (!this._tableData.length) {
             this.showAlert('⚠️ لا توجد بيانات لتقفيلها', 'error');
             return;
           }
           const branchName = this.elements.branch.value.trim() || 'فرع غير محدد';
+          const productUrl = this._lastProductUrl || this.elements.url.value.trim() || '';
           const allRows = [...this._tableData];
-          Utils.saveInvoiceToFirebase(branchName, allRows, (error, key) => {
+          Utils.saveInvoiceToFirebase(branchName, allRows, productUrl, (error, key) => {
             if (error) { this.showAlert('❌ ' + error, 'error'); return; }
             this._tableData = [];
             this.renderTable();
@@ -1855,11 +2027,11 @@
           this.syncTableToFirebase();
           this.showAlert(`✅ تم إضافة/تحديث ${newRows.length} صف`, 'success');
           
-          // مسح حقلي الرابط والسريات بعد الإضافة
+          // Clear fields after adding
           this.elements.url.value = '';
           this.elements.series.value = '';
-          // إلغاء عرض المعاينة
           this._lastProduct = null;
+          this._lastProductUrl = '';
           Storage.set('cachedProduct', null);
           this.elements.previewSection.classList.remove('show');
           this.elements.storeStatus.textContent = '🟢 جاهز';
@@ -1871,6 +2043,7 @@
           if (!this._tableData.length) { this.showAlert('⚠️ الجدول فارغ', 'error'); return; }
           const mode = this._currentViewMode;
           let dataToExport;
+          
           if (mode === 'summary') {
             const map = new Map();
             this._tableData.forEach(row => {
@@ -1888,26 +2061,54 @@
               const colors = [...s.colors].filter(c => c).join(', ') || '—';
               const sizes = [...s.sizes].filter(sz => sz).join(', ') || '—';
               const variantsCount = s.colors.size * s.sizes.size;
-              dataToExport.push({ name: s.name, colors: colors, sizes: sizes, seriesQty: s.totalQty /
-                  variantsCount, sku: s.sku, variantsCount: variantsCount, totalPieces: s.totalQty,
+              dataToExport.push({ name: s.name, colors: colors, sizes: sizes, seriesQty: Math.round(s.totalQty /
+                  variantsCount), sku: s.sku, totalPieces: s.totalQty,
+                unitPrice: s.unitPrice, total: s.total });
+            }
+          } else if (mode === 'colorSummary') {
+            const map = new Map();
+            this._tableData.forEach(row => {
+              const key = row.name + '|' + row.sku + '|' + row.color;
+              if (!map.has(key)) {
+                map.set(key, { name: row.name, sku: row.sku, color: row.color || '—', sizes: new Set(),
+                  unitPrice: row.unitPrice, totalQty: 0, total: 0 });
+              }
+              const s = map.get(key);
+              if (row.size) s.sizes.add(row.size);
+              s.totalQty += row.qty || 0;
+              s.total += row.total || 0;
+            });
+            dataToExport = [];
+            for (const [key, s] of map) {
+              const sizes = [...s.sizes].filter(sz => sz).join(', ') || '—';
+              const variantsCount = s.sizes.size;
+              dataToExport.push({ name: s.name, sku: s.sku, color: s.color, sizes: sizes,
+                seriesQty: Math.round(s.totalQty / variantsCount), totalPieces: s.totalQty,
                 unitPrice: s.unitPrice, total: s.total });
             }
           } else {
+            // rows mode
             const sorted = Utils.sortTableData(this._tableData);
             dataToExport = sorted.map(row => ({ name: row.name, color: row.color || '—', size: row
                 .size || '—', sku: row.sku, qty: row.qty || 0, pieces: row.qty || 0,
               unitPrice: row.unitPrice, total: (row.qty || 0) * row.unitPrice }));
           }
+
           const wb = XLSX.utils.book_new();
           let excelData;
+          
           if (mode === 'summary') {
             excelData = [
-              ['Name', 'Colors', 'Sizes', 'Series Qty', 'SKU', 'Variants', 'Total Pieces', 'Unit Price',
-                'Total'
-              ]
+              ['Name', 'Colors', 'Sizes', 'Series Qty', 'SKU', 'Total Pieces', 'Unit Price', 'Total']
             ];
             dataToExport.forEach(r => { excelData.push([r.name, r.colors, r.sizes, r.seriesQty, r.sku, r
-                .variantsCount, r.totalPieces, r.unitPrice, r.total]); });
+                .totalPieces, r.unitPrice, r.total]); });
+          } else if (mode === 'colorSummary') {
+            excelData = [
+              ['Name', 'SKU', 'Color', 'Sizes', 'Series Qty', 'Total Pieces', 'Unit Price', 'Total']
+            ];
+            dataToExport.forEach(r => { excelData.push([r.name, r.sku, r.color, r.sizes, r.seriesQty, r
+                .totalPieces, r.unitPrice, r.total]); });
           } else {
             excelData = [
               ['#', 'Name', 'Color', 'Size', 'SKU', 'Qty', 'Pieces', 'Unit Price', 'Total']
@@ -1916,16 +2117,18 @@
                 r.pieces, r.unitPrice, r.total
               ]); });
           }
+
           const ws = XLSX.utils.aoa_to_sheet(excelData);
           XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
           const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
           const blob = new Blob([wbout], { type: 'application/octet-stream' });
           const link = document.createElement('a');
           link.href = URL.createObjectURL(blob);
-          link.download = `export_${new Date().toISOString().slice(0,10)}.xlsx`;
+          const modeNames = { 'rows': 'تفصيل', 'summary': 'ملخص', 'colorSummary': 'ملخص_بالألوان' };
+          link.download = `export_${modeNames[mode] || 'report'}_${new Date().toISOString().slice(0,10)}.xlsx`;
           link.click();
           URL.revokeObjectURL(link.href);
-          this.showAlert(`✅ تم التصدير (${mode === 'summary' ? 'ملخص' : 'تفصيل'})`, 'success');
+          this.showAlert(`✅ تم التصدير (${modeNames[mode] || mode})`, 'success');
         },
 
         clearTable() {
@@ -1939,11 +2142,11 @@
 
         loadOldInvoices() {
           const tbody = this.elements.oldOrdersBody;
-          tbody.innerHTML = `<tr><td colspan="7" class="empty-table-msg">⏳ جاري التحميل...</td></tr>`;
+          tbody.innerHTML = `<tr><td colspan="8" class="empty-table-msg">⏳ جاري التحميل...</td></tr>`;
           Utils.loadOldInvoices((invoices) => {
             this._oldInvoices = invoices;
             if (!invoices || !invoices.length) { tbody.innerHTML =
-                `<tr><td colspan="7" class="empty-table-msg">لا توجد فواتير قديمة</td></tr>`;
+                `<tr><td colspan="8" class="empty-table-msg">لا توجد فواتير قديمة</td></tr>`;
               this.elements.oldOrdersCount.textContent = '0 فاتورة'; return; }
             let html = '';
             invoices.forEach((inv, idx) => {
@@ -1958,6 +2161,9 @@
                   '، ');
                 if (inv.items.length > 3) details += ` ... +${inv.items.length-3} أخرى`;
               }
+              const urlDisplay = inv.productUrl ? 
+                `<span class="old-order-url" title="${this.escapeHtml(inv.productUrl)}">${this.escapeHtml(inv.productUrl.substring(0, 50))}...</span>` : 
+                '—';
               html += `
                 <tr>
                   <td>${idx+1}</td>
@@ -1965,6 +2171,7 @@
                   <td>${dateStr}</td>
                   <td>${inv.totalPieces||0}</td>
                   <td>${Utils.formatCurrency(inv.totalValue||0)} LE</td>
+                  <td>${urlDisplay}</td>
                   <td class="old-order-item">${details||'—'}</td>
                   <td><button class="old-order-export-btn" data-idx="${idx}">📥 Excel</button></td>
                 </tr>`;
@@ -2014,16 +2221,22 @@
               this.setStatus('❌ فشل', 0); return; }
           }
           this.setStatus('📊 تجهيز ...', 70);
-          let data = mode === 'rows' ? ExcelGenerator.generateRows(product, series, sku) : [ExcelGenerator
-            .generateSummary(product, series, sku)
-          ];
+          let data;
+          if (mode === 'rows') {
+            data = ExcelGenerator.generateRows(product, series, sku);
+          } else if (mode === 'summary') {
+            data = [ExcelGenerator.generateSummary(product, series, sku)];
+          } else if (mode === 'colorSummary') {
+            data = ExcelGenerator.generateColorSummary(product, series, sku);
+          }
           this.setStatus('📁 إنشاء Excel ...', 85);
           const wb = ExcelGenerator.toExcel(data, mode, 'Sheet1');
           const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
           const blob = new Blob([wbout], { type: 'application/octet-stream' });
           const link = document.createElement('a');
           link.href = URL.createObjectURL(blob);
-          link.download = `${product.name.replace(/\s+/g,'_')}_${mode}.xlsx`;
+          const modeNames = { 'rows': 'تفصيل', 'summary': 'ملخص', 'colorSummary': 'ملخص_بالألوان' };
+          link.download = `${product.name.replace(/\s+/g,'_')}_${modeNames[mode] || mode}.xlsx`;
           link.click();
           URL.revokeObjectURL(link.href);
           this.setStatus('✅ تم التحميل', 100);
