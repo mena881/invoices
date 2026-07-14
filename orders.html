@@ -171,8 +171,8 @@
       box-shadow: 0 8px 24px rgba(26, 58, 94, 0.35);
     }
 
-    .btn-force-fetch {
-      background: #6b3fa0;
+    .btn-clear-preview {
+      background: #b13e3e;
       border: none;
       padding: 6px 18px;
       border-radius: 40px;
@@ -184,13 +184,13 @@
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      box-shadow: 0 4px 14px rgba(107, 63, 160, 0.3);
+      box-shadow: 0 4px 14px rgba(177, 62, 62, 0.3);
     }
 
-    .btn-force-fetch:hover {
-      background: #553081;
+    .btn-clear-preview:hover {
+      background: #942f2f;
       transform: translateY(-2px);
-      box-shadow: 0 8px 24px rgba(107, 63, 160, 0.4);
+      box-shadow: 0 8px 24px rgba(177, 62, 62, 0.4);
     }
 
     /* ===== SUBHEADER ===== */
@@ -408,18 +408,6 @@
       transform: translateY(-2px);
     }
 
-    .btn-dash-color-summary {
-      background: #6b3fa0;
-      color: white;
-      box-shadow: 0 6px 18px rgba(107, 63, 160, 0.25);
-    }
-
-    .btn-dash-color-summary:hover {
-      background: #553081;
-      transform: translateY(-2px);
-      box-shadow: 0 10px 30px rgba(107, 63, 160, 0.35);
-    }
-
     /* ===== PROGRESS / ALERT ===== */
     .progress-wrap {
       width: 100%;
@@ -527,7 +515,7 @@
       color: #3a4d66;
     }
 
-    .preview-header .force-fetch-btn {
+    .preview-header .clear-preview-btn {
       margin-right: auto;
     }
 
@@ -940,7 +928,7 @@
         padding: 6px 14px;
         font-size: 12px;
       }
-      .preview-header .force-fetch-btn {
+      .preview-header .clear-preview-btn {
         margin-right: 0;
         width: 100%;
       }
@@ -1049,7 +1037,7 @@
       <div class="preview-header">
         <h3>👁️ بيانات المنتج</h3>
         <span class="tag" id="dataSourceDash">JSON</span>
-        <button class="btn-force-fetch force-fetch-btn" id="forceFetchBtnDash">🔄 سحب البيانات</button>
+        <button class="btn-clear-preview clear-preview-btn" id="clearPreviewBtnDash">🗑️ مسح بيانات العرض</button>
       </div>
       <div class="preview-grid-dash">
         <div class="img-box"><img id="previewImgDash" src="" alt="product" /></div>
@@ -1585,7 +1573,7 @@
           oldOrdersCount: document.getElementById('oldOrdersCountDash'),
           oldOrdersSection: document.getElementById('oldOrdersSectionDash'),
           syncStatus: document.getElementById('syncStatusDash'),
-          forceFetchBtn: document.getElementById('forceFetchBtnDash')
+          clearPreviewBtn: document.getElementById('clearPreviewBtnDash')
         },
 
         _lastProduct: null,
@@ -1670,8 +1658,8 @@
           this.elements.refreshOldOrdersBtn.addEventListener('click', () => this.loadOldInvoices());
           this.elements.exportAllOldOrdersBtn.addEventListener('click', () => this.exportAllInvoices());
 
-          // Force Fetch Button
-          this.elements.forceFetchBtn.addEventListener('click', () => this.forceFetch());
+          // Clear Preview Button - NEW FUNCTIONALITY
+          this.elements.clearPreviewBtn.addEventListener('click', () => this.clearPreview());
 
           this.elements.modal.addEventListener('click', (e) => { if (e.target === this.elements.modal) this
               .closeModal(); });
@@ -1682,45 +1670,30 @@
               this.addToTable(); } });
         },
 
-        // ===== FORCE FETCH =====
-        async forceFetch() {
-          const url = this.elements.url.value.trim();
-          if (!url) {
-            this.showAlert('⚠️ لا يوجد رابط في حقل الرابط', 'error');
-            return;
-          }
+        // ===== CLEAR PREVIEW =====
+        clearPreview() {
+          // Clear preview data only
+          this.elements.pName.textContent = '—';
+          this.elements.pPrice.textContent = '0 LE';
+          this.elements.pColors.textContent = '—';
+          this.elements.pSizes.textContent = '—';
+          this.elements.previewImg.src = '';
+          this.elements.previewImg.alt = 'No image';
+          this.elements.dataSource.textContent = '—';
           
-          this.setStatus('⏳ جاري السحب الإجباري ...', 10);
-          this.elements.storeStatus.textContent = '⏳ جاري السحب';
-          this.elements.storeStatus.className = 'status-pill loading';
-          this.elements.forceFetchBtn.textContent = '⏳ جاري...';
-          this.elements.forceFetchBtn.disabled = true;
+          // Hide preview section
+          this.elements.previewSection.classList.remove('show');
           
-          try {
-            let jsonData, product;
-            try {
-              jsonData = await ShopifyFetcher.fetchProduct(url);
-              this.setStatus('🔄 استخراج ...', 60);
-              product = ProductParser.parse(jsonData);
-            } catch (e) {
-              this.setStatus('⚠️ محاولة HTML ...', 40);
-              const html = await ShopifyFetcher.fetchProductHTML(url);
-              this.setStatus('🔄 استخراج ...', 60);
-              product = ProductParser.parseFromHTML(html);
-            }
-            this.setStatus('✅ تم السحب بنجاح', 100);
-            this._lastProductUrl = url;
-            this.showPreview(product);
-            this.showAlert('✅ تم سحب البيانات بنجاح', 'success');
-          } catch (err) {
-            this.setStatus('❌ فشل السحب', 0);
-            this.showAlert('⚠️ ' + err.message, 'error');
-            this.elements.storeStatus.textContent = '❌ خطأ';
-            this.elements.storeStatus.className = 'status-pill';
-          } finally {
-            this.elements.forceFetchBtn.textContent = '🔄 سحب البيانات';
-            this.elements.forceFetchBtn.disabled = false;
-          }
+          // Clear cache
+          this._lastProduct = null;
+          this._lastProductUrl = '';
+          Storage.set('cachedProduct', null);
+          
+          // Update store status
+          this.elements.storeStatus.textContent = '🟢 جاهز';
+          this.elements.storeStatus.className = 'status-pill online';
+          
+          this.showAlert('🗑️ تم مسح بيانات العرض', 'info');
         },
 
         toggleOldOrders() {
