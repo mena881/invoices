@@ -1,0 +1,2270 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes" />
+  <title>Order Management · Create Order</title>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js">
+  </script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js">
+  </script>
+  <!-- SheetJS -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js">
+  </script>
+
+  <style>
+    /* ===== DESIGN SYSTEM ===== */
+    :root {
+      --primary: #1E3A5F;
+      --primary-dark: #0F2A44;
+      --bg: #F8FAFC;
+      --card: #FFFFFF;
+      --border: #E5E7EB;
+      --text: #0F172A;
+      --subtext: #64748B;
+      --success: #16A34A;
+      --warning: #F59E0B;
+      --danger: #DC2626;
+      --radius: 20px;
+      --radius-card: 24px;
+      --radius-btn: 16px;
+      --shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+      --shadow-hover: 0 18px 45px rgba(0, 0, 0, 0.08);
+      --transition: 250ms ease;
+      --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: var(--font);
+    }
+
+    body {
+      background: var(--bg);
+      min-height: 100vh;
+      padding: 24px 20px 100px;
+      color: var(--text);
+    }
+
+    .app {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    /* ===== CARDS ===== */
+    .card {
+      background: var(--card);
+      border-radius: var(--radius-card);
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      transition: all var(--transition);
+      padding: 24px;
+    }
+
+    .card:hover {
+      box-shadow: var(--shadow-hover);
+      border-color: #D1D5DB;
+      transform: translateY(-2px);
+    }
+
+    /* ===== HEADER ===== */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 24px;
+      background: var(--card);
+      border-radius: var(--radius-card);
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+    }
+
+    .header-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .header-brand h1 {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--primary);
+      letter-spacing: -0.3px;
+    }
+
+    .header-brand span {
+      font-size: 12px;
+      background: var(--primary);
+      color: white;
+      padding: 2px 12px;
+      border-radius: 40px;
+      font-weight: 500;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .header-actions .status {
+      font-size: 12px;
+      font-weight: 500;
+      padding: 6px 16px;
+      border-radius: 40px;
+      background: #E8F5E9;
+      color: var(--success);
+      border: 1px solid #C8E6C9;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-ghost {
+      background: transparent;
+      border: 1px solid var(--border);
+      padding: 8px 18px;
+      border-radius: var(--radius-btn);
+      font-weight: 500;
+      font-size: 13px;
+      color: var(--text);
+      cursor: pointer;
+      transition: all var(--transition);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-ghost:hover {
+      background: var(--bg);
+      border-color: #CBD5E1;
+    }
+
+    /* ===== BUTTONS ===== */
+    .btn {
+      padding: 10px 24px;
+      border: none;
+      border-radius: var(--radius-btn);
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all var(--transition);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      touch-action: manipulation;
+    }
+
+    .btn:active {
+      transform: scale(0.97);
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+      box-shadow: 0 4px 14px rgba(30, 58, 95, 0.25);
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(30, 58, 95, 0.35);
+    }
+
+    .btn-success {
+      background: var(--success);
+      color: white;
+      box-shadow: 0 4px 14px rgba(22, 163, 74, 0.25);
+    }
+
+    .btn-success:hover {
+      background: #15803D;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(22, 163, 74, 0.35);
+    }
+
+    .btn-secondary {
+      background: transparent;
+      border: 1.5px solid var(--border);
+      color: var(--text);
+    }
+
+    .btn-secondary:hover {
+      background: var(--bg);
+      border-color: #CBD5E1;
+    }
+
+    .btn-danger {
+      background: var(--danger);
+      color: white;
+      box-shadow: 0 4px 14px rgba(220, 38, 38, 0.2);
+    }
+
+    .btn-danger:hover {
+      background: #B91C1C;
+      transform: translateY(-2px);
+    }
+
+    .btn-warning {
+      background: var(--warning);
+      color: white;
+      box-shadow: 0 4px 14px rgba(245, 158, 11, 0.25);
+    }
+
+    .btn-warning:hover {
+      background: #D97706;
+      transform: translateY(-2px);
+    }
+
+    .btn-sm {
+      padding: 6px 14px;
+      font-size: 12px;
+      border-radius: 12px;
+    }
+
+    /* ===== FLOATING LABEL INPUTS ===== */
+    .floating-group {
+      position: relative;
+      margin-bottom: 8px;
+    }
+
+    .floating-group input,
+    .floating-group select {
+      width: 100%;
+      padding: 16px 14px 8px;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 14px;
+      background: white;
+      transition: all var(--transition);
+      outline: none;
+    }
+
+    .floating-group input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(30, 58, 95, 0.08);
+    }
+
+    .floating-group label {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      font-size: 14px;
+      color: var(--subtext);
+      pointer-events: none;
+      transition: all var(--transition);
+      background: white;
+      padding: 0 6px;
+    }
+
+    .floating-group input:focus+label,
+    .floating-group input:not(:placeholder-shown)+label {
+      top: 4px;
+      font-size: 11px;
+      color: var(--primary);
+      font-weight: 600;
+    }
+
+    .floating-group input::placeholder {
+      opacity: 0;
+    }
+
+    /* ===== PRODUCT INFO GRID ===== */
+    .product-info-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr auto auto;
+      gap: 16px;
+      align-items: end;
+    }
+
+    .product-info-grid .floating-group {
+      margin-bottom: 0;
+    }
+
+    .product-info-grid .btn {
+      height: 52px;
+      padding: 0 28px;
+      white-space: nowrap;
+    }
+
+    @media (max-width: 780px) {
+      .product-info-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+      .product-info-grid .btn {
+        grid-column: 1 / -1;
+      }
+    }
+
+    /* ===== PREVIEW CARD ===== */
+    .preview-card {
+      display: none;
+      animation: fadeSlide 0.3s ease;
+    }
+
+    .preview-card.show {
+      display: block;
+    }
+
+    .preview-content {
+      display: flex;
+      gap: 24px;
+      align-items: flex-start;
+    }
+
+    .preview-content img {
+      width: 100px;
+      height: 100px;
+      border-radius: var(--radius);
+      object-fit: cover;
+      border: 1px solid var(--border);
+      transition: all var(--transition);
+      flex-shrink: 0;
+      cursor: pointer;
+    }
+
+    .preview-content img:hover {
+      transform: scale(1.04);
+    }
+
+    .preview-content .info {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4px 24px;
+      flex: 1;
+    }
+
+    .preview-content .info .field {
+      font-size: 14px;
+      padding: 4px 0;
+    }
+
+    .preview-content .info .field strong {
+      color: var(--subtext);
+      font-weight: 500;
+      margin-left: 6px;
+    }
+
+    /* ===== INVOICE ===== */
+    .invoice-header-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .invoice-header-actions .left-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    /* ===== PRODUCT CARDS ===== */
+    .product-card {
+      background: var(--card);
+      border-radius: var(--radius-card);
+      border: 1px solid var(--border);
+      overflow: hidden;
+      transition: all var(--transition);
+      margin-bottom: 12px;
+    }
+
+    .product-card:hover {
+      box-shadow: var(--shadow-hover);
+      border-color: #D1D5DB;
+      transform: translateY(-2px);
+    }
+
+    .product-card-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 16px 20px;
+      cursor: pointer;
+      user-select: none;
+      transition: all var(--transition);
+    }
+
+    .product-card-header:hover {
+      background: #F8FAFC;
+    }
+
+    .product-card-header .thumb {
+      width: 60px;
+      height: 60px;
+      border-radius: var(--radius);
+      object-fit: cover;
+      border: 1px solid var(--border);
+      flex-shrink: 0;
+      transition: all var(--transition);
+      cursor: pointer;
+    }
+
+    .product-card-header .thumb:hover {
+      transform: scale(1.05);
+    }
+
+    .product-card-header .meta {
+      flex: 1;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px 18px;
+    }
+
+    .product-card-header .meta .name {
+      font-weight: 600;
+      font-size: 15px;
+    }
+
+    .product-card-header .meta .sku {
+      font-size: 12px;
+      color: var(--subtext);
+    }
+
+    .product-card-header .meta .price {
+      font-weight: 600;
+      color: var(--primary);
+      font-size: 14px;
+    }
+
+    .product-card-header .chevron {
+      margin-right: auto;
+      font-size: 18px;
+      color: var(--subtext);
+      transition: transform var(--transition);
+    }
+
+    .product-card-header .chevron.open {
+      transform: rotate(180deg);
+    }
+
+    .product-card-body {
+      padding: 0 20px 20px;
+      display: none;
+      animation: fadeSlide 0.25s ease;
+    }
+
+    .product-card-body.open {
+      display: block;
+    }
+
+    .color-accordion {
+      border-top: 1px solid var(--border);
+      padding-top: 12px;
+      margin-top: 4px;
+    }
+
+    .color-accordion:first-child {
+      border-top: none;
+      padding-top: 0;
+    }
+
+    .color-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 0;
+      cursor: pointer;
+      user-select: none;
+      transition: all var(--transition);
+      font-weight: 500;
+    }
+
+    .color-header:hover {
+      color: var(--primary);
+    }
+
+    .color-header .chevron-sm {
+      font-size: 14px;
+      color: var(--subtext);
+      transition: transform var(--transition);
+    }
+
+    .color-header .chevron-sm.open {
+      transform: rotate(180deg);
+    }
+
+    .color-sizes {
+      display: none;
+      padding-right: 28px;
+      padding-bottom: 8px;
+      animation: fadeSlide 0.2s ease;
+    }
+
+    .color-sizes.open {
+      display: block;
+    }
+
+    .size-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 6px 0;
+      font-size: 14px;
+    }
+
+    .size-row .size-label {
+      min-width: 40px;
+      font-weight: 500;
+    }
+
+    .size-row .qty-control {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .size-row .qty-control button {
+      width: 30px;
+      height: 30px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: white;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 600;
+      transition: all var(--transition);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      touch-action: manipulation;
+    }
+
+    .size-row .qty-control button:hover {
+      background: var(--bg);
+      border-color: #CBD5E1;
+    }
+
+    .size-row .qty-control button:active {
+      transform: scale(0.92);
+    }
+
+    .size-row .qty-control .qty-val {
+      min-width: 32px;
+      text-align: center;
+      font-weight: 600;
+      font-size: 15px;
+    }
+
+    .product-card-footer {
+      padding: 12px 20px 16px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    /* ===== STATISTICS ===== */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
+
+    .stat-card {
+      background: var(--card);
+      border-radius: var(--radius-card);
+      padding: 18px 20px;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      transition: all var(--transition);
+      text-align: center;
+    }
+
+    .stat-card:hover {
+      box-shadow: var(--shadow-hover);
+      transform: translateY(-3px);
+      border-color: #D1D5DB;
+    }
+
+    .stat-card .stat-label {
+      font-size: 12px;
+      color: var(--subtext);
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    .stat-card .stat-value {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--text);
+      margin-top: 4px;
+    }
+
+    .stat-card .stat-value.green {
+      color: var(--success);
+    }
+    .stat-card .stat-value.primary {
+      color: var(--primary);
+    }
+
+    @media (max-width: 640px) {
+      .stats-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    /* ===== STICKY BOTTOM ===== */
+    .sticky-bottom {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: var(--card);
+      border-top: 1px solid var(--border);
+      padding: 12px 24px;
+      box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.05);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+      background: rgba(255, 255, 255, 0.92);
+    }
+
+    .sticky-bottom .summary {
+      display: flex;
+      gap: 24px;
+      flex-wrap: wrap;
+      font-size: 14px;
+    }
+
+    .sticky-bottom .summary .item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .sticky-bottom .summary .item strong {
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .sticky-bottom .actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    /* ===== DIALOG / MODAL ===== */
+    .dialog-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(4px);
+      z-index: 9999;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .dialog-overlay.show {
+      display: flex;
+      animation: fadeIn 0.25s ease;
+    }
+
+    .dialog-box {
+      background: var(--card);
+      border-radius: var(--radius-card);
+      padding: 32px;
+      max-width: 480px;
+      width: 90%;
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.2);
+      animation: slideUp 0.3s ease;
+      position: relative;
+    }
+
+    .dialog-box h3 {
+      font-size: 20px;
+      margin-bottom: 12px;
+    }
+
+    .dialog-box p {
+      color: var(--subtext);
+      margin-bottom: 16px;
+      font-size: 14px;
+    }
+
+    .dialog-box .dialog-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+      margin-top: 16px;
+    }
+
+    /* ===== ANIMATIONS ===== */
+    @keyframes fadeSlide {
+      from {
+        opacity: 0;
+        transform: translateY(-6px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 780px) {
+      body {
+        padding: 16px 12px 110px;
+      }
+      .header {
+        flex-wrap: wrap;
+        gap: 10px;
+        padding: 14px 16px;
+      }
+      .header-brand h1 {
+        font-size: 18px;
+      }
+      .product-info-grid {
+        grid-template-columns: 1fr;
+      }
+      .product-info-grid .btn {
+        grid-column: 1;
+      }
+      .preview-content {
+        flex-direction: column;
+        align-items: center;
+      }
+      .preview-content .info {
+        grid-template-columns: 1fr;
+        width: 100%;
+      }
+      .sticky-bottom {
+        flex-direction: column;
+        align-items: stretch;
+        padding: 12px 16px;
+      }
+      .sticky-bottom .summary {
+        justify-content: center;
+      }
+      .sticky-bottom .actions {
+        justify-content: center;
+      }
+      .stats-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+      .product-card-header {
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .product-card-header .meta {
+        width: 100%;
+      }
+    }
+
+    /* ===== UTILITY ===== */
+    .hidden {
+      display: none !important;
+    }
+    .mt-8 {
+      margin-top: 8px;
+    }
+    .mb-8 {
+      margin-bottom: 8px;
+    }
+    .gap-8 {
+      gap: 8px;
+    }
+    .flex {
+      display: flex;
+    }
+    .flex-wrap {
+      flex-wrap: wrap;
+    }
+    .items-center {
+      align-items: center;
+    }
+    .justify-between {
+      justify-content: space-between;
+    }
+
+    /* Toast */
+    .toast-alert {
+      position: fixed;
+      bottom: 90px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 12px 24px;
+      border-radius: 16px;
+      font-weight: 500;
+      font-size: 14px;
+      z-index: 9999;
+      animation: fadeSlide 0.3s ease;
+      max-width: 90vw;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Duplicate dialog specific */
+    .duplicate-product-preview {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      padding: 12px;
+      background: var(--bg);
+      border-radius: var(--radius);
+      margin: 8px 0;
+    }
+
+    .duplicate-product-preview img {
+      width: 50px;
+      height: 50px;
+      border-radius: 12px;
+      object-fit: cover;
+      border: 1px solid var(--border);
+    }
+
+    .duplicate-product-preview .info {
+      flex: 1;
+    }
+
+    .duplicate-product-preview .info .name {
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .duplicate-product-preview .info .details {
+      font-size: 12px;
+      color: var(--subtext);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app" id="app">
+
+    <!-- HEADER -->
+    <header class="header">
+      <div class="header-brand">
+        <h1>📦 Order Management</h1>
+        <span>ERP</span>
+      </div>
+      <div class="header-actions">
+        <button class="btn-ghost" id="showOldOrdersBtn">📜 Previous Orders</button>
+        <span class="status" id="storeStatus">🟢 Ready</span>
+      </div>
+    </header>
+
+    <!-- PRODUCT INFORMATION -->
+    <section class="card">
+      <div class="product-info-grid">
+        <div class="floating-group">
+          <input type="url" id="productUrl" placeholder=" " />
+          <label>🔗 Product URL</label>
+        </div>
+        <div class="floating-group">
+          <input type="text" id="branchName" placeholder=" " />
+          <label>🏷️ Branch</label>
+        </div>
+        <div class="floating-group">
+          <input type="number" id="seriesQty" placeholder=" " min="1" />
+          <label>📦 Series Qty</label>
+        </div>
+        <button class="btn btn-success" id="addToTableBtn">➕ Add</button>
+        <button class="btn btn-primary" id="fetchProductBtn">🔍 Fetch Product</button>
+      </div>
+    </section>
+
+    <!-- PRODUCT PREVIEW -->
+    <section class="card preview-card" id="previewSection">
+      <div class="preview-content">
+        <img id="previewImg" src="" alt="Product" onclick="window.openModal(this.src)" />
+        <div class="info">
+          <div class="field"><strong>Name</strong> <span id="pName">—</span></div>
+          <div class="field"><strong>Price</strong> <span id="pPrice">—</span></div>
+          <div class="field"><strong>Colors</strong> <span id="pColors">—</span></div>
+          <div class="field"><strong>Sizes</strong> <span id="pSizes">—</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CURRENT INVOICE -->
+    <section class="card">
+      <div class="invoice-header-actions">
+        <div class="left-actions">
+          <button class="btn btn-secondary btn-sm" id="expandAllColors">▼ Expand All Colors</button>
+          <button class="btn btn-secondary btn-sm" id="collapseAllColors">▶ Collapse All Colors</button>
+          <button class="btn btn-secondary btn-sm" id="expandAllProducts">▼ Expand All Products</button>
+          <button class="btn btn-secondary btn-sm" id="collapseAllProducts">▶ Collapse All Products</button>
+        </div>
+        <button class="btn btn-success btn-sm" id="exportDialogBtn">📥 Export</button>
+      </div>
+      <div id="invoiceContainer">
+        <div id="emptyInvoiceMsg" style="text-align:center;padding:40px 0;color:var(--subtext);">
+          No products added yet
+        </div>
+      </div>
+    </section>
+
+    <!-- STATISTICS -->
+    <section class="stats-grid" id="statsGrid">
+      <div class="stat-card">
+        <div class="stat-label">Today's Orders</div>
+        <div class="stat-value" id="statTodayOrders">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Current Order</div>
+        <div class="stat-value primary" id="statCurrentOrder">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Total Pieces</div>
+        <div class="stat-value green" id="statTotalPieces">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Value</div>
+        <div class="stat-value primary" id="statTotalValue">0 LE</div>
+      </div>
+    </section>
+
+    <!-- OLD ORDERS (hidden by default) -->
+    <section class="card" id="oldOrdersSection" style="display:none;">
+      <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:12px;">
+        <h4 style="font-size:18px;">📜 Previous Orders</h4>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <span class="btn-ghost" style="padding:4px 14px;font-size:12px;" id="oldOrdersCount">0 invoices</span>
+          <button class="btn-ghost" style="padding:4px 14px;font-size:12px;" id="refreshOldOrdersBtn">🔄 Refresh</button>
+          <button class="btn-primary" style="padding:4px 16px;font-size:12px;" id="exportAllOldOrdersBtn">📥 Export All</button>
+        </div>
+      </div>
+      <div id="oldOrdersList" style="max-height:400px;overflow-y:auto;">
+        <div style="text-align:center;padding:20px;color:var(--subtext);">Loading...</div>
+      </div>
+    </section>
+
+    <!-- STICKY BOTTOM BAR -->
+    <div class="sticky-bottom" id="stickyBottom">
+      <div class="summary">
+        <span class="item">🧮 Pieces: <strong id="bottomPieces">0</strong></span>
+        <span class="item">📦 Products: <strong id="bottomProducts">0</strong></span>
+        <span class="item">💰 Value: <strong id="bottomValue">0 LE</strong></span>
+      </div>
+      <div class="actions">
+        <button class="btn btn-success" id="closeInvoiceBtn">✅ تقفيل الفاتورة</button>
+      </div>
+    </div>
+
+    <!-- EXPORT DIALOG - XLSX ONLY with 3 options -->
+    <div class="dialog-overlay" id="exportDialog">
+      <div class="dialog-box" id="exportDialogBox">
+        <h3>📥 Export Invoice</h3>
+        <div class="options" style="display:flex;flex-direction:column;gap:8px;margin:16px 0;">
+          <label style="display:flex;align-items:center;gap:10px;padding:10px 14px;border:1px solid var(--border);border-radius:var(--radius);cursor:pointer;transition:all var(--transition);">
+            <input type="radio" name="exportFormat" value="detail" checked /> 📋 تفصيل
+          </label>
+          <label style="display:flex;align-items:center;gap:10px;padding:10px 14px;border:1px solid var(--border);border-radius:var(--radius);cursor:pointer;transition:all var(--transition);">
+            <input type="radio" name="exportFormat" value="summary" /> 📊 ملخص
+          </label>
+          <label style="display:flex;align-items:center;gap:10px;padding:10px 14px;border:1px solid var(--border);border-radius:var(--radius);cursor:pointer;transition:all var(--transition);">
+            <input type="radio" name="exportFormat" value="colorSummary" /> 🎨 ملخص بالألوان
+          </label>
+        </div>
+        <div class="dialog-actions">
+          <button class="btn btn-secondary" id="dialogCancel">Cancel</button>
+          <button class="btn btn-primary" id="dialogExport">📥 Export XLSX</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- DUPLICATE PRODUCT DIALOG -->
+    <div class="dialog-overlay" id="duplicateDialog">
+      <div class="dialog-box" id="duplicateDialogBox">
+        <h3>⚠️ منتج مكرر</h3>
+        <p>هذا المنتج موجود بالفعل في الطلبية. ماذا تريد أن تفعل؟</p>
+        <div class="duplicate-product-preview" id="duplicatePreview">
+          <img id="dupImg" src="" alt="Product" />
+          <div class="info">
+            <div class="name" id="dupName">Product Name</div>
+            <div class="details" id="dupDetails">SKU: — | Current Qty: 0</div>
+          </div>
+        </div>
+        <div class="dialog-actions">
+          <button class="btn btn-secondary" id="dupCancel">إلغاء</button>
+          <button class="btn btn-warning" id="dupAddQty">➕ إضافة الكمية</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- IMAGE MODAL -->
+    <div class="dialog-overlay" id="imageModal" style="z-index:99999;">
+      <div style="position:relative;max-width:80%;max-height:80%;">
+        <button style="position:absolute;top:-40px;left:0;background:rgba(0,0,0,0.5);border:none;color:white;font-size:24px;width:40px;height:40px;border-radius:50%;cursor:pointer;" onclick="event.stopPropagation();closeModal();">✕</button>
+        <img id="modalImage" src="" alt="Product" style="max-width:100%;max-height:80vh;border-radius:20px;object-fit:contain;" />
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    (function() {
+      'use strict';
+
+      // ===== STORAGE VERSION CONTROL =====
+      const STORAGE_VERSION = 2;
+      const STORAGE_VERSION_KEY = 'shopify_storage_version';
+
+      // Check if storage version matches, if not clear everything
+      const currentVersion = localStorage.getItem(STORAGE_VERSION_KEY);
+      if (currentVersion !== String(STORAGE_VERSION)) {
+        console.log('🔄 Storage version mismatch. Clearing all data...');
+        console.log('Old version:', currentVersion, 'New version:', STORAGE_VERSION);
+        
+        // Clear only shopify_ keys
+        const keysToRemove = [];
+        for (let i = 0; i < localStorage.length; i++) {
+          const key = localStorage.key(i);
+          if (key && key.startsWith('shopify_')) {
+            keysToRemove.push(key);
+          }
+        }
+        keysToRemove.forEach(key => localStorage.removeItem(key));
+        localStorage.setItem(STORAGE_VERSION_KEY, String(STORAGE_VERSION));
+        console.log('✅ Storage cleared and version set to', STORAGE_VERSION);
+      }
+
+      // ===== STORAGE WITH VERSION CONTROL =====
+      const Storage = {
+        get(key, fallback = '') {
+          try {
+            const fullKey = 'shopify_' + key;
+            const v = localStorage.getItem(fullKey);
+            if (v === null) return fallback;
+            
+            // Try to parse JSON
+            try {
+              return JSON.parse(v);
+            } catch {
+              return v;
+            }
+          } catch (e) {
+            console.warn('⚠️ Storage get error for key:', key, e);
+            return fallback;
+          }
+        },
+        set(key, value) {
+          try {
+            const fullKey = 'shopify_' + key;
+            const v = (typeof value === 'object') ? JSON.stringify(value) : String(value);
+            localStorage.setItem(fullKey, v);
+          } catch (e) {
+            console.warn('⚠️ Storage set error for key:', key, e);
+          }
+        },
+        remove(key) {
+          try {
+            localStorage.removeItem('shopify_' + key);
+          } catch (e) {
+            console.warn('⚠️ Storage remove error for key:', key, e);
+          }
+        },
+        clear() {
+          try {
+            const keysToRemove = [];
+            for (let i = 0; i < localStorage.length; i++) {
+              const key = localStorage.key(i);
+              if (key && key.startsWith('shopify_')) {
+                keysToRemove.push(key);
+              }
+            }
+            keysToRemove.forEach(key => localStorage.removeItem(key));
+            localStorage.setItem(STORAGE_VERSION_KEY, String(STORAGE_VERSION));
+            console.log('✅ All storage cleared');
+          } catch (e) {
+            console.warn('⚠️ Storage clear error:', e);
+          }
+        }
+      };
+
+      // ===== FIREBASE CONFIG =====
+      const firebaseConfig = {
+        apiKey: "AIzaSyC7M4JhDl7KGZdrPj78W0nPqQy2I4P4I6I",
+        authDomain: "exams-fab0f.firebaseapp.com",
+        databaseURL: "https://exams-fab0f-default-rtdb.firebaseio.com",
+        projectId: "exams-fab0f",
+        storageBucket: "exams-fab0f.appspot.com",
+        messagingSenderId: "123456789",
+        appId: "1:123456789:web:abcdef123456"
+      };
+
+      let firebaseApp, database;
+      try {
+        firebaseApp = firebase.initializeApp(firebaseConfig);
+        database = firebase.database();
+        console.log('✅ Firebase ready');
+      } catch (e) { console.warn('⚠️ Firebase init error', e); }
+
+      // ===== UTILS =====
+      const Utils = {
+        cleanText(t) { return t ? t.replace(/\s+/g, ' ').trim() : ''; },
+        unique(a) { return [...new Set(a.filter(Boolean))]; },
+        formatCurrency(v) { return v ? Number(v).toLocaleString('en-EG') : '0'; },
+        sortSizes(arr) {
+          const order = ['XXXS', 'XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL', 'XXXXL'];
+          const std = [],
+            num = [],
+            other = [];
+          arr.forEach(s => {
+            const u = s.toUpperCase().trim();
+            if (order.includes(u)) std.push(u);
+            else if (/^\d+XL$/.test(u) || /^\d+X$/.test(u)) num.push(u);
+            else if (u) other.push(u);
+          });
+          std.sort((a, b) => order.indexOf(a) - order.indexOf(b));
+          num.sort((a, b) => parseInt(a) - parseInt(b));
+          other.sort();
+          return [...std, ...num, ...other];
+        },
+        centsToCurrency(c) { return c ? c / 100 : 0; },
+        extractHandle(url) { try { const u = new URL(url); const m = u.pathname.match(/\/products\/([^\/?]+)/); return m ?
+              m[1] : null; } catch { return null; } },
+        buildJsonUrl(base, handle) { try { const u = new URL(base); return u.origin + '/products/' + handle + '.js'; } catch {
+            return null; } },
+        extractMainImage(p) {
+          if (p.featured_image) { let img = p.featured_image; if (img.startsWith('//')) img = 'https:' + img; return img; }
+          if (p.images && p.images.length) { let img = p.images[0]; if (typeof img === 'string') { if (img.startsWith('//'))
+              img = 'https:' + img; return img; } if (img.src) { let s = img.src; if (s.startsWith('//')) s = 'https:' + s;
+            return s; } }
+          if (p.media && p.media.length && p.media[0].src) { let s = p.media[0].src; if (s.startsWith('//')) s = 'https:' +
+              s; return s; }
+          return null;
+        },
+        extractColors(p) {
+          if (p.options) { for (const o of p.options) { const n = o.name.toLowerCase(); if (n === 'color' || n ===
+                'colour' || n === 'لون') return o.values || []; } } return [];
+        },
+        extractSizes(p) {
+          if (p.options) { for (const o of p.options) { const n = o.name.toLowerCase(); if (n === 'size' || n ===
+                'مقاس') return o.values || []; } } return [];
+        },
+        extractPrice(v) { if (!v || !v.length) return 0; for (const vv of v) { if (vv.compare_at_price && vv
+              .compare_at_price > 0) return Utils.centsToCurrency(vv.compare_at_price); if (vv.price && vv.price > 0)
+            return Utils.centsToCurrency(vv.price); } return 0; },
+        extractSku(v) { if (!v || !v.length) return ''; for (const vv of v) { if (vv.sku) return vv.sku; } return ''; },
+        getVariantDetails(v, colors, sizes) {
+          let color = '',
+            size = '';
+          const check = (val) => {
+            if (!val) return;
+            const u = val.toUpperCase().trim();
+            if (colors.includes(val) || colors.includes(u)) { color = val; } else if (sizes.includes(val) || sizes
+              .includes(u)) { size = val; } else if (u.match(/^(?:[0-9]+XL|[0-9]+X|XXXS|XXS|XS|S|M|L|XL|XXL|XXXL|XXXXL|ONE SIZE|FREE SIZE)$/)) {
+              size = val;
+            } else { color = val; }
+          };
+          check(v.option1);
+          check(v.option2);
+          check(v.option3);
+          return { color, size };
+        },
+        sortTableData(rows) {
+          const groups = {};
+          rows.forEach(row => {
+            const key = row.name + '|' + row.sku;
+            if (!groups[key]) groups[key] = { name: row.name, sku: row.sku, unitPrice: row.unitPrice,
+              image: row.image, items: [] };
+            groups[key].items.push({ color: row.color || '', size: row.size || '', qty: row.qty || 0,
+              total: row.total || 0 });
+          });
+          const result = [];
+          for (const key in groups) {
+            const g = groups[key];
+            const sorted = g.items.sort((a, b) => {
+              const c = a.color.localeCompare(b.color);
+              if (c !== 0) return c;
+              const sizes = Utils.sortSizes([a.size, b.size]);
+              if (sizes.length === 2) { if (sizes[0] === a.size && sizes[1] === b.size) return -1; if (sizes[
+                  0] === b.size && sizes[1] === a.size) return 1; }
+              return a.size.localeCompare(b.size);
+            });
+            sorted.forEach(item => {
+              result.push({ name: g.name, color: item.color, size: item.size, sku: g.sku, qty: item
+                  .qty, unitPrice: g.unitPrice, total: item.total, image: g.image });
+            });
+          }
+          return result;
+        },
+        calculateTotalPieces(rows) { let t = 0;
+          rows.forEach(r => { t += r.qty || 0; }); return t; },
+        calculateTotalValue(rows) { let t = 0;
+          rows.forEach(r => { t += r.total || 0; }); return t; },
+
+        saveInvoiceToFirebase(branchName, tableData, productUrl, callback) {
+          if (!database) { if (callback) callback('⚠️ Firebase not ready'); return; }
+          const invoice = {
+            branch: branchName || 'Branch not set',
+            totalPieces: Utils.calculateTotalPieces(tableData),
+            totalValue: Utils.calculateTotalValue(tableData),
+            itemsCount: tableData.length,
+            productUrl: productUrl || '',
+            items: tableData.map(row => ({ 
+              name: row.name, 
+              color: row.color || '', 
+              size: row.size || '',
+              sku: row.sku || '', 
+              qty: row.qty || 0, 
+              unitPrice: row.unitPrice || 0, 
+              total: row.total || 0,
+              image: row.image || ''
+            })),
+            createdAt: firebase.database.ServerValue.TIMESTAMP
+          };
+          const ref = database.ref('invoices').push();
+          ref.set(invoice, (error) => { if (error) { console.error('❌ Firebase save error:', error); if (
+                callback) callback('❌ Save failed: ' + error.message); } else { console.log('✅ Invoice saved');
+              if (callback) callback(null, ref.key); } });
+        },
+
+        loadOldInvoices(callback) {
+          if (!database) { if (callback) callback([]); return; }
+          const oneMonthAgo = Date.now() - (30 * 24 * 60 * 60 * 1000);
+          database.ref('invoices').orderByChild('createdAt').startAt(oneMonthAgo).once('value', (snapshot) => {
+            const data = snapshot.val();
+            if (!data) { if (callback) callback([]); return; }
+            const invoices = [];
+            for (const key in data) { const inv = data[key];
+              invoices.push({ id: key, ...inv, createdAt: inv.createdAt || 0 }); }
+            invoices.sort((a, b) => b.createdAt - a.createdAt);
+            if (callback) callback(invoices);
+          }, (error) => { console.error('❌ Error loading invoices:', error); if (callback) callback([]); });
+        },
+
+        cleanOldInvoices() {
+          if (!database) return;
+          const oneMonthAgo = Date.now() - (30 * 24 * 60 * 60 * 1000);
+          const ref = database.ref('invoices');
+          ref.once('value', (snapshot) => {
+            const invoices = snapshot.val();
+            if (!invoices) return;
+            const updates = {};
+            let count = 0;
+            for (const key in invoices) { if (invoices[key].createdAt && invoices[key].createdAt < oneMonthAgo) {
+                updates[key] = null;
+                count++; } }
+            if (count > 0) ref.update(updates, (error) => { if (!error) console.log(
+                `✅ Cleaned ${count} old invoices`); });
+          });
+        },
+
+        silentSyncTable(tableData) {
+          if (!database) return;
+          database.ref('currentTable').set({ 
+            data: tableData, 
+            updatedAt: firebase.database.ServerValue.TIMESTAMP 
+          }, (error) => {
+            if (error) { console.error('❌ Silent sync error:', error); } else { console.log('✅ Silent synced'); }
+          });
+        },
+
+        exportSingleInvoice(invoice) {
+          const wb = XLSX.utils.book_new();
+          const headers = ['#', 'Name', 'Color', 'Size', 'SKU', 'Qty', 'Pieces', 'Unit Price', 'Total'];
+          const data = [headers];
+          invoice.items.forEach((item, i) => { data.push([i + 1, item.name || '', item.color || '', item.size ||
+              '', item.sku || '', item.qty || 0, item.qty || 0, item.unitPrice || 0, item.total || 0]); });
+          data.push(['', '', '', '', '', '', invoice.totalPieces || 0, '', invoice.totalValue || 0]);
+          const ws = XLSX.utils.aoa_to_sheet(data);
+          XLSX.utils.book_append_sheet(wb, ws, 'Invoice');
+          const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+          const blob = new Blob([wbout], { type: 'application/octet-stream' });
+          const link = document.createElement('a');
+          link.href = URL.createObjectURL(blob);
+          const dateStr = new Date(invoice.createdAt).toISOString().slice(0, 10);
+          link.download = `invoice_${invoice.branch}_${dateStr}.xlsx`;
+          link.click();
+          URL.revokeObjectURL(link.href);
+        },
+
+        exportAllInvoices(invoices) {
+          const wb = XLSX.utils.book_new();
+          invoices.forEach((invoice, idx) => {
+            const headers = ['#', 'Name', 'Color', 'Size', 'SKU', 'Qty', 'Pieces', 'Unit Price', 'Total'];
+            const data = [
+              [`Invoice: ${invoice.branch || 'Branch not set'}`],
+              [`Date: ${new Date(invoice.createdAt).toLocaleDateString('ar-EG')}`],
+              [`URL: ${invoice.productUrl || '—'}`],
+              [],
+              headers
+            ];
+            invoice.items.forEach((item, i) => { data.push([i + 1, item.name || '', item.color || '', item
+                .size || '', item.sku || '', item.qty || 0, item.qty || 0, item.unitPrice || 0, item
+                .total || 0
+              ]); });
+            data.push(['', '', '', '', '', '', invoice.totalPieces || 0, '', invoice.totalValue || 0]);
+            const ws = XLSX.utils.aoa_to_sheet(data);
+            const sheetName = `Invoice_${idx+1}`.slice(0, 31);
+            XLSX.utils.book_append_sheet(wb, ws, sheetName);
+          });
+          const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+          const blob = new Blob([wbout], { type: 'application/octet-stream' });
+          const link = document.createElement('a');
+          link.href = URL.createObjectURL(blob);
+          link.download = `all_invoices_${new Date().toISOString().slice(0,10)}.xlsx`;
+          link.click();
+          URL.revokeObjectURL(link.href);
+        }
+      };
+
+      // ===== SHOPIFY FETCHER =====
+      const ShopifyFetcher = {
+        async fetchProduct(url) {
+          const handle = Utils.extractHandle(url);
+          if (!handle) throw new Error('❌ Cannot extract product handle');
+          const jsonUrl = Utils.buildJsonUrl(url, handle);
+          if (!jsonUrl) throw new Error('❌ Invalid URL');
+          let fetchUrl = jsonUrl;
+          if (window.location.protocol === 'file:') fetchUrl = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(
+            jsonUrl);
+          const response = await fetch(fetchUrl, { headers: { 'User-Agent': 'Mozilla/5.0' } });
+          if (!response.ok) { if (response.status === 404) throw new Error('❌ 404 Not Found'); if (response.status ===
+              429) throw new Error('❌ Too many requests'); throw new Error(`❌ Failed (${response.status})`); }
+          const data = await response.json();
+          if (!data || !data.variants || !data.variants.length) throw new Error('❌ Incomplete data');
+          return data;
+        },
+        async fetchProductHTML(url) {
+          let fetchUrl = url;
+          if (window.location.protocol === 'file:') fetchUrl = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(
+            url);
+          const response = await fetch(fetchUrl, { headers: { 'User-Agent': 'Mozilla/5.0' } });
+          if (!response.ok) throw new Error(`❌ Failed to load (${response.status})`);
+          return await response.text();
+        }
+      };
+
+      // ===== PARSER =====
+      const ProductParser = {
+        parse(jsonData) {
+          const title = jsonData.title || '';
+          const mainImage = Utils.extractMainImage(jsonData);
+          let colors = Utils.extractColors(jsonData);
+          let sizes = Utils.extractSizes(jsonData);
+          if (!colors.length || !sizes.length) {
+            const cSet = new Set(),
+              sSet = new Set();
+            jsonData.variants.forEach(v => {
+              [v.option1, v.option2, v.option3].forEach(val => {
+                if (val) { if (val.match(
+                    /^(?:[0-9]+XL|[0-9]+X|XXXS|XXS|XS|S|M|L|XL|XXL|XXXL|XXXXL|ONE SIZE|FREE SIZE)$/
+                    )) sSet.add(val);
+                  else cSet.add(val); }
+              });
+            });
+            if (!colors.length) colors = [...cSet];
+            if (!sizes.length) sizes = [...sSet];
+          }
+          sizes = Utils.sortSizes(sizes);
+          const price = Utils.extractPrice(jsonData.variants);
+          const sku = Utils.extractSku(jsonData.variants);
+          let images = [];
+          if (jsonData.images) { images = jsonData.images.map(img => { if (typeof img === 'string') { return img
+                  .startsWith('//') ? 'https:' + img : img; } if (img.src) { return img.src.startsWith('//') ?
+                  'https:' + img.src : img.src; } return img; }); }
+          return {
+            name: Utils.cleanText(title) || 'Unknown',
+            price: price || 0,
+            colors: Utils.unique(colors.length ? colors : ['']),
+            sizes: Utils.unique(sizes.length ? sizes : ['']),
+            sku: sku || '',
+            images: Utils.unique(images),
+            mainImage: mainImage,
+            variants: jsonData.variants || [],
+            dataSource: 'JSON'
+          };
+        },
+        parseFromHTML(html) {
+          const doc = document.createElement('html');
+          doc.innerHTML = html;
+          const getMeta = (prop) => { const el = doc.querySelector(`meta[property="${prop}"]`); return el ? el
+              .getAttribute('content') : ''; };
+          const name = getMeta('og:title') || doc.querySelector('title')?.textContent || '';
+          const price = getMeta('product:price:amount') || '';
+          const image = getMeta('og:image') || '';
+          return { name: Utils.cleanText(name) || 'Unknown', price: price ? parseFloat(price) : 0, colors: [''],
+            sizes: [''], sku: '', images: image ? [image] : [], mainImage: image || '', variants: [],
+            dataSource: 'HTML' };
+        }
+      };
+
+      // ===== EXCEL GENERATOR =====
+      const ExcelGenerator = {
+        generateRows(product, seriesQty, userSku) {
+          const rows = [];
+          if (product.variants && product.variants.length) {
+            product.variants.forEach(v => {
+              const { color, size } = Utils.getVariantDetails(v, product.colors, product.sizes);
+              let p = product.price;
+              if (v.compare_at_price && v.compare_at_price > 0) p = Utils.centsToCurrency(v
+              .compare_at_price);
+              else if (v.price) p = Utils.centsToCurrency(v.price);
+              rows.push({ name: product.name, color: color || '', size: size || '', sku: userSku || v
+                  .sku || product.sku || '', qty: seriesQty, unitPrice: p, total: seriesQty * p,
+                image: product.mainImage || (product.images && product.images.length ? product
+                  .images[0] : '') });
+            });
+          } else {
+            const colors = product.colors.length ? product.colors : [''];
+            const sizes = product.sizes.length ? product.sizes : [''];
+            colors.forEach(color => { sizes.forEach(size => { rows.push({ name: product.name, color: color,
+                  size: size, sku: userSku || product.sku || '', qty: seriesQty, unitPrice: product
+                    .price, total: seriesQty * product.price, image: product.mainImage || (
+                    product.images && product.images.length ? product.images[0] : '') }); }); });
+          }
+          return Utils.sortTableData(rows);
+        },
+        generateSummary(product, seriesQty, userSku) {
+          const colors = product.colors.length ? product.colors : [''];
+          const sizes = product.sizes.length ? product.sizes : [''];
+          const variantsCount = colors.length * sizes.length;
+          return { name: product.name, colors: colors.join(', '), sizes: sizes.join(', '), seriesQty: seriesQty,
+            sku: userSku || product.sku || '', totalPieces: variantsCount * seriesQty, unitPrice: product.price || 0,
+            total: variantsCount * seriesQty * (product.price || 0) };
+        },
+        generateColorSummary(product, seriesQty, userSku) {
+          const rows = [];
+          const colors = product.colors.length ? product.colors : [''];
+          const sizes = product.sizes.length ? product.sizes : [''];
+          colors.forEach(color => {
+            const allSizes = sizes.join(', ');
+            const variantsCount = sizes.length;
+            const totalPieces = variantsCount * seriesQty;
+            const unitPrice = product.price || 0;
+            rows.push({
+              name: product.name,
+              sku: userSku || product.sku || '',
+              color: color || '—',
+              sizes: allSizes || '—',
+              seriesQty: seriesQty,
+              totalPieces: totalPieces,
+              unitPrice: unitPrice,
+              total: totalPieces * unitPrice,
+              image: product.mainImage || (product.images && product.images.length ? product.images[0] : '')
+            });
+          });
+          return rows;
+        },
+        toExcel(rowsData, mode, sheetName = 'Sheet1') {
+          const wb = XLSX.utils.book_new();
+          let data = [];
+          if (mode === 'rows') {
+            data.push(['Name', 'Color', 'Size', 'SKU', 'Qty', 'Pieces', 'Unit Price', 'Total']);
+            rowsData.forEach(r => { data.push([r.name, r.color, r.size, r.sku, r.qty, r.qty, r.unitPrice, r
+                .total]); });
+          } else if (mode === 'summary') {
+            data.push(['Name', 'Colors', 'Sizes', 'Series Qty', 'SKU', 'Total Pieces', 'Unit Price', 'Total']);
+            rowsData.forEach(r => { data.push([r.name, r.colors, r.sizes, r.seriesQty, r.sku, r.totalPieces, r
+                .unitPrice, r.total]); });
+          } else if (mode === 'colorSummary') {
+            data.push(['Name', 'SKU', 'Color', 'Sizes', 'Series Qty', 'Total Pieces', 'Unit Price', 'Total']);
+            rowsData.forEach(r => { data.push([r.name, r.sku, r.color, r.sizes, r.seriesQty, r.totalPieces, r
+                .unitPrice, r.total]); });
+          }
+          const ws = XLSX.utils.aoa_to_sheet(data);
+          XLSX.utils.book_append_sheet(wb, ws, sheetName);
+          return wb;
+        },
+        fromTableData(tableData, mode) {
+          const wb = XLSX.utils.book_new();
+          let data = [];
+          
+          if (mode === 'detail' || mode === 'rows') {
+            data = [['#', 'Name', 'Color', 'Size', 'SKU', 'Qty', 'Pieces', 'Unit Price', 'Total']];
+            const sorted = Utils.sortTableData(tableData);
+            sorted.forEach((r, i) => { data.push([i + 1, r.name, r.color, r.size, r.sku, r.qty, r.qty, r
+                .unitPrice, r.total]); });
+          } else if (mode === 'summary') {
+            const map = new Map();
+            tableData.forEach(row => {
+              const key = row.name + '|' + row.sku;
+              if (!map.has(key)) map.set(key, { name: row.name, sku: row.sku, colors: new Set(),
+                sizes: new Set(), unitPrice: row.unitPrice, totalQty: 0, total: 0 });
+              const s = map.get(key);
+              if (row.color) s.colors.add(row.color);
+              if (row.size) s.sizes.add(row.size);
+              s.totalQty += row.qty || 0;
+              s.total += row.total || 0;
+            });
+            data = [['Name', 'Colors', 'Sizes', 'SKU', 'Total Pieces', 'Unit Price', 'Total']];
+            for (const [key, s] of map) {
+              const colors = [...s.colors].filter(c => c).join(', ') || '—';
+              const sizes = [...s.sizes].filter(sz => sz).join(', ') || '—';
+              data.push([s.name, colors, sizes, s.sku, s.totalQty, s.unitPrice, s.total]);
+            }
+          } else if (mode === 'colorSummary') {
+            const map = new Map();
+            tableData.forEach(row => {
+              const key = row.name + '|' + row.sku + '|' + row.color;
+              if (!map.has(key)) {
+                map.set(key, { name: row.name, sku: row.sku, color: row.color || '—', sizes: new Set(),
+                  unitPrice: row.unitPrice, totalQty: 0, total: 0 });
+              }
+              const s = map.get(key);
+              if (row.size) s.sizes.add(row.size);
+              s.totalQty += row.qty || 0;
+              s.total += row.total || 0;
+            });
+            data = [['Name', 'SKU', 'Color', 'Sizes', 'Total Pieces', 'Unit Price', 'Total']];
+            for (const [key, s] of map) {
+              const sizes = [...s.sizes].filter(sz => sz).join(', ') || '—';
+              data.push([s.name, s.sku, s.color, sizes, s.totalQty, s.unitPrice, s.total]);
+            }
+          }
+          
+          const ws = XLSX.utils.aoa_to_sheet(data);
+          XLSX.utils.book_append_sheet(wb, ws, 'Invoice');
+          return wb;
+        }
+      };
+
+      // ===== UI CONTROLLER =====
+      const UI = {
+        elements: {
+          url: document.getElementById('productUrl'),
+          branch: document.getElementById('branchName'),
+          series: document.getElementById('seriesQty'),
+          fetchBtn: document.getElementById('fetchProductBtn'),
+          addBtn: document.getElementById('addToTableBtn'),
+          previewSection: document.getElementById('previewSection'),
+          previewImg: document.getElementById('previewImg'),
+          pName: document.getElementById('pName'),
+          pPrice: document.getElementById('pPrice'),
+          pColors: document.getElementById('pColors'),
+          pSizes: document.getElementById('pSizes'),
+          storeStatus: document.getElementById('storeStatus'),
+          invoiceContainer: document.getElementById('invoiceContainer'),
+          emptyMsg: document.getElementById('emptyInvoiceMsg'),
+          statTodayOrders: document.getElementById('statTodayOrders'),
+          statCurrentOrder: document.getElementById('statCurrentOrder'),
+          statTotalPieces: document.getElementById('statTotalPieces'),
+          statTotalValue: document.getElementById('statTotalValue'),
+          bottomPieces: document.getElementById('bottomPieces'),
+          bottomProducts: document.getElementById('bottomProducts'),
+          bottomValue: document.getElementById('bottomValue'),
+          closeInvoiceBtn: document.getElementById('closeInvoiceBtn'),
+          exportDialogBtn: document.getElementById('exportDialogBtn'),
+          exportDialog: document.getElementById('exportDialog'),
+          exportDialogBox: document.getElementById('exportDialogBox'),
+          dialogCancel: document.getElementById('dialogCancel'),
+          dialogExport: document.getElementById('dialogExport'),
+          showOldOrdersBtn: document.getElementById('showOldOrdersBtn'),
+          oldOrdersSection: document.getElementById('oldOrdersSection'),
+          oldOrdersList: document.getElementById('oldOrdersList'),
+          oldOrdersCount: document.getElementById('oldOrdersCount'),
+          refreshOldOrdersBtn: document.getElementById('refreshOldOrdersBtn'),
+          exportAllOldOrdersBtn: document.getElementById('exportAllOldOrdersBtn'),
+          expandAllColors: document.getElementById('expandAllColors'),
+          collapseAllColors: document.getElementById('collapseAllColors'),
+          expandAllProducts: document.getElementById('expandAllProducts'),
+          collapseAllProducts: document.getElementById('collapseAllProducts'),
+          imageModal: document.getElementById('imageModal'),
+          modalImage: document.getElementById('modalImage'),
+          duplicateDialog: document.getElementById('duplicateDialog'),
+          dupImg: document.getElementById('dupImg'),
+          dupName: document.getElementById('dupName'),
+          dupDetails: document.getElementById('dupDetails'),
+          dupCancel: document.getElementById('dupCancel'),
+          dupAddQty: document.getElementById('dupAddQty'),
+        },
+        _lastProduct: null,
+        _lastProductUrl: '',
+        _tableData: [],
+        _oldInvoices: [],
+        _productCardStates: {},
+        _fetchTimer: null,
+        _syncTimer: null,
+        _isDirty: false,
+        _pendingAddData: null,
+
+        init() {
+          console.log('🚀 Initializing UI...');
+          
+          // Log current storage state for debugging
+          console.log('📦 Storage state:');
+          console.log('  - cachedProduct:', Storage.get('cachedProduct', null));
+          console.log('  - tableData length:', Storage.get('tableData', []).length);
+          console.log('  - branch:', Storage.get('branch', ''));
+          console.log('  - cardStates:', Storage.get('cardStates', {}));
+          console.log('  - storage_version:', localStorage.getItem(STORAGE_VERSION_KEY));
+
+          // Load saved data
+          this.elements.url.value = Storage.get('url', '');
+          this.elements.series.value = Storage.get('series', '');
+          this.elements.branch.value = Storage.get('branch', '');
+
+          const saved = Storage.get('tableData', []);
+          if (Array.isArray(saved) && saved.length) { 
+            this._tableData = saved;
+            this.renderInvoice(); 
+          }
+          
+          // Load cached product - handle version compatibility
+          const cached = Storage.get('cachedProduct', null);
+          if (cached) {
+            // Check if cached product has the expected structure
+            if (cached.name && typeof cached.name === 'string') {
+              // Ensure it has all required fields with defaults
+              this._lastProduct = {
+                name: cached.name || 'Unknown',
+                price: cached.price || 0,
+                colors: Array.isArray(cached.colors) ? cached.colors : [],
+                sizes: Array.isArray(cached.sizes) ? cached.sizes : [],
+                sku: cached.sku || '',
+                images: Array.isArray(cached.images) ? cached.images : [],
+                mainImage: cached.mainImage || cached.image || (cached.images && cached.images.length ? cached.images[0] : ''),
+                variants: Array.isArray(cached.variants) ? cached.variants : [],
+                dataSource: cached.dataSource || 'JSON'
+              };
+              this.showPreview(this._lastProduct);
+              console.log('✅ Cached product loaded:', this._lastProduct.name);
+            } else {
+              console.warn('⚠️ Cached product has invalid structure, clearing...');
+              Storage.remove('cachedProduct');
+            }
+          }
+          
+          this.loadOldInvoices();
+          Utils.cleanOldInvoices();
+
+          // Set all states to expanded by default
+          this._productCardStates = {};
+
+          // Branch is preserved
+          this.elements.branch.addEventListener('change', () => { 
+            Storage.set('branch', this.elements.branch.value); 
+          });
+
+          // AUTO-FETCH: whenever URL changes, fetch automatically
+          this.elements.url.addEventListener('input', () => {
+            clearTimeout(this._fetchTimer);
+            const url = this.elements.url.value.trim();
+            if (url) {
+              this._fetchTimer = setTimeout(() => {
+                this.handleFetch(true);
+              }, 600);
+            } else {
+              this.elements.previewSection.classList.remove('show');
+              this._lastProduct = null;
+              Storage.remove('cachedProduct');
+            }
+          });
+
+          this.elements.fetchBtn.addEventListener('click', () => this.handleFetch(false));
+          this.elements.addBtn.addEventListener('click', () => this.handleAddWithDuplicateCheck());
+
+          this.elements.closeInvoiceBtn.addEventListener('click', () => this.closeFullInvoice());
+          this.elements.exportDialogBtn.addEventListener('click', () => this.openExportDialog());
+          this.elements.dialogCancel.addEventListener('click', () => this.closeExportDialog());
+          this.elements.dialogExport.addEventListener('click', () => this.handleExport());
+
+          // Close dialog when clicking outside
+          this.elements.exportDialog.addEventListener('click', (e) => {
+            if (e.target === this.elements.exportDialog) this.closeExportDialog();
+          });
+          this.elements.imageModal.addEventListener('click', (e) => {
+            if (e.target === this.elements.imageModal) this.closeModal();
+          });
+          this.elements.duplicateDialog.addEventListener('click', (e) => {
+            if (e.target === this.elements.duplicateDialog) this.closeDuplicateDialog();
+          });
+
+          this.elements.showOldOrdersBtn.addEventListener('click', () => this.toggleOldOrders());
+          this.elements.refreshOldOrdersBtn.addEventListener('click', () => this.loadOldInvoices());
+          this.elements.exportAllOldOrdersBtn.addEventListener('click', () => this.exportAllInvoices());
+
+          // Expand/Collapse buttons
+          this.elements.expandAllColors.addEventListener('click', () => {
+            this.expandAllColors(true);
+          });
+          this.elements.collapseAllColors.addEventListener('click', () => {
+            this.expandAllColors(false);
+          });
+          this.elements.expandAllProducts.addEventListener('click', () => {
+            this.expandAllProducts(true);
+          });
+          this.elements.collapseAllProducts.addEventListener('click', () => {
+            this.expandAllProducts(false);
+          });
+
+          // Duplicate dialog buttons
+          this.elements.dupCancel.addEventListener('click', () => this.closeDuplicateDialog());
+          this.elements.dupAddQty.addEventListener('click', () => this.confirmAddDuplicate());
+
+          // Keyboard shortcut: Ctrl+Enter to add
+          document.addEventListener('keydown', (e) => { if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') { e
+              .preventDefault();
+              this.handleAddWithDuplicateCheck(); } });
+
+          // Silent sync - only when data changes
+          this._syncTimer = setInterval(() => {
+            if (this._isDirty && this._tableData.length > 0) {
+              Utils.silentSyncTable(this._tableData);
+              this._isDirty = false;
+            }
+          }, 2000);
+        },
+
+        markDirty() {
+          this._isDirty = true;
+        },
+
+        // ===== FETCH =====
+        async handleFetch(silent = false) {
+          const url = this.elements.url.value.trim();
+          if (!url) { 
+            if (!silent) this.showAlert('⚠️ Please enter a product URL', 'error');
+            return; 
+          }
+          try {
+            if (!silent) {
+              this.elements.storeStatus.textContent = '⏳ Loading...';
+              this.elements.storeStatus.style.background = '#FEF3C7';
+              this.elements.storeStatus.style.color = '#92400E';
+            }
+            let jsonData, product;
+            try { jsonData = await ShopifyFetcher.fetchProduct(url);
+              product = ProductParser.parse(jsonData); } catch (e) {
+              const html = await ShopifyFetcher.fetchProductHTML(url);
+              product = ProductParser.parseFromHTML(html); }
+            this._lastProduct = product;
+            this._lastProductUrl = url;
+            this.showPreview(product);
+            if (!silent) {
+              this.elements.storeStatus.textContent = '✅ Ready';
+              this.elements.storeStatus.style.background = '#E8F5E9';
+              this.elements.storeStatus.style.color = '#16A34A';
+              this.showAlert('✅ Product loaded successfully', 'success');
+            }
+            Storage.set('cachedProduct', product);
+            Storage.set('url', url);
+          } catch (err) {
+            if (!silent) {
+              this.elements.storeStatus.textContent = '⚠️ Error';
+              this.elements.storeStatus.style.background = '#FEE2E2';
+              this.elements.storeStatus.style.color = '#DC2626';
+              this.showAlert('❌ ' + err.message, 'error');
+            } else {
+              console.warn('Auto-fetch failed:', err.message);
+            }
+          }
+        },
+
+        showPreview(product) {
+          if (!product) return;
+          this.elements.previewSection.classList.add('show');
+          this.elements.pName.textContent = product.name || '—';
+          this.elements.pPrice.textContent = Utils.formatCurrency(product.price) + ' LE';
+          this.elements.pColors.textContent = (product.colors && product.colors.length) ? product.colors.join(', ') : '—';
+          this.elements.pSizes.textContent = (product.sizes && product.sizes.length) ? product.sizes.join(', ') : '—';
+          
+          // Get image - try mainImage first, then image, then images[0]
+          const img = product.mainImage || product.image || (product.images && product.images.length ? product.images[0] : '');
+          if (img) { 
+            this.elements.previewImg.src = img;
+            this.elements.previewImg.alt = product.name; 
+          } else { 
+            this.elements.previewImg.src = ''; 
+          }
+        },
+
+        // ===== ADD WITH DUPLICATE CHECK =====
+        handleAddWithDuplicateCheck() {
+          if (!this._lastProduct) { 
+            this.showAlert('⚠️ No product data. Fetch a product first.', 'error'); 
+            return; 
+          }
+          const seriesQty = parseInt(this.elements.series.value);
+          if (!seriesQty || seriesQty <= 0) { 
+            this.showAlert('⚠️ Enter a valid Series Qty', 'error'); 
+            return; 
+          }
+
+          const product = this._lastProduct;
+          const sku = product.sku || '';
+          
+          // Check if this product already exists in the table
+          const existingProducts = new Set();
+          this._tableData.forEach(row => {
+            existingProducts.add(row.name + '|' + row.sku);
+          });
+          
+          const productKey = product.name + '|' + sku;
+          
+          if (existingProducts.has(productKey)) {
+            // Product exists - show duplicate dialog
+            this._pendingAddData = {
+              product: product,
+              seriesQty: seriesQty,
+              sku: sku
+            };
+            
+            // Fill dialog with product info
+            const img = product.mainImage || product.image || (product.images && product.images.length ? product.images[0] : '');
+            this.elements.dupImg.src = img || '';
+            this.elements.dupName.textContent = product.name;
+            
+            // Calculate current total quantity for this product
+            let currentQty = 0;
+            this._tableData.forEach(row => {
+              if (row.name === product.name && row.sku === sku) {
+                currentQty += row.qty || 0;
+              }
+            });
+            this.elements.dupDetails.textContent = `SKU: ${sku || '—'} | الكمية الحالية: ${currentQty}`;
+            
+            this.elements.duplicateDialog.classList.add('show');
+          } else {
+            // No duplicate - add directly
+            this.addProductToTable(product, seriesQty, sku);
+          }
+        },
+
+        confirmAddDuplicate() {
+          if (this._pendingAddData) {
+            const { product, seriesQty, sku } = this._pendingAddData;
+            this.addProductToTable(product, seriesQty, sku);
+            this.closeDuplicateDialog();
+          }
+        },
+
+        closeDuplicateDialog() {
+          this.elements.duplicateDialog.classList.remove('show');
+          this._pendingAddData = null;
+        },
+
+        addProductToTable(product, seriesQty, sku) {
+          const newRows = ExcelGenerator.generateRows(product, seriesQty, sku);
+          newRows.forEach(newRow => {
+            let found = false;
+            for (let i = 0; i < this._tableData.length; i++) {
+              const existing = this._tableData[i];
+              if (existing.name === newRow.name && existing.color === newRow.color && existing.size ===
+                newRow.size && existing.sku === newRow.sku) {
+                existing.qty += newRow.qty;
+                existing.total = existing.qty * existing.unitPrice;
+                found = true;
+                break;
+              }
+            }
+            if (!found) this._tableData.push(newRow);
+          });
+          
+          this.renderInvoice();
+          this.saveAll();
+          this.markDirty();
+          this.showAlert(`✅ Added ${newRows.length} rows`, 'success');
+
+          // Clear URL and Series Qty fields
+          this.elements.url.value = '';
+          this.elements.series.value = '';
+          this._lastProduct = null;
+          this._lastProductUrl = '';
+          Storage.remove('cachedProduct');
+          this.elements.previewSection.classList.remove('show');
+          Storage.set('url', '');
+          Storage.set('series', '');
+        },
+
+        // ===== RENDER INVOICE =====
+        renderInvoice() {
+          const container = this.elements.invoiceContainer;
+
+          if (!this._tableData.length) {
+            container.innerHTML = `<div style="text-align:center;padding:40px 0;color:var(--subtext);">No products added yet</div>`;
+            this.updateStats();
+            return;
+          }
+
+          // Group by product (name + sku)
+          const groups = {};
+          this._tableData.forEach(row => {
+            const key = row.name + '|' + row.sku;
+            if (!groups[key]) {
+              groups[key] = {
+                name: row.name,
+                sku: row.sku,
+                unitPrice: row.unitPrice,
+                image: row.image,
+                colors: {}
+              };
+            }
+            const color = row.color || 'No Color';
+            if (!groups[key].colors[color]) groups[key].colors[color] = [];
+            groups[key].colors[color].push({ size: row.size || 'No Size', qty: row.qty || 0, total: row.total ||
+              0 });
+          });
+
+          let html = '';
+          let productIdx = 0;
+          for (const key in groups) {
+            const g = groups[key];
+            const productId = 'prod_' + productIdx;
+            if (this._productCardStates[productId] === undefined) {
+              this._productCardStates[productId] = true;
+            }
+            const isProductOpen = this._productCardStates[productId];
+
+            html += `
+              <div class="product-card" data-product-id="${productId}">
+                <div class="product-card-header" onclick="window.UI.toggleProduct('${productId}')">
+                  <img class="thumb" src="${g.image || ''}" alt="${g.name}" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2260%22 height=%2260%22/%3E'" onclick="event.stopPropagation();window.openModal('${g.image || ''}')" />
+                  <div class="meta">
+                    <span class="name">${this.escapeHtml(g.name)}</span>
+                    <span class="sku">SKU: ${this.escapeHtml(g.sku)}</span>
+                    <span class="price">${Utils.formatCurrency(g.unitPrice)} LE</span>
+                  </div>
+                  <span class="chevron ${isProductOpen ? 'open' : ''}">▼</span>
+                </div>
+                <div class="product-card-body ${isProductOpen ? 'open' : ''}">
+                  ${this.renderColors(g, productId)}
+                </div>
+                <div class="product-card-footer">
+                  <button class="btn btn-danger btn-sm" onclick="window.UI.deleteProduct('${key}')">🗑 Delete Product</button>
+                </div>
+              </div>
+            `;
+            productIdx++;
+          }
+
+          container.innerHTML = html;
+          this.updateStats();
+          this.saveAll();
+        },
+
+        renderColors(g, productId) {
+          let html = '';
+          let colorIdx = 0;
+          for (const color in g.colors) {
+            const sizes = g.colors[color];
+            const colorId = productId + '_color_' + colorIdx;
+            if (this._productCardStates[colorId] === undefined) {
+              this._productCardStates[colorId] = true;
+            }
+            const isColorOpen = this._productCardStates[colorId];
+
+            html += `
+              <div class="color-accordion">
+                <div class="color-header" onclick="window.UI.toggleColor('${colorId}')">
+                  <span class="chevron-sm ${isColorOpen ? 'open' : ''}">▼</span>
+                  <span>${this.escapeHtml(color)}</span>
+                  <span style="font-size:12px;color:var(--subtext);margin-right:auto;">${sizes.reduce((sum, s) => sum + s.qty, 0)} pcs</span>
+                </div>
+                <div class="color-sizes ${isColorOpen ? 'open' : ''}">
+                  ${sizes.map((s, idx) => `
+                    <div class="size-row" data-product="${productId}" data-color="${color}" data-size="${s.size}">
+                      <span class="size-label">${this.escapeHtml(s.size)}</span>
+                      <div class="qty-control">
+                        <button onclick="window.UI.changeQty('${productId}', '${color}', '${s.size}', -1)">−</button>
+                        <span class="qty-val">${s.qty}</span>
+                        <button onclick="window.UI.changeQty('${productId}', '${color}', '${s.size}', 1)">+</button>
+                      </div>
+                    </div>
+                  `).join('')}
+                </div>
+              </div>
+            `;
+            colorIdx++;
+          }
+          return html;
+        },
+
+        // ===== ACCORDION CONTROLS =====
+        toggleProduct(productId) {
+          const state = this._productCardStates[productId];
+          this._productCardStates[productId] = state === false ? true : false;
+          this.renderInvoice();
+        },
+
+        toggleColor(colorId) {
+          const state = this._productCardStates[colorId];
+          this._productCardStates[colorId] = state === false ? true : false;
+          this.renderInvoice();
+        },
+
+        expandAllColors(open) {
+          for (const key in this._productCardStates) {
+            if (key.includes('_color_')) this._productCardStates[key] = open;
+          }
+          this.renderInvoice();
+        },
+
+        expandAllProducts(open) {
+          for (const key in this._productCardStates) {
+            if (!key.includes('_color_')) this._productCardStates[key] = open;
+          }
+          this.renderInvoice();
+        },
+
+        // ===== QTY CONTROLS =====
+        changeQty(productId, color, size, delta) {
+          let found = false;
+          for (let i = 0; i < this._tableData.length; i++) {
+            const row = this._tableData[i];
+            const rowColor = row.color || 'No Color';
+            const rowSize = row.size || 'No Size';
+            if (rowColor === color && rowSize === size) {
+              let targetName = '';
+              let targetSku = '';
+              for (const key in this._tableData) {
+                const r = this._tableData[key];
+                if ((r.color || 'No Color') === color && (r.size || 'No Size') === size) {
+                  targetName = r.name;
+                  targetSku = r.sku;
+                  break;
+                }
+              }
+              if (row.name === targetName && row.sku === targetSku) {
+                const newQty = Math.max(0, row.qty + delta);
+                row.qty = newQty;
+                row.total = newQty * row.unitPrice;
+                found = true;
+                break;
+              }
+            }
+          }
+
+          if (found) {
+            this.renderInvoice();
+            this.saveAll();
+            this.markDirty();
+          }
+        },
+
+        // ===== DELETE PRODUCT =====
+        deleteProduct(key) {
+          const [name, sku] = key.split('|');
+          this._tableData = this._tableData.filter(row => !(row.name === name && row.sku === sku));
+          this.renderInvoice();
+          this.saveAll();
+          this.markDirty();
+          this.showAlert('🗑️ Product removed', 'info');
+        },
+
+        // ===== STATS =====
+        updateStats() {
+          const pieces = Utils.calculateTotalPieces(this._tableData);
+          const value = Utils.calculateTotalValue(this._tableData);
+          const products = this._tableData.length ? new Set(this._tableData.map(r => r.name + '|' + r.sku)).size : 0;
+
+          this.elements.statCurrentOrder.textContent = products;
+          this.elements.statTotalPieces.textContent = pieces;
+          this.elements.statTotalValue.textContent = Utils.formatCurrency(value) + ' LE';
+          this.elements.bottomPieces.textContent = pieces;
+          this.elements.bottomProducts.textContent = products;
+          this.elements.bottomValue.textContent = Utils.formatCurrency(value) + ' LE';
+        },
+
+        // ===== CLOSE INVOICE =====
+        closeFullInvoice() {
+          if (!this._tableData.length) {
+            this.showAlert('⚠️ No data to close', 'error');
+            return;
+          }
+          const branchName = this.elements.branch.value.trim() || 'Branch not set';
+          const productUrl = this._lastProductUrl || this.elements.url.value.trim() || '';
+          const allRows = [...this._tableData];
+          Utils.saveInvoiceToFirebase(branchName, allRows, productUrl, (error, key) => {
+            if (error) { this.showAlert('❌ ' + error, 'error'); return; }
+            this._tableData = [];
+            this.renderInvoice();
+            this.saveAll();
+            this.loadOldInvoices();
+            this.showAlert(`✅ Invoice closed (ID: ${key})`, 'success');
+          });
+        },
+
+        // ===== EXPORT DIALOG =====
+        openExportDialog() {
+          if (!this._tableData.length) { this.showAlert('⚠️ No data to export', 'error'); return; }
+          this.elements.exportDialog.classList.add('show');
+        },
+
+        closeExportDialog() {
+          this.elements.exportDialog.classList.remove('show');
+        },
+
+        handleExport() {
+          const format = document.querySelector('input[name="exportFormat"]:checked')?.value || 'detail';
+          this.closeExportDialog();
+
+          const wb = ExcelGenerator.fromTableData(this._tableData, format);
+          const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+          const blob = new Blob([wbout], { type: 'application/octet-stream' });
+          const link = document.createElement('a');
+          link.href = URL.createObjectURL(blob);
+          const names = { detail: 'تفصيل', summary: 'ملخص', colorSummary: 'ملخص_بالألوان' };
+          link.download = `invoice_${names[format] || 'export'}_${new Date().toISOString().slice(0,10)}.xlsx`;
+          link.click();
+          URL.revokeObjectURL(link.href);
+          this.showAlert(`✅ XLSX exported (${names[format]})`, 'success');
+        },
+
+        // ===== OLD ORDERS =====
+        toggleOldOrders() {
+          const sec = this.elements.oldOrdersSection;
+          if (sec.style.display === 'none') { sec.style.display = 'block';
+            this.elements.showOldOrdersBtn.textContent = '📜 Hide Previous Orders';
+            this.loadOldInvoices(); } else { sec.style.display = 'none';
+            this.elements.showOldOrdersBtn.textContent = '📜 Previous Orders'; }
+        },
+
+        loadOldInvoices() {
+          const list = this.elements.oldOrdersList;
+          list.innerHTML = `<div style="text-align:center;padding:20px;color:var(--subtext);">Loading...</div>`;
+          Utils.loadOldInvoices((invoices) => {
+            this._oldInvoices = invoices;
+            if (!invoices || !invoices.length) {
+              list.innerHTML =
+                `<div style="text-align:center;padding:20px;color:var(--subtext);">No previous invoices</div>`;
+              this.elements.oldOrdersCount.textContent = '0 invoices';
+              return;
+            }
+            let html = '';
+            invoices.forEach((inv, idx) => {
+              const date = new Date(inv.createdAt);
+              const dateStr = date.toLocaleDateString('ar-EG') + ' ' + date.toLocaleTimeString('ar-EG', {
+                hour: '2-digit',
+                minute: '2-digit'
+              });
+              let details = '';
+              if (inv.items && inv.items.length) {
+                const items = inv.items.slice(0, 3);
+                details = items.map(item =>
+                  `${item.name} (${item.color||''} ${item.size||''} × ${item.qty})`).join(
+                  '، ');
+                if (inv.items.length > 3) details += ` ... +${inv.items.length-3} more`;
+              }
+              const urlDisplay = inv.productUrl ?
+                `<span style="font-size:11px;color:var(--subtext);max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:inline-block;direction:ltr;" title="${this.escapeHtml(inv.productUrl)}">${this.escapeHtml(inv.productUrl.substring(0, 50))}...</span>` :
+                '—';
+              html += `
+                <div style="display:flex;align-items:center;gap:12px;padding:10px 12px;border-bottom:1px solid var(--border);flex-wrap:wrap;">
+                  <span style="font-weight:600;min-width:30px;">#${idx+1}</span>
+                  <span style="min-width:80px;font-weight:500;">${this.escapeHtml(inv.branch||'Branch')}</span>
+                  <span style="font-size:12px;color:var(--subtext);min-width:120px;">${dateStr}</span>
+                  <span style="font-weight:600;min-width:60px;">${inv.totalPieces||0} pcs</span>
+                  <span style="font-weight:600;color:var(--primary);min-width:80px;">${Utils.formatCurrency(inv.totalValue||0)} LE</span>
+                  <span style="flex:1;min-width:80px;">${urlDisplay}</span>
+                  <span style="font-size:12px;color:var(--subtext);flex:2;min-width:100px;">${details||'—'}</span>
+                  <button class="btn btn-secondary btn-sm" onclick="window.UI.exportSingleOldInvoice(${idx})">📥</button>
+                </div>
+              `;
+            });
+            list.innerHTML = html;
+            this.elements.oldOrdersCount.textContent = `${invoices.length} invoices`;
+            this.elements.statTodayOrders.textContent = invoices.length;
+          });
+        },
+
+        exportSingleOldInvoice(idx) {
+          if (this._oldInvoices[idx]) { Utils.exportSingleInvoice(this._oldInvoices[idx]);
+            this.showAlert('✅ Invoice exported', 'success'); }
+        },
+
+        exportAllInvoices() {
+          if (!this._oldInvoices || !this._oldInvoices.length) { this.showAlert('⚠️ No invoices', 'error'); return; }
+          Utils.exportAllInvoices(this._oldInvoices);
+          this.showAlert(`✅ Exported ${this._oldInvoices.length} invoices`, 'success');
+        },
+
+        // ===== UTILITY =====
+        escapeHtml(text) { const d = document.createElement('div');
+          d.textContent = text; return d.innerHTML; },
+
+        showAlert(msg, type = 'info') {
+          const existing = document.querySelector('.toast-alert');
+          if (existing) existing.remove();
+          const div = document.createElement('div');
+          div.className = 'toast-alert';
+          const colors = {
+            error: { bg: '#FEE2E2', color: '#DC2626', border: '#FCA5A5' },
+            success: { bg: '#E8F5E9', color: '#16A34A', border: '#86EFAC' },
+            info: { bg: '#E1ECF9', color: '#1E3A5F', border: '#93C5FD' }
+          };
+          const c = colors[type] || colors.info;
+          div.style.cssText = `
+            background:${c.bg};color:${c.color};border:1px solid ${c.border};
+            padding:12px 24px;border-radius:16px;font-weight:500;font-size:14px;
+            z-index:9999;animation:fadeSlide 0.3s ease;
+            max-width:90vw;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,0.1);
+          `;
+          div.textContent = msg;
+          document.body.appendChild(div);
+          setTimeout(() => { if (div.parentNode) div.remove(); }, 3000);
+        },
+
+        saveAll() {
+          Storage.set('tableData', this._tableData);
+          Storage.set('branch', this.elements.branch.value);
+          Storage.set('cardStates', this._productCardStates);
+        },
+
+        // ===== IMAGE MODAL =====
+        openModal(imgSrc) {
+          if (!imgSrc) return;
+          this.elements.modalImage.src = imgSrc;
+          this.elements.imageModal.classList.add('show');
+        },
+
+        closeModal() {
+          this.elements.imageModal.classList.remove('show');
+          this.elements.modalImage.src = '';
+        }
+      };
+
+      // ===== GLOBAL EXPOSURE =====
+      window.UI = UI;
+
+      // ===== BOOT =====
+      document.addEventListener('DOMContentLoaded', () => {
+        UI.init();
+      });
+
+      // Global functions for inline onclick
+      window.closeModal = function() { if (window.UI) window.UI.closeModal(); };
+      window.openModal = function(img) { if (window.UI) window.UI.openModal(img); };
+
+    })();
+  </script>
+</body>
+</html>
