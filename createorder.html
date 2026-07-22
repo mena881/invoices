@@ -556,6 +556,17 @@
       font-size: 15px;
     }
 
+    /* Style for zero quantity rows */
+    .size-row.zero-qty .qty-val {
+      color: var(--subtext);
+      opacity: 0.5;
+    }
+    
+    .size-row.zero-qty .size-label {
+      color: var(--subtext);
+      opacity: 0.5;
+    }
+
     .product-card-footer {
       padding: 12px 20px 16px;
       border-top: 1px solid var(--border);
@@ -1042,7 +1053,7 @@
       'use strict';
 
       // ===== STORAGE VERSION CONTROL =====
-      const STORAGE_VERSION = 2;
+      const STORAGE_VERSION = 5; // Increased version to force refresh
       const STORAGE_VERSION_KEY = 'shopify_storage_version';
 
       // Check if storage version matches, if not clear everything
@@ -1198,32 +1209,14 @@
           check(v.option3);
           return { color, size };
         },
+        // NEW: Keep original order - just return as is
         sortTableData(rows) {
-          const groups = {};
-          rows.forEach(row => {
-            const key = row.name + '|' + row.sku;
-            if (!groups[key]) groups[key] = { name: row.name, sku: row.sku, unitPrice: row.unitPrice,
-              image: row.image, items: [] };
-            groups[key].items.push({ color: row.color || '', size: row.size || '', qty: row.qty || 0,
-              total: row.total || 0 });
-          });
-          const result = [];
-          for (const key in groups) {
-            const g = groups[key];
-            const sorted = g.items.sort((a, b) => {
-              const c = a.color.localeCompare(b.color);
-              if (c !== 0) return c;
-              const sizes = Utils.sortSizes([a.size, b.size]);
-              if (sizes.length === 2) { if (sizes[0] === a.size && sizes[1] === b.size) return -1; if (sizes[
-                  0] === b.size && sizes[1] === a.size) return 1; }
-              return a.size.localeCompare(b.size);
-            });
-            sorted.forEach(item => {
-              result.push({ name: g.name, color: item.color, size: item.size, sku: g.sku, qty: item
-                  .qty, unitPrice: g.unitPrice, total: item.total, image: g.image });
-            });
-          }
-          return result;
+          // Return rows in the original order they were added
+          return rows;
+        },
+        // Get only rows with qty > 0 (for export)
+        getNonZeroRows(rows) {
+          return rows.filter(row => (row.qty || 0) > 0);
         },
         calculateTotalPieces(rows) { let t = 0;
           rows.forEach(r => { t += r.qty || 0; }); return t; },
@@ -1232,13 +1225,15 @@
 
         saveInvoiceToFirebase(branchName, tableData, productUrl, callback) {
           if (!database) { if (callback) callback('⚠️ Firebase not ready'); return; }
+          // Only save rows with qty > 0
+          const nonZeroRows = this.getNonZeroRows(tableData);
           const invoice = {
             branch: branchName || 'Branch not set',
-            totalPieces: Utils.calculateTotalPieces(tableData),
-            totalValue: Utils.calculateTotalValue(tableData),
-            itemsCount: tableData.length,
+            totalPieces: this.calculateTotalPieces(nonZeroRows),
+            totalValue: this.calculateTotalValue(nonZeroRows),
+            itemsCount: nonZeroRows.length,
             productUrl: productUrl || '',
-            items: tableData.map(row => ({ 
+            items: nonZeroRows.map(row => ({ 
               name: row.name, 
               color: row.color || '', 
               size: row.size || '',
@@ -1451,7 +1446,7 @@
                     .price, total: seriesQty * product.price, image: product.mainImage || (
                     product.images && product.images.length ? product.images[0] : '') }); }); });
           }
-          return Utils.sortTableData(rows);
+          return rows; // Return without sorting to preserve order
         },
         generateSummary(product, seriesQty, userSku) {
           const colors = product.colors.length ? product.colors : [''];
@@ -1508,14 +1503,17 @@
           const wb = XLSX.utils.book_new();
           let data = [];
           
+          // Filter out rows with qty = 0 for export
+          const filteredData = Utils.getNonZeroRows(tableData);
+          
           if (mode === 'detail' || mode === 'rows') {
             data = [['#', 'Name', 'Color', 'Size', 'SKU', 'Qty', 'Pieces', 'Unit Price', 'Total']];
-            const sorted = Utils.sortTableData(tableData);
-            sorted.forEach((r, i) => { data.push([i + 1, r.name, r.color, r.size, r.sku, r.qty, r.qty, r
+            // Keep original order - no sorting
+            filteredData.forEach((r, i) => { data.push([i + 1, r.name, r.color, r.size, r.sku, r.qty, r.qty, r
                 .unitPrice, r.total]); });
           } else if (mode === 'summary') {
             const map = new Map();
-            tableData.forEach(row => {
+            filteredData.forEach(row => {
               const key = row.name + '|' + row.sku;
               if (!map.has(key)) map.set(key, { name: row.name, sku: row.sku, colors: new Set(),
                 sizes: new Set(), unitPrice: row.unitPrice, totalQty: 0, total: 0 });
@@ -1526,14 +1524,27 @@
               s.total += row.total || 0;
             });
             data = [['Name', 'Colors', 'Sizes', 'SKU', 'Total Pieces', 'Unit Price', 'Total']];
-            for (const [key, s] of map) {
-              const colors = [...s.colors].filter(c => c).join(', ') || '—';
-              const sizes = [...s.sizes].filter(sz => sz).join(', ') || '—';
-              data.push([s.name, colors, sizes, s.sku, s.totalQty, s.unitPrice, s.total]);
+            // Keep order based on first occurrence
+            const orderedKeys = [];
+            const keySet = new Set();
+            filteredData.forEach(row => {
+              const key = row.name + '|' + row.sku;
+              if (!keySet.has(key)) {
+                keySet.add(key);
+                orderedKeys.push(key);
+              }
+            });
+            for (const key of orderedKeys) {
+              const s = map.get(key);
+              if (s) {
+                const colors = [...s.colors].filter(c => c).join(', ') || '—';
+                const sizes = [...s.sizes].filter(sz => sz).join(', ') || '—';
+                data.push([s.name, colors, sizes, s.sku, s.totalQty, s.unitPrice, s.total]);
+              }
             }
           } else if (mode === 'colorSummary') {
             const map = new Map();
-            tableData.forEach(row => {
+            filteredData.forEach(row => {
               const key = row.name + '|' + row.sku + '|' + row.color;
               if (!map.has(key)) {
                 map.set(key, { name: row.name, sku: row.sku, color: row.color || '—', sizes: new Set(),
@@ -1545,9 +1556,22 @@
               s.total += row.total || 0;
             });
             data = [['Name', 'SKU', 'Color', 'Sizes', 'Total Pieces', 'Unit Price', 'Total']];
-            for (const [key, s] of map) {
-              const sizes = [...s.sizes].filter(sz => sz).join(', ') || '—';
-              data.push([s.name, s.sku, s.color, sizes, s.totalQty, s.unitPrice, s.total]);
+            // Keep order based on first occurrence
+            const orderedKeys = [];
+            const keySet = new Set();
+            filteredData.forEach(row => {
+              const key = row.name + '|' + row.sku + '|' + row.color;
+              if (!keySet.has(key)) {
+                keySet.add(key);
+                orderedKeys.push(key);
+              }
+            });
+            for (const key of orderedKeys) {
+              const s = map.get(key);
+              if (s) {
+                const sizes = [...s.sizes].filter(sz => sz).join(', ') || '—';
+                data.push([s.name, s.sku, s.color, sizes, s.totalQty, s.unitPrice, s.total]);
+              }
             }
           }
           
@@ -1872,27 +1896,38 @@
           this._pendingAddData = null;
         },
 
+        // ===== ADD PRODUCT TO TABLE - PRESERVE ORDER =====
         addProductToTable(product, seriesQty, sku) {
           const newRows = ExcelGenerator.generateRows(product, seriesQty, sku);
+          
+          // For each new row, check if it already exists (by name + sku + color + size)
           newRows.forEach(newRow => {
+            const key = newRow.name + '|' + newRow.sku + '|' + (newRow.color || '') + '|' + (newRow.size || '');
             let found = false;
+            
+            // Search for existing row
             for (let i = 0; i < this._tableData.length; i++) {
               const existing = this._tableData[i];
-              if (existing.name === newRow.name && existing.color === newRow.color && existing.size ===
-                newRow.size && existing.sku === newRow.sku) {
+              const existingKey = existing.name + '|' + existing.sku + '|' + (existing.color || '') + '|' + (existing.size || '');
+              if (existingKey === key) {
+                // Update existing row
                 existing.qty += newRow.qty;
                 existing.total = existing.qty * existing.unitPrice;
                 found = true;
                 break;
               }
             }
-            if (!found) this._tableData.push(newRow);
+            
+            if (!found) {
+              // Add new row at the end
+              this._tableData.push({ ...newRow });
+            }
           });
           
           this.renderInvoice();
           this.saveAll();
           this.markDirty();
-          this.showAlert(`✅ Added ${newRows.length} rows`, 'success');
+          this.showAlert(`✅ Added/Updated ${newRows.length} rows`, 'success');
 
           // Clear URL and Series Qty fields
           this.elements.url.value = '';
@@ -1915,8 +1950,10 @@
             return;
           }
 
-          // Group by product (name + sku)
+          // Group by product (name + sku) but preserve order of first occurrence
           const groups = {};
+          const groupOrder = [];
+          
           this._tableData.forEach(row => {
             const key = row.name + '|' + row.sku;
             if (!groups[key]) {
@@ -1925,18 +1962,25 @@
                 sku: row.sku,
                 unitPrice: row.unitPrice,
                 image: row.image,
-                colors: {}
+                colors: {},
+                order: groupOrder.length // Track order
               };
+              groupOrder.push(key);
             }
             const color = row.color || 'No Color';
             if (!groups[key].colors[color]) groups[key].colors[color] = [];
-            groups[key].colors[color].push({ size: row.size || 'No Size', qty: row.qty || 0, total: row.total ||
-              0 });
+            groups[key].colors[color].push({ 
+              size: row.size || 'No Size', 
+              qty: row.qty || 0, 
+              total: row.total || 0 
+            });
           });
 
           let html = '';
           let productIdx = 0;
-          for (const key in groups) {
+          
+          // Iterate in the order they were added
+          for (const key of groupOrder) {
             const g = groups[key];
             const productId = 'prod_' + productIdx;
             if (this._productCardStates[productId] === undefined) {
@@ -1974,7 +2018,11 @@
         renderColors(g, productId) {
           let html = '';
           let colorIdx = 0;
-          for (const color in g.colors) {
+          
+          // Preserve color order as they appear in the data
+          const colorKeys = Object.keys(g.colors);
+          
+          for (const color of colorKeys) {
             const sizes = g.colors[color];
             const colorId = productId + '_color_' + colorIdx;
             if (this._productCardStates[colorId] === undefined) {
@@ -1990,16 +2038,18 @@
                   <span style="font-size:12px;color:var(--subtext);margin-right:auto;">${sizes.reduce((sum, s) => sum + s.qty, 0)} pcs</span>
                 </div>
                 <div class="color-sizes ${isColorOpen ? 'open' : ''}">
-                  ${sizes.map((s, idx) => `
-                    <div class="size-row" data-product="${productId}" data-color="${color}" data-size="${s.size}">
+                  ${sizes.map((s, idx) => {
+                    const isZero = s.qty === 0;
+                    return `
+                    <div class="size-row ${isZero ? 'zero-qty' : ''}" data-product="${productId}" data-color="${color}" data-size="${s.size}" data-sku="${g.sku}" data-name="${g.name}">
                       <span class="size-label">${this.escapeHtml(s.size)}</span>
                       <div class="qty-control">
-                        <button onclick="window.UI.changeQty('${productId}', '${color}', '${s.size}', -1)">−</button>
+                        <button onclick="window.UI.changeQty('${productId}', '${color}', '${s.size}', -1, '${g.sku}', '${g.name}')">−</button>
                         <span class="qty-val">${s.qty}</span>
-                        <button onclick="window.UI.changeQty('${productId}', '${color}', '${s.size}', 1)">+</button>
+                        <button onclick="window.UI.changeQty('${productId}', '${color}', '${s.size}', 1, '${g.sku}', '${g.name}')">+</button>
                       </div>
                     </div>
-                  `).join('')}
+                  `}).join('')}
                 </div>
               </div>
             `;
@@ -2035,42 +2085,41 @@
           this.renderInvoice();
         },
 
-        // ===== QTY CONTROLS =====
-        changeQty(productId, color, size, delta) {
-          let found = false;
+        // ===== QTY CONTROLS - KEEP ZERO ROWS =====
+        changeQty(productId, color, size, delta, sku, name) {
+          // Find the row that matches exactly
+          let foundIndex = -1;
+          
           for (let i = 0; i < this._tableData.length; i++) {
             const row = this._tableData[i];
             const rowColor = row.color || 'No Color';
             const rowSize = row.size || 'No Size';
-            if (rowColor === color && rowSize === size) {
-              let targetName = '';
-              let targetSku = '';
-              for (const key in this._tableData) {
-                const r = this._tableData[key];
-                if ((r.color || 'No Color') === color && (r.size || 'No Size') === size) {
-                  targetName = r.name;
-                  targetSku = r.sku;
-                  break;
-                }
-              }
-              if (row.name === targetName && row.sku === targetSku) {
-                const newQty = Math.max(0, row.qty + delta);
-                row.qty = newQty;
-                row.total = newQty * row.unitPrice;
-                found = true;
-                break;
-              }
+            
+            // Match by name, sku, color, and size
+            if (row.name === name && row.sku === sku && rowColor === color && rowSize === size) {
+              foundIndex = i;
+              break;
             }
           }
-
-          if (found) {
+          
+          if (foundIndex !== -1) {
+            const row = this._tableData[foundIndex];
+            const newQty = Math.max(0, row.qty + delta);
+            row.qty = newQty;
+            row.total = newQty * row.unitPrice;
+            
+            // IMPORTANT: Do NOT remove the row when qty becomes 0
+            // Keep it in the table with qty = 0
+            
             this.renderInvoice();
             this.saveAll();
             this.markDirty();
+          } else {
+            console.warn('⚠️ Could not find row to update:', { productId, color, size, sku, name });
           }
         },
 
-        // ===== DELETE PRODUCT =====
+        // ===== DELETE PRODUCT - Remove entire product =====
         deleteProduct(key) {
           const [name, sku] = key.split('|');
           this._tableData = this._tableData.filter(row => !(row.name === name && row.sku === sku));
@@ -2082,9 +2131,11 @@
 
         // ===== STATS =====
         updateStats() {
-          const pieces = Utils.calculateTotalPieces(this._tableData);
-          const value = Utils.calculateTotalValue(this._tableData);
-          const products = this._tableData.length ? new Set(this._tableData.map(r => r.name + '|' + r.sku)).size : 0;
+          // Count only rows with qty > 0 for statistics
+          const nonZeroRows = Utils.getNonZeroRows(this._tableData);
+          const pieces = Utils.calculateTotalPieces(nonZeroRows);
+          const value = Utils.calculateTotalValue(nonZeroRows);
+          const products = nonZeroRows.length ? new Set(nonZeroRows.map(r => r.name + '|' + r.sku)).size : 0;
 
           this.elements.statCurrentOrder.textContent = products;
           this.elements.statTotalPieces.textContent = pieces;
@@ -2096,14 +2147,15 @@
 
         // ===== CLOSE INVOICE =====
         closeFullInvoice() {
-          if (!this._tableData.length) {
-            this.showAlert('⚠️ No data to close', 'error');
+          // Only save rows with qty > 0
+          const nonZeroRows = Utils.getNonZeroRows(this._tableData);
+          if (!nonZeroRows.length) {
+            this.showAlert('⚠️ No items with quantity > 0 to close', 'error');
             return;
           }
           const branchName = this.elements.branch.value.trim() || 'Branch not set';
           const productUrl = this._lastProductUrl || this.elements.url.value.trim() || '';
-          const allRows = [...this._tableData];
-          Utils.saveInvoiceToFirebase(branchName, allRows, productUrl, (error, key) => {
+          Utils.saveInvoiceToFirebase(branchName, nonZeroRows, productUrl, (error, key) => {
             if (error) { this.showAlert('❌ ' + error, 'error'); return; }
             this._tableData = [];
             this.renderInvoice();
@@ -2115,7 +2167,11 @@
 
         // ===== EXPORT DIALOG =====
         openExportDialog() {
-          if (!this._tableData.length) { this.showAlert('⚠️ No data to export', 'error'); return; }
+          const nonZeroRows = Utils.getNonZeroRows(this._tableData);
+          if (!nonZeroRows.length) { 
+            this.showAlert('⚠️ No items with quantity > 0 to export', 'error'); 
+            return; 
+          }
           this.elements.exportDialog.classList.add('show');
         },
 
@@ -2127,6 +2183,7 @@
           const format = document.querySelector('input[name="exportFormat"]:checked')?.value || 'detail';
           this.closeExportDialog();
 
+          // ExcelGenerator.fromTableData already filters out zero qty rows and preserves order
           const wb = ExcelGenerator.fromTableData(this._tableData, format);
           const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
           const blob = new Blob([wbout], { type: 'application/octet-stream' });
