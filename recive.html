@@ -399,6 +399,11 @@
       color: #DC2626;
     }
 
+    .badge.prepared {
+      background: #DBEAFE;
+      color: #1E40AF;
+    }
+
     /* ===== PREVIEW CARD ===== */
     .preview-card {
       display: none;
@@ -1122,7 +1127,7 @@
     <section class="card">
       <div class="filter-section">
         <select id="invoiceFilter">
-          <option value="all">📋 جميع الفواتير</option>
+          <option value="all">📋 جميع الفواتير الجاهزة</option>
           <option value="pending">⏳ غير مستلمة</option>
           <option value="partial">⚠️ استلام جزئي</option>
           <option value="received">✅ مستلمة</option>
@@ -1142,8 +1147,8 @@
       <div class="invoice-list" id="invoiceList">
         <div class="empty-state" id="emptyInvoiceList">
           <div class="icon">📭</div>
-          <h3>لا توجد فواتير</h3>
-          <p>انتظر حتى يتم تحضير الفواتير من صفحة التحضير</p>
+          <h3>لا توجد فواتير جاهزة</h3>
+          <p>جميع الفواتير التي حالتها "prepared" تظهر هنا</p>
         </div>
       </div>
     </section>
@@ -1176,7 +1181,7 @@
     <!-- STATISTICS -->
     <section class="stats-grid" id="statsGrid">
       <div class="stat-card">
-        <div class="stat-label">إجمالي الفواتير</div>
+        <div class="stat-label">إجمالي الفواتير الجاهزة</div>
         <div class="stat-value primary" id="statTotalInvoices">0</div>
       </div>
       <div class="stat-card">
@@ -1242,7 +1247,7 @@
       'use strict';
 
       // ===== STORAGE VERSION CONTROL =====
-      const STORAGE_VERSION = 2;
+      const STORAGE_VERSION = 3;
       const STORAGE_VERSION_KEY = 'shopify_storage_version';
 
       const currentVersion = localStorage.getItem(STORAGE_VERSION_KEY);
@@ -1376,6 +1381,10 @@
             shortage: '📉 يوجد نقص'
           };
           return map[status] || status;
+        },
+        // Check if invoice has status "prepared"
+        isPrepared(invoice) {
+          return invoice && invoice.status === 'prepared';
         }
       };
 
@@ -1488,17 +1497,22 @@
             if (data) {
               for (const key in data) {
                 const inv = data[key];
-                // Ensure each item has receivedQty
-                if (inv.items) {
-                  inv.items.forEach(item => {
-                    if (item.receivedQty === undefined) item.receivedQty = 0;
+                // ONLY INCLUDE INVOICES WITH status === "prepared"
+                if (inv.status === 'prepared') {
+                  // Ensure each item has receivedQty
+                  if (inv.items) {
+                    inv.items.forEach(item => {
+                      if (item.receivedQty === undefined) item.receivedQty = 0;
+                      // Ensure receivedQty is initialized with actual value from database
+                      // If the item already has receivedQty, keep it
+                    });
+                  }
+                  this._invoices.push({
+                    id: key,
+                    ...inv,
+                    createdAt: inv.createdAt || 0
                   });
                 }
-                this._invoices.push({
-                  id: key,
-                  ...inv,
-                  createdAt: inv.createdAt || 0
-                });
               }
               this._invoices.sort((a, b) => b.createdAt - a.createdAt);
             }
@@ -1507,7 +1521,7 @@
             this.elements.storeStatus.textContent = '✅ Ready';
             this.elements.storeStatus.style.background = '#E8F5E9';
             this.elements.storeStatus.style.color = '#16A34A';
-            this.showAlert(`✅ Loaded ${this._invoices.length} invoices`, 'success');
+            this.showAlert(`✅ Loaded ${this._invoices.length} prepared invoices`, 'success');
           }, (error) => {
             console.error('❌ Error loading invoices:', error);
             this.elements.storeStatus.textContent = '⚠️ Error';
@@ -1545,8 +1559,8 @@
             list.innerHTML = `
               <div class="empty-state">
                 <div class="icon">📭</div>
-                <h3>${this._invoices.length ? 'لا توجد نتائج مطابقة' : 'لا توجد فواتير'}</h3>
-                <p>${this._invoices.length ? 'حاول تغيير الفلتر أو البحث' : 'انتظر حتى يتم تحضير الفواتير من صفحة التحضير'}</p>
+                <h3>${this._invoices.length ? 'لا توجد نتائج مطابقة' : 'لا توجد فواتير جاهزة'}</h3>
+                <p>${this._invoices.length ? 'حاول تغيير الفلتر أو البحث' : 'جميع الفواتير التي حالتها "prepared" تظهر هنا'}</p>
               </div>
             `;
             this.elements.invoicesCount.textContent = `${filtered.length} فاتورة`;
@@ -1681,7 +1695,7 @@
               size: item.size || 'No Size',
               qty: item.qty || 0,
               total: item.total || 0,
-              receivedQty: item.receivedQty || 0
+              receivedQty: item.receivedQty || 0 // Show actual receivedQty
             });
           });
 
@@ -1764,15 +1778,18 @@
                 </div>
                 <div class="color-sizes ${isColorOpen ? 'open' : ''}">
                   ${sizes.map((s, idx) => {
-                    const isReceived = (s.receivedQty || 0) >= (s.qty || 0);
-                    const isPartial = (s.receivedQty || 0) > 0 && (s.receivedQty || 0) < (s.qty || 0);
+                    // Display actual receivedQty from database
+                    const received = s.receivedQty || 0;
+                    const qty = s.qty || 0;
+                    const isReceived = received >= qty;
+                    const isPartial = received > 0 && received < qty;
                     const statusClass = isReceived ? 'received' : isPartial ? 'partial' : 'pending';
                     return `
                       <div class="size-row">
                         <span class="size-label">${Utils.escapeHtml(s.size)}</span>
                         <div class="qty-control">
                           <button onclick="window.UI.changeReceiveQty('${productId}', '${color}', '${s.size}', -1)">−</button>
-                          <span class="qty-val ${statusClass}">${s.receivedQty || 0}/${s.qty || 0}</span>
+                          <span class="qty-val ${statusClass}">${received}/${qty}</span>
                           <button onclick="window.UI.changeReceiveQty('${productId}', '${color}', '${s.size}', 1)">+</button>
                         </div>
                       </div>
@@ -1896,13 +1913,14 @@
               return (a.size || '').localeCompare(b.size || '');
             });
             sorted.forEach(item => {
-              const isReceived = (item.receivedQty || 0) >= (item.qty || 0);
+              const received = item.receivedQty || 0;
+              const isReceived = received >= (item.qty || 0);
               detailsHtml += `
                 <div style="display:flex;align-items:center;gap:12px;padding:4px 0;font-size:14px;flex-wrap:wrap;">
                   <span style="min-width:50px;font-weight:500;">${Utils.escapeHtml(item.size || 'No Size')}</span>
                   <span style="color:var(--subtext);">الكمية: ${item.qty || 0}</span>
                   <span style="color:${isReceived ? 'var(--success)' : 'var(--warning)'};">
-                    المستلم: ${item.receivedQty || 0}
+                    المستلم: ${received}
                   </span>
                   <div style="display:flex;gap:4px;margin-right:auto;">
                     <button class="btn btn-secondary btn-sm" onclick="window.UI.adjustReceiveQtyFromDialog('${item.color || 'No Color'}', '${item.size || 'No Size'}', -1)">−</button>
