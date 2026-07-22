@@ -15,7 +15,6 @@
   </script>
 
   <style>
-    /* ===== DESIGN SYSTEM ===== */
     :root {
       --primary: #1E3A5F;
       --primary-dark: #0F2A44;
@@ -60,7 +59,6 @@
       gap: 24px;
     }
 
-    /* ===== CARDS ===== */
     .card {
       background: var(--card);
       border-radius: var(--radius-card);
@@ -76,7 +74,6 @@
       transform: translateY(-2px);
     }
 
-    /* ===== HEADER ===== */
     .header {
       display: flex;
       justify-content: space-between;
@@ -152,13 +149,6 @@
       border-color: #CBD5E1;
     }
 
-    .btn-ghost.active {
-      background: var(--primary);
-      color: white;
-      border-color: var(--primary);
-    }
-
-    /* ===== BUTTONS ===== */
     .btn {
       padding: 10px 24px;
       border: none;
@@ -251,7 +241,22 @@
       border-radius: 12px;
     }
 
-    /* ===== DROPDOWN ===== */
+    .btn-lg {
+      padding: 14px 36px;
+      font-size: 16px;
+    }
+
+    .btn-gold {
+      background: linear-gradient(135deg, #F59E0B, #D97706);
+      color: white;
+      box-shadow: 0 4px 14px rgba(245, 158, 11, 0.35);
+    }
+
+    .btn-gold:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(245, 158, 11, 0.45);
+    }
+
     .filter-section {
       display: flex;
       gap: 12px;
@@ -292,7 +297,6 @@
       box-shadow: 0 0 0 4px rgba(30, 58, 95, 0.08);
     }
 
-    /* ===== INVOICE LIST ===== */
     .invoice-list {
       display: flex;
       flex-direction: column;
@@ -317,6 +321,11 @@
       box-shadow: var(--shadow-hover);
       border-color: #D1D5DB;
       transform: translateY(-2px);
+    }
+
+    .invoice-item.selected {
+      border-color: var(--primary);
+      background: #F0F4FF;
     }
 
     .invoice-item .info {
@@ -345,16 +354,7 @@
       flex-wrap: wrap;
     }
 
-    .invoice-item .stats .stat {
-      font-size: 13px;
-    }
-
-    .invoice-item .stats .stat strong {
-      font-weight: 700;
-      color: var(--primary);
-    }
-
-    .invoice-item .badge {
+    .badge {
       font-size: 11px;
       font-weight: 600;
       padding: 4px 14px;
@@ -382,7 +382,6 @@
       color: #C62828;
     }
 
-    /* ===== PREVIEW CARD ===== */
     .preview-card {
       display: none;
       animation: fadeSlide 0.3s ease;
@@ -392,7 +391,6 @@
       display: block;
     }
 
-    /* ===== PRODUCT CARDS IN PREVIEW ===== */
     .product-card {
       background: var(--card);
       border-radius: var(--radius-card);
@@ -616,7 +614,6 @@
       flex-wrap: wrap;
     }
 
-    /* ===== STICKY BOTTOM ===== */
     .sticky-bottom {
       position: fixed;
       bottom: 0;
@@ -660,7 +657,6 @@
       flex-wrap: wrap;
     }
 
-    /* ===== DIALOG / MODAL ===== */
     .dialog-overlay {
       display: none;
       position: fixed;
@@ -758,7 +754,6 @@
       text-align: center;
     }
 
-    /* ===== STATISTICS ===== */
     .stats-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
@@ -815,7 +810,6 @@
       }
     }
 
-    /* ===== ANIMATIONS ===== */
     @keyframes fadeSlide {
       from {
         opacity: 0;
@@ -847,7 +841,6 @@
       }
     }
 
-    /* ===== RESPONSIVE ===== */
     @media (max-width: 780px) {
       body {
         padding: 16px 12px 110px;
@@ -911,7 +904,6 @@
       }
     }
 
-    /* ===== UTILITY ===== */
     .hidden {
       display: none !important;
     }
@@ -943,7 +935,6 @@
       color: var(--subtext);
     }
 
-    /* Toast */
     .toast-alert {
       position: fixed;
       bottom: 90px;
@@ -960,7 +951,6 @@
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
     }
 
-    /* Empty state */
     .empty-state {
       text-align: center;
       padding: 60px 20px;
@@ -982,7 +972,6 @@
       font-size: 14px;
     }
 
-    /* Progress bar */
     .progress-bar {
       width: 100%;
       height: 6px;
@@ -1035,7 +1024,6 @@
           <option value="partial">⚠️ تحضير جزئي</option>
         </select>
         <input type="text" class="search-input" id="searchInput" placeholder="🔍 بحث عن فرع أو منتج..." />
-        <button class="btn btn-purple" id="loadSelectedBtn">📥 تحميل الفاتورة</button>
       </div>
     </section>
 
@@ -1074,7 +1062,7 @@
       </div>
       <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:16px;flex-wrap:wrap;">
         <button class="btn btn-secondary" id="closePreviewBtn">✕ إغلاق</button>
-        <button class="btn btn-success" id="completePreparationBtn">✅ تأكيد التحضير الكامل</button>
+        <button class="btn btn-gold btn-lg" id="closePreparationBtn">🔒 تقفيل التحضير</button>
       </div>
     </section>
 
@@ -1110,32 +1098,33 @@
         </span>
       </div>
       <div class="actions">
-        <button class="btn btn-success" id="completeSelectedBtn">✅ تأكيد التحضير</button>
+        <button class="btn btn-gold" id="closePreparationStickyBtn">🔒 تقفيل التحضير</button>
       </div>
     </div>
 
-    <!-- COMPLETE PREPARATION DIALOG -->
-    <div class="dialog-overlay" id="completeDialog">
+    <!-- CLOSE PREPARATION DIALOG -->
+    <div class="dialog-overlay" id="closeDialog">
       <div class="dialog-box">
-        <h3>✅ تأكيد التحضير الكامل</h3>
-        <p class="subtitle">هل أنت متأكد من أن جميع المنتجات في هذه الفاتورة تم تحضيرها بالكامل؟</p>
-        <div class="product-list" id="completeProductList"></div>
-        <div class="dialog-actions">
-          <button class="btn btn-secondary" id="completeDialogCancel">إلغاء</button>
-          <button class="btn btn-success" id="completeDialogConfirm">✅ تأكيد التحضير الكامل</button>
+        <h3>🔒 تقفيل التحضير</h3>
+        <p class="subtitle">سيتم تقفيل الفاتورة بالكميات المحضرة حالياً. الكميات غير المحضرة ستبقى 0.</p>
+        
+        <div style="background:#FEF3C7;padding:12px;border-radius:12px;margin-bottom:16px;border:1px solid #FCD34D;">
+          <div style="display:flex;justify-content:space-between;font-size:14px;">
+            <span>📊 إجمالي القطع المطلوبة: <strong id="closeTotalPieces">0</strong></span>
+            <span>✅ القطع المحضرة: <strong id="closePreparedPieces" style="color:var(--success);">0</strong></span>
+            <span>⏳ المتبقية: <strong id="closeRemainingPieces" style="color:var(--danger);">0</strong></span>
+          </div>
         </div>
-      </div>
-    </div>
 
-    <!-- PREPARE DIALOG (for individual product) -->
-    <div class="dialog-overlay" id="prepareDialog">
-      <div class="dialog-box">
-        <h3>🔧 تحضير المنتج</h3>
-        <p class="subtitle" id="prepareProductName">اسم المنتج</p>
-        <div id="prepareProductDetails"></div>
+        <div class="product-list" id="closeProductList"></div>
+        
+        <div style="background:#E8F5E9;padding:12px;border-radius:12px;margin:12px 0;border:1px solid #86EFAC;">
+          <p style="font-size:13px;color:#166534;">✅ سيتم تحديث حالة الفاتورة إلى "محضرة" بعد التأكيد</p>
+        </div>
+
         <div class="dialog-actions">
-          <button class="btn btn-secondary" id="prepareDialogCancel">إلغاء</button>
-          <button class="btn btn-primary" id="prepareDialogConfirm">💾 حفظ التحضير</button>
+          <button class="btn btn-secondary" id="closeDialogCancel">إلغاء</button>
+          <button class="btn btn-gold" id="closeDialogConfirm">🔒 تأكيد تقفيل التحضير</button>
         </div>
       </div>
     </div>
@@ -1146,7 +1135,6 @@
     (function() {
       'use strict';
 
-      // ===== STORAGE VERSION CONTROL =====
       const STORAGE_VERSION = 2;
       const STORAGE_VERSION_KEY = 'shopify_storage_version';
 
@@ -1165,7 +1153,6 @@
         console.log('✅ Storage cleared and version set to', STORAGE_VERSION);
       }
 
-      // ===== STORAGE =====
       const Storage = {
         get(key, fallback = '') {
           try {
@@ -1187,7 +1174,6 @@
         }
       };
 
-      // ===== FIREBASE CONFIG =====
       const firebaseConfig = {
         apiKey: "AIzaSyC7M4JhDl7KGZdrPj78W0nPqQy2I4P4I6I",
         authDomain: "exams-fab0f.firebaseapp.com",
@@ -1205,7 +1191,6 @@
         console.log('✅ Firebase ready');
       } catch (e) { console.warn('⚠️ Firebase init error', e); }
 
-      // ===== UTILS =====
       const Utils = {
         cleanText(t) { return t ? t.replace(/\s+/g, ' ').trim() : ''; },
         formatCurrency(v) { return v ? Number(v).toLocaleString('en-EG') : '0'; },
@@ -1237,6 +1222,11 @@
           items.forEach(r => { prepared += r.preparedQty || 0; });
           return prepared;
         },
+        calculateRemaining(items) {
+          let remaining = 0;
+          items.forEach(r => { remaining += (r.qty || 0) - (r.preparedQty || 0); });
+          return remaining;
+        },
         isFullyPrepared(items) {
           if (!items || !items.length) return false;
           return items.every(r => (r.preparedQty || 0) >= (r.qty || 0));
@@ -1257,7 +1247,6 @@
         }
       };
 
-      // ===== UI CONTROLLER =====
       const UI = {
         elements: {
           invoiceList: document.getElementById('invoiceList'),
@@ -1266,15 +1255,14 @@
           filter: document.getElementById('invoiceFilter'),
           searchInput: document.getElementById('searchInput'),
           refreshBtn: document.getElementById('refreshBtn'),
-          loadSelectedBtn: document.getElementById('loadSelectedBtn'),
           previewSection: document.getElementById('previewSection'),
           previewTitle: document.getElementById('previewTitle'),
           previewMeta: document.getElementById('previewMeta'),
           previewStatus: document.getElementById('previewStatus'),
           previewContainer: document.getElementById('previewContainer'),
           closePreviewBtn: document.getElementById('closePreviewBtn'),
-          completePreparationBtn: document.getElementById('completePreparationBtn'),
-          completeSelectedBtn: document.getElementById('completeSelectedBtn'),
+          closePreparationBtn: document.getElementById('closePreparationBtn'),
+          closePreparationStickyBtn: document.getElementById('closePreparationStickyBtn'),
           storeStatus: document.getElementById('storeStatus'),
           statTotalInvoices: document.getElementById('statTotalInvoices'),
           statPending: document.getElementById('statPending'),
@@ -1284,50 +1272,40 @@
           bottomPieces: document.getElementById('bottomPieces'),
           bottomPrepared: document.getElementById('bottomPrepared'),
           bottomPercent: document.getElementById('bottomPercent'),
-          completeDialog: document.getElementById('completeDialog'),
-          completeProductList: document.getElementById('completeProductList'),
-          completeDialogCancel: document.getElementById('completeDialogCancel'),
-          completeDialogConfirm: document.getElementById('completeDialogConfirm'),
-          prepareDialog: document.getElementById('prepareDialog'),
-          prepareProductName: document.getElementById('prepareProductName'),
-          prepareProductDetails: document.getElementById('prepareProductDetails'),
-          prepareDialogCancel: document.getElementById('prepareDialogCancel'),
-          prepareDialogConfirm: document.getElementById('prepareDialogConfirm'),
+          closeDialog: document.getElementById('closeDialog'),
+          closeProductList: document.getElementById('closeProductList'),
+          closeTotalPieces: document.getElementById('closeTotalPieces'),
+          closePreparedPieces: document.getElementById('closePreparedPieces'),
+          closeRemainingPieces: document.getElementById('closeRemainingPieces'),
+          closeDialogCancel: document.getElementById('closeDialogCancel'),
+          closeDialogConfirm: document.getElementById('closeDialogConfirm'),
         },
         _invoices: [],
         _filteredInvoices: [],
         _selectedInvoice: null,
         _selectedInvoiceId: null,
         _productCardStates: {},
-        _pendingPrepareData: null,
 
         init() {
           console.log('🚀 Initializing Preparation UI...');
           this.loadInvoices();
 
-          // Event listeners
           this.elements.refreshBtn.addEventListener('click', () => this.loadInvoices());
           this.elements.filter.addEventListener('change', () => this.renderInvoiceList());
           this.elements.searchInput.addEventListener('input', () => this.renderInvoiceList());
-          this.elements.loadSelectedBtn.addEventListener('click', () => this.loadSelectedInvoice());
           this.elements.closePreviewBtn.addEventListener('click', () => this.closePreview());
-          this.elements.completePreparationBtn.addEventListener('click', () => this.openCompleteDialog());
-          this.elements.completeSelectedBtn.addEventListener('click', () => this.openCompleteDialog());
+          
+          // Close preparation buttons
+          this.elements.closePreparationBtn.addEventListener('click', () => this.openCloseDialog());
+          this.elements.closePreparationStickyBtn.addEventListener('click', () => this.openCloseDialog());
 
           // Dialog events
-          this.elements.completeDialogCancel.addEventListener('click', () => this.closeCompleteDialog());
-          this.elements.completeDialogConfirm.addEventListener('click', () => this.confirmCompletePreparation());
-          this.elements.completeDialog.addEventListener('click', (e) => {
-            if (e.target === this.elements.completeDialog) this.closeCompleteDialog();
+          this.elements.closeDialogCancel.addEventListener('click', () => this.closeCloseDialog());
+          this.elements.closeDialogConfirm.addEventListener('click', () => this.confirmClosePreparation());
+          this.elements.closeDialog.addEventListener('click', (e) => {
+            if (e.target === this.elements.closeDialog) this.closeCloseDialog();
           });
 
-          this.elements.prepareDialogCancel.addEventListener('click', () => this.closePrepareDialog());
-          this.elements.prepareDialogConfirm.addEventListener('click', () => this.confirmPrepareProduct());
-          this.elements.prepareDialog.addEventListener('click', (e) => {
-            if (e.target === this.elements.prepareDialog) this.closePrepareDialog();
-          });
-
-          // Auto-select first invoice after load
           this.loadFromURL();
         },
 
@@ -1337,7 +1315,7 @@
           if (id) {
             setTimeout(() => {
               const invoice = this._invoices.find(inv => inv.id === id);
-              if (invoice) {
+              if (invoice && this.getInvoiceStatus(invoice) !== 'prepared') {
                 this.selectInvoice(invoice.id);
                 this.elements.filter.value = 'all';
                 this.renderInvoiceList();
@@ -1363,7 +1341,6 @@
             if (data) {
               for (const key in data) {
                 const inv = data[key];
-                // Ensure each item has preparedQty
                 if (inv.items) {
                   inv.items.forEach(item => {
                     if (item.preparedQty === undefined) item.preparedQty = 0;
@@ -1383,6 +1360,9 @@
             this.elements.storeStatus.style.background = '#E8F5E9';
             this.elements.storeStatus.style.color = '#16A34A';
             this.showAlert(`✅ Loaded ${this._invoices.length} invoices`, 'success');
+
+            // Auto-select if URL has invoice param
+            this.loadFromURL();
           }, (error) => {
             console.error('❌ Error loading invoices:', error);
             this.elements.storeStatus.textContent = '⚠️ Error';
@@ -1394,6 +1374,7 @@
 
         getInvoiceStatus(invoice) {
           if (!invoice || !invoice.items || !invoice.items.length) return 'pending';
+          if (invoice.isClosed || invoice.status === 'prepared') return 'prepared';
           const allPrepared = invoice.items.every(item => (item.preparedQty || 0) >= (item.qty || 0));
           const anyPrepared = invoice.items.some(item => (item.preparedQty || 0) > 0);
           if (allPrepared) return 'prepared';
@@ -1416,10 +1397,8 @@
           const search = this.elements.searchInput.value.toLowerCase().trim();
 
           let filtered = this._invoices.filter(inv => {
-            // Status filter
             const status = this.getInvoiceStatus(inv);
             if (filter !== 'all' && status !== filter) return false;
-            // Search filter
             if (search) {
               const branch = (inv.branch || '').toLowerCase();
               const nameMatch = inv.items && inv.items.some(item => 
@@ -1432,9 +1411,7 @@
           });
 
           this._filteredInvoices = filtered;
-
           const list = this.elements.invoiceList;
-          const empty = this.elements.emptyInvoiceList;
 
           if (!filtered.length) {
             list.innerHTML = `
@@ -1449,7 +1426,7 @@
           }
 
           let html = '';
-          filtered.forEach((inv, idx) => {
+          filtered.forEach((inv) => {
             const status = this.getInvoiceStatus(inv);
             const date = new Date(inv.createdAt);
             const dateStr = date.toLocaleDateString('ar-EG') + ' ' + date.toLocaleTimeString('ar-EG', {
@@ -1461,7 +1438,6 @@
 
             html += `
               <div class="invoice-item ${isSelected ? 'selected' : ''}" 
-                   style="${isSelected ? 'border-color:var(--primary);background:#F0F4FF;' : ''}"
                    onclick="window.UI.selectInvoice('${inv.id}')">
                 <div class="info">
                   <div class="branch">🏢 ${Utils.escapeHtml(inv.branch || 'Branch not set')}</div>
@@ -1496,6 +1472,23 @@
             this.showAlert('⚠️ Invoice not found', 'error');
             return;
           }
+          
+          // Don't allow selecting prepared invoices for editing
+          if (this.getInvoiceStatus(invoice) === 'prepared') {
+            this.showAlert('✅ هذه الفاتورة محضرة بالكامل ولا يمكن تعديلها', 'info');
+            this._selectedInvoice = invoice;
+            this._selectedInvoiceId = invoiceId;
+            this._productCardStates = {};
+            this.renderInvoicePreview(invoice);
+            this.renderInvoiceList();
+            this.updateStats();
+            // Update URL
+            const url = new URL(window.location);
+            url.searchParams.set('invoice', invoiceId);
+            window.history.pushState({}, '', url);
+            return;
+          }
+
           this._selectedInvoice = invoice;
           this._selectedInvoiceId = invoiceId;
           this._productCardStates = {};
@@ -1503,28 +1496,9 @@
           this.renderInvoiceList();
           this.updateStats();
 
-          // Update URL
           const url = new URL(window.location);
           url.searchParams.set('invoice', invoiceId);
           window.history.pushState({}, '', url);
-        },
-
-        loadSelectedInvoice() {
-          const selected = document.querySelector('.invoice-item.selected');
-          if (selected) {
-            // Already selected
-          } else {
-            // Get first visible invoice
-            const firstItem = this.elements.invoiceList.querySelector('.invoice-item');
-            if (firstItem) {
-              // Find its id by scanning invoices
-              const branch = firstItem.querySelector('.branch')?.textContent?.replace('🏢 ', '') || '';
-              const matched = this._filteredInvoices.find(inv => 
-                (inv.branch || 'Branch not set') === branch
-              );
-              if (matched) this.selectInvoice(matched.id);
-            }
-          }
         },
 
         renderInvoicePreview(invoice) {
@@ -1539,11 +1513,27 @@
           });
           const status = this.getInvoiceStatus(invoice);
           const progress = Utils.getProgress(invoice.items);
+          const isPrepared = status === 'prepared';
 
           this.elements.previewTitle.textContent = `📋 ${Utils.escapeHtml(branch)}`;
           this.elements.previewMeta.textContent = `📅 ${dateStr} | 🧮 ${invoice.totalPieces || Utils.calculateTotalPieces(invoice.items)} قطعة | 💰 ${Utils.formatCurrency(invoice.totalValue || Utils.calculateTotalValue(invoice.items))} LE`;
           this.elements.previewStatus.textContent = this.getStatusText(status);
           this.elements.previewStatus.className = `badge ${status}`;
+
+          if (isPrepared) {
+            container.innerHTML = `
+              <div style="background:#E8F5E9;padding:24px;border-radius:16px;text-align:center;border:2px solid #86EFAC;">
+                <div style="font-size:48px;margin-bottom:12px;">✅</div>
+                <h3 style="color:#16A34A;">تم تحضير هذه الفاتورة بالكامل</h3>
+                <p style="color:#15803D;margin-top:8px;">لا يمكن تعديل الكميات بعد التقفيل</p>
+                <div style="margin-top:12px;font-size:14px;color:#166534;">
+                  تم تحضير ${Utils.calculatePrepared(invoice.items)} من ${Utils.calculateTotalPieces(invoice.items)} قطعة
+                </div>
+              </div>
+            `;
+            this.updateBottomBar(invoice);
+            return;
+          }
 
           if (!invoice.items || !invoice.items.length) {
             container.innerHTML = `
@@ -1556,7 +1546,6 @@
             return;
           }
 
-          // Group items by product (name + sku)
           const groups = {};
           invoice.items.forEach(item => {
             const key = (item.name || 'Unknown') + '|' + (item.sku || '');
@@ -1589,7 +1578,6 @@
             }
             const isOpen = this._productCardStates[productId];
 
-            // Calculate product progress
             let totalQty = 0,
               totalPrepared = 0;
             for (const color in g.colors) {
@@ -1615,9 +1603,6 @@
                 </div>
                 <div class="product-card-body ${isOpen ? 'open' : ''}">
                   ${this.renderPreviewColors(g, productId)}
-                </div>
-                <div class="product-card-footer">
-                  <button class="btn btn-primary btn-sm" onclick="window.UI.openPrepareDialog('${key}', '${productId}')">🔧 تحضير</button>
                 </div>
               </div>
             `;
@@ -1653,7 +1638,7 @@
                   </span>
                 </div>
                 <div class="color-sizes ${isColorOpen ? 'open' : ''}">
-                  ${sizes.map((s, idx) => {
+                  ${sizes.map((s) => {
                     const isPrepared = (s.preparedQty || 0) >= (s.qty || 0);
                     const isPartial = (s.preparedQty || 0) > 0 && (s.preparedQty || 0) < (s.qty || 0);
                     const statusClass = isPrepared ? 'prepared' : isPartial ? 'partial' : 'pending';
@@ -1690,8 +1675,13 @@
 
         changePrepareQty(productId, color, size, delta) {
           if (!this._selectedInvoice || !this._selectedInvoice.items) return;
+          
+          // Check if invoice is prepared
+          if (this.getInvoiceStatus(this._selectedInvoice) === 'prepared') {
+            this.showAlert('⚠️ لا يمكن تعديل كميات فاتورة محضرة', 'error');
+            return;
+          }
 
-          // Find the item
           let found = false;
           this._selectedInvoice.items.forEach(item => {
             const itemColor = item.color || 'No Color';
@@ -1708,27 +1698,20 @@
           });
 
           if (found) {
-            // Update totals
             this._selectedInvoice.totalPieces = Utils.calculateTotalPieces(this._selectedInvoice.items);
             this._selectedInvoice.totalValue = Utils.calculateTotalValue(this._selectedInvoice.items);
             
-            // Save to Firebase
             this.saveInvoiceToFirebase(this._selectedInvoice);
-
-            // Re-render
             this.renderInvoicePreview(this._selectedInvoice);
             this.renderInvoiceList();
             this.updateStats();
-            this.showAlert('✅ تم تحديث الكمية المحضرة', 'success');
           }
         },
 
         saveInvoiceToFirebase(invoice) {
           if (!database) return;
           const ref = database.ref('invoices/' + invoice.id);
-          // Remove id from data
           const { id, ...data } = invoice;
-          // Ensure all items have preparedQty
           if (data.items) {
             data.items.forEach(item => {
               if (item.preparedQty === undefined) item.preparedQty = 0;
@@ -1740,128 +1723,7 @@
           });
         },
 
-        openPrepareDialog(productKey, productId) {
-          if (!this._selectedInvoice) return;
-
-          // Find product group
-          const groups = {};
-          this._selectedInvoice.items.forEach(item => {
-            const key = (item.name || 'Unknown') + '|' + (item.sku || '');
-            if (!groups[key]) {
-              groups[key] = {
-                name: item.name || 'Unknown',
-                sku: item.sku || '',
-                unitPrice: item.unitPrice || 0,
-                image: item.image || '',
-                items: []
-              };
-            }
-            groups[key].items.push(item);
-          });
-
-          const group = groups[productKey];
-          if (!group) {
-            this.showAlert('⚠️ Product not found', 'error');
-            return;
-          }
-
-          this._pendingPrepareData = {
-            productKey: productKey,
-            productId: productId,
-            group: group
-          };
-
-          this.elements.prepareProductName.textContent = `📦 ${Utils.escapeHtml(group.name)} (SKU: ${Utils.escapeHtml(group.sku)})`;
-
-          let detailsHtml = '';
-          // Group by color
-          const colorMap = {};
-          group.items.forEach(item => {
-            const color = item.color || 'No Color';
-            if (!colorMap[color]) colorMap[color] = [];
-            colorMap[color].push(item);
-          });
-
-          for (const color in colorMap) {
-            detailsHtml += `
-              <div style="padding:8px 0;border-bottom:1px solid var(--border);">
-                <div style="font-weight:600;margin-bottom:4px;">🎨 ${Utils.escapeHtml(color)}</div>
-            `;
-            const sorted = colorMap[color].sort((a, b) => {
-              const sizes = Utils.sortSizes([a.size || 'No Size', b.size || 'No Size']);
-              if (sizes.length === 2) {
-                if (sizes[0] === a.size && sizes[1] === b.size) return -1;
-                if (sizes[0] === b.size && sizes[1] === a.size) return 1;
-              }
-              return (a.size || '').localeCompare(b.size || '');
-            });
-            sorted.forEach(item => {
-              const isPrepared = (item.preparedQty || 0) >= (item.qty || 0);
-              detailsHtml += `
-                <div style="display:flex;align-items:center;gap:12px;padding:4px 0;font-size:14px;flex-wrap:wrap;">
-                  <span style="min-width:50px;font-weight:500;">${Utils.escapeHtml(item.size || 'No Size')}</span>
-                  <span style="color:var(--subtext);">الكمية: ${item.qty || 0}</span>
-                  <span style="color:${isPrepared ? 'var(--success)' : 'var(--warning)'};">
-                    المحضر: ${item.preparedQty || 0}
-                  </span>
-                  <div style="display:flex;gap:4px;margin-right:auto;">
-                    <button class="btn btn-secondary btn-sm" onclick="window.UI.adjustPrepareQtyFromDialog('${item.color || 'No Color'}', '${item.size || 'No Size'}', -1)">−</button>
-                    <button class="btn btn-secondary btn-sm" onclick="window.UI.adjustPrepareQtyFromDialog('${item.color || 'No Color'}', '${item.size || 'No Size'}', 1)">+</button>
-                  </div>
-                </div>
-              `;
-            });
-            detailsHtml += `</div>`;
-          }
-
-          this.elements.prepareProductDetails.innerHTML = detailsHtml;
-          this.elements.prepareDialog.classList.add('show');
-        },
-
-        adjustPrepareQtyFromDialog(color, size, delta) {
-          if (!this._selectedInvoice || !this._pendingPrepareData) return;
-
-          // Find the item
-          let found = false;
-          this._selectedInvoice.items.forEach(item => {
-            const itemColor = item.color || 'No Color';
-            const itemSize = item.size || 'No Size';
-            if (itemColor === color && itemSize === size) {
-              const current = item.preparedQty || 0;
-              const max = item.qty || 0;
-              const newQty = Math.max(0, Math.min(max, current + delta));
-              if (newQty !== current) {
-                item.preparedQty = newQty;
-                found = true;
-              }
-            }
-          });
-
-          if (found) {
-            this._selectedInvoice.totalPieces = Utils.calculateTotalPieces(this._selectedInvoice.items);
-            this._selectedInvoice.totalValue = Utils.calculateTotalValue(this._selectedInvoice.items);
-            this.saveInvoiceToFirebase(this._selectedInvoice);
-            
-            // Re-open dialog with updated data
-            const { productKey, productId } = this._pendingPrepareData;
-            this.openPrepareDialog(productKey, productId);
-            this.renderInvoicePreview(this._selectedInvoice);
-            this.renderInvoiceList();
-            this.updateStats();
-          }
-        },
-
-        closePrepareDialog() {
-          this.elements.prepareDialog.classList.remove('show');
-          this._pendingPrepareData = null;
-        },
-
-        confirmPrepareProduct() {
-          this.closePrepareDialog();
-          this.showAlert('✅ تم حفظ التحضير', 'success');
-        },
-
-        openCompleteDialog() {
+        openCloseDialog() {
           if (!this._selectedInvoice) {
             this.showAlert('⚠️ اختر فاتورة أولاً', 'error');
             return;
@@ -1875,26 +1737,18 @@
             return;
           }
 
-          const list = this.elements.completeProductList;
-          let html = '';
-          const progress = Utils.getProgress(invoice.items);
           const totalPieces = Utils.calculateTotalPieces(invoice.items);
           const preparedPieces = Utils.calculatePrepared(invoice.items);
+          const remainingPieces = Utils.calculateRemaining(invoice.items);
 
-          html += `
-            <div style="margin-bottom:12px;">
-              <div style="display:flex;justify-content:space-between;font-size:14px;">
-                <span>التقدم: ${progress}%</span>
-                <span>${preparedPieces}/${totalPieces} قطعة</span>
-              </div>
-              <div class="progress-bar">
-                <div class="fill ${progress < 50 ? 'danger' : progress < 100 ? 'warning' : ''}" style="width:${progress}%;"></div>
-              </div>
-            </div>
-          `;
+          this.elements.closeTotalPieces.textContent = totalPieces;
+          this.elements.closePreparedPieces.textContent = preparedPieces;
+          this.elements.closeRemainingPieces.textContent = remainingPieces;
+
+          const list = this.elements.closeProductList;
+          let html = '';
 
           if (invoice.items && invoice.items.length) {
-            // Group by product
             const productMap = {};
             invoice.items.forEach(item => {
               const key = (item.name || 'Unknown') + '|' + (item.sku || '');
@@ -1904,16 +1758,20 @@
                   sku: item.sku || '',
                   totalQty: 0,
                   preparedQty: 0,
+                  remainingQty: 0,
                   image: item.image || ''
                 };
               }
               productMap[key].totalQty += item.qty || 0;
               productMap[key].preparedQty += item.preparedQty || 0;
+              productMap[key].remainingQty += (item.qty || 0) - (item.preparedQty || 0);
             });
 
             for (const key in productMap) {
               const p = productMap[key];
               const isDone = p.preparedQty >= p.totalQty;
+              const hasRemaining = p.remainingQty > 0;
+              
               html += `
                 <div class="dialog-product-item">
                   <img src="${p.image || ''}" alt="${p.name}" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2240%22 height=%2240%22/%3E'" />
@@ -1921,9 +1779,9 @@
                     <div class="name">${Utils.escapeHtml(p.name)}</div>
                     <div class="details">SKU: ${Utils.escapeHtml(p.sku)}</div>
                   </div>
-                  <div class="qty-info" style="color:${isDone ? 'var(--success)' : 'var(--warning)'};">
-                    ${p.preparedQty}/${p.totalQty}
-                    ${isDone ? '✅' : '⚠️'}
+                  <div class="qty-info" style="color:${isDone ? 'var(--success)' : hasRemaining ? 'var(--warning)' : 'var(--subtext)'};">
+                    ✅ ${p.preparedQty} / ${p.totalQty}
+                    ${hasRemaining ? `⏳ ${p.remainingQty}` : '✅'}
                   </div>
                 </div>
               `;
@@ -1931,43 +1789,41 @@
           }
 
           list.innerHTML = html;
-          this.elements.completeDialog.classList.add('show');
+          this.elements.closeDialog.classList.add('show');
         },
 
-        closeCompleteDialog() {
-          this.elements.completeDialog.classList.remove('show');
+        closeCloseDialog() {
+          this.elements.closeDialog.classList.remove('show');
         },
 
-        confirmCompletePreparation() {
+        confirmClosePreparation() {
           if (!this._selectedInvoice) return;
 
           const invoice = this._selectedInvoice;
           
-          // Mark all items as fully prepared
-          if (invoice.items) {
-            invoice.items.forEach(item => {
-              item.preparedQty = item.qty || 0;
-            });
-          }
-
+          // Ensure all items keep their current prepared quantities
+          // No changes are made to preparedQty values
+          // Just mark the invoice as closed/prepared
+          
+          invoice.isClosed = true;
+          invoice.status = 'prepared';
           invoice.totalPieces = Utils.calculateTotalPieces(invoice.items);
           invoice.totalValue = Utils.calculateTotalValue(invoice.items);
 
           this.saveInvoiceToFirebase(invoice);
-          this.closeCompleteDialog();
+          this.closeCloseDialog();
 
           // Update UI
           this.renderInvoicePreview(invoice);
           this.renderInvoiceList();
           this.updateStats();
-          this.showAlert('✅ تم تأكيد التحضير الكامل للفاتورة', 'success');
+          
+          this.showAlert(`✅ تم تقفيل التحضير بنجاح! تم تحضير ${Utils.calculatePrepared(invoice.items)} من ${Utils.calculateTotalPieces(invoice.items)} قطعة`, 'success');
 
-          // Auto-close preview if fully prepared
-          if (this.getInvoiceStatus(invoice) === 'prepared') {
-            setTimeout(() => {
-              this.closePreview();
-            }, 2000);
-          }
+          // Auto-close preview after 2 seconds
+          setTimeout(() => {
+            this.closePreview();
+          }, 2000);
         },
 
         closePreview() {
@@ -1975,7 +1831,6 @@
           this._selectedInvoice = null;
           this._selectedInvoiceId = null;
           this._productCardStates = {};
-          // Remove from URL
           const url = new URL(window.location);
           url.searchParams.delete('invoice');
           window.history.pushState({}, '', url);
@@ -2039,7 +1894,6 @@
         }
       };
 
-      // ===== GLOBAL EXPOSURE =====
       window.UI = UI;
       window.openModal = function(img) {
         if (!img) return;
@@ -2058,7 +1912,6 @@
         document.body.appendChild(modal);
       };
 
-      // ===== BOOT =====
       document.addEventListener('DOMContentLoaded', () => {
         UI.init();
       });
