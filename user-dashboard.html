@@ -678,6 +678,13 @@
             color: #6d7b93;
             border-radius: 20px;
         }
+        /* إخفاء الأصفار */
+        .qty-box input[value="0"] {
+            color: transparent;
+        }
+        .qty-box input[value="0"]:focus {
+            color: #0b1b2f;
+        }
         .qty-box button {
             background: #6c8cff;
             color: #fff;
@@ -1898,7 +1905,6 @@
         let currentReceiptData = null;
         let currentBlankReceiptId = null;
         let currentBlankReceiptData = null;
-        let autoSaveTimer = null;
         let sizesData = {};
         let allSizesList = [];
         let allReceivedHistory = [];
@@ -2179,8 +2185,7 @@
         }
 
         function switchTab(tab) {
-            if (currentReceiptId && currentReceiptData) { autoSaveField(true);
-                closeDetail(true); }
+            if (currentReceiptId && currentReceiptData) { closeDetail(true); }
             if (currentBlankReceiptId && currentBlankReceiptData) { closeBlankDetail(true); }
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
             document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
@@ -2338,9 +2343,7 @@
         // ========== BLANK RECEIPT - ADD MODEL WITH SEARCH & SMART BADGE ==========
         function addBlankModelWithSearch() {
             if (!currentBlankReceiptData) return;
-            // We'll use a modal-like input with search
             const container = document.getElementById('blankReceiptDetail');
-            // Append a new model row with search
             const tempRowId = Date.now();
             const rowHtml = `
                 <div class="blank-model-row" id="blank-model-row-${tempRowId}">
@@ -2353,18 +2356,15 @@
                     <button class="btn btn-danger btn-sm" onclick="cancelAddBlankModel(${tempRowId})">إلغاء</button>
                 </div>
             `;
-            // Insert before the "إضافة موديل جديد" button
             const addBtn = document.querySelector('.add-blank-model-btn');
             if (addBtn) {
                 addBtn.insertAdjacentHTML('beforebegin', rowHtml);
             } else {
-                // Fallback: append to the models grid
                 const modelsGrid = document.querySelector('#blankReceiptDetail .models-grid');
                 if (modelsGrid) {
                     modelsGrid.insertAdjacentHTML('beforebegin', rowHtml);
                 }
             }
-            // Focus the input
             setTimeout(() => {
                 const input = document.querySelector(`#blank-model-row-${tempRowId} .blank-model-search-input`);
                 if (input) input.focus();
@@ -2441,7 +2441,6 @@
             document.getElementById('newModelCodeBlank').value = '';
             closeModelModalBlank();
 
-            // Find the pending row and set the selected model
             let rowId = null;
             for (const key in blankPendingModelSearch) {
                 if (blankPendingModelSearch[key] === true) {
@@ -2454,10 +2453,8 @@
                 const input = document.querySelector(`#blank-model-row-${rowId} .blank-model-search-input`);
                 if (input) input.value = modelCode;
                 document.getElementById(`blankModelSearchResults_${rowId}`).style.display = 'none';
-                // Auto confirm after adding
                 confirmAddBlankModel(rowId);
             } else {
-                // If no pending row, add directly to the receipt
                 if (currentBlankReceiptData && !currentBlankReceiptData.modelColors[modelCode]) {
                     const isFirstTime = !receivedModelsHistory.has(modelCode);
                     currentBlankReceiptData.modelColors[modelCode] = {};
@@ -2515,7 +2512,6 @@
 
         // Modify the add blank model button to use search
         function addNewBlankModel() {
-            // This is now handled by addBlankModelWithSearch
             addBlankModelWithSearch();
         }
 
@@ -2539,8 +2535,6 @@
 
         function closeBlankDetail(silent = false) {
             document.getElementById('blankReceiptDetail').style.display = 'none';
-            if (autoSaveTimer) clearInterval(autoSaveTimer);
-            autoSaveTimer = null;
             if (!silent && currentBlankReceiptId && currentBlankReceiptData) { saveBlankToFirebase(true); }
             currentBlankReceiptId = null;
             currentBlankReceiptData = null;
@@ -2627,13 +2621,17 @@
 
         function removeBlankColorSizeRow(modelName, colorName, sizeId, idx) {
             if (!currentBlankReceiptData) return;
-            const colorData = currentBlankReceiptData.modelColors[modelName][colorName];
-            let sizeArray = colorData[sizeId] || [0];
-            sizeArray.splice(idx, 1);
-            if (sizeArray.length === 0) sizeArray = [0];
-            colorData[sizeId] = sizeArray;
-            saveBlankToFirebase();
-            renderBlankReceiptDetail();
+            customConfirm(`هل أنت متأكد من حذف هذه الكمية؟`, async (confirmed) => {
+                if (confirmed) {
+                    const colorData = currentBlankReceiptData.modelColors[modelName][colorName];
+                    let sizeArray = colorData[sizeId] || [0];
+                    sizeArray.splice(idx, 1);
+                    if (sizeArray.length === 0) sizeArray = [0];
+                    colorData[sizeId] = sizeArray;
+                    saveBlankToFirebase();
+                    renderBlankReceiptDetail();
+                }
+            });
         }
 
         function updateBlankModelNote(modelName, value) {
@@ -2789,7 +2787,7 @@
                                 qtyRowsHtml += `
                                     <div class="qty-box">
                                         <button class="danger" onclick="removeBlankColorSizeRow('${modelName}', '${colorName}', '${sizeId}', ${idx})"><i class="fas fa-minus"></i></button>
-                                        <input type="number" value="${val}" min="0" onchange="updateBlankColorSizeValue('${modelName}', '${colorName}', '${sizeId}', ${idx}, this.value)">
+                                        <input type="number" value="${val || ''}" min="0" onchange="updateBlankColorSizeValue('${modelName}', '${colorName}', '${sizeId}', ${idx}, this.value)" ${val === 0 ? 'style="color:transparent;"' : ''} onfocus="this.style.color='#0b1b2f'" onblur="if(this.value==='0' || this.value===''){this.value='';this.style.color='transparent'}">
                                         ${idx === sizeArray.length - 1 ? `<button onclick="addNewBlankQtyRow('${modelName}', '${colorName}', '${sizeId}')"><i class="fas fa-plus"></i></button>` : ''}
                                     </div>
                                 `;
@@ -2890,17 +2888,6 @@
                 </button>` : ''}
             `;
             document.getElementById('blankReceiptDetail').style.display = 'block';
-            startBlankAutoSave();
-        }
-
-        function startBlankAutoSave() {
-            if (autoSaveTimer) clearInterval(autoSaveTimer);
-            autoSaveTimer = setInterval(() => {
-                if (currentBlankReceiptId && currentBlankReceiptData && document.getElementById('blankReceiptDetail')
-                    .style.display === 'block') {
-                    saveBlankToFirebase();
-                }
-            }, 10000);
         }
 
         // ====== NORMAL RECEIPT FUNCTIONS ======
@@ -2954,7 +2941,7 @@
                         <input type="hidden" id="selectedModelCode_${row.id}" value="${row.modelCode || ''}">
                         ${smartBadgeHtml}
                     </div>
-                    <input type="number" placeholder="الكمية" value="${row.quantity || 0}" onchange="updateNewModelRow(${row.id}, 'quantity', this.value)" min="0" style="flex:1;">
+                    <input type="number" placeholder="الكمية" value="${row.quantity || ''}" onchange="updateNewModelRow(${row.id}, 'quantity', this.value)" min="0" style="flex:1;">
                     ${newModelRows.length > 1 ? `<button class="btn btn-danger btn-sm" onclick="removeNewModelRow(${row.id})"><i class="fas fa-trash"></i></button>` : ''}
                 `;
                 container.appendChild(div);
@@ -3594,7 +3581,7 @@
 
         // ====== NORMAL RECEIPT FUNCTIONS ======
         async function openReceipt(receiptId) {
-            if (currentReceiptId && currentReceiptData) { autoSaveField(true); }
+            if (currentReceiptId && currentReceiptData) { closeDetail(true); }
             if (currentBlankReceiptId && currentBlankReceiptData) { closeBlankDetail(true); }
             currentReceiptId = receiptId;
             const snapshot = await db.ref(`receipts/${receiptId}`).once('value');
@@ -3847,14 +3834,18 @@
 
         function removeColorSizeRow(modelName, colorName, sizeId, idx) {
             if (isModelClosed(modelName)) return;
-            const colorData = currentReceiptData.modelColors[modelName][colorName];
-            let sizeArray = colorData[sizeId] || [0];
-            sizeArray.splice(idx, 1);
-            if (sizeArray.length === 0) sizeArray = [0];
-            colorData[sizeId] = sizeArray;
-            updateTotals();
-            saveToFirebase();
-            renderReceiptDetail();
+            customConfirm(`هل أنت متأكد من حذف هذه الكمية؟`, async (confirmed) => {
+                if (confirmed) {
+                    const colorData = currentReceiptData.modelColors[modelName][colorName];
+                    let sizeArray = colorData[sizeId] || [0];
+                    sizeArray.splice(idx, 1);
+                    if (sizeArray.length === 0) sizeArray = [0];
+                    colorData[sizeId] = sizeArray;
+                    updateTotals();
+                    saveToFirebase();
+                    renderReceiptDetail();
+                }
+            });
         }
 
         function updateModelNote(modelName, value) {
@@ -4020,7 +4011,7 @@
                                     qtyRowsHtml += `
                                         <div class="qty-box">
                                             ${!isClosed && !isCompleted ? `<button class="danger" onclick="removeColorSizeRow('${model.modelName}', '${colorName}', '${sizeId}', ${idx})"><i class="fas fa-minus"></i></button>` : ''}
-                                            <input type="number" value="${val}" min="0" onchange="updateColorSizeValue('${model.modelName}', '${colorName}', '${sizeId}', ${idx}, this.value)" ${(isClosed || isCompleted) ? 'disabled' : ''}>
+                                            <input type="number" value="${val || ''}" min="0" onchange="updateColorSizeValue('${model.modelName}', '${colorName}', '${sizeId}', ${idx}, this.value)" ${(isClosed || isCompleted) ? 'disabled' : ''} ${val === 0 ? 'style="color:transparent;"' : ''} onfocus="this.style.color='#0b1b2f'" onblur="if(this.value==='0' || this.value===''){this.value='';this.style.color='transparent'}">
                                             ${!isClosed && !isCompleted && idx === sizeArray.length - 1 ? `<button onclick="addNewQtyRow('${model.modelName}', '${colorName}', '${sizeId}')"><i class="fas fa-plus"></i></button>` : ''}
                                         </div>
                                     `;
@@ -4146,26 +4137,14 @@
                 </button>` : ''}
             `;
             document.getElementById('receiptDetail').style.display = 'block';
-            startAutoSave();
         }
 
         function closeDetail(silent = false) {
             document.getElementById('receiptDetail').style.display = 'none';
-            if (autoSaveTimer) clearInterval(autoSaveTimer);
-            autoSaveTimer = null;
-            if (!silent && currentReceiptId && currentReceiptData) { autoSaveField(true); }
+            if (!silent && currentReceiptId && currentReceiptData) { saveToFirebase(true); }
             currentReceiptId = null;
             currentReceiptData = null;
             modelOpenState = {};
-        }
-
-        function autoSaveField(forceSync = false) {
-            if (!currentReceiptId || !currentReceiptData) return;
-            const anyModelOpen = currentReceiptData.models.some(m => !isModelClosed(m.modelName));
-            if (!anyModelOpen && currentReceiptData.status !== 'closed' && currentReceiptData.status !== 'completed')
-                return;
-            updateTotals();
-            saveToFirebase(forceSync);
         }
 
         async function saveToFirebase(skipIndicator = false) {
@@ -4183,16 +4162,6 @@
             loadAssignedReceipts();
             loadReceivedHistory();
             loadDashboardStats();
-        }
-
-        function startAutoSave() {
-            if (autoSaveTimer) clearInterval(autoSaveTimer);
-            autoSaveTimer = setInterval(() => {
-                if (currentReceiptId && currentReceiptData && document.getElementById('receiptDetail').style
-                    .display === 'block') {
-                    autoSaveField();
-                }
-            }, 10000);
         }
 
         function showWarning(message, isError = false) {
