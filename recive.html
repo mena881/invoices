@@ -410,6 +410,11 @@
       color: #1E40AF;
     }
 
+    .badge.closed {
+      background: #E5E7EB;
+      color: #4B5563;
+    }
+
     /* ===== PREVIEW CARD ===== */
     .preview-card {
       display: none;
@@ -635,10 +640,11 @@
     }
 
     .size-row .qty-control .qty-val {
-      min-width: 32px;
+      min-width: 60px;
       text-align: center;
       font-weight: 600;
       font-size: 15px;
+      padding: 0 4px;
     }
 
     .size-row .qty-control .qty-val.received {
@@ -1354,10 +1360,8 @@
           other.sort();
           return [...std, ...num, ...other];
         },
-        // Calculate total prepared quantity (preparedQty)
         calculateTotalPrepared(items) { let t = 0;
           items.forEach(r => { t += r.preparedQty || 0; }); return t; },
-        // Calculate total received quantity
         calculateReceived(items) {
           let received = 0;
           items.forEach(r => { received += r.receivedQty || 0; });
@@ -1404,14 +1408,17 @@
             pending: '⏳ غير مستلمة',
             partial: '⚠️ استلام جزئي',
             received: '✅ مستلمة',
-            shortage: '📉 يوجد نقص'
+            shortage: '📉 يوجد نقص',
+            closed: '🔒 مغلقة'
           };
           return map[status] || status;
         },
         isPrepared(invoice) {
           return invoice && invoice.status === 'prepared';
         },
-        // Check if item has preparedQty > 0
+        isClosed(invoice) {
+          return invoice && invoice.status === 'closed';
+        },
         canReceive(item) {
           return (item.preparedQty || 0) > 0;
         }
@@ -1462,6 +1469,7 @@
         _productCardStates: {},
         _pendingReceiveData: null,
         _shortageData: {},
+        _isClosing: false,
 
         init() {
           console.log('🚀 Initializing Receiving UI...');
@@ -1526,9 +1534,8 @@
             if (data) {
               for (const key in data) {
                 const inv = data[key];
-                // ONLY INCLUDE INVOICES WITH status === "prepared"
+                // ONLY INCLUDE INVOICES WITH status === "prepared" (not closed)
                 if (inv.status === 'prepared') {
-                  // Ensure each item has receivedQty and preparedQty
                   if (inv.items) {
                     inv.items.forEach(item => {
                       if (item.receivedQty === undefined) item.receivedQty = 0;
@@ -1564,10 +1571,8 @@
           const search = this.elements.searchInput.value.toLowerCase().trim();
 
           let filtered = this._invoices.filter(inv => {
-            // Status filter
             const status = Utils.getStatus(inv);
             if (filter !== 'all' && status !== filter) return false;
-            // Search filter
             if (search) {
               const branch = (inv.branch || '').toLowerCase();
               const nameMatch = inv.items && inv.items.some(item => 
@@ -1721,7 +1726,7 @@
             if (!groups[key].colors[color]) groups[key].colors[color] = [];
             groups[key].colors[color].push({
               size: item.size || 'No Size',
-              preparedQty: item.preparedQty || 0, // Use preparedQty as max
+              preparedQty: item.preparedQty || 0,
               qty: item.qty || 0,
               total: item.total || 0,
               receivedQty: item.receivedQty || 0
@@ -1738,7 +1743,6 @@
             }
             const isOpen = this._productCardStates[productId];
 
-            // Calculate product progress based on preparedQty
             let totalPrepared = 0,
               totalReceived = 0;
             for (const color in g.colors) {
@@ -1814,7 +1818,7 @@
                     const isPartial = received > 0 && received < prepared;
                     const statusClass = canReceive ? (isReceived ? 'received' : isPartial ? 'partial' : 'pending') : 'zero';
                     
-                    // Determine if buttons should be disabled
+                    // Disable minus if received is 0, disable plus if received >= prepared
                     const disableMinus = received <= 0;
                     const disablePlus = received >= prepared || prepared === 0;
                     
@@ -1861,7 +1865,7 @@
             const itemSize = item.size || 'No Size';
             if (itemColor === color && itemSize === size) {
               const current = item.receivedQty || 0;
-              const max = item.preparedQty || 0; // Use preparedQty as max
+              const max = item.preparedQty || 0;
               const newQty = Math.max(0, Math.min(max, current + delta));
               if (newQty !== current) {
                 item.receivedQty = newQty;
@@ -1872,13 +1876,22 @@
 
           if (found) {
             this._selectedInvoice.totalPieces = Utils.calculateTotalPrepared(this._selectedInvoice.items);
-            this._selectedInvoice.totalValue = Utils.calculateTotalValue(this._selectedInvoice.items);
+            this._selectedInvoice.totalValue = this.calculateTotalValue(this._selectedInvoice.items);
             this.saveInvoiceToFirebase(this._selectedInvoice);
             this.renderInvoicePreview(this._selectedInvoice);
             this.renderInvoiceList();
             this.updateStats();
-            this.showAlert('✅ تم تحديث الكمية المستلمة', 'success');
           }
+        },
+
+        calculateTotalValue(items) {
+          let total = 0;
+          if (items) {
+            items.forEach(item => {
+              total += (item.unitPrice || 0) * (item.preparedQty || 0);
+            });
+          }
+          return total;
         },
 
         saveInvoiceToFirebase(invoice) {
@@ -1998,7 +2011,7 @@
 
           if (found) {
             this._selectedInvoice.totalPieces = Utils.calculateTotalPrepared(this._selectedInvoice.items);
-            this._selectedInvoice.totalValue = Utils.calculateTotalValue(this._selectedInvoice.items);
+            this._selectedInvoice.totalValue = this.calculateTotalValue(this._selectedInvoice.items);
             this.saveInvoiceToFirebase(this._selectedInvoice);
             
             const { productKey, productId } = this._pendingReceiveData;
@@ -2025,36 +2038,36 @@
             return;
           }
 
-          const invoice = this._selectedInvoice;
-          const status = Utils.getStatus(invoice);
-          
-          if (status === 'received') {
-            this.showAlert('✅ هذه الفاتورة مستلمة بالكامل بالفعل', 'info');
-            return;
-          }
+          if (this._isClosing) return;
+          this._isClosing = true;
 
-          // Mark all items as fully received based on preparedQty
-          if (invoice.items) {
-            invoice.items.forEach(item => {
-              item.receivedQty = item.preparedQty || 0;
-            });
-          }
+          const invoice = this._selectedInvoice;
+          
+          // Close the invoice by setting status to 'closed'
+          invoice.status = 'closed';
+          
+          // Keep the received quantities as they are (don't auto-fill)
+          // The user has already set receivedQty using the +/- buttons
 
           invoice.totalPieces = Utils.calculateTotalPrepared(invoice.items);
-          invoice.totalValue = Utils.calculateTotalValue(invoice.items);
+          invoice.totalValue = this.calculateTotalValue(invoice.items);
 
           this.saveInvoiceToFirebase(invoice);
-          this.renderInvoicePreview(invoice);
+          
+          // Remove from the list of prepared invoices
+          const index = this._invoices.findIndex(inv => inv.id === invoice.id);
+          if (index !== -1) {
+            this._invoices.splice(index, 1);
+          }
+
+          this.showAlert('✅ تم إغلاق الفاتورة بنجاح', 'success');
+          
+          // Close preview and refresh
+          this.closePreview();
           this.renderInvoiceList();
           this.updateStats();
-          this.showAlert('✅ تم تأكيد الاستلام الكامل للفاتورة', 'success');
-
-          // Auto-close preview if fully received
-          if (Utils.getStatus(invoice) === 'received') {
-            setTimeout(() => {
-              this.closePreview();
-            }, 2000);
-          }
+          
+          this._isClosing = false;
         },
 
         openShortageDialog() {
@@ -2069,7 +2082,6 @@
 
           let html = '';
           
-          // Group by product
           const productMap = {};
           invoice.items.forEach(item => {
             const key = (item.name || 'Unknown') + '|' + (item.sku || '');
@@ -2165,7 +2177,6 @@
           const invoice = this._selectedInvoice;
           let hasShortage = false;
 
-          // Apply shortage values
           invoice.items.forEach(item => {
             const key = `${(item.name || 'Unknown')}|${(item.sku || '')}|${(item.color || 'No Color')}|${(item.size || 'No Size')}`;
             const shortageValue = this._shortageData[key];
@@ -2178,7 +2189,7 @@
           });
 
           invoice.totalPieces = Utils.calculateTotalPrepared(invoice.items);
-          invoice.totalValue = Utils.calculateTotalValue(invoice.items);
+          invoice.totalValue = this.calculateTotalValue(invoice.items);
 
           this.saveInvoiceToFirebase(invoice);
           this.closeShortageDialog();
