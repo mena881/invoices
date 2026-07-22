@@ -508,6 +508,7 @@
             display: flex;
             align-items: center;
             gap: 10px;
+            flex-wrap: wrap;
         }
         .model-required {
             background: #ffffff;
@@ -526,6 +527,17 @@
             font-size: 0.7rem;
             font-weight: 600;
             color: #1f3a8a;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .model-total-badge {
+            background: #6c8cff;
+            color: #fff;
+            padding: 4px 16px;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            font-weight: 700;
             display: inline-flex;
             align-items: center;
             gap: 6px;
@@ -2621,17 +2633,29 @@
 
         function removeBlankColorSizeRow(modelName, colorName, sizeId, idx) {
             if (!currentBlankReceiptData) return;
-            customConfirm(`هل أنت متأكد من حذف هذه الكمية؟`, async (confirmed) => {
-                if (confirmed) {
-                    const colorData = currentBlankReceiptData.modelColors[modelName][colorName];
-                    let sizeArray = colorData[sizeId] || [0];
-                    sizeArray.splice(idx, 1);
-                    if (sizeArray.length === 0) sizeArray = [0];
-                    colorData[sizeId] = sizeArray;
-                    saveBlankToFirebase();
-                    renderBlankReceiptDetail();
-                }
-            });
+            const colorData = currentBlankReceiptData.modelColors[modelName][colorName];
+            let sizeArray = colorData[sizeId] || [0];
+            const currentValue = sizeArray[idx] || 0;
+            
+            // إذا كانت القيمة صفر أو الخلية فارغة، احذف مباشرة بدون تأكيد
+            if (currentValue === 0 || currentValue === '' || sizeArray.length === 1) {
+                sizeArray.splice(idx, 1);
+                if (sizeArray.length === 0) sizeArray = [0];
+                colorData[sizeId] = sizeArray;
+                saveBlankToFirebase();
+                renderBlankReceiptDetail();
+            } else {
+                // إذا كانت هناك قيمة موجودة، أظهر تأكيد
+                customConfirm(`هل أنت متأكد من حذف الكمية (${currentValue})؟`, async (confirmed) => {
+                    if (confirmed) {
+                        sizeArray.splice(idx, 1);
+                        if (sizeArray.length === 0) sizeArray = [0];
+                        colorData[sizeId] = sizeArray;
+                        saveBlankToFirebase();
+                        renderBlankReceiptDetail();
+                    }
+                });
+            }
         }
 
         function updateBlankModelNote(modelName, value) {
@@ -2664,7 +2688,10 @@
             const fileInput = document.createElement('input');
             fileInput.type = 'file';
             fileInput.accept = 'image/*';
-            fileInput.capture = 'environment';
+            // تفعيل الكاميرا على الموبايل
+            if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+                fileInput.capture = 'environment';
+            }
             fileInput.onchange = async (e) => {
                 const file = e.target.files[0];
                 if (!file) return;
@@ -2764,6 +2791,16 @@
                     const isOpen = blankModelOpenState[modelName] !== false;
                     const safeModelKey = modelName.replace(/[^a-zA-Z0-9]/g, '_');
                     const isModelFirstTime = r.modelFirstTime?.[modelName] === true;
+                    
+                    // حساب إجمالي الموديل بغض النظر عن الألوان
+                    let modelTotal = 0;
+                    for (const colorName in r.modelColors[modelName]) {
+                        for (const sizeId in r.modelColors[modelName][colorName]) {
+                            const sizeArray = r.modelColors[modelName][colorName][sizeId] || [0];
+                            modelTotal += sizeArray.reduce((a, b) => a + b, 0);
+                        }
+                    }
+                    
                     let colorsHtml = '';
                     const colorNames = Object.keys(r.modelColors[modelName]);
                     colorNames.forEach(colorName => {
@@ -2843,6 +2880,7 @@
                                 <div class="model-title-left">
                                     <i class="fas ${isOpen ? 'fa-chevron-up' : 'fa-chevron-down'}"></i>
                                     <span><i class="fas fa-tshirt"></i> ${modelName}</span>
+                                    <span class="model-total-badge"><i class="fas fa-boxes"></i> الإجمالي: ${modelTotal} قطعة</span>
                                     ${isModelFirstTime ? `<span class="model-smart-badge badge-new"><i class="fas fa-camera"></i> جديد - يحتاج تصوير</span>` : `<span class="model-smart-badge badge-repeat"><i class="fas fa-sync-alt"></i> موديل مكرر</span>`}
                                 </div>
                             </div>
@@ -3834,18 +3872,31 @@
 
         function removeColorSizeRow(modelName, colorName, sizeId, idx) {
             if (isModelClosed(modelName)) return;
-            customConfirm(`هل أنت متأكد من حذف هذه الكمية؟`, async (confirmed) => {
-                if (confirmed) {
-                    const colorData = currentReceiptData.modelColors[modelName][colorName];
-                    let sizeArray = colorData[sizeId] || [0];
-                    sizeArray.splice(idx, 1);
-                    if (sizeArray.length === 0) sizeArray = [0];
-                    colorData[sizeId] = sizeArray;
-                    updateTotals();
-                    saveToFirebase();
-                    renderReceiptDetail();
-                }
-            });
+            const colorData = currentReceiptData.modelColors[modelName][colorName];
+            let sizeArray = colorData[sizeId] || [0];
+            const currentValue = sizeArray[idx] || 0;
+            
+            // إذا كانت القيمة صفر أو الخلية فارغة، احذف مباشرة بدون تأكيد
+            if (currentValue === 0 || currentValue === '' || sizeArray.length === 1) {
+                sizeArray.splice(idx, 1);
+                if (sizeArray.length === 0) sizeArray = [0];
+                colorData[sizeId] = sizeArray;
+                updateTotals();
+                saveToFirebase();
+                renderReceiptDetail();
+            } else {
+                // إذا كانت هناك قيمة موجودة، أظهر تأكيد
+                customConfirm(`هل أنت متأكد من حذف الكمية (${currentValue})؟`, async (confirmed) => {
+                    if (confirmed) {
+                        sizeArray.splice(idx, 1);
+                        if (sizeArray.length === 0) sizeArray = [0];
+                        colorData[sizeId] = sizeArray;
+                        updateTotals();
+                        saveToFirebase();
+                        renderReceiptDetail();
+                    }
+                });
+            }
         }
 
         function updateModelNote(modelName, value) {
@@ -3929,7 +3980,10 @@
             const fileInput = document.createElement('input');
             fileInput.type = 'file';
             fileInput.accept = 'image/*';
-            fileInput.capture = 'environment';
+            // تفعيل الكاميرا على الموبايل
+            if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+                fileInput.capture = 'environment';
+            }
             fileInput.onchange = async (e) => {
                 const file = e.target.files[0];
                 if (!file) return;
@@ -3979,8 +4033,15 @@
                     const safeModelKey = model.modelName.replace(/[^a-zA-Z0-9]/g, '_');
                     const isOpen = modelOpenState[model.modelName] !== false;
                     const isModelFirstTime = r.modelFirstTime?.[model.modelName] === true;
-                    let colorsHtml = '';
+                    
+                    // حساب إجمالي الموديل بغض النظر عن الألوان
+                    let modelTotal = 0;
                     const modelColors = r.modelColors?.[model.modelName] || {};
+                    for (const colorName in modelColors) {
+                        modelTotal += getTotalForColor(model.modelName, colorName);
+                    }
+                    
+                    let colorsHtml = '';
                     const colorNames = Object.keys(modelColors);
                     if (colorNames.length === 0) {
                         colorsHtml = `
@@ -4071,6 +4132,7 @@
                                 <div class="model-title-left">
                                     <i class="fas ${isOpen ? 'fa-chevron-up' : 'fa-chevron-down'}"></i>
                                     <span><i class="fas fa-tshirt"></i> ${model.modelName} ${model.modelCode ? `<span class="model-code-badge">${model.modelCode}</span>` : ''}</span>
+                                    <span class="model-total-badge"><i class="fas fa-boxes"></i> الإجمالي: ${modelTotal} قطعة</span>
                                 </div>
                                 <div style="display: flex; gap: 10px; flex-wrap: wrap;">
                                     <span class="model-required">المطلوب: ${model.quantity}</span>
