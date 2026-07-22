@@ -29,7 +29,6 @@
             -webkit-font-smoothing: antialiased;
         }
 
-        /* ---------- HEADER ---------- */
         .header {
             background: #0b1b2f;
             color: #fff;
@@ -102,14 +101,12 @@
             transform: scale(1.02);
         }
 
-        /* ---------- CONTAINER ---------- */
         .container {
             max-width: 1280px;
             margin: 0 auto;
             padding: 28px 24px 80px;
         }
 
-        /* ---------- STATS ---------- */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -150,7 +147,6 @@
             letter-spacing: 0.02em;
         }
 
-        /* ---------- TABS ---------- */
         .tab-container {
             display: flex;
             gap: 4px;
@@ -233,7 +229,6 @@
             }
         }
 
-        /* ---------- CARDS & LISTS ---------- */
         .section-title {
             display: flex;
             align-items: center;
@@ -364,7 +359,6 @@
             font-weight: 500;
         }
 
-        /* ---------- RECEIPT DETAIL (inside) ---------- */
         .receipt-detail {
             background: #ffffff;
             border-radius: 24px;
@@ -416,7 +410,6 @@
             color: #0b1b2f;
         }
 
-        /* ---------- SUMMARY BAR ---------- */
         .summary-bar {
             background: linear-gradient(135deg, #f0f4fe, #e8edfe);
             border-radius: 20px;
@@ -466,7 +459,6 @@
             color: #0b1b2f;
         }
 
-        /* ---------- MODELS GRID ---------- */
         .models-grid {
             display: grid;
             gap: 20px;
@@ -543,7 +535,6 @@
             gap: 6px;
         }
 
-        /* ---------- COLORS ---------- */
         .colors-container {
             margin-bottom: 16px;
             border: 1px solid #e6edf5;
@@ -690,11 +681,10 @@
             color: #6d7b93;
             border-radius: 20px;
         }
-        /* إخفاء الأصفار */
-        .qty-box input[value="0"] {
+        .qty-box input.empty-input {
             color: transparent;
         }
-        .qty-box input[value="0"]:focus {
+        .qty-box input.empty-input:focus {
             color: #0b1b2f;
         }
         .qty-box button {
@@ -783,7 +773,6 @@
             box-shadow: none;
         }
 
-        /* ---------- FULL CLOSE RECEIPT BUTTON ---------- */
         .close-receipt-full-btn {
             background: #f5a623;
             color: #fff;
@@ -814,7 +803,6 @@
             box-shadow: none;
         }
 
-        /* ---------- BLANK RECEIPT ---------- */
         .blank-receipt-header {
             background: linear-gradient(135deg, #f0f4fe, #e8edfe);
             border-radius: 20px;
@@ -881,7 +869,6 @@
             background: #5a77e0;
         }
 
-        /* ---------- SEARCH / ADD RECEIPT ---------- */
         .search-box {
             background: #ffffff;
             border-radius: 20px;
@@ -1007,7 +994,6 @@
             cursor: not-allowed;
         }
 
-        /* ---------- BUTTONS ---------- */
         .btn {
             padding: 10px 24px;
             border: none;
@@ -1061,7 +1047,6 @@
             margin-right: 8px;
         }
 
-        /* ---------- MODALS ---------- */
         .modal {
             display: none;
             position: fixed;
@@ -1104,7 +1089,6 @@
             margin-top: 16px;
         }
 
-        /* ---------- AUTO SAVE / WARNING ---------- */
         .auto-save-indicator {
             position: fixed;
             bottom: 28px;
@@ -1143,7 +1127,6 @@
             box-shadow: 0 8px 28px rgba(225, 76, 76, 0.2);
         }
 
-        /* ---------- EMPTY STATES ---------- */
         .empty-state {
             text-align: center;
             padding: 48px 20px;
@@ -1162,7 +1145,6 @@
             font-size: 0.95rem;
         }
 
-        /* ---------- BADGES / MISC ---------- */
         .model-smart-badge {
             font-size: 0.7rem;
             padding: 3px 14px;
@@ -1340,7 +1322,6 @@
             border-radius: 12px;
         }
 
-        /* ---------- LOAD MORE ---------- */
         .load-more-btn {
             background: #f0f4fe;
             border: none;
@@ -1370,7 +1351,157 @@
             transform: none;
         }
 
-        /* ---------- RESPONSIVE ---------- */
+        .blank-receipt-detail-wrapper {
+            background: #ffffff;
+            border-radius: 24px;
+            padding: 20px 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 20, 40, 0.06);
+            border: 1px solid rgba(0, 0, 0, 0.04);
+        }
+
+        .blank-model-row {
+            display: flex;
+            gap: 14px;
+            align-items: center;
+            margin-bottom: 14px;
+            flex-wrap: wrap;
+        }
+
+        .blank-model-search-container {
+            position: relative;
+            flex: 2;
+        }
+        .blank-model-search-input {
+            width: 100%;
+            padding: 10px 16px;
+            border: 1px solid #e6edf5;
+            border-radius: 16px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            transition: border-color 0.2s;
+            background: #fafcff;
+        }
+        .blank-model-search-input:focus {
+            outline: none;
+            border-color: #6c8cff;
+            box-shadow: 0 0 0 3px rgba(108, 140, 255, 0.12);
+        }
+        .blank-model-search-results {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: #ffffff;
+            border: 1px solid #e6edf5;
+            border-top: none;
+            border-radius: 0 0 16px 16px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 10;
+            display: none;
+            box-shadow: 0 8px 28px rgba(0, 20, 40, 0.08);
+        }
+        .blank-model-search-result {
+            padding: 10px 16px;
+            cursor: pointer;
+            transition: background 0.15s;
+            border-bottom: 1px solid #f0f4fe;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .blank-model-search-result:hover {
+            background: #f0f4fe;
+        }
+
+        .model-content-wrapper {
+            display: none;
+            margin-top: 14px;
+        }
+        .model-content-wrapper.open {
+            display: block;
+        }
+        .color-sizes-wrapper {
+            display: none;
+            margin-top: 12px;
+            padding-right: 18px;
+            border-right: 3px solid #6c8cff;
+        }
+        .color-sizes-wrapper.open {
+            display: block;
+        }
+
+        .received-list {
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 16px;
+            min-height: 200px;
+            border: 1px solid rgba(0, 0, 0, 0.02);
+            box-shadow: 0 2px 10px rgba(0, 20, 40, 0.04);
+        }
+        .received-item {
+            background: #fafcff;
+            border-radius: 16px;
+            padding: 16px 20px;
+            margin-bottom: 10px;
+            border-right: 4px solid #6c8cff;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid #e6edf5;
+        }
+        .received-item:hover {
+            transform: translateX(-4px);
+            box-shadow: 0 4px 16px rgba(0, 20, 40, 0.06);
+            border-color: #6c8cff60;
+        }
+        .received-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 6px;
+        }
+        .received-code {
+            font-weight: 700;
+            color: #0b1b2f;
+            background: #f0f4fe;
+            padding: 4px 16px;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .received-date {
+            font-size: 0.75rem;
+            color: #6d7b93;
+        }
+        .received-details {
+            font-size: 0.8rem;
+            color: #4e5e77;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 14px;
+            margin-top: 6px;
+        }
+        .received-details span {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .status-closed {
+            background: #ddf4e8;
+            color: #0e7b4a;
+        }
+        .status-completed {
+            background: #ddf4e8;
+            color: #0e7b4a;
+        }
+
         @media (max-width: 768px) {
             .container {
                 padding: 20px 16px 80px;
@@ -1462,6 +1593,9 @@
                 font-size: 0.9rem;
                 padding: 14px 20px;
             }
+            .blank-receipt-detail-wrapper {
+                padding: 16px 18px;
+            }
         }
 
         @media (max-width: 480px) {
@@ -1499,153 +1633,9 @@
                 right: 16px;
                 left: 16px;
             }
-        }
-
-        /* ---------- COLOR OVERRIDES FOR BLANK ---------- */
-        .model-content-wrapper {
-            display: none;
-            margin-top: 14px;
-        }
-        .model-content-wrapper.open {
-            display: block;
-        }
-        .color-sizes-wrapper {
-            display: none;
-            margin-top: 12px;
-            padding-right: 18px;
-            border-right: 3px solid #6c8cff;
-        }
-        .color-sizes-wrapper.open {
-            display: block;
-        }
-
-        /* ---------- RECEIVED LIST (history) ---------- */
-        .received-list {
-            background: #ffffff;
-            border-radius: 20px;
-            padding: 16px;
-            min-height: 200px;
-            border: 1px solid rgba(0, 0, 0, 0.02);
-            box-shadow: 0 2px 10px rgba(0, 20, 40, 0.04);
-        }
-        .received-item {
-            background: #fafcff;
-            border-radius: 16px;
-            padding: 16px 20px;
-            margin-bottom: 10px;
-            border-right: 4px solid #6c8cff;
-            cursor: pointer;
-            transition: all 0.2s;
-            border: 1px solid #e6edf5;
-        }
-        .received-item:hover {
-            transform: translateX(-4px);
-            box-shadow: 0 4px 16px rgba(0, 20, 40, 0.06);
-            border-color: #6c8cff60;
-        }
-        .received-item-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-bottom: 6px;
-        }
-        .received-code {
-            font-weight: 700;
-            color: #0b1b2f;
-            background: #f0f4fe;
-            padding: 4px 16px;
-            border-radius: 30px;
-            font-size: 0.8rem;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .received-date {
-            font-size: 0.75rem;
-            color: #6d7b93;
-        }
-        .received-details {
-            font-size: 0.8rem;
-            color: #4e5e77;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 14px;
-            margin-top: 6px;
-        }
-        .received-details span {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        /* ---------- STATUS BADGE FOR CLOSED RECEIPTS ---------- */
-        .status-closed {
-            background: #ddf4e8;
-            color: #0e7b4a;
-        }
-        .status-completed {
-            background: #ddf4e8;
-            color: #0e7b4a;
-        }
-
-        /* ---------- NEW STYLES FOR BLANK MODEL SEARCH ---------- */
-        .blank-model-search-container {
-            position: relative;
-            flex: 2;
-        }
-        .blank-model-search-input {
-            width: 100%;
-            padding: 10px 16px;
-            border: 1px solid #e6edf5;
-            border-radius: 16px;
-            font-family: 'Inter', sans-serif;
-            font-size: 0.9rem;
-            transition: border-color 0.2s;
-            background: #fafcff;
-        }
-        .blank-model-search-input:focus {
-            outline: none;
-            border-color: #6c8cff;
-            box-shadow: 0 0 0 3px rgba(108, 140, 255, 0.12);
-        }
-        .blank-model-search-results {
-            position: absolute;
-            top: 100%;
-            left: 0;
-            right: 0;
-            background: #ffffff;
-            border: 1px solid #e6edf5;
-            border-top: none;
-            border-radius: 0 0 16px 16px;
-            max-height: 200px;
-            overflow-y: auto;
-            z-index: 10;
-            display: none;
-            box-shadow: 0 8px 28px rgba(0, 20, 40, 0.08);
-        }
-        .blank-model-search-result {
-            padding: 10px 16px;
-            cursor: pointer;
-            transition: background 0.15s;
-            border-bottom: 1px solid #f0f4fe;
-            font-size: 0.85rem;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .blank-model-search-result:hover {
-            background: #f0f4fe;
-        }
-
-        /* Additional model row for blank */
-        .blank-model-row {
-            display: flex;
-            gap: 14px;
-            align-items: center;
-            margin-bottom: 14px;
-            flex-wrap: wrap;
+            .blank-receipt-detail-wrapper {
+                padding: 12px 14px;
+            }
         }
     </style>
 </head>
@@ -1713,7 +1703,7 @@
             <button class="load-more-btn" id="loadMoreBlankBtn" onclick="loadMoreBlankReceipts()" style="display:none;">
                 <i class="fas fa-chevron-down"></i> عرض المزيد
             </button>
-            <div id="blankReceiptDetail" class="receipt-detail" style="display: none;"></div>
+            <div id="blankReceiptDetailsContainer"></div>
         </div>
 
         <!-- HISTORY TAB -->
@@ -1915,8 +1905,6 @@
         let currentUser = null;
         let currentReceiptId = null;
         let currentReceiptData = null;
-        let currentBlankReceiptId = null;
-        let currentBlankReceiptData = null;
         let sizesData = {};
         let allSizesList = [];
         let allReceivedHistory = [];
@@ -1925,9 +1913,10 @@
         let allColorsList = [];
         let newModelRows = [{ id: Date.now(), modelId: '', modelCode: '', quantity: 0 }];
         let modelOpenState = {};
-        let blankModelOpenState = {};
-        let blankColorOpenState = {};
         let normalColorOpenState = {};
+
+        // Track open blank receipts
+        let openBlankReceipts = {};
 
         let receivedModelsHistory = new Set();
         let modalEventListenersAdded = false;
@@ -1941,72 +1930,13 @@
         const HISTORY_PER_PAGE = 100;
         let allHistoryData = [];
 
-        // Blank pagination
         let blankReceiptsPage = 0;
         const BLANK_PER_PAGE = 100;
         let allBlankReceipts = [];
 
-        // ========== NEW: Function to update model image in models node ==========
-        async function updateModelImageInModelsNode(modelName, imageUrl) {
-            try {
-                const snapshot = await db.ref('models').once('value');
-                let modelKey = null;
-                snapshot.forEach((child) => {
-                    const val = child.val();
-                    if (val.name === modelName || val.code === modelName) {
-                        modelKey = child.key;
-                    }
-                });
-                if (modelKey) {
-                    await db.ref(`models/${modelKey}`).update({ imageUrl: imageUrl });
-                    console.log(`✅ تم تحديث صورة الموديل ${modelName}: ${imageUrl}`);
-                } else {
-                    console.log(`⚠️ لم يتم العثور على الموديل ${modelName} في قاعدة البيانات`);
-                }
-            } catch (error) {
-                console.error('❌ خطأ في تحديث صورة الموديل:', error);
-            }
-        }
-
-        // ========== NEW: Extract first image from closed receipt for each model ==========
-        async function updateModelsImagesFromReceipt(receiptId, receiptData) {
-            if (!receiptData.modelColorsImages) return;
-
-            const modelImages = receiptData.modelColorsImages;
-            for (const modelName in modelImages) {
-                const colorImages = modelImages[modelName];
-                let firstImageUrl = null;
-                for (const colorName in colorImages) {
-                    if (colorImages[colorName]) {
-                        firstImageUrl = colorImages[colorName];
-                        break;
-                    }
-                }
-                if (firstImageUrl) {
-                    await updateModelImageInModelsNode(modelName, firstImageUrl);
-                }
-            }
-        }
-
-        // ========== NEW: For blank receipts, extract images ==========
-        async function updateModelsImagesFromBlankReceipt(receiptId, receiptData) {
-            if (!receiptData.modelColorsImages) return;
-
-            const modelImages = receiptData.modelColorsImages;
-            for (const modelName in modelImages) {
-                const colorImages = modelImages[modelName];
-                let firstImageUrl = null;
-                for (const colorName in colorImages) {
-                    if (colorImages[colorName]) {
-                        firstImageUrl = colorImages[colorName];
-                        break;
-                    }
-                }
-                if (firstImageUrl) {
-                    await updateModelImageInModelsNode(modelName, firstImageUrl);
-                }
-            }
-        }
+        // Track if data has changed to avoid unnecessary updates
+        let dataChanged = false;
+        let saveTimeout = null;
 
         function setupModalListeners() {
             if (modalEventListenersAdded) return;
@@ -2163,9 +2093,6 @@
             if (!user) { window.location.href = 'index.html'; return; }
             try {
                 currentUser = JSON.parse(user);
-                console.log('🔍 Current User:', currentUser);
-                console.log('🔍 currentUser.userId:', currentUser.userId);
-                console.log('🔍 currentUser.uid:', currentUser.uid);
                 if (!currentUser.userId && !currentUser.uid) {
                     db.ref('users').once('value').then((snapshot) => {
                         snapshot.forEach((child) => {
@@ -2174,7 +2101,6 @@
                                 currentUser.userId = child.key;
                                 currentUser.uid = child.key;
                                 localStorage.setItem('currentUser', JSON.stringify(currentUser));
-                                console.log('✅ تم إضافة userId من قاعدة البيانات:', currentUser.userId);
                             }
                         });
                     });
@@ -2197,8 +2123,6 @@
         }
 
         function switchTab(tab) {
-            if (currentReceiptId && currentReceiptData) { closeDetail(true); }
-            if (currentBlankReceiptId && currentBlankReceiptData) { closeBlankDetail(true); }
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
             document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
             const tabMap = { 'receipts': { btn: 0, el: 'receiptsTab' }, 'blankReceipt': { btn: 1, el: 'blankReceiptTab' },
@@ -2311,11 +2235,12 @@
                         }
                     }
                 }
+                const isOpen = openBlankReceipts[r.id] !== undefined;
                 container.innerHTML += `
-                    <div class="receipt-card" onclick="openBlankReceipt('${r.id}')">
+                    <div class="receipt-card" onclick="toggleBlankReceipt('${r.id}')" style="${isOpen ? 'border-color: #6c8cff; border-width: 2px;' : ''}">
                         <div class="receipt-header">
                             <span class="receipt-code"><i class="fas fa-barcode"></i> ${r.invoiceCode}</span>
-                            <span class="receipt-badge badge-blank">فاتورة Blank</span>
+                            <span class="receipt-badge badge-blank">فاتورة Blank ${isOpen ? '🔓 مفتوحة' : ''}</span>
                         </div>
                         <div class="receipt-details">
                             <span><i class="fas fa-factory"></i> ${r.factory || '-'}</span>
@@ -2352,422 +2277,70 @@
             }
         }
 
-        // ========== BLANK RECEIPT - ADD MODEL WITH SEARCH & SMART BADGE ==========
-        function addBlankModelWithSearch() {
-            if (!currentBlankReceiptData) return;
-            const container = document.getElementById('blankReceiptDetail');
-            const tempRowId = Date.now();
-            const rowHtml = `
-                <div class="blank-model-row" id="blank-model-row-${tempRowId}">
-                    <div class="blank-model-search-container" style="flex:2;">
-                        <input type="text" class="blank-model-search-input" placeholder="بحث عن موديل (كود أو اسم)..." autocomplete="off" oninput="filterBlankModelSearch(${tempRowId}, this.value)" onfocus="filterBlankModelSearch(${tempRowId}, this.value)">
-                        <div class="blank-model-search-results" id="blankModelSearchResults_${tempRowId}"></div>
-                        <input type="hidden" id="blankSelectedModel_${tempRowId}" value="">
-                    </div>
-                    <button class="btn btn-success btn-sm" onclick="confirmAddBlankModel(${tempRowId})">إضافة</button>
-                    <button class="btn btn-danger btn-sm" onclick="cancelAddBlankModel(${tempRowId})">إلغاء</button>
-                </div>
-            `;
-            const addBtn = document.querySelector('.add-blank-model-btn');
-            if (addBtn) {
-                addBtn.insertAdjacentHTML('beforebegin', rowHtml);
+        // Toggle blank receipt open/close
+        async function toggleBlankReceipt(receiptId) {
+            if (openBlankReceipts[receiptId]) {
+                // Close it
+                await saveBlankReceiptIfChanged(receiptId);
+                delete openBlankReceipts[receiptId];
+                renderBlankReceiptDetailsContainer();
+                loadBlankReceipts();
+                showWarning('تم حفظ الفاتورة وإغلاقها', false);
             } else {
-                const modelsGrid = document.querySelector('#blankReceiptDetail .models-grid');
-                if (modelsGrid) {
-                    modelsGrid.insertAdjacentHTML('beforebegin', rowHtml);
-                }
-            }
-            setTimeout(() => {
-                const input = document.querySelector(`#blank-model-row-${tempRowId} .blank-model-search-input`);
-                if (input) input.focus();
-            }, 100);
-        }
-
-        let blankPendingModelSearch = {};
-
-        function filterBlankModelSearch(rowId, searchTerm) {
-            const resultsDiv = document.getElementById(`blankModelSearchResults_${rowId}`);
-            const currentFactory = currentBlankReceiptData?.factory || '';
-            if (!searchTerm.trim()) { resultsDiv.style.display = 'none'; return; }
-            const filteredModels = allModelsList.filter(m =>
-                (currentFactory ? m.factory === currentFactory : true) &&
-                (m.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                    (m.code && m.code.toLowerCase().includes(searchTerm.toLowerCase())))
-            );
-            if (filteredModels.length === 0) {
-                resultsDiv.innerHTML =
-                    `<div class="blank-model-search-result" onclick="openAddModelFromBlankSearch('${searchTerm.replace(/'/g, "\\'")}', ${rowId})">
-                    <i class="fas fa-plus-circle"></i> إضافة موديل جديد: "${searchTerm}"
-                </div>`;
-                resultsDiv.style.display = 'block';
-            } else {
-                resultsDiv.innerHTML = filteredModels.map(m => {
-                    const isNewModel = !receivedModelsHistory.has(m.name) && !receivedModelsHistory.has(m.code);
-                    const badge = isNewModel ?
-                        '<span class="model-smart-badge badge-new" style="margin-right:8px;"><i class="fas fa-camera"></i> جديد</span>' :
-                        '<span class="model-smart-badge badge-repeat" style="margin-right:8px;">مكرر</span>';
-                    return `
-                        <div class="blank-model-search-result" onclick="selectBlankModelFromSearch(${rowId}, '${m.name.replace(/'/g, "\\'")}', '${(m.code || '').replace(/'/g, "\\'")}')">
-                            <strong>${m.name}</strong> ${m.code ? `<span class="model-code-badge">${m.code}</span>` : ''}
-                            ${badge}
-                            ${m.imageUrl ? `<img src="${m.imageUrl}" style="width:30px;height:30px;border-radius:6px;object-fit:cover;margin-right:auto;">` : ''}
-                        </div>
-                    `;
-                }).join('');
-                resultsDiv.style.display = 'block';
-            }
-        }
-
-        function selectBlankModelFromSearch(rowId, modelName, modelCode) {
-            document.getElementById(`blankSelectedModel_${rowId}`).value = modelName;
-            const input = document.querySelector(`#blank-model-row-${rowId} .blank-model-search-input`);
-            if (input) input.value = modelName;
-            document.getElementById(`blankModelSearchResults_${rowId}`).style.display = 'none';
-        }
-
-        function openAddModelFromBlankSearch(modelCode, rowId) {
-            const currentFactory = currentBlankReceiptData?.factory || '';
-            if (!currentFactory) { showWarning('الرجاء اختيار المصنع أولاً', true); return; }
-            blankPendingModelSearch[rowId] = true;
-            document.getElementById('newModelCodeBlank').value = modelCode;
-            document.getElementById('modelErrorMsgBlank').innerHTML = '';
-            document.getElementById('addModelModalBlank').style.display = 'flex';
-        }
-
-        function closeModelModalBlank() { document.getElementById('addModelModalBlank').style.display = 'none'; }
-
-        async function quickAddModelForBlank() {
-            const currentFactory = currentBlankReceiptData?.factory || document.getElementById('blankFactorySelect')?.value;
-            if (!currentFactory) { document.getElementById('modelErrorMsgBlank').innerHTML = 'الرجاء اختيار المصنع أولاً'; return; }
-            const modelCode = document.getElementById('newModelCodeBlank').value.trim();
-            if (!modelCode) { document.getElementById('modelErrorMsgBlank').innerHTML = 'الرجاء إدخال كود الموديل'; return; }
-            const exists = allModelsList.some(m => (m.code === modelCode || m.name === modelCode) && m.factory ===
-                currentFactory);
-            if (exists) { document.getElementById('modelErrorMsgBlank').innerHTML = 'هذا الموديل موجود بالفعل في هذا المصنع'; return; }
-            const newModelData = { name: modelCode, code: modelCode, factory: currentFactory };
-            const newRef = await db.ref('models').push(newModelData);
-            await loadAllModels();
-            await loadReceivedModelsHistory();
-            const newModel = { id: newRef.key, name: modelCode, code: modelCode, factory: currentFactory, imageUrl: '' };
-            allModelsList.push(newModel);
-            document.getElementById('newModelCodeBlank').value = '';
-            closeModelModalBlank();
-
-            let rowId = null;
-            for (const key in blankPendingModelSearch) {
-                if (blankPendingModelSearch[key] === true) {
-                    rowId = parseInt(key);
-                    break;
-                }
-            }
-            if (rowId) {
-                document.getElementById(`blankSelectedModel_${rowId}`).value = modelCode;
-                const input = document.querySelector(`#blank-model-row-${rowId} .blank-model-search-input`);
-                if (input) input.value = modelCode;
-                document.getElementById(`blankModelSearchResults_${rowId}`).style.display = 'none';
-                confirmAddBlankModel(rowId);
-            } else {
-                if (currentBlankReceiptData && !currentBlankReceiptData.modelColors[modelCode]) {
-                    const isFirstTime = !receivedModelsHistory.has(modelCode);
-                    currentBlankReceiptData.modelColors[modelCode] = {};
-                    if (!currentBlankReceiptData.modelColorsImages) currentBlankReceiptData.modelColorsImages = {};
-                    currentBlankReceiptData.modelColorsImages[modelCode] = {};
-                    if (!currentBlankReceiptData.modelNotes) currentBlankReceiptData.modelNotes = {};
-                    currentBlankReceiptData.modelNotes[modelCode] = '';
-                    if (!currentBlankReceiptData.sampleRequests) currentBlankReceiptData.sampleRequests = {};
-                    currentBlankReceiptData.sampleRequests[modelCode] = {};
-                    if (!currentBlankReceiptData.modelFirstTime) currentBlankReceiptData.modelFirstTime = {};
-                    currentBlankReceiptData.modelFirstTime[modelCode] = isFirstTime;
-                    await saveBlankToFirebase();
-                    renderBlankReceiptDetail();
-                    showWarning(`تم إضافة الموديل ${modelCode} (جديد)`, false);
-                }
-            }
-            loadBlankFormData();
-            showWarning('تم إضافة الموديل بنجاح', false);
-        }
-
-        function cancelAddBlankModel(rowId) {
-            const row = document.getElementById(`blank-model-row-${rowId}`);
-            if (row) row.remove();
-            delete blankPendingModelSearch[rowId];
-        }
-
-        async function confirmAddBlankModel(rowId) {
-            const modelName = document.getElementById(`blankSelectedModel_${rowId}`).value;
-            if (!modelName) {
-                showWarning('الرجاء اختيار موديل', true);
-                return;
-            }
-            const row = document.getElementById(`blank-model-row-${rowId}`);
-            if (row) row.remove();
-            delete blankPendingModelSearch[rowId];
-
-            if (currentBlankReceiptData.modelColors[modelName]) {
-                showWarning('هذا الموديل موجود بالفعل في هذه الفاتورة', true);
-                return;
-            }
-            const isFirstTime = !receivedModelsHistory.has(modelName);
-            currentBlankReceiptData.modelColors[modelName] = {};
-            if (!currentBlankReceiptData.modelColorsImages) currentBlankReceiptData.modelColorsImages = {};
-            currentBlankReceiptData.modelColorsImages[modelName] = {};
-            if (!currentBlankReceiptData.modelNotes) currentBlankReceiptData.modelNotes = {};
-            currentBlankReceiptData.modelNotes[modelName] = '';
-            if (!currentBlankReceiptData.sampleRequests) currentBlankReceiptData.sampleRequests = {};
-            currentBlankReceiptData.sampleRequests[modelName] = {};
-            if (!currentBlankReceiptData.modelFirstTime) currentBlankReceiptData.modelFirstTime = {};
-            currentBlankReceiptData.modelFirstTime[modelName] = isFirstTime;
-            await saveBlankToFirebase();
-            renderBlankReceiptDetail();
-            showWarning(`تم إضافة الموديل ${modelName}`, false);
-        }
-
-        // Modify the add blank model button to use search
-        function addNewBlankModel() {
-            addBlankModelWithSearch();
-        }
-
-        async function openBlankReceipt(receiptId) {
-            if (currentBlankReceiptId && currentBlankReceiptData) { closeBlankDetail(true); }
-            currentBlankReceiptId = receiptId;
-            const snapshot = await db.ref(`blankReceipts/${receiptId}`).once('value');
-            currentBlankReceiptData = snapshot.val();
-            if (!currentBlankReceiptData.modelColors) currentBlankReceiptData.modelColors = {};
-            if (!currentBlankReceiptData.modelColorsImages) currentBlankReceiptData.modelColorsImages = {};
-            if (!currentBlankReceiptData.modelNotes) currentBlankReceiptData.modelNotes = {};
-            if (!currentBlankReceiptData.sampleRequests) currentBlankReceiptData.sampleRequests = {};
-            if (!currentBlankReceiptData.images) currentBlankReceiptData.images = [];
-            if (!currentBlankReceiptData.modelFirstTime) currentBlankReceiptData.modelFirstTime = {};
-            blankColorOpenState = {};
-            renderBlankReceiptDetail();
-            setTimeout(() => {
-                document.getElementById('blankReceiptDetail').scrollIntoView({ behavior: 'smooth' });
-            }, 100);
-        }
-
-        function closeBlankDetail(silent = false) {
-            document.getElementById('blankReceiptDetail').style.display = 'none';
-            if (!silent && currentBlankReceiptId && currentBlankReceiptData) { saveBlankToFirebase(true); }
-            currentBlankReceiptId = null;
-            currentBlankReceiptData = null;
-            blankModelOpenState = {};
-            blankColorOpenState = {};
-        }
-
-        function toggleBlankColorContent(modelName, colorName) {
-            const key = `${modelName}_${colorName}`;
-            if (blankColorOpenState[key] === undefined) blankColorOpenState[key] = true;
-            blankColorOpenState[key] = !blankColorOpenState[key];
-            const contentDiv = document.getElementById(`blank-color-content-${modelName.replace(/[^a-zA-Z0-9]/g, '_')}_${colorName.replace(/[^a-zA-Z0-9]/g, '_')}`);
-            if (contentDiv) {
-                if (blankColorOpenState[key]) contentDiv.classList.add('open');
-                else contentDiv.classList.remove('open');
-            }
-        }
-
-        function toggleNormalColorContent(modelName, colorName) {
-            const key = `${modelName}_${colorName}`;
-            if (normalColorOpenState[key] === undefined) normalColorOpenState[key] = true;
-            normalColorOpenState[key] = !normalColorOpenState[key];
-            const contentDiv = document.getElementById(`normal-color-content-${modelName.replace(/[^a-zA-Z0-9]/g, '_')}_${colorName.replace(/[^a-zA-Z0-9]/g, '_')}`);
-            if (contentDiv) {
-                if (normalColorOpenState[key]) contentDiv.classList.add('open');
-                else contentDiv.classList.remove('open');
-            }
-        }
-
-        function addNewBlankColor(modelName) {
-            if (!currentBlankReceiptData) return;
-            customPrompt('أدخل اسم اللون الجديد:', 'مثال: أحمر', async (newColorName) => {
-                if (!newColorName) return;
-                if (currentBlankReceiptData.modelColors[modelName][newColorName]) {
-                    showWarning('هذا اللون موجود بالفعل لهذا الموديل', true);
-                    return;
-                }
-                currentBlankReceiptData.modelColors[modelName][newColorName] = {};
-                allSizesList.forEach(({ id: sizeId }) => {
-                    currentBlankReceiptData.modelColors[modelName][newColorName][sizeId] = [0];
-                });
-                await saveBlankToFirebase();
-                renderBlankReceiptDetail();
-            });
-        }
-
-        function deleteBlankColor(modelName, colorName) {
-            if (!currentBlankReceiptData) return;
-            customConfirm(`هل أنت متأكد من حذف اللون "${colorName}"؟`, async (confirmed) => {
-                if (confirmed) {
-                    delete currentBlankReceiptData.modelColors[modelName][colorName];
-                    delete currentBlankReceiptData.modelColorsImages?.[modelName]?.[colorName];
-                    if (Object.keys(currentBlankReceiptData.modelColors[modelName]).length === 0) {
-                        delete currentBlankReceiptData.modelColors[modelName];
-                    }
-                    await saveBlankToFirebase();
-                    renderBlankReceiptDetail();
-                }
-            });
-        }
-
-        function addNewBlankQtyRow(modelName, colorName, sizeId) {
-            if (!currentBlankReceiptData) return;
-            const colorData = currentBlankReceiptData.modelColors[modelName][colorName];
-            let sizeArray = colorData[sizeId] || [0];
-            if (sizeArray[0] === 0 && sizeArray.length === 1) { sizeArray = []; }
-            sizeArray.push(0);
-            colorData[sizeId] = sizeArray;
-            saveBlankToFirebase();
-            renderBlankReceiptDetail();
-        }
-
-        function updateBlankColorSizeValue(modelName, colorName, sizeId, idx, value) {
-            if (!currentBlankReceiptData) return;
-            const colorData = currentBlankReceiptData.modelColors[modelName][colorName];
-            let sizeArray = colorData[sizeId] || [0];
-            sizeArray[idx] = parseInt(value) || 0;
-            sizeArray = sizeArray.filter(v => v > 0);
-            if (sizeArray.length === 0) sizeArray = [0];
-            colorData[sizeId] = sizeArray;
-            saveBlankToFirebase();
-            renderBlankReceiptDetail();
-        }
-
-        function removeBlankColorSizeRow(modelName, colorName, sizeId, idx) {
-            if (!currentBlankReceiptData) return;
-            const colorData = currentBlankReceiptData.modelColors[modelName][colorName];
-            let sizeArray = colorData[sizeId] || [0];
-            const currentValue = sizeArray[idx] || 0;
-            
-            // إذا كانت القيمة صفر أو الخلية فارغة، احذف مباشرة بدون تأكيد
-            if (currentValue === 0 || currentValue === '' || sizeArray.length === 1) {
-                sizeArray.splice(idx, 1);
-                if (sizeArray.length === 0) sizeArray = [0];
-                colorData[sizeId] = sizeArray;
-                saveBlankToFirebase();
-                renderBlankReceiptDetail();
-            } else {
-                // إذا كانت هناك قيمة موجودة، أظهر تأكيد
-                customConfirm(`هل أنت متأكد من حذف الكمية (${currentValue})؟`, async (confirmed) => {
-                    if (confirmed) {
-                        sizeArray.splice(idx, 1);
-                        if (sizeArray.length === 0) sizeArray = [0];
-                        colorData[sizeId] = sizeArray;
-                        saveBlankToFirebase();
-                        renderBlankReceiptDetail();
-                    }
-                });
-            }
-        }
-
-        function updateBlankModelNote(modelName, value) {
-            if (!currentBlankReceiptData) return;
-            currentBlankReceiptData.modelNotes[modelName] = value;
-            saveBlankToFirebase();
-        }
-
-        function toggleBlankSampleRequest(modelName, colorName, sizeId, isChecked) {
-            if (!currentBlankReceiptData) return;
-            if (!currentBlankReceiptData.sampleRequests[modelName]) currentBlankReceiptData.sampleRequests[modelName] = {};
-            if (!currentBlankReceiptData.sampleRequests[modelName][colorName]) currentBlankReceiptData.sampleRequests[
-                modelName][colorName] = {};
-            if (isChecked) {
-                currentBlankReceiptData.sampleRequests[modelName][colorName][sizeId] = true;
-            } else {
-                delete currentBlankReceiptData.sampleRequests[modelName][colorName][sizeId];
-                if (Object.keys(currentBlankReceiptData.sampleRequests[modelName][colorName]).length === 0) {
-                    delete currentBlankReceiptData.sampleRequests[modelName][colorName];
-                }
-                if (Object.keys(currentBlankReceiptData.sampleRequests[modelName]).length === 0) {
-                    delete currentBlankReceiptData.sampleRequests[modelName];
-                }
-            }
-            saveBlankToFirebase();
-            renderBlankReceiptDetail();
-        }
-
-        async function uploadBlankColorImage(modelName, colorName) {
-            const fileInput = document.createElement('input');
-            fileInput.type = 'file';
-            fileInput.accept = 'image/*';
-            // تفعيل الكاميرا على الموبايل
-            if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
-                fileInput.capture = 'environment';
-            }
-            fileInput.onchange = async (e) => {
-                const file = e.target.files[0];
-                if (!file) return;
-                const formData = new FormData();
-                formData.append('image', file);
-                const response = await fetch('https://api.imgbb.com/1/upload?key=' + IMGBB_KEY, { method: 'POST',
-                    body: formData });
-                const result = await response.json();
-                if (result.success) {
-                    if (!currentBlankReceiptData.modelColorsImages[modelName]) currentBlankReceiptData.modelColorsImages[
-                        modelName] = {};
-                    currentBlankReceiptData.modelColorsImages[modelName][colorName] = result.data.url;
-                    await db.ref(`blankReceipts/${currentBlankReceiptId}/modelColorsImages/${modelName}/${colorName}`)
-                        .set(result.data.url);
-                    renderBlankReceiptDetail();
-                    showWarning('تم رفع الصورة بنجاح', false);
-                } else {
-                    showWarning('فشل رفع الصورة', true);
-                }
-            };
-            fileInput.click();
-        }
-
-        function toggleBlankModelContent(modelName) {
-            if (blankModelOpenState[modelName] === undefined) blankModelOpenState[modelName] = true;
-            blankModelOpenState[modelName] = !blankModelOpenState[modelName];
-            const contentDiv = document.getElementById(`blank-model-content-${modelName.replace(/[^a-zA-Z0-9]/g, '_')}`);
-            if (contentDiv) {
-                if (blankModelOpenState[modelName]) contentDiv.classList.add('open');
-                else contentDiv.classList.remove('open');
-            }
-        }
-
-        async function closeBlankReceiptFully() {
-            if (!currentBlankReceiptData) return;
-            customConfirm('هل أنت متأكد من إقفال هذه الفاتورة بالكامل؟ لن تتمكن من التعديل عليها بعد الإقفال.', async (confirmed) => {
-                if (confirmed) {
-                    currentBlankReceiptData.isClosed = true;
-                    currentBlankReceiptData.closedDate = new Date().toISOString();
-                    await saveBlankToFirebase(true);
-
-                    await updateModelsImagesFromBlankReceipt(currentBlankReceiptId, currentBlankReceiptData);
-
-                    const blankReceiptsRef = db.ref(`blankReceipts/${currentBlankReceiptId}`);
-                    await blankReceiptsRef.update({ isClosed: true, closedDate: new Date().toISOString() });
-                    showWarning('تم إقفال الفاتورة وتحديث صور الموديلات بنجاح', false);
-                    closeBlankDetail(true);
+                // Open it
+                const snapshot = await db.ref(`blankReceipts/${receiptId}`).once('value');
+                const data = snapshot.val();
+                if (data) {
+                    openBlankReceipts[receiptId] = data;
+                    if (!data.modelColors) data.modelColors = {};
+                    if (!data.modelColorsImages) data.modelColorsImages = {};
+                    if (!data.modelNotes) data.modelNotes = {};
+                    if (!data.sampleRequests) data.sampleRequests = {};
+                    if (!data.images) data.images = [];
+                    if (!data.modelFirstTime) data.modelFirstTime = {};
+                    renderBlankReceiptDetailsContainer();
                     loadBlankReceipts();
-                    loadReceivedHistory();
-                    loadDashboardStats();
-                    loadAllModels();
+                    showWarning('تم فتح الفاتورة', false);
                 }
+            }
+        }
+
+        async function saveBlankReceiptIfChanged(receiptId) {
+            if (!openBlankReceipts[receiptId]) return;
+            if (dataChanged) {
+                await db.ref(`blankReceipts/${receiptId}`).update(openBlankReceipts[receiptId]);
+                dataChanged = false;
+                showWarning('تم حفظ التغييرات', false);
+            }
+        }
+
+        function renderBlankReceiptDetailsContainer() {
+            const container = document.getElementById('blankReceiptDetailsContainer');
+            container.innerHTML = '';
+            const receiptIds = Object.keys(openBlankReceipts);
+            if (receiptIds.length === 0) {
+                container.innerHTML = '';
+                return;
+            }
+            // Sort so newest first
+            receiptIds.sort((a, b) => {
+                const dateA = openBlankReceipts[a]?.createdAt || 0;
+                const dateB = openBlankReceipts[b]?.createdAt || 0;
+                return dateB - dateA;
+            });
+            receiptIds.forEach(id => {
+                const r = openBlankReceipts[id];
+                const wrapper = document.createElement('div');
+                wrapper.className = 'blank-receipt-detail-wrapper';
+                wrapper.id = `blank-wrapper-${id}`;
+                wrapper.innerHTML = renderBlankReceiptDetailHTML(id, r);
+                container.appendChild(wrapper);
+                // Add event listeners for this receipt
+                attachBlankEventListeners(id);
             });
         }
 
-        async function saveBlankToFirebase(skipIndicator = false) {
-            if (!currentBlankReceiptId) return;
-            const dataToSave = { ...currentBlankReceiptData };
-            await db.ref(`blankReceipts/${currentBlankReceiptId}`).update(dataToSave);
-            if (!skipIndicator) {
-                const indicator = document.getElementById('autoSaveIndicator');
-                indicator.style.display = 'flex';
-                setTimeout(() => { indicator.style.display = 'none'; }, 1500);
-            }
-            loadBlankReceipts();
-        }
-
-        function formatDate(timestamp) {
-            if (!timestamp) return '-';
-            const date = new Date(timestamp);
-            return date.toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' });
-        }
-
-        function renderBlankReceiptDetail() {
-            if (!currentBlankReceiptData) return;
-            const r = currentBlankReceiptData;
+        function renderBlankReceiptDetailHTML(receiptId, r) {
             let totalReceived = 0;
             for (const modelName in r.modelColors) {
                 for (const colorName in r.modelColors[modelName]) {
@@ -2788,11 +2361,10 @@
                 `;
             } else {
                 modelNames.forEach(modelName => {
-                    const isOpen = blankModelOpenState[modelName] !== false;
-                    const safeModelKey = modelName.replace(/[^a-zA-Z0-9]/g, '_');
+                    const isOpen = blankModelOpenState[`${receiptId}_${modelName}`] !== false;
+                    const safeModelKey = `${receiptId}_${modelName.replace(/[^a-zA-Z0-9]/g, '_')}`;
                     const isModelFirstTime = r.modelFirstTime?.[modelName] === true;
                     
-                    // حساب إجمالي الموديل بغض النظر عن الألوان
                     let modelTotal = 0;
                     for (const colorName in r.modelColors[modelName]) {
                         for (const sizeId in r.modelColors[modelName][colorName]) {
@@ -2811,8 +2383,8 @@
                             colorTotal += sizeArray.reduce((a, b) => a + b, 0);
                         }
                         const colorImage = r.modelColorsImages?.[modelName]?.[colorName] || '';
-                        const isColorOpen = blankColorOpenState[`${modelName}_${colorName}`] !== false;
-                        const safeColorKey = colorName.replace(/[^a-zA-Z0-9]/g, '_');
+                        const isColorOpen = blankColorOpenState[`${receiptId}_${modelName}_${colorName}`] !== false;
+                        const safeColorKey = `${receiptId}_${modelName.replace(/[^a-zA-Z0-9]/g, '_')}_${colorName.replace(/[^a-zA-Z0-9]/g, '_')}`;
                         let sizesHtml = '';
                         allSizesList.forEach(({ id: sizeId, name: sizeName }) => {
                             const sizeArray = colorData[sizeId] || [0];
@@ -2822,10 +2394,10 @@
                             let qtyRowsHtml = '';
                             sizeArray.forEach((val, idx) => {
                                 qtyRowsHtml += `
-                                    <div class="qty-box">
-                                        <button class="danger" onclick="removeBlankColorSizeRow('${modelName}', '${colorName}', '${sizeId}', ${idx})"><i class="fas fa-minus"></i></button>
-                                        <input type="number" value="${val || ''}" min="0" onchange="updateBlankColorSizeValue('${modelName}', '${colorName}', '${sizeId}', ${idx}, this.value)" ${val === 0 ? 'style="color:transparent;"' : ''} onfocus="this.style.color='#0b1b2f'" onblur="if(this.value==='0' || this.value===''){this.value='';this.style.color='transparent'}">
-                                        ${idx === sizeArray.length - 1 ? `<button onclick="addNewBlankQtyRow('${modelName}', '${colorName}', '${sizeId}')"><i class="fas fa-plus"></i></button>` : ''}
+                                    <div class="qty-box" data-receipt="${receiptId}" data-model="${modelName}" data-color="${colorName}" data-size="${sizeId}" data-idx="${idx}">
+                                        <button class="danger" onclick="removeBlankColorSizeRow('${receiptId}', '${modelName}', '${colorName}', '${sizeId}', ${idx})"><i class="fas fa-minus"></i></button>
+                                        <input type="number" value="${val || ''}" min="0" onchange="updateBlankColorSizeValue('${receiptId}', '${modelName}', '${colorName}', '${sizeId}', ${idx}, this.value)" class="${val === 0 || val === '' ? 'empty-input' : ''}" onfocus="this.classList.remove('empty-input')" onblur="if(this.value==='0' || this.value===''){this.value='';this.classList.add('empty-input')}">
+                                        ${idx === sizeArray.length - 1 ? `<button onclick="addNewBlankQtyRow('${receiptId}', '${modelName}', '${colorName}', '${sizeId}')"><i class="fas fa-plus"></i></button>` : ''}
                                     </div>
                                 `;
                             });
@@ -2839,7 +2411,7 @@
                                         <div style="display: flex; flex-wrap: wrap; gap: 10px; align-items: center;">
                                             ${qtyRowsHtml}
                                             <label class="checkbox-label">
-                                                <input type="checkbox" onchange="toggleBlankSampleRequest('${modelName}', '${colorName}', '${sizeId}', this.checked)" ${isSampleChecked ? 'checked' : ''}>
+                                                <input type="checkbox" onchange="toggleBlankSampleRequest('${receiptId}', '${modelName}', '${colorName}', '${sizeId}', this.checked)" ${isSampleChecked ? 'checked' : ''}>
                                                 <i class="fas fa-camera"></i> عينة تصوير
                                             </label>
                                         </div>
@@ -2849,7 +2421,7 @@
                         });
                         colorsHtml += `
                             <div class="colors-container">
-                                <div class="color-header" onclick="toggleBlankColorContent('${modelName}', '${colorName}')">
+                                <div class="color-header" onclick="toggleBlankColorContent('${receiptId}', '${modelName}', '${colorName}')">
                                     <div class="color-name-input">
                                         <button class="color-toggle-btn"><i class="fas ${isColorOpen ? 'fa-chevron-up' : 'fa-chevron-down'}"></i></button>
                                         <strong><i class="fas fa-palette"></i> اللون: ${colorName}</strong>
@@ -2857,11 +2429,11 @@
                                     </div>
                                     <div style="display: flex; gap: 10px; align-items: center;" onclick="event.stopPropagation()">
                                         ${colorImage ? `<img src="${colorImage}" class="color-image-preview" onclick="showFullImage('${colorImage}')">` : ''}
-                                        <button class="color-image-upload" onclick="uploadBlankColorImage('${modelName}', '${colorName}')"><i class="fas fa-camera"></i> صورة</button>
-                                        <button class="delete-color-btn" onclick="deleteBlankColor('${modelName}', '${colorName}')"><i class="fas fa-trash"></i></button>
+                                        <button class="color-image-upload" onclick="uploadBlankColorImage('${receiptId}', '${modelName}', '${colorName}')"><i class="fas fa-camera"></i> صورة</button>
+                                        <button class="delete-color-btn" onclick="deleteBlankColor('${receiptId}', '${modelName}', '${colorName}')"><i class="fas fa-trash"></i></button>
                                     </div>
                                 </div>
-                                <div id="blank-color-content-${safeModelKey}_${safeColorKey}" class="color-sizes-wrapper ${isColorOpen ? 'open' : ''}" onclick="event.stopPropagation()">
+                                <div id="blank-color-content-${safeColorKey}" class="color-sizes-wrapper ${isColorOpen ? 'open' : ''}" onclick="event.stopPropagation()">
                                     <div class="sizes-container">
                                         ${sizesHtml}
                                     </div>
@@ -2870,13 +2442,13 @@
                         `;
                     });
                     colorsHtml += `
-                        <button class="add-color-btn" onclick="addNewBlankColor('${modelName}')">
+                        <button class="add-color-btn" onclick="addNewBlankColor('${receiptId}', '${modelName}')">
                             <i class="fas fa-plus"></i> إضافة لون آخر
                         </button>
                     `;
                     modelsHtml += `
                         <div class="model-card">
-                            <div class="model-title" onclick="toggleBlankModelContent('${modelName}')">
+                            <div class="model-title" onclick="toggleBlankModelContent('${receiptId}', '${modelName}')">
                                 <div class="model-title-left">
                                     <i class="fas ${isOpen ? 'fa-chevron-up' : 'fa-chevron-down'}"></i>
                                     <span><i class="fas fa-tshirt"></i> ${modelName}</span>
@@ -2887,7 +2459,7 @@
                             <div id="blank-model-content-${safeModelKey}" class="model-content-wrapper ${isOpen ? 'open' : ''}">
                                 ${colorsHtml}
                                 <div class="model-note-area">
-                                    <textarea rows="2" placeholder="ملاحظات خاصة بهذا الموديل..." onchange="updateBlankModelNote('${modelName}', this.value)">${r.modelNotes?.[modelName] || ''}</textarea>
+                                    <textarea rows="2" placeholder="ملاحظات خاصة بهذا الموديل..." onchange="updateBlankModelNote('${receiptId}', '${modelName}', this.value)">${r.modelNotes?.[modelName] || ''}</textarea>
                                 </div>
                             </div>
                         </div>
@@ -2896,13 +2468,13 @@
             }
             const closedDate = r.closedDate;
             const isClosed = r.isClosed === true;
-            document.getElementById('blankReceiptDetail').innerHTML = `
+            return `
                 <div class="detail-header">
                     <h3><i class="fas fa-file-alt"></i> فاتورة Blank: ${r.invoiceCode}</h3>
                     <div>
-                        ${!isClosed ? `<button class="btn btn-warning close-receipt-btn" onclick="closeBlankReceiptFully()"><i class="fas fa-check-double"></i> إقفال الفاتورة بالكامل</button>` : ''}
+                        ${!isClosed ? `<button class="btn btn-warning close-receipt-btn" onclick="closeBlankReceiptFully('${receiptId}')"><i class="fas fa-check-double"></i> إقفال الفاتورة بالكامل</button>` : ''}
                         ${isClosed ? `<span class="model-smart-badge badge-repeat" style="font-size:16px;padding:8px 16px;"><i class="fas fa-check-circle"></i> الفاتورة مقفلة</span>` : ''}
-                        <button class="close-detail" onclick="closeBlankDetail()"><i class="fas fa-times"></i></button>
+                        <button class="close-detail" onclick="closeBlankReceipt('${receiptId}')"><i class="fas fa-times"></i></button>
                     </div>
                 </div>
                 <div class="summary-bar">
@@ -2917,15 +2489,450 @@
                     ${closedDate ? `<span><i class="fas fa-calendar-check"></i> <strong>تاريخ التقفيل:</strong> ${formatDate(closedDate)}</span>` : ''}
                     <span><i class="fas fa-user"></i> <strong>الموظف:</strong> ${r.createdBy || '-'}</span>
                 </div>
-                ${!isClosed ? `<button class="add-blank-model-btn" onclick="addNewBlankModel()">
+                ${!isClosed ? `<button class="add-blank-model-btn" onclick="addNewBlankModel('${receiptId}')">
                     <i class="fas fa-plus-circle"></i> + إضافة موديل جديد
                 </button>` : ''}
                 <div class="models-grid" style="margin-top: 18px;">${modelsHtml}</div>
-                ${!isClosed ? `<button class="close-receipt-full-btn" onclick="closeBlankReceiptFully()">
+                ${!isClosed ? `<button class="close-receipt-full-btn" onclick="closeBlankReceiptFully('${receiptId}')">
                     <i class="fas fa-check-double"></i> إقفال الفاتورة بالكامل
                 </button>` : ''}
             `;
-            document.getElementById('blankReceiptDetail').style.display = 'block';
+        }
+
+        function attachBlankEventListeners(receiptId) {
+            // Event listeners are attached via inline onclick handlers
+            // No additional setup needed
+        }
+
+        // ====== BLANK RECEIPT FUNCTIONS (with receiptId parameter) ======
+        let blankModelOpenState = {};
+        let blankColorOpenState = {};
+
+        function toggleBlankModelContent(receiptId, modelName) {
+            const key = `${receiptId}_${modelName}`;
+            if (blankModelOpenState[key] === undefined) blankModelOpenState[key] = true;
+            blankModelOpenState[key] = !blankModelOpenState[key];
+            const safeKey = `${receiptId}_${modelName.replace(/[^a-zA-Z0-9]/g, '_')}`;
+            const contentDiv = document.getElementById(`blank-model-content-${safeKey}`);
+            if (contentDiv) {
+                if (blankModelOpenState[key]) contentDiv.classList.add('open');
+                else contentDiv.classList.remove('open');
+            }
+            // Update the icon
+            const title = contentDiv?.parentElement?.querySelector('.model-title');
+            if (title) {
+                const icon = title.querySelector('.fa-chevron-up, .fa-chevron-down');
+                if (icon) {
+                    icon.className = blankModelOpenState[key] ? 'fas fa-chevron-up' : 'fas fa-chevron-down';
+                }
+            }
+        }
+
+        function toggleBlankColorContent(receiptId, modelName, colorName) {
+            const key = `${receiptId}_${modelName}_${colorName}`;
+            if (blankColorOpenState[key] === undefined) blankColorOpenState[key] = true;
+            blankColorOpenState[key] = !blankColorOpenState[key];
+            const safeKey = `${receiptId}_${modelName.replace(/[^a-zA-Z0-9]/g, '_')}_${colorName.replace(/[^a-zA-Z0-9]/g, '_')}`;
+            const contentDiv = document.getElementById(`blank-color-content-${safeKey}`);
+            if (contentDiv) {
+                if (blankColorOpenState[key]) contentDiv.classList.add('open');
+                else contentDiv.classList.remove('open');
+            }
+            // Update the icon
+            const header = contentDiv?.parentElement?.querySelector('.color-header');
+            if (header) {
+                const icon = header.querySelector('.fa-chevron-up, .fa-chevron-down');
+                if (icon) {
+                    icon.className = blankColorOpenState[key] ? 'fas fa-chevron-up' : 'fas fa-chevron-down';
+                }
+            }
+        }
+
+        function closeBlankReceipt(receiptId) {
+            if (openBlankReceipts[receiptId]) {
+                saveBlankReceiptIfChanged(receiptId);
+                delete openBlankReceipts[receiptId];
+                renderBlankReceiptDetailsContainer();
+                loadBlankReceipts();
+                showWarning('تم حفظ الفاتورة وإغلاقها', false);
+            }
+        }
+
+        function addNewBlankModel(receiptId) {
+            if (!openBlankReceipts[receiptId]) return;
+            const r = openBlankReceipts[receiptId];
+            const tempRowId = Date.now();
+            const wrapper = document.getElementById(`blank-wrapper-${receiptId}`);
+            if (!wrapper) return;
+            
+            const rowHtml = `
+                <div class="blank-model-row" id="blank-model-row-${receiptId}-${tempRowId}">
+                    <div class="blank-model-search-container" style="flex:2;">
+                        <input type="text" class="blank-model-search-input" placeholder="بحث عن موديل (كود أو اسم)..." autocomplete="off" oninput="filterBlankModelSearch('${receiptId}', ${tempRowId}, this.value)" onfocus="filterBlankModelSearch('${receiptId}', ${tempRowId}, this.value)">
+                        <div class="blank-model-search-results" id="blankModelSearchResults_${receiptId}_${tempRowId}"></div>
+                        <input type="hidden" id="blankSelectedModel_${receiptId}_${tempRowId}" value="">
+                    </div>
+                    <button class="btn btn-success btn-sm" onclick="confirmAddBlankModel('${receiptId}', ${tempRowId})">إضافة</button>
+                    <button class="btn btn-danger btn-sm" onclick="cancelAddBlankModel('${receiptId}', ${tempRowId})">إلغاء</button>
+                </div>
+            `;
+            const addBtn = wrapper.querySelector('.add-blank-model-btn');
+            if (addBtn) {
+                addBtn.insertAdjacentHTML('beforebegin', rowHtml);
+            } else {
+                const modelsGrid = wrapper.querySelector('.models-grid');
+                if (modelsGrid) {
+                    modelsGrid.insertAdjacentHTML('beforebegin', rowHtml);
+                }
+            }
+            setTimeout(() => {
+                const input = document.querySelector(`#blank-model-row-${receiptId}-${tempRowId} .blank-model-search-input`);
+                if (input) input.focus();
+            }, 100);
+        }
+
+        let blankPendingModelSearch = {};
+
+        function filterBlankModelSearch(receiptId, rowId, searchTerm) {
+            const resultsDiv = document.getElementById(`blankModelSearchResults_${receiptId}_${rowId}`);
+            const r = openBlankReceipts[receiptId];
+            if (!r) return;
+            const currentFactory = r.factory || '';
+            if (!searchTerm.trim()) { resultsDiv.style.display = 'none'; return; }
+            const filteredModels = allModelsList.filter(m =>
+                (currentFactory ? m.factory === currentFactory : true) &&
+                (m.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                    (m.code && m.code.toLowerCase().includes(searchTerm.toLowerCase())))
+            );
+            if (filteredModels.length === 0) {
+                resultsDiv.innerHTML =
+                    `<div class="blank-model-search-result" onclick="openAddModelFromBlankSearch('${receiptId}', '${searchTerm.replace(/'/g, "\\'")}', ${rowId})">
+                    <i class="fas fa-plus-circle"></i> إضافة موديل جديد: "${searchTerm}"
+                </div>`;
+                resultsDiv.style.display = 'block';
+            } else {
+                resultsDiv.innerHTML = filteredModels.map(m => {
+                    const isNewModel = !receivedModelsHistory.has(m.name) && !receivedModelsHistory.has(m.code);
+                    const badge = isNewModel ?
+                        '<span class="model-smart-badge badge-new" style="margin-right:8px;"><i class="fas fa-camera"></i> جديد</span>' :
+                        '<span class="model-smart-badge badge-repeat" style="margin-right:8px;">مكرر</span>';
+                    return `
+                        <div class="blank-model-search-result" onclick="selectBlankModelFromSearch('${receiptId}', ${rowId}, '${m.name.replace(/'/g, "\\'")}', '${(m.code || '').replace(/'/g, "\\'")}')">
+                            <strong>${m.name}</strong> ${m.code ? `<span class="model-code-badge">${m.code}</span>` : ''}
+                            ${badge}
+                            ${m.imageUrl ? `<img src="${m.imageUrl}" style="width:30px;height:30px;border-radius:6px;object-fit:cover;margin-right:auto;">` : ''}
+                        </div>
+                    `;
+                }).join('');
+                resultsDiv.style.display = 'block';
+            }
+        }
+
+        function selectBlankModelFromSearch(receiptId, rowId, modelName, modelCode) {
+            document.getElementById(`blankSelectedModel_${receiptId}_${rowId}`).value = modelName;
+            const input = document.querySelector(`#blank-model-row-${receiptId}-${rowId} .blank-model-search-input`);
+            if (input) input.value = modelName;
+            document.getElementById(`blankModelSearchResults_${receiptId}_${rowId}`).style.display = 'none';
+        }
+
+        function openAddModelFromBlankSearch(receiptId, modelCode, rowId) {
+            const r = openBlankReceipts[receiptId];
+            if (!r) return;
+            const currentFactory = r.factory || '';
+            if (!currentFactory) { showWarning('الرجاء اختيار المصنع أولاً', true); return; }
+            blankPendingModelSearch[`${receiptId}_${rowId}`] = true;
+            document.getElementById('newModelCodeBlank').value = modelCode;
+            document.getElementById('modelErrorMsgBlank').innerHTML = '';
+            document.getElementById('addModelModalBlank').style.display = 'flex';
+            // Store the receiptId and rowId for later use
+            document.getElementById('addModelModalBlank').dataset.receiptId = receiptId;
+            document.getElementById('addModelModalBlank').dataset.rowId = rowId;
+        }
+
+        function closeModelModalBlank() { document.getElementById('addModelModalBlank').style.display = 'none'; }
+
+        async function quickAddModelForBlank() {
+            const modal = document.getElementById('addModelModalBlank');
+            const receiptId = modal.dataset.receiptId;
+            const rowId = parseInt(modal.dataset.rowId);
+            const r = openBlankReceipts[receiptId];
+            if (!r) { document.getElementById('modelErrorMsgBlank').innerHTML = 'حدث خطأ، يرجى المحاولة مرة أخرى'; return; }
+            const currentFactory = r.factory || '';
+            if (!currentFactory) { document.getElementById('modelErrorMsgBlank').innerHTML = 'الرجاء اختيار المصنع أولاً'; return; }
+            const modelCode = document.getElementById('newModelCodeBlank').value.trim();
+            if (!modelCode) { document.getElementById('modelErrorMsgBlank').innerHTML = 'الرجاء إدخال كود الموديل'; return; }
+            const exists = allModelsList.some(m => (m.code === modelCode || m.name === modelCode) && m.factory ===
+                currentFactory);
+            if (exists) { document.getElementById('modelErrorMsgBlank').innerHTML = 'هذا الموديل موجود بالفعل في هذا المصنع'; return; }
+            const newModelData = { name: modelCode, code: modelCode, factory: currentFactory };
+            const newRef = await db.ref('models').push(newModelData);
+            await loadAllModels();
+            await loadReceivedModelsHistory();
+            const newModel = { id: newRef.key, name: modelCode, code: modelCode, factory: currentFactory, imageUrl: '' };
+            allModelsList.push(newModel);
+            document.getElementById('newModelCodeBlank').value = '';
+            closeModelModalBlank();
+
+            if (receiptId && rowId) {
+                document.getElementById(`blankSelectedModel_${receiptId}_${rowId}`).value = modelCode;
+                const input = document.querySelector(`#blank-model-row-${receiptId}-${rowId} .blank-model-search-input`);
+                if (input) input.value = modelCode;
+                document.getElementById(`blankModelSearchResults_${receiptId}_${rowId}`).style.display = 'none';
+                confirmAddBlankModel(receiptId, rowId);
+            } else {
+                if (r && !r.modelColors[modelCode]) {
+                    const isFirstTime = !receivedModelsHistory.has(modelCode);
+                    r.modelColors[modelCode] = {};
+                    if (!r.modelColorsImages) r.modelColorsImages = {};
+                    r.modelColorsImages[modelCode] = {};
+                    if (!r.modelNotes) r.modelNotes = {};
+                    r.modelNotes[modelCode] = '';
+                    if (!r.sampleRequests) r.sampleRequests = {};
+                    r.sampleRequests[modelCode] = {};
+                    if (!r.modelFirstTime) r.modelFirstTime = {};
+                    r.modelFirstTime[modelCode] = isFirstTime;
+                    dataChanged = true;
+                    renderBlankReceiptDetailsContainer();
+                    showWarning(`تم إضافة الموديل ${modelCode} (جديد)`, false);
+                }
+            }
+            loadBlankFormData();
+            showWarning('تم إضافة الموديل بنجاح', false);
+        }
+
+        function cancelAddBlankModel(receiptId, rowId) {
+            const row = document.getElementById(`blank-model-row-${receiptId}-${rowId}`);
+            if (row) row.remove();
+            delete blankPendingModelSearch[`${receiptId}_${rowId}`];
+        }
+
+        async function confirmAddBlankModel(receiptId, rowId) {
+            const modelName = document.getElementById(`blankSelectedModel_${receiptId}_${rowId}`).value;
+            if (!modelName) {
+                showWarning('الرجاء اختيار موديل', true);
+                return;
+            }
+            const row = document.getElementById(`blank-model-row-${receiptId}-${rowId}`);
+            if (row) row.remove();
+            delete blankPendingModelSearch[`${receiptId}_${rowId}`];
+
+            const r = openBlankReceipts[receiptId];
+            if (!r) return;
+            if (r.modelColors[modelName]) {
+                showWarning('هذا الموديل موجود بالفعل في هذه الفاتورة', true);
+                return;
+            }
+            const isFirstTime = !receivedModelsHistory.has(modelName);
+            r.modelColors[modelName] = {};
+            if (!r.modelColorsImages) r.modelColorsImages = {};
+            r.modelColorsImages[modelName] = {};
+            if (!r.modelNotes) r.modelNotes = {};
+            r.modelNotes[modelName] = '';
+            if (!r.sampleRequests) r.sampleRequests = {};
+            r.sampleRequests[modelName] = {};
+            if (!r.modelFirstTime) r.modelFirstTime = {};
+            r.modelFirstTime[modelName] = isFirstTime;
+            dataChanged = true;
+            renderBlankReceiptDetailsContainer();
+            showWarning(`تم إضافة الموديل ${modelName}`, false);
+        }
+
+        function addNewBlankColor(receiptId, modelName) {
+            if (!openBlankReceipts[receiptId]) return;
+            customPrompt('أدخل اسم اللون الجديد:', 'مثال: أحمر', (newColorName) => {
+                if (!newColorName) return;
+                const r = openBlankReceipts[receiptId];
+                if (r.modelColors[modelName][newColorName]) {
+                    showWarning('هذا اللون موجود بالفعل لهذا الموديل', true);
+                    return;
+                }
+                r.modelColors[modelName][newColorName] = {};
+                allSizesList.forEach(({ id: sizeId }) => {
+                    r.modelColors[modelName][newColorName][sizeId] = [0];
+                });
+                dataChanged = true;
+                renderBlankReceiptDetailsContainer();
+            });
+        }
+
+        function deleteBlankColor(receiptId, modelName, colorName) {
+            customConfirm(`هل أنت متأكد من حذف اللون "${colorName}"؟`, (confirmed) => {
+                if (confirmed) {
+                    const r = openBlankReceipts[receiptId];
+                    if (!r) return;
+                    delete r.modelColors[modelName][colorName];
+                    delete r.modelColorsImages?.[modelName]?.[colorName];
+                    if (Object.keys(r.modelColors[modelName]).length === 0) {
+                        delete r.modelColors[modelName];
+                    }
+                    dataChanged = true;
+                    renderBlankReceiptDetailsContainer();
+                }
+            });
+        }
+
+        function addNewBlankQtyRow(receiptId, modelName, colorName, sizeId) {
+            const r = openBlankReceipts[receiptId];
+            if (!r) return;
+            const colorData = r.modelColors[modelName][colorName];
+            let sizeArray = colorData[sizeId] || [0];
+            if (sizeArray[0] === 0 && sizeArray.length === 1) { sizeArray = []; }
+            sizeArray.push(0);
+            colorData[sizeId] = sizeArray;
+            dataChanged = true;
+            renderBlankReceiptDetailsContainer();
+        }
+
+        function updateBlankColorSizeValue(receiptId, modelName, colorName, sizeId, idx, value) {
+            const r = openBlankReceipts[receiptId];
+            if (!r) return;
+            const colorData = r.modelColors[modelName][colorName];
+            let sizeArray = colorData[sizeId] || [0];
+            sizeArray[idx] = parseInt(value) || 0;
+            sizeArray = sizeArray.filter(v => v > 0);
+            if (sizeArray.length === 0) sizeArray = [0];
+            colorData[sizeId] = sizeArray;
+            dataChanged = true;
+            renderBlankReceiptDetailsContainer();
+        }
+
+        function removeBlankColorSizeRow(receiptId, modelName, colorName, sizeId, idx) {
+            const r = openBlankReceipts[receiptId];
+            if (!r) return;
+            const colorData = r.modelColors[modelName][colorName];
+            let sizeArray = colorData[sizeId] || [0];
+            const currentValue = sizeArray[idx] || 0;
+            
+            if (currentValue === 0 || currentValue === '' || sizeArray.length === 1) {
+                sizeArray.splice(idx, 1);
+                if (sizeArray.length === 0) sizeArray = [0];
+                colorData[sizeId] = sizeArray;
+                dataChanged = true;
+                renderBlankReceiptDetailsContainer();
+            } else {
+                customConfirm(`هل أنت متأكد من حذف الكمية (${currentValue})؟`, (confirmed) => {
+                    if (confirmed) {
+                        sizeArray.splice(idx, 1);
+                        if (sizeArray.length === 0) sizeArray = [0];
+                        colorData[sizeId] = sizeArray;
+                        dataChanged = true;
+                        renderBlankReceiptDetailsContainer();
+                    }
+                });
+            }
+        }
+
+        function updateBlankModelNote(receiptId, modelName, value) {
+            const r = openBlankReceipts[receiptId];
+            if (!r) return;
+            r.modelNotes[modelName] = value;
+            dataChanged = true;
+        }
+
+        function toggleBlankSampleRequest(receiptId, modelName, colorName, sizeId, isChecked) {
+            const r = openBlankReceipts[receiptId];
+            if (!r) return;
+            if (!r.sampleRequests[modelName]) r.sampleRequests[modelName] = {};
+            if (!r.sampleRequests[modelName][colorName]) r.sampleRequests[modelName][colorName] = {};
+            if (isChecked) {
+                r.sampleRequests[modelName][colorName][sizeId] = true;
+            } else {
+                delete r.sampleRequests[modelName][colorName][sizeId];
+                if (Object.keys(r.sampleRequests[modelName][colorName]).length === 0) {
+                    delete r.sampleRequests[modelName][colorName];
+                }
+                if (Object.keys(r.sampleRequests[modelName]).length === 0) {
+                    delete r.sampleRequests[modelName];
+                }
+            }
+            dataChanged = true;
+            renderBlankReceiptDetailsContainer();
+        }
+
+        async function uploadBlankColorImage(receiptId, modelName, colorName) {
+            const fileInput = document.createElement('input');
+            fileInput.type = 'file';
+            fileInput.accept = 'image/*';
+            if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+                fileInput.capture = 'environment';
+            }
+            fileInput.onchange = async (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                const formData = new FormData();
+                formData.append('image', file);
+                const response = await fetch('https://api.imgbb.com/1/upload?key=' + IMGBB_KEY, { method: 'POST',
+                    body: formData });
+                const result = await response.json();
+                if (result.success) {
+                    const r = openBlankReceipts[receiptId];
+                    if (!r.modelColorsImages) r.modelColorsImages = {};
+                    if (!r.modelColorsImages[modelName]) r.modelColorsImages[modelName] = {};
+                    r.modelColorsImages[modelName][colorName] = result.data.url;
+                    dataChanged = true;
+                    renderBlankReceiptDetailsContainer();
+                    showWarning('تم رفع الصورة بنجاح', false);
+                } else {
+                    showWarning('فشل رفع الصورة', true);
+                }
+            };
+            fileInput.click();
+        }
+
+        async function closeBlankReceiptFully(receiptId) {
+            const r = openBlankReceipts[receiptId];
+            if (!r) return;
+            customConfirm('هل أنت متأكد من إقفال هذه الفاتورة بالكامل؟ لن تتمكن من التعديل عليها بعد الإقفال.', async (confirmed) => {
+                if (confirmed) {
+                    r.isClosed = true;
+                    r.closedDate = new Date().toISOString();
+                    await db.ref(`blankReceipts/${receiptId}`).update({ isClosed: true, closedDate: new Date().toISOString() });
+                    
+                    // Update model images
+                    if (r.modelColorsImages) {
+                        for (const modelName in r.modelColorsImages) {
+                            const colorImages = r.modelColorsImages[modelName];
+                            let firstImageUrl = null;
+                            for (const colorName in colorImages) {
+                                if (colorImages[colorName]) {
+                                    firstImageUrl = colorImages[colorName];
+                                    break;
+                                }
+                            }
+                            if (firstImageUrl) {
+                                await updateModelImageInModelsNode(modelName, firstImageUrl);
+                            }
+                        }
+                    }
+                    
+                    delete openBlankReceipts[receiptId];
+                    renderBlankReceiptDetailsContainer();
+                    loadBlankReceipts();
+                    loadReceivedHistory();
+                    loadDashboardStats();
+                    loadAllModels();
+                    showWarning('تم إقفال الفاتورة وتحديث صور الموديلات بنجاح', false);
+                }
+            });
+        }
+
+        async function updateModelImageInModelsNode(modelName, imageUrl) {
+            try {
+                const snapshot = await db.ref('models').once('value');
+                let modelKey = null;
+                snapshot.forEach((child) => {
+                    const val = child.val();
+                    if (val.name === modelName || val.code === modelName) {
+                        modelKey = child.key;
+                    }
+                });
+                if (modelKey) {
+                    await db.ref(`models/${modelKey}`).update({ imageUrl: imageUrl });
+                    console.log(`✅ تم تحديث صورة الموديل ${modelName}: ${imageUrl}`);
+                }
+            } catch (error) {
+                console.error('❌ خطأ في تحديث صورة الموديل:', error);
+            }
         }
 
         // ====== NORMAL RECEIPT FUNCTIONS ======
@@ -3029,6 +3036,8 @@
         }
 
         function closeModelModal() { document.getElementById('addModelModal').style.display = 'none'; }
+
+        let pendingModelSearchRowId = null;
 
         async function quickAddModel() {
             const currentFactory = document.getElementById('newFactorySelect')?.value;
@@ -3173,10 +3182,8 @@
             const snapshot = await db.ref('receipts').once('value');
             const history = [];
             const userId = currentUser.userId || currentUser.uid || currentUser.username || '';
-            console.log('🔍 loadReceivedHistory - userId:', userId);
             snapshot.forEach((child) => {
                 const receipt = child.val();
-                console.log('🔍 loadReceivedHistory - receipt:', child.key, receipt.assignedTo);
                 if (receipt.assignedTo && receipt.assignedTo.userId === userId) {
                     if (receipt.status === 'completed' || receipt.status === 'closed') {
                         history.push({ id: child.key, ...receipt });
@@ -3484,11 +3491,9 @@
             let totalReceived = 0;
             let pending = 0;
             const userId = currentUser.userId || currentUser.uid || currentUser.username || '';
-            console.log('🔍 loadDashboardStats - userId:', userId);
             const snapshot = await db.ref('receipts').once('value');
             snapshot.forEach((child) => {
                 const receipt = child.val();
-                console.log('🔍 loadDashboardStats - receipt:', child.key, receipt.assignedTo, receipt.status);
                 if (receipt.assignedTo && receipt.assignedTo.userId === userId) {
                     if (receipt.status === 'assigned' || receipt.status === 'in_progress') {
                         totalAssigned++;
@@ -3526,29 +3531,17 @@
         // ====== ASSIGNED RECEIPTS ======
         function loadAssignedReceipts() {
             const userId = currentUser.userId || currentUser.uid || currentUser.username || '';
-            console.log('🔍 loadAssignedReceipts - userId:', userId);
-            console.log('🔍 loadAssignedReceipts - currentUser:', currentUser);
             db.ref('receipts').once('value', (snapshot) => {
                 const receipts = [];
-                let receiptCount = 0;
                 snapshot.forEach((child) => {
                     const receipt = child.val();
-                    receiptCount++;
-                    console.log(`🔍 Receipt ${receiptCount}:`, child.key);
-                    console.log('   receipt.assignedTo:', receipt.assignedTo);
-                    console.log('   receipt.status:', receipt.status);
-                    console.log('   userId match:', receipt.assignedTo?.userId === userId);
                     if (receipt.assignedTo && receipt.assignedTo.userId === userId) {
                         if (receipt.status !== 'completed' && receipt.status !== 'cancelled' && receipt
                             .status !== 'closed') {
                             receipts.push({ id: child.key, ...receipt });
-                            console.log('   ✅ تم إضافة الفاتورة');
-                        } else { console.log('   ⏭️ تم تجاهل الفاتورة (مكتملة أو ملغية أو مقفلة)'); }
-                    } else { console.log('   ⏭️ تم تجاهل الفاتورة (ليست للمستخدم)'); }
+                        }
+                    }
                 });
-                console.log('🔍 Total receipts found:', receiptCount);
-                console.log('🔍 Filtered receipts:', receipts.length);
-                console.log('🔍 Receipts list:', receipts);
                 allAssignedReceipts = receipts;
                 receiptsPage = 0;
                 loadDashboardStats();
@@ -3617,10 +3610,9 @@
             }
         }
 
-        // ====== NORMAL RECEIPT FUNCTIONS ======
+        // ====== NORMAL RECEIPT DETAIL ======
         async function openReceipt(receiptId) {
             if (currentReceiptId && currentReceiptData) { closeDetail(true); }
-            if (currentBlankReceiptId && currentBlankReceiptData) { closeBlankDetail(true); }
             currentReceiptId = receiptId;
             const snapshot = await db.ref(`receipts/${receiptId}`).once('value');
             currentReceiptData = snapshot.val();
@@ -3689,7 +3681,22 @@
             updateTotals();
             await saveToFirebase(true);
 
-            await updateModelsImagesFromReceipt(currentReceiptId, currentReceiptData);
+            // Update model images
+            if (currentReceiptData.modelColorsImages) {
+                for (const modelName in currentReceiptData.modelColorsImages) {
+                    const colorImages = currentReceiptData.modelColorsImages[modelName];
+                    let firstImageUrl = null;
+                    for (const colorName in colorImages) {
+                        if (colorImages[colorName]) {
+                            firstImageUrl = colorImages[colorName];
+                            break;
+                        }
+                    }
+                    if (firstImageUrl) {
+                        await updateModelImageInModelsNode(modelName, firstImageUrl);
+                    }
+                }
+            }
 
             await loadReceivedModelsHistory();
             showWarning('تم إقفال الفاتورة وتحديث صور الموديلات بنجاح', false);
@@ -3702,21 +3709,7 @@
 
         async function closeFullReceipt() {
             if (!currentReceiptData) return;
-            let allClosed = true;
-            for (const model of currentReceiptData.models) {
-                if (!isModelClosed(model.modelName)) {
-                    allClosed = false;
-                    break;
-                }
-            }
-            let message = 'هل أنت متأكد من إقفال الفاتورة بالكامل؟';
-            if (!allClosed) {
-                const openModels = currentReceiptData.models.filter(m => !isModelClosed(m.modelName)).map(m => m.modelName)
-                    .join(', ');
-                message += `\nتحذير: الموديلات التالية لم يتم تقفيلها بشكل منفرد: ${openModels}`;
-                message += '\nسيتم تقفيلها تلقائياً عند إقفال الفاتورة.';
-            }
-            customConfirm(message, async (confirmed) => {
+            customConfirm('هل أنت متأكد من إقفال الفاتورة بالكامل؟ سيتم تقفيل جميع الموديلات.', async (confirmed) => {
                 if (confirmed) {
                     for (const model of currentReceiptData.models) {
                         if (!isModelClosed(model.modelName)) {
@@ -3734,7 +3727,22 @@
                     updateTotals();
                     await saveToFirebase(true);
 
-                    await updateModelsImagesFromReceipt(currentReceiptId, currentReceiptData);
+                    // Update model images
+                    if (currentReceiptData.modelColorsImages) {
+                        for (const modelName in currentReceiptData.modelColorsImages) {
+                            const colorImages = currentReceiptData.modelColorsImages[modelName];
+                            let firstImageUrl = null;
+                            for (const colorName in colorImages) {
+                                if (colorImages[colorName]) {
+                                    firstImageUrl = colorImages[colorName];
+                                    break;
+                                }
+                            }
+                            if (firstImageUrl) {
+                                await updateModelImageInModelsNode(modelName, firstImageUrl);
+                            }
+                        }
+                    }
 
                     await loadReceivedModelsHistory();
                     showWarning('تم إقفال الفاتورة بالكامل وتحديث صور الموديلات', false);
@@ -3777,6 +3785,7 @@
             currentReceiptData.closedModels[modelName] = true;
             currentReceiptData.closedModelsDate[modelName] = new Date().toISOString();
 
+            // Update model image
             const modelColorsImages = currentReceiptData.modelColorsImages;
             if (modelColorsImages && modelColorsImages[modelName]) {
                 const colorImages = modelColorsImages[modelName];
@@ -3876,7 +3885,6 @@
             let sizeArray = colorData[sizeId] || [0];
             const currentValue = sizeArray[idx] || 0;
             
-            // إذا كانت القيمة صفر أو الخلية فارغة، احذف مباشرة بدون تأكيد
             if (currentValue === 0 || currentValue === '' || sizeArray.length === 1) {
                 sizeArray.splice(idx, 1);
                 if (sizeArray.length === 0) sizeArray = [0];
@@ -3885,7 +3893,6 @@
                 saveToFirebase();
                 renderReceiptDetail();
             } else {
-                // إذا كانت هناك قيمة موجودة، أظهر تأكيد
                 customConfirm(`هل أنت متأكد من حذف الكمية (${currentValue})؟`, async (confirmed) => {
                     if (confirmed) {
                         sizeArray.splice(idx, 1);
@@ -3980,7 +3987,6 @@
             const fileInput = document.createElement('input');
             fileInput.type = 'file';
             fileInput.accept = 'image/*';
-            // تفعيل الكاميرا على الموبايل
             if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
                 fileInput.capture = 'environment';
             }
@@ -4016,6 +4022,34 @@
                 if (modelOpenState[modelName]) contentDiv.classList.add('open');
                 else contentDiv.classList.remove('open');
             }
+            // Update the icon
+            const title = contentDiv?.parentElement?.querySelector('.model-title');
+            if (title) {
+                const icon = title.querySelector('.fa-chevron-up, .fa-chevron-down');
+                if (icon) {
+                    icon.className = modelOpenState[modelName] ? 'fas fa-chevron-up' : 'fas fa-chevron-down';
+                }
+            }
+        }
+
+        function toggleNormalColorContent(modelName, colorName) {
+            const key = `${modelName}_${colorName}`;
+            if (normalColorOpenState[key] === undefined) normalColorOpenState[key] = true;
+            normalColorOpenState[key] = !normalColorOpenState[key];
+            const safeKey = `${modelName.replace(/[^a-zA-Z0-9]/g, '_')}_${colorName.replace(/[^a-zA-Z0-9]/g, '_')}`;
+            const contentDiv = document.getElementById(`normal-color-content-${safeKey}`);
+            if (contentDiv) {
+                if (normalColorOpenState[key]) contentDiv.classList.add('open');
+                else contentDiv.classList.remove('open');
+            }
+            // Update the icon
+            const header = contentDiv?.parentElement?.querySelector('.color-header');
+            if (header) {
+                const icon = header.querySelector('.fa-chevron-up, .fa-chevron-down');
+                if (icon) {
+                    icon.className = normalColorOpenState[key] ? 'fas fa-chevron-up' : 'fas fa-chevron-down';
+                }
+            }
         }
 
         function renderReceiptDetail() {
@@ -4026,7 +4060,7 @@
             const isCompleted = r.status === 'completed' || r.status === 'closed';
             let modelsHtml = '';
             if (r.models && r.models.length > 0) {
-                r.models.forEach((model, modelIndex) => {
+                r.models.forEach((model) => {
                     const isClosed = isModelClosed(model.modelName);
                     const modelTotalReceived = getTotalForModel(model.modelName);
                     const remainingForModel = model.quantity - modelTotalReceived;
@@ -4034,7 +4068,6 @@
                     const isOpen = modelOpenState[model.modelName] !== false;
                     const isModelFirstTime = r.modelFirstTime?.[model.modelName] === true;
                     
-                    // حساب إجمالي الموديل بغض النظر عن الألوان
                     let modelTotal = 0;
                     const modelColors = r.modelColors?.[model.modelName] || {};
                     for (const colorName in modelColors) {
@@ -4059,7 +4092,7 @@
                             const colorImage = r.modelColorsImages?.[model.modelName]?.[colorName] || '';
                             const isColorOpen = normalColorOpenState[`${model.modelName}_${colorName}`] !==
                                 false;
-                            const safeColorKey = colorName.replace(/[^a-zA-Z0-9]/g, '_');
+                            const safeColorKey = `${model.modelName.replace(/[^a-zA-Z0-9]/g, '_')}_${colorName.replace(/[^a-zA-Z0-9]/g, '_')}`;
                             const sizesList = getSizesForModel();
                             let sizesHtml = '';
                             sizesList.forEach(({ sizeId, sizeName }) => {
@@ -4072,7 +4105,7 @@
                                     qtyRowsHtml += `
                                         <div class="qty-box">
                                             ${!isClosed && !isCompleted ? `<button class="danger" onclick="removeColorSizeRow('${model.modelName}', '${colorName}', '${sizeId}', ${idx})"><i class="fas fa-minus"></i></button>` : ''}
-                                            <input type="number" value="${val || ''}" min="0" onchange="updateColorSizeValue('${model.modelName}', '${colorName}', '${sizeId}', ${idx}, this.value)" ${(isClosed || isCompleted) ? 'disabled' : ''} ${val === 0 ? 'style="color:transparent;"' : ''} onfocus="this.style.color='#0b1b2f'" onblur="if(this.value==='0' || this.value===''){this.value='';this.style.color='transparent'}">
+                                            <input type="number" value="${val || ''}" min="0" onchange="updateColorSizeValue('${model.modelName}', '${colorName}', '${sizeId}', ${idx}, this.value)" ${(isClosed || isCompleted) ? 'disabled' : ''} class="${val === 0 || val === '' ? 'empty-input' : ''}" onfocus="this.classList.remove('empty-input')" onblur="if(this.value==='0' || this.value===''){this.value='';this.classList.add('empty-input')}">
                                             ${!isClosed && !isCompleted && idx === sizeArray.length - 1 ? `<button onclick="addNewQtyRow('${model.modelName}', '${colorName}', '${sizeId}')"><i class="fas fa-plus"></i></button>` : ''}
                                         </div>
                                     `;
@@ -4110,7 +4143,7 @@
                                             ${!isClosed && !isCompleted ? `<button class="delete-color-btn" onclick="deleteColorFromModel('${model.modelName}', '${colorName}')"><i class="fas fa-trash"></i></button>` : ''}
                                         </div>
                                     </div>
-                                    <div id="normal-color-content-${safeModelKey}_${safeColorKey}" class="color-sizes-wrapper ${isColorOpen ? 'open' : ''}" onclick="event.stopPropagation()">
+                                    <div id="normal-color-content-${safeColorKey}" class="color-sizes-wrapper ${isColorOpen ? 'open' : ''}" onclick="event.stopPropagation()">
                                         <div class="sizes-container">
                                             ${sizesHtml}
                                         </div>
@@ -4158,7 +4191,6 @@
                     `;
                 });
             }
-            const isAnyModelOpen = r.models ? r.models.some(m => !isModelClosed(m.modelName)) : true;
             const isClosed = r.status === 'closed' || r.status === 'completed';
             document.getElementById('receiptDetail').innerHTML = `
                 <div class="detail-header">
@@ -4300,13 +4332,55 @@
             showWarning('تم إضافة اللون بنجاح', false);
         }
 
-        function logout() { localStorage.removeItem('currentUser');
-            window.location.href = 'index.html'; }
+        function logout() { 
+            // Save any open blank receipts before logout
+            for (const receiptId in openBlankReceipts) {
+                saveBlankReceiptIfChanged(receiptId);
+            }
+            localStorage.removeItem('currentUser');
+            window.location.href = 'index.html'; 
+        }
 
-        let pendingModelSearchRowId = null;
+        function formatDate(timestamp) {
+            if (!timestamp) return '-';
+            const date = new Date(timestamp);
+            return date.toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' });
+        }
+
+        // Save open blank receipts periodically (every 30 seconds) but only if changed
+        setInterval(() => {
+            if (dataChanged) {
+                for (const receiptId in openBlankReceipts) {
+                    saveBlankReceiptIfChanged(receiptId);
+                }
+                dataChanged = false;
+            }
+        }, 30000);
+
+        // Save open blank receipts before page unload
+        window.addEventListener('beforeunload', function(e) {
+            let hasChanges = false;
+            for (const receiptId in openBlankReceipts) {
+                // Check if there are changes
+                const r = openBlankReceipts[receiptId];
+                // We'll save all open ones just in case
+                saveBlankReceiptIfChanged(receiptId);
+                hasChanges = true;
+            }
+            if (hasChanges) {
+                // Allow the save to complete
+                e.preventDefault();
+                e.returnValue = '';
+            }
+        });
 
         checkAuth();
+
+        // Override the newFactorySelect change to re-render model rows
         document.getElementById('newFactorySelect')?.addEventListener('change', () => { renderNewModelRows(); });
+
+        // Store the original loadMoreHistory for filtering
+        window._filteredHistoryData = null;
     </script>
 </body>
 </html>
