@@ -13,6 +13,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
+        /* جميع الستايلات كما هي ... */
         * {
             margin: 0;
             padding: 0;
@@ -1763,7 +1764,7 @@
     </div>
     <div class="warning-indicator" id="warningIndicator"></div>
 
-    <!-- MODALS -->
+    <!-- MODALS (مثل السابق) -->
     <div id="customModal" class="modal">
         <div class="modal-content">
             <h3 id="modalTitle">تأكيد</h3>
@@ -1936,7 +1937,8 @@
 
         // Track if data has changed to avoid unnecessary updates
         let dataChanged = false;
-        let saveTimeout = null;
+
+        // ====== FUNCTIONS ======
 
         function setupModalListeners() {
             if (modalEventListenersAdded) return;
@@ -2280,8 +2282,10 @@
         // Toggle blank receipt open/close
         async function toggleBlankReceipt(receiptId) {
             if (openBlankReceipts[receiptId]) {
-                // Close it
-                await saveBlankReceiptIfChanged(receiptId);
+                // Close it - save if changed
+                if (dataChanged) {
+                    await saveBlankReceiptIfChanged(receiptId);
+                }
                 delete openBlankReceipts[receiptId];
                 renderBlankReceiptDetailsContainer();
                 loadBlankReceipts();
@@ -2314,6 +2318,68 @@
             }
         }
 
+        // ====== BLANK RECEIPT DETAILS RENDER ======
+        // متغيرات لحالة الفتح والإغلاق
+        let blankModelOpenState = {};
+        let blankColorOpenState = {};
+
+        // دالة لتبديل حالة فتح/إغلاق الموديل
+        function toggleBlankModelContent(receiptId, modelName) {
+            const key = `${receiptId}_${modelName}`;
+            blankModelOpenState[key] = blankModelOpenState[key] === undefined ? true : !blankModelOpenState[key];
+            const safeKey = `${receiptId}_${modelName.replace(/[^a-zA-Z0-9]/g, '_')}`;
+            const contentDiv = document.getElementById(`blank-model-content-${safeKey}`);
+            if (contentDiv) {
+                contentDiv.classList.toggle('open', blankModelOpenState[key]);
+            }
+            // Update icon
+            const title = contentDiv?.parentElement?.querySelector('.model-title');
+            if (title) {
+                const icon = title.querySelector('.fa-chevron-up, .fa-chevron-down');
+                if (icon) {
+                    icon.className = blankModelOpenState[key] ? 'fas fa-chevron-up' : 'fas fa-chevron-down';
+                }
+            }
+        }
+
+        // دالة لتبديل حالة فتح/إغلاق اللون
+        function toggleBlankColorContent(receiptId, modelName, colorName) {
+            const key = `${receiptId}_${modelName}_${colorName}`;
+            blankColorOpenState[key] = blankColorOpenState[key] === undefined ? true : !blankColorOpenState[key];
+            const safeKey = `${receiptId}_${modelName.replace(/[^a-zA-Z0-9]/g, '_')}_${colorName.replace(/[^a-zA-Z0-9]/g, '_')}`;
+            const contentDiv = document.getElementById(`blank-color-content-${safeKey}`);
+            if (contentDiv) {
+                contentDiv.classList.toggle('open', blankColorOpenState[key]);
+            }
+            // Update icon
+            const header = contentDiv?.parentElement?.querySelector('.color-header');
+            if (header) {
+                const icon = header.querySelector('.fa-chevron-up, .fa-chevron-down');
+                if (icon) {
+                    icon.className = blankColorOpenState[key] ? 'fas fa-chevron-up' : 'fas fa-chevron-down';
+                }
+            }
+        }
+
+        // دالة لتبديل حالة فتح/إغلاق اللون في الفواتير العادية
+        function toggleNormalColorContent(modelName, colorName) {
+            const key = `${modelName}_${colorName}`;
+            normalColorOpenState[key] = normalColorOpenState[key] === undefined ? true : !normalColorOpenState[key];
+            const safeKey = `${modelName.replace(/[^a-zA-Z0-9]/g, '_')}_${colorName.replace(/[^a-zA-Z0-9]/g, '_')}`;
+            const contentDiv = document.getElementById(`normal-color-content-${safeKey}`);
+            if (contentDiv) {
+                contentDiv.classList.toggle('open', normalColorOpenState[key]);
+            }
+            // Update icon
+            const header = contentDiv?.parentElement?.querySelector('.color-header');
+            if (header) {
+                const icon = header.querySelector('.fa-chevron-up, .fa-chevron-down');
+                if (icon) {
+                    icon.className = normalColorOpenState[key] ? 'fas fa-chevron-up' : 'fas fa-chevron-down';
+                }
+            }
+        }
+
         function renderBlankReceiptDetailsContainer() {
             const container = document.getElementById('blankReceiptDetailsContainer');
             container.innerHTML = '';
@@ -2335,8 +2401,6 @@
                 wrapper.id = `blank-wrapper-${id}`;
                 wrapper.innerHTML = renderBlankReceiptDetailHTML(id, r);
                 container.appendChild(wrapper);
-                // Add event listeners for this receipt
-                attachBlankEventListeners(id);
             });
         }
 
@@ -2394,7 +2458,7 @@
                             let qtyRowsHtml = '';
                             sizeArray.forEach((val, idx) => {
                                 qtyRowsHtml += `
-                                    <div class="qty-box" data-receipt="${receiptId}" data-model="${modelName}" data-color="${colorName}" data-size="${sizeId}" data-idx="${idx}">
+                                    <div class="qty-box">
                                         <button class="danger" onclick="removeBlankColorSizeRow('${receiptId}', '${modelName}', '${colorName}', '${sizeId}', ${idx})"><i class="fas fa-minus"></i></button>
                                         <input type="number" value="${val || ''}" min="0" onchange="updateBlankColorSizeValue('${receiptId}', '${modelName}', '${colorName}', '${sizeId}', ${idx}, this.value)" class="${val === 0 || val === '' ? 'empty-input' : ''}" onfocus="this.classList.remove('empty-input')" onblur="if(this.value==='0' || this.value===''){this.value='';this.classList.add('empty-input')}">
                                         ${idx === sizeArray.length - 1 ? `<button onclick="addNewBlankQtyRow('${receiptId}', '${modelName}', '${colorName}', '${sizeId}')"><i class="fas fa-plus"></i></button>` : ''}
@@ -2499,58 +2563,11 @@
             `;
         }
 
-        function attachBlankEventListeners(receiptId) {
-            // Event listeners are attached via inline onclick handlers
-            // No additional setup needed
-        }
-
-        // ====== BLANK RECEIPT FUNCTIONS (with receiptId parameter) ======
-        let blankModelOpenState = {};
-        let blankColorOpenState = {};
-
-        function toggleBlankModelContent(receiptId, modelName) {
-            const key = `${receiptId}_${modelName}`;
-            if (blankModelOpenState[key] === undefined) blankModelOpenState[key] = true;
-            blankModelOpenState[key] = !blankModelOpenState[key];
-            const safeKey = `${receiptId}_${modelName.replace(/[^a-zA-Z0-9]/g, '_')}`;
-            const contentDiv = document.getElementById(`blank-model-content-${safeKey}`);
-            if (contentDiv) {
-                if (blankModelOpenState[key]) contentDiv.classList.add('open');
-                else contentDiv.classList.remove('open');
-            }
-            // Update the icon
-            const title = contentDiv?.parentElement?.querySelector('.model-title');
-            if (title) {
-                const icon = title.querySelector('.fa-chevron-up, .fa-chevron-down');
-                if (icon) {
-                    icon.className = blankModelOpenState[key] ? 'fas fa-chevron-up' : 'fas fa-chevron-down';
-                }
-            }
-        }
-
-        function toggleBlankColorContent(receiptId, modelName, colorName) {
-            const key = `${receiptId}_${modelName}_${colorName}`;
-            if (blankColorOpenState[key] === undefined) blankColorOpenState[key] = true;
-            blankColorOpenState[key] = !blankColorOpenState[key];
-            const safeKey = `${receiptId}_${modelName.replace(/[^a-zA-Z0-9]/g, '_')}_${colorName.replace(/[^a-zA-Z0-9]/g, '_')}`;
-            const contentDiv = document.getElementById(`blank-color-content-${safeKey}`);
-            if (contentDiv) {
-                if (blankColorOpenState[key]) contentDiv.classList.add('open');
-                else contentDiv.classList.remove('open');
-            }
-            // Update the icon
-            const header = contentDiv?.parentElement?.querySelector('.color-header');
-            if (header) {
-                const icon = header.querySelector('.fa-chevron-up, .fa-chevron-down');
-                if (icon) {
-                    icon.className = blankColorOpenState[key] ? 'fas fa-chevron-up' : 'fas fa-chevron-down';
-                }
-            }
-        }
-
         function closeBlankReceipt(receiptId) {
             if (openBlankReceipts[receiptId]) {
-                saveBlankReceiptIfChanged(receiptId);
+                if (dataChanged) {
+                    saveBlankReceiptIfChanged(receiptId);
+                }
                 delete openBlankReceipts[receiptId];
                 renderBlankReceiptDetailsContainer();
                 loadBlankReceipts();
@@ -2558,6 +2575,7 @@
             }
         }
 
+        // ====== BLANK RECEIPT CRUD OPERATIONS ======
         function addNewBlankModel(receiptId) {
             if (!openBlankReceipts[receiptId]) return;
             const r = openBlankReceipts[receiptId];
@@ -2644,7 +2662,6 @@
             document.getElementById('newModelCodeBlank').value = modelCode;
             document.getElementById('modelErrorMsgBlank').innerHTML = '';
             document.getElementById('addModelModalBlank').style.display = 'flex';
-            // Store the receiptId and rowId for later use
             document.getElementById('addModelModalBlank').dataset.receiptId = receiptId;
             document.getElementById('addModelModalBlank').dataset.rowId = rowId;
         }
@@ -4019,8 +4036,7 @@
             modelOpenState[modelName] = !modelOpenState[modelName];
             const contentDiv = document.getElementById(`model-content-${modelName.replace(/[^a-zA-Z0-9]/g, '_')}`);
             if (contentDiv) {
-                if (modelOpenState[modelName]) contentDiv.classList.add('open');
-                else contentDiv.classList.remove('open');
+                contentDiv.classList.toggle('open', modelOpenState[modelName]);
             }
             // Update the icon
             const title = contentDiv?.parentElement?.querySelector('.model-title');
@@ -4028,26 +4044,6 @@
                 const icon = title.querySelector('.fa-chevron-up, .fa-chevron-down');
                 if (icon) {
                     icon.className = modelOpenState[modelName] ? 'fas fa-chevron-up' : 'fas fa-chevron-down';
-                }
-            }
-        }
-
-        function toggleNormalColorContent(modelName, colorName) {
-            const key = `${modelName}_${colorName}`;
-            if (normalColorOpenState[key] === undefined) normalColorOpenState[key] = true;
-            normalColorOpenState[key] = !normalColorOpenState[key];
-            const safeKey = `${modelName.replace(/[^a-zA-Z0-9]/g, '_')}_${colorName.replace(/[^a-zA-Z0-9]/g, '_')}`;
-            const contentDiv = document.getElementById(`normal-color-content-${safeKey}`);
-            if (contentDiv) {
-                if (normalColorOpenState[key]) contentDiv.classList.add('open');
-                else contentDiv.classList.remove('open');
-            }
-            // Update the icon
-            const header = contentDiv?.parentElement?.querySelector('.color-header');
-            if (header) {
-                const icon = header.querySelector('.fa-chevron-up, .fa-chevron-down');
-                if (icon) {
-                    icon.className = normalColorOpenState[key] ? 'fas fa-chevron-up' : 'fas fa-chevron-down';
                 }
             }
         }
@@ -4335,7 +4331,9 @@
         function logout() { 
             // Save any open blank receipts before logout
             for (const receiptId in openBlankReceipts) {
-                saveBlankReceiptIfChanged(receiptId);
+                if (dataChanged) {
+                    saveBlankReceiptIfChanged(receiptId);
+                }
             }
             localStorage.removeItem('currentUser');
             window.location.href = 'index.html'; 
@@ -4347,30 +4345,12 @@
             return date.toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' });
         }
 
-        // Save open blank receipts periodically (every 30 seconds) but only if changed
-        setInterval(() => {
-            if (dataChanged) {
-                for (const receiptId in openBlankReceipts) {
-                    saveBlankReceiptIfChanged(receiptId);
-                }
-                dataChanged = false;
-            }
-        }, 10000);
-
         // Save open blank receipts before page unload
         window.addEventListener('beforeunload', function(e) {
-            let hasChanges = false;
             for (const receiptId in openBlankReceipts) {
-                // Check if there are changes
-                const r = openBlankReceipts[receiptId];
-                // We'll save all open ones just in case
-                saveBlankReceiptIfChanged(receiptId);
-                hasChanges = true;
-            }
-            if (hasChanges) {
-                // Allow the save to complete
-                e.preventDefault();
-                e.returnValue = '';
+                if (dataChanged) {
+                    saveBlankReceiptIfChanged(receiptId);
+                }
             }
         });
 
