@@ -382,6 +382,11 @@
       color: #C62828;
     }
 
+    .badge.closed {
+      background: #D1D5DB;
+      color: #374151;
+    }
+
     .preview-card {
       display: none;
       animation: fadeSlide 0.3s ease;
@@ -995,6 +1000,22 @@
     .progress-bar .fill.danger {
       background: var(--danger);
     }
+
+    .invoice-item.disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+
+    .invoice-item .closed-badge {
+      background: #D1D5DB;
+      color: #374151;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 4px 14px;
+      border-radius: 40px;
+      text-transform: uppercase;
+    }
   </style>
 </head>
 <body>
@@ -1022,6 +1043,7 @@
           <option value="preparing">⚡ قيد التحضير</option>
           <option value="prepared">✅ محضرة</option>
           <option value="partial">⚠️ تحضير جزئي</option>
+          <option value="closed">🔒 مقفلة</option>
         </select>
         <input type="text" class="search-input" id="searchInput" placeholder="🔍 بحث عن فرع أو منتج..." />
       </div>
@@ -1119,7 +1141,7 @@
         <div class="product-list" id="closeProductList"></div>
         
         <div style="background:#E8F5E9;padding:12px;border-radius:12px;margin:12px 0;border:1px solid #86EFAC;">
-          <p style="font-size:13px;color:#166534;">✅ سيتم تحديث حالة الفاتورة إلى "محضرة" بعد التأكيد</p>
+          <p style="font-size:13px;color:#166534;">✅ سيتم تحديث حالة الفاتورة إلى "prepared" بعد التأكيد</p>
         </div>
 
         <div class="dialog-actions">
@@ -1244,6 +1266,9 @@
           items.forEach(r => { total += r.qty || 0;
             prepared += r.preparedQty || 0; });
           return total === 0 ? 0 : Math.round((prepared / total) * 100);
+        },
+        isInvoiceClosed(invoice) {
+          return invoice && (invoice.status === 'prepared' || invoice.isClosed === true);
         }
       };
 
@@ -1315,7 +1340,7 @@
           if (id) {
             setTimeout(() => {
               const invoice = this._invoices.find(inv => inv.id === id);
-              if (invoice && this.getInvoiceStatus(invoice) !== 'prepared') {
+              if (invoice && !Utils.isInvoiceClosed(invoice)) {
                 this.selectInvoice(invoice.id);
                 this.elements.filter.value = 'all';
                 this.renderInvoiceList();
@@ -1346,6 +1371,14 @@
                     if (item.preparedQty === undefined) item.preparedQty = 0;
                   });
                 }
+                // Ensure status field exists
+                if (!inv.status) {
+                  if (inv.isClosed === true) {
+                    inv.status = 'prepared';
+                  } else {
+                    inv.status = 'pending';
+                  }
+                }
                 this._invoices.push({
                   id: key,
                   ...inv,
@@ -1373,12 +1406,25 @@
         },
 
         getInvoiceStatus(invoice) {
-          if (!invoice || !invoice.items || !invoice.items.length) return 'pending';
-          if (invoice.isClosed || invoice.status === 'prepared') return 'prepared';
+          if (!invoice || !invoice.items || !invoice.items.length) {
+            return invoice && invoice.status === 'prepared' ? 'prepared' : 'pending';
+          }
+          
+          // Check if invoice is explicitly marked as prepared/closed
+          if (invoice.status === 'prepared' || invoice.isClosed === true) {
+            return 'prepared';
+          }
+          
           const allPrepared = invoice.items.every(item => (item.preparedQty || 0) >= (item.qty || 0));
           const anyPrepared = invoice.items.some(item => (item.preparedQty || 0) > 0);
-          if (allPrepared) return 'prepared';
-          if (anyPrepared) return 'partial';
+          
+          if (allPrepared) {
+            // Auto-mark as prepared if all items are prepared
+            return 'prepared';
+          }
+          if (anyPrepared) {
+            return 'partial';
+          }
           return 'pending';
         },
 
@@ -1387,7 +1433,8 @@
             pending: '⏳ غير محضرة',
             partial: '⚠️ تحضير جزئي',
             preparing: '⚡ قيد التحضير',
-            prepared: '✅ محضرة'
+            prepared: '✅ محضرة',
+            closed: '🔒 مقفلة'
           };
           return map[status] || status;
         },
@@ -1428,6 +1475,7 @@
           let html = '';
           filtered.forEach((inv) => {
             const status = this.getInvoiceStatus(inv);
+            const isClosed = Utils.isInvoiceClosed(inv);
             const date = new Date(inv.createdAt);
             const dateStr = date.toLocaleDateString('ar-EG') + ' ' + date.toLocaleTimeString('ar-EG', {
               hour: '2-digit',
@@ -1437,8 +1485,8 @@
             const isSelected = this._selectedInvoiceId === inv.id;
 
             html += `
-              <div class="invoice-item ${isSelected ? 'selected' : ''}" 
-                   onclick="window.UI.selectInvoice('${inv.id}')">
+              <div class="invoice-item ${isSelected ? 'selected' : ''} ${isClosed ? 'disabled' : ''}" 
+                   onclick="${isClosed ? '' : `window.UI.selectInvoice('${inv.id}')`}">
                 <div class="info">
                   <div class="branch">🏢 ${Utils.escapeHtml(inv.branch || 'Branch not set')}</div>
                   <div class="meta">
@@ -1449,13 +1497,17 @@
                   </div>
                 </div>
                 <div class="stats">
-                  <div style="min-width:80px;">
-                    <div style="font-size:12px;color:var(--subtext);">التقدم</div>
-                    <div style="font-weight:700;font-size:14px;">${progress}%</div>
-                    <div class="progress-bar" style="width:80px;">
-                      <div class="fill ${progress < 50 ? 'danger' : progress < 100 ? 'warning' : ''}" style="width:${progress}%;"></div>
+                  ${isClosed ? `
+                    <span class="closed-badge">🔒 مقفلة</span>
+                  ` : `
+                    <div style="min-width:80px;">
+                      <div style="font-size:12px;color:var(--subtext);">التقدم</div>
+                      <div style="font-weight:700;font-size:14px;">${progress}%</div>
+                      <div class="progress-bar" style="width:80px;">
+                        <div class="fill ${progress < 50 ? 'danger' : progress < 100 ? 'warning' : ''}" style="width:${progress}%;"></div>
+                      </div>
                     </div>
-                  </div>
+                  `}
                   <span class="badge ${status}">${this.getStatusText(status)}</span>
                 </div>
               </div>
@@ -1473,16 +1525,15 @@
             return;
           }
           
-          // Don't allow selecting prepared invoices for editing
-          if (this.getInvoiceStatus(invoice) === 'prepared') {
-            this.showAlert('✅ هذه الفاتورة محضرة بالكامل ولا يمكن تعديلها', 'info');
+          // Don't allow selecting prepared/closed invoices for editing
+          if (Utils.isInvoiceClosed(invoice)) {
+            this.showAlert('🔒 هذه الفاتورة مقفلة ولا يمكن تعديلها', 'info');
             this._selectedInvoice = invoice;
             this._selectedInvoiceId = invoiceId;
             this._productCardStates = {};
             this.renderInvoicePreview(invoice);
             this.renderInvoiceList();
             this.updateStats();
-            // Update URL
             const url = new URL(window.location);
             url.searchParams.set('invoice', invoiceId);
             window.history.pushState({}, '', url);
@@ -1513,27 +1564,38 @@
           });
           const status = this.getInvoiceStatus(invoice);
           const progress = Utils.getProgress(invoice.items);
-          const isPrepared = status === 'prepared';
+          const isClosed = Utils.isInvoiceClosed(invoice);
 
           this.elements.previewTitle.textContent = `📋 ${Utils.escapeHtml(branch)}`;
           this.elements.previewMeta.textContent = `📅 ${dateStr} | 🧮 ${invoice.totalPieces || Utils.calculateTotalPieces(invoice.items)} قطعة | 💰 ${Utils.formatCurrency(invoice.totalValue || Utils.calculateTotalValue(invoice.items))} LE`;
-          this.elements.previewStatus.textContent = this.getStatusText(status);
-          this.elements.previewStatus.className = `badge ${status}`;
+          this.elements.previewStatus.textContent = isClosed ? '🔒 مقفلة' : this.getStatusText(status);
+          this.elements.previewStatus.className = `badge ${isClosed ? 'closed' : status}`;
 
-          if (isPrepared) {
+          if (isClosed) {
             container.innerHTML = `
-              <div style="background:#E8F5E9;padding:24px;border-radius:16px;text-align:center;border:2px solid #86EFAC;">
-                <div style="font-size:48px;margin-bottom:12px;">✅</div>
-                <h3 style="color:#16A34A;">تم تحضير هذه الفاتورة بالكامل</h3>
-                <p style="color:#15803D;margin-top:8px;">لا يمكن تعديل الكميات بعد التقفيل</p>
-                <div style="margin-top:12px;font-size:14px;color:#166534;">
+              <div style="background:#F3F4F6;padding:24px;border-radius:16px;text-align:center;border:2px solid #D1D5DB;">
+                <div style="font-size:48px;margin-bottom:12px;">🔒</div>
+                <h3 style="color:#374151;">هذه الفاتورة مقفلة</h3>
+                <p style="color:#6B7280;margin-top:8px;">لا يمكن تعديل الكميات بعد التقفيل</p>
+                <div style="margin-top:12px;font-size:14px;color:#374151;">
                   تم تحضير ${Utils.calculatePrepared(invoice.items)} من ${Utils.calculateTotalPieces(invoice.items)} قطعة
+                </div>
+                <div style="margin-top:8px;font-size:13px;color:#6B7280;">
+                  الحالة: ${invoice.status || 'prepared'}
                 </div>
               </div>
             `;
             this.updateBottomBar(invoice);
+            
+            // Hide close button for closed invoices
+            this.elements.closePreparationBtn.style.display = 'none';
+            this.elements.closePreparationStickyBtn.style.display = 'none';
             return;
           }
+
+          // Show close button for non-closed invoices
+          this.elements.closePreparationBtn.style.display = 'inline-flex';
+          this.elements.closePreparationStickyBtn.style.display = 'inline-flex';
 
           if (!invoice.items || !invoice.items.length) {
             container.innerHTML = `
@@ -1676,9 +1738,9 @@
         changePrepareQty(productId, color, size, delta) {
           if (!this._selectedInvoice || !this._selectedInvoice.items) return;
           
-          // Check if invoice is prepared
-          if (this.getInvoiceStatus(this._selectedInvoice) === 'prepared') {
-            this.showAlert('⚠️ لا يمكن تعديل كميات فاتورة محضرة', 'error');
+          // Check if invoice is closed
+          if (Utils.isInvoiceClosed(this._selectedInvoice)) {
+            this.showAlert('⚠️ لا يمكن تعديل كميات فاتورة مقفلة', 'error');
             return;
           }
 
@@ -1701,6 +1763,7 @@
             this._selectedInvoice.totalPieces = Utils.calculateTotalPieces(this._selectedInvoice.items);
             this._selectedInvoice.totalValue = Utils.calculateTotalValue(this._selectedInvoice.items);
             
+            // Don't auto-close, just save
             this.saveInvoiceToFirebase(this._selectedInvoice);
             this.renderInvoicePreview(this._selectedInvoice);
             this.renderInvoiceList();
@@ -1730,10 +1793,9 @@
           }
 
           const invoice = this._selectedInvoice;
-          const status = this.getInvoiceStatus(invoice);
           
-          if (status === 'prepared') {
-            this.showAlert('✅ هذه الفاتورة محضرة بالكامل بالفعل', 'info');
+          if (Utils.isInvoiceClosed(invoice)) {
+            this.showAlert('🔒 هذه الفاتورة مقفلة بالفعل', 'info');
             return;
           }
 
@@ -1801,15 +1863,13 @@
 
           const invoice = this._selectedInvoice;
           
-          // Ensure all items keep their current prepared quantities
-          // No changes are made to preparedQty values
-          // Just mark the invoice as closed/prepared
-          
+          // Mark invoice as prepared/closed
           invoice.isClosed = true;
-          invoice.status = 'prepared';
+          invoice.status = 'prepared'; // Set status to "prepared" as requested
           invoice.totalPieces = Utils.calculateTotalPieces(invoice.items);
           invoice.totalValue = Utils.calculateTotalValue(invoice.items);
 
+          // Save to Firebase
           this.saveInvoiceToFirebase(invoice);
           this.closeCloseDialog();
 
@@ -1818,12 +1878,9 @@
           this.renderInvoiceList();
           this.updateStats();
           
-          this.showAlert(`✅ تم تقفيل التحضير بنجاح! تم تحضير ${Utils.calculatePrepared(invoice.items)} من ${Utils.calculateTotalPieces(invoice.items)} قطعة`, 'success');
+          this.showAlert(`✅ تم تقفيل التحضير بنجاح! الحالة: prepared`, 'success');
 
-          // Auto-close preview after 2 seconds
-          setTimeout(() => {
-            this.closePreview();
-          }, 2000);
+          // Keep preview open to show the closed state
         },
 
         closePreview() {
@@ -1848,7 +1905,7 @@
             const status = this.getInvoiceStatus(inv);
             if (status === 'pending') pending++;
             else if (status === 'partial' || status === 'preparing') preparing++;
-            else if (status === 'prepared') prepared++;
+            else if (status === 'prepared' || status === 'closed') prepared++;
           });
 
           this.elements.statTotalInvoices.textContent = total;
