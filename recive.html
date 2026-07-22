@@ -263,6 +263,12 @@
       border-radius: 12px;
     }
 
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none !important;
+    }
+
     /* ===== FILTER SECTION ===== */
     .filter-section {
       display: flex;
@@ -614,13 +620,18 @@
       touch-action: manipulation;
     }
 
-    .size-row .qty-control button:hover {
+    .size-row .qty-control button:hover:not(:disabled) {
       background: var(--bg);
       border-color: #CBD5E1;
     }
 
-    .size-row .qty-control button:active {
+    .size-row .qty-control button:active:not(:disabled) {
       transform: scale(0.92);
+    }
+
+    .size-row .qty-control button:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
     }
 
     .size-row .qty-control .qty-val {
@@ -644,6 +655,11 @@
 
     .size-row .qty-control .qty-val.pending {
       color: var(--subtext);
+    }
+
+    .size-row .qty-control .qty-val.zero {
+      color: var(--danger);
+      font-weight: 700;
     }
 
     .product-card-footer {
@@ -1105,6 +1121,16 @@
       font-size: 12px;
       font-weight: 600;
     }
+
+    .no-prepare {
+      background: #FEE2E2;
+      border: 1px solid #FCA5A5;
+      border-radius: 8px;
+      padding: 4px 8px;
+      color: var(--danger);
+      font-size: 12px;
+      font-weight: 600;
+    }
   </style>
 </head>
 <body>
@@ -1247,7 +1273,7 @@
       'use strict';
 
       // ===== STORAGE VERSION CONTROL =====
-      const STORAGE_VERSION = 3;
+      const STORAGE_VERSION = 4;
       const STORAGE_VERSION_KEY = 'shopify_storage_version';
 
       const currentVersion = localStorage.getItem(STORAGE_VERSION_KEY);
@@ -1328,10 +1354,10 @@
           other.sort();
           return [...std, ...num, ...other];
         },
-        calculateTotalPieces(items) { let t = 0;
-          items.forEach(r => { t += r.qty || 0; }); return t; },
-        calculateTotalValue(items) { let t = 0;
-          items.forEach(r => { t += r.total || 0; }); return t; },
+        // Calculate total prepared quantity (preparedQty)
+        calculateTotalPrepared(items) { let t = 0;
+          items.forEach(r => { t += r.preparedQty || 0; }); return t; },
+        // Calculate total received quantity
         calculateReceived(items) {
           let received = 0;
           items.forEach(r => { received += r.receivedQty || 0; });
@@ -1340,33 +1366,33 @@
         calculateShortage(items) {
           let shortage = 0;
           items.forEach(r => {
-            const qty = r.qty || 0;
+            const prepared = r.preparedQty || 0;
             const received = r.receivedQty || 0;
-            if (received < qty) shortage += (qty - received);
+            if (received < prepared) shortage += (prepared - received);
           });
           return shortage;
         },
         isFullyReceived(items) {
           if (!items || !items.length) return false;
-          return items.every(r => (r.receivedQty || 0) >= (r.qty || 0));
+          return items.every(r => (r.receivedQty || 0) >= (r.preparedQty || 0));
         },
         hasShortage(items) {
           if (!items || !items.length) return false;
-          return items.some(r => (r.receivedQty || 0) < (r.qty || 0));
+          return items.some(r => (r.receivedQty || 0) < (r.preparedQty || 0));
         },
         getProgress(items) {
           if (!items || !items.length) return 0;
           let total = 0,
             received = 0;
-          items.forEach(r => { total += r.qty || 0;
+          items.forEach(r => { total += r.preparedQty || 0;
             received += r.receivedQty || 0; });
           return total === 0 ? 0 : Math.round((received / total) * 100);
         },
         getStatus(invoice) {
           if (!invoice || !invoice.items || !invoice.items.length) return 'pending';
-          const allReceived = invoice.items.every(item => (item.receivedQty || 0) >= (item.qty || 0));
+          const allReceived = invoice.items.every(item => (item.receivedQty || 0) >= (item.preparedQty || 0));
           const anyReceived = invoice.items.some(item => (item.receivedQty || 0) > 0);
-          const hasShortage = invoice.items.some(item => (item.receivedQty || 0) < (item.qty || 0));
+          const hasShortage = invoice.items.some(item => (item.receivedQty || 0) < (item.preparedQty || 0));
           
           if (allReceived) return 'received';
           if (hasShortage && anyReceived) return 'shortage';
@@ -1382,9 +1408,12 @@
           };
           return map[status] || status;
         },
-        // Check if invoice has status "prepared"
         isPrepared(invoice) {
           return invoice && invoice.status === 'prepared';
+        },
+        // Check if item has preparedQty > 0
+        canReceive(item) {
+          return (item.preparedQty || 0) > 0;
         }
       };
 
@@ -1499,12 +1528,11 @@
                 const inv = data[key];
                 // ONLY INCLUDE INVOICES WITH status === "prepared"
                 if (inv.status === 'prepared') {
-                  // Ensure each item has receivedQty
+                  // Ensure each item has receivedQty and preparedQty
                   if (inv.items) {
                     inv.items.forEach(item => {
                       if (item.receivedQty === undefined) item.receivedQty = 0;
-                      // Ensure receivedQty is initialized with actual value from database
-                      // If the item already has receivedQty, keep it
+                      if (item.preparedQty === undefined) item.preparedQty = 0;
                     });
                   }
                   this._invoices.push({
@@ -1586,8 +1614,8 @@
                   <div class="meta">
                     <span>📅 ${dateStr}</span>
                     <span>📦 ${inv.items ? inv.items.length : 0} منتج</span>
-                    <span>🧮 ${inv.totalPieces || Utils.calculateTotalPieces(inv.items)} قطعة</span>
-                    <span>💰 ${Utils.formatCurrency(inv.totalValue || Utils.calculateTotalValue(inv.items))} LE</span>
+                    <span>🧮 ${inv.totalPieces || Utils.calculateTotalPrepared(inv.items)} قطعة</span>
+                    <span>💰 ${Utils.formatCurrency(inv.totalValue || 0)} LE</span>
                   </div>
                 </div>
                 <div class="stats">
@@ -1657,7 +1685,7 @@
           const shortage = Utils.calculateShortage(invoice.items);
 
           this.elements.previewTitle.textContent = `📋 ${Utils.escapeHtml(branch)}`;
-          this.elements.previewMeta.textContent = `📅 ${dateStr} | 🧮 ${invoice.totalPieces || Utils.calculateTotalPieces(invoice.items)} قطعة | 💰 ${Utils.formatCurrency(invoice.totalValue || Utils.calculateTotalValue(invoice.items))} LE`;
+          this.elements.previewMeta.textContent = `📅 ${dateStr} | 🧮 ${invoice.totalPieces || Utils.calculateTotalPrepared(invoice.items)} قطعة | 💰 ${Utils.formatCurrency(invoice.totalValue || 0)} LE`;
           this.elements.previewStatus.textContent = Utils.getStatusText(status);
           this.elements.previewStatus.className = `badge ${status}`;
 
@@ -1693,9 +1721,10 @@
             if (!groups[key].colors[color]) groups[key].colors[color] = [];
             groups[key].colors[color].push({
               size: item.size || 'No Size',
+              preparedQty: item.preparedQty || 0, // Use preparedQty as max
               qty: item.qty || 0,
               total: item.total || 0,
-              receivedQty: item.receivedQty || 0 // Show actual receivedQty
+              receivedQty: item.receivedQty || 0
             });
           });
 
@@ -1709,18 +1738,18 @@
             }
             const isOpen = this._productCardStates[productId];
 
-            // Calculate product progress
-            let totalQty = 0,
+            // Calculate product progress based on preparedQty
+            let totalPrepared = 0,
               totalReceived = 0;
             for (const color in g.colors) {
               g.colors[color].forEach(s => {
-                totalQty += s.qty || 0;
+                totalPrepared += s.preparedQty || 0;
                 totalReceived += s.receivedQty || 0;
               });
             }
-            const prodProgress = totalQty === 0 ? 0 : Math.round((totalReceived / totalQty) * 100);
-            const isDone = prodProgress === 100;
-            const hasShortage = totalReceived < totalQty;
+            const prodProgress = totalPrepared === 0 ? 0 : Math.round((totalReceived / totalPrepared) * 100);
+            const isDone = totalPrepared > 0 && prodProgress === 100;
+            const hasShortage = totalReceived < totalPrepared;
             const statusClass = isDone ? 'done' : hasShortage ? 'shortage' : 'pending';
 
             html += `
@@ -1761,10 +1790,10 @@
             }
             const isColorOpen = this._productCardStates[colorId];
 
-            const totalQty = sizes.reduce((sum, s) => sum + s.qty, 0);
+            const totalPrepared = sizes.reduce((sum, s) => sum + s.preparedQty, 0);
             const totalReceived = sizes.reduce((sum, s) => sum + (s.receivedQty || 0), 0);
-            const colorProgress = totalQty === 0 ? 0 : Math.round((totalReceived / totalQty) * 100);
-            const hasShortage = totalReceived < totalQty;
+            const colorProgress = totalPrepared === 0 ? 0 : Math.round((totalReceived / totalPrepared) * 100);
+            const hasShortage = totalReceived < totalPrepared;
 
             html += `
               <div class="color-accordion">
@@ -1772,26 +1801,34 @@
                   <span class="chevron-sm ${isColorOpen ? 'open' : ''}">▼</span>
                   <span>${Utils.escapeHtml(color)}</span>
                   <span style="font-size:12px;color:var(--subtext);margin-right:auto;">
-                    ${totalReceived}/${totalQty} pcs (${colorProgress}%)
+                    ${totalReceived}/${totalPrepared} pcs (${colorProgress}%)
                     ${hasShortage ? '<span class="shortage-highlight">⚠️ نقص</span>' : ''}
                   </span>
                 </div>
                 <div class="color-sizes ${isColorOpen ? 'open' : ''}">
                   ${sizes.map((s, idx) => {
-                    // Display actual receivedQty from database
+                    const prepared = s.preparedQty || 0;
                     const received = s.receivedQty || 0;
-                    const qty = s.qty || 0;
-                    const isReceived = received >= qty;
-                    const isPartial = received > 0 && received < qty;
-                    const statusClass = isReceived ? 'received' : isPartial ? 'partial' : 'pending';
+                    const canReceive = prepared > 0;
+                    const isReceived = received >= prepared && prepared > 0;
+                    const isPartial = received > 0 && received < prepared;
+                    const statusClass = canReceive ? (isReceived ? 'received' : isPartial ? 'partial' : 'pending') : 'zero';
+                    
+                    // Determine if buttons should be disabled
+                    const disableMinus = received <= 0;
+                    const disablePlus = received >= prepared || prepared === 0;
+                    
                     return `
                       <div class="size-row">
                         <span class="size-label">${Utils.escapeHtml(s.size)}</span>
                         <div class="qty-control">
-                          <button onclick="window.UI.changeReceiveQty('${productId}', '${color}', '${s.size}', -1)">−</button>
-                          <span class="qty-val ${statusClass}">${received}/${qty}</span>
-                          <button onclick="window.UI.changeReceiveQty('${productId}', '${color}', '${s.size}', 1)">+</button>
+                          <button onclick="window.UI.changeReceiveQty('${productId}', '${color}', '${s.size}', -1)" 
+                                  ${disableMinus ? 'disabled' : ''}>−</button>
+                          <span class="qty-val ${statusClass}">${received}/${prepared}</span>
+                          <button onclick="window.UI.changeReceiveQty('${productId}', '${color}', '${s.size}', 1)" 
+                                  ${disablePlus ? 'disabled' : ''}>+</button>
                         </div>
+                        ${!canReceive ? '<span class="no-prepare">🚫 غير متاح للاستلام</span>' : ''}
                       </div>
                     `;
                   }).join('')}
@@ -1824,7 +1861,7 @@
             const itemSize = item.size || 'No Size';
             if (itemColor === color && itemSize === size) {
               const current = item.receivedQty || 0;
-              const max = item.qty || 0;
+              const max = item.preparedQty || 0; // Use preparedQty as max
               const newQty = Math.max(0, Math.min(max, current + delta));
               if (newQty !== current) {
                 item.receivedQty = newQty;
@@ -1834,7 +1871,7 @@
           });
 
           if (found) {
-            this._selectedInvoice.totalPieces = Utils.calculateTotalPieces(this._selectedInvoice.items);
+            this._selectedInvoice.totalPieces = Utils.calculateTotalPrepared(this._selectedInvoice.items);
             this._selectedInvoice.totalValue = Utils.calculateTotalValue(this._selectedInvoice.items);
             this.saveInvoiceToFirebase(this._selectedInvoice);
             this.renderInvoicePreview(this._selectedInvoice);
@@ -1851,6 +1888,7 @@
           if (data.items) {
             data.items.forEach(item => {
               if (item.receivedQty === undefined) item.receivedQty = 0;
+              if (item.preparedQty === undefined) item.preparedQty = 0;
             });
           }
           ref.update(data, (error) => {
@@ -1913,18 +1951,22 @@
               return (a.size || '').localeCompare(b.size || '');
             });
             sorted.forEach(item => {
+              const prepared = item.preparedQty || 0;
               const received = item.receivedQty || 0;
-              const isReceived = received >= (item.qty || 0);
+              const canReceive = prepared > 0;
+              const isReceived = received >= prepared && prepared > 0;
+              
               detailsHtml += `
                 <div style="display:flex;align-items:center;gap:12px;padding:4px 0;font-size:14px;flex-wrap:wrap;">
                   <span style="min-width:50px;font-weight:500;">${Utils.escapeHtml(item.size || 'No Size')}</span>
-                  <span style="color:var(--subtext);">الكمية: ${item.qty || 0}</span>
+                  <span style="color:var(--subtext);">المتاح: ${prepared}</span>
                   <span style="color:${isReceived ? 'var(--success)' : 'var(--warning)'};">
                     المستلم: ${received}
                   </span>
+                  ${!canReceive ? '<span class="no-prepare">🚫 غير متاح</span>' : ''}
                   <div style="display:flex;gap:4px;margin-right:auto;">
-                    <button class="btn btn-secondary btn-sm" onclick="window.UI.adjustReceiveQtyFromDialog('${item.color || 'No Color'}', '${item.size || 'No Size'}', -1)">−</button>
-                    <button class="btn btn-secondary btn-sm" onclick="window.UI.adjustReceiveQtyFromDialog('${item.color || 'No Color'}', '${item.size || 'No Size'}', 1)">+</button>
+                    <button class="btn btn-secondary btn-sm" onclick="window.UI.adjustReceiveQtyFromDialog('${item.color || 'No Color'}', '${item.size || 'No Size'}', -1)" ${received <= 0 ? 'disabled' : ''}>−</button>
+                    <button class="btn btn-secondary btn-sm" onclick="window.UI.adjustReceiveQtyFromDialog('${item.color || 'No Color'}', '${item.size || 'No Size'}', 1)" ${received >= prepared || prepared === 0 ? 'disabled' : ''}>+</button>
                   </div>
                 </div>
               `;
@@ -1945,7 +1987,7 @@
             const itemSize = item.size || 'No Size';
             if (itemColor === color && itemSize === size) {
               const current = item.receivedQty || 0;
-              const max = item.qty || 0;
+              const max = item.preparedQty || 0;
               const newQty = Math.max(0, Math.min(max, current + delta));
               if (newQty !== current) {
                 item.receivedQty = newQty;
@@ -1955,7 +1997,7 @@
           });
 
           if (found) {
-            this._selectedInvoice.totalPieces = Utils.calculateTotalPieces(this._selectedInvoice.items);
+            this._selectedInvoice.totalPieces = Utils.calculateTotalPrepared(this._selectedInvoice.items);
             this._selectedInvoice.totalValue = Utils.calculateTotalValue(this._selectedInvoice.items);
             this.saveInvoiceToFirebase(this._selectedInvoice);
             
@@ -1991,14 +2033,14 @@
             return;
           }
 
-          // Mark all items as fully received
+          // Mark all items as fully received based on preparedQty
           if (invoice.items) {
             invoice.items.forEach(item => {
-              item.receivedQty = item.qty || 0;
+              item.receivedQty = item.preparedQty || 0;
             });
           }
 
-          invoice.totalPieces = Utils.calculateTotalPieces(invoice.items);
+          invoice.totalPieces = Utils.calculateTotalPrepared(invoice.items);
           invoice.totalValue = Utils.calculateTotalValue(invoice.items);
 
           this.saveInvoiceToFirebase(invoice);
@@ -2077,22 +2119,24 @@
               });
               sorted.forEach(item => {
                 const currentReceived = item.receivedQty || 0;
-                const qty = item.qty || 0;
-                const shortage = qty - currentReceived;
+                const prepared = item.preparedQty || 0;
+                const shortage = prepared - currentReceived;
                 const itemKey = `${key}|${color}|${item.size}`;
-                this._shortageData[itemKey] = shortage;
+                this._shortageData[itemKey] = shortage > 0 ? shortage : 0;
 
                 html += `
                   <div class="shortage-item">
                     <span class="label">${Utils.escapeHtml(item.size || 'No Size')}</span>
-                    <span class="qty-display">الكمية: ${qty}</span>
+                    <span class="qty-display">المتاح: ${prepared}</span>
                     <span class="qty-display">المستلم: ${currentReceived}</span>
-                    <span style="font-weight:600;color:var(--danger);">النقص: ${shortage}</span>
-                    <input type="number" class="shortage-input" 
-                           id="shortage_${itemKey.replace(/[^a-zA-Z0-9]/g, '_')}"
-                           value="${shortage}" 
-                           min="0" max="${shortage}"
-                           onchange="window.UI.updateShortageValue('${itemKey}', this.value)" />
+                    <span style="font-weight:600;color:${shortage > 0 ? 'var(--danger)' : 'var(--success)'};">${shortage > 0 ? 'النقص: ' + shortage : '✅ مكتمل'}</span>
+                    ${shortage > 0 ? `
+                      <input type="number" class="shortage-input" 
+                             id="shortage_${itemKey.replace(/[^a-zA-Z0-9]/g, '_')}"
+                             value="${shortage}" 
+                             min="0" max="${shortage}"
+                             onchange="window.UI.updateShortageValue('${itemKey}', this.value)" />
+                    ` : ''}
                   </div>
                 `;
               });
@@ -2126,14 +2170,14 @@
             const key = `${(item.name || 'Unknown')}|${(item.sku || '')}|${(item.color || 'No Color')}|${(item.size || 'No Size')}`;
             const shortageValue = this._shortageData[key];
             if (shortageValue !== undefined) {
-              const qty = item.qty || 0;
-              const received = qty - shortageValue;
+              const prepared = item.preparedQty || 0;
+              const received = prepared - shortageValue;
               item.receivedQty = Math.max(0, received);
-              if (received < qty) hasShortage = true;
+              if (received < prepared) hasShortage = true;
             }
           });
 
-          invoice.totalPieces = Utils.calculateTotalPieces(invoice.items);
+          invoice.totalPieces = Utils.calculateTotalPrepared(invoice.items);
           invoice.totalValue = Utils.calculateTotalValue(invoice.items);
 
           this.saveInvoiceToFirebase(invoice);
@@ -2183,14 +2227,14 @@
         updateBottomBar(invoice) {
           if (!invoice) return;
           const items = invoice.items || [];
-          const totalPieces = Utils.calculateTotalPieces(items);
+          const totalPrepared = Utils.calculateTotalPrepared(items);
           const receivedPieces = Utils.calculateReceived(items);
           const products = new Set(items.map(r => r.name + '|' + r.sku)).size;
-          const progress = totalPieces === 0 ? 0 : Math.round((receivedPieces / totalPieces) * 100);
+          const progress = totalPrepared === 0 ? 0 : Math.round((receivedPieces / totalPrepared) * 100);
           const shortage = Utils.calculateShortage(items);
 
           this.elements.bottomProducts.textContent = products;
-          this.elements.bottomPieces.textContent = totalPieces;
+          this.elements.bottomPieces.textContent = totalPrepared;
           this.elements.bottomReceived.textContent = receivedPieces;
           this.elements.bottomPercent.textContent = progress + '%';
           
