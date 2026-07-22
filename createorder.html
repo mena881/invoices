@@ -572,6 +572,8 @@
       border-top: 1px solid var(--border);
       display: flex;
       justify-content: flex-end;
+      gap: 8px;
+      flex-wrap: wrap;
     }
 
     /* ===== STATISTICS ===== */
@@ -941,7 +943,10 @@
           <button class="btn btn-secondary btn-sm" id="expandAllProducts">▼ Expand All Products</button>
           <button class="btn btn-secondary btn-sm" id="collapseAllProducts">▶ Collapse All Products</button>
         </div>
-        <button class="btn btn-success btn-sm" id="exportDialogBtn">📥 Export</button>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <button class="btn btn-danger btn-sm" id="clearAllBtn">🗑️ مسح الكل</button>
+          <button class="btn btn-success btn-sm" id="exportDialogBtn">📥 Export</button>
+        </div>
       </div>
       <div id="invoiceContainer">
         <div id="emptyInvoiceMsg" style="text-align:center;padding:40px 0;color:var(--subtext);">
@@ -1053,7 +1058,7 @@
       'use strict';
 
       // ===== STORAGE VERSION CONTROL =====
-      const STORAGE_VERSION = 5; // Increased version to force refresh
+      const STORAGE_VERSION = 6; // Increased version to force refresh
       const STORAGE_VERSION_KEY = 'shopify_storage_version';
 
       // Check if storage version matches, if not clear everything
@@ -1223,6 +1228,49 @@
         calculateTotalValue(rows) { let t = 0;
           rows.forEach(r => { t += r.total || 0; }); return t; },
 
+        // ===== NEW: Load currentTable from Firebase =====
+        loadCurrentTable(callback) {
+          if (!database) { 
+            console.warn('⚠️ Firebase not ready, cannot load currentTable');
+            if (callback) callback(null); 
+            return; 
+          }
+          database.ref('currentTable').once('value', (snapshot) => {
+            const data = snapshot.val();
+            if (data && data.data && Array.isArray(data.data)) {
+              console.log('✅ تم تحميل currentTable:', data.data.length, 'عنصر');
+              if (callback) callback(data.data);
+            } else {
+              console.log('ℹ️ لا توجد بيانات في currentTable');
+              if (callback) callback(null);
+            }
+          }, (error) => {
+            console.error('❌ خطأ في تحميل currentTable:', error);
+            if (callback) callback(null);
+          });
+        },
+
+        // ===== NEW: Save currentTable to Firebase =====
+        saveCurrentTable(tableData, callback) {
+          if (!database || !tableData) {
+            if (callback) callback('Firebase not ready');
+            return;
+          }
+          // حفظ البيانات فقط (بدون timestamp لتقليل الكتابات)
+          database.ref('currentTable').set({ 
+            data: tableData,
+            updatedAt: firebase.database.ServerValue.TIMESTAMP
+          }, (error) => {
+            if (error) { 
+              console.error('❌ خطأ في حفظ currentTable:', error); 
+              if (callback) callback(error);
+            } else { 
+              console.log('✅ تم حفظ currentTable:', tableData.length, 'عنصر');
+              if (callback) callback(null);
+            }
+          });
+        },
+
         saveInvoiceToFirebase(branchName, tableData, productUrl, callback) {
           if (!database) { if (callback) callback('⚠️ Firebase not ready'); return; }
           // Only save rows with qty > 0
@@ -1279,16 +1327,6 @@
                 count++; } }
             if (count > 0) ref.update(updates, (error) => { if (!error) console.log(
                 `✅ Cleaned ${count} old invoices`); });
-          });
-        },
-
-        silentSyncTable(tableData) {
-          if (!database) return;
-          database.ref('currentTable').set({ 
-            data: tableData, 
-            updatedAt: firebase.database.ServerValue.TIMESTAMP 
-          }, (error) => {
-            if (error) { console.error('❌ Silent sync error:', error); } else { console.log('✅ Silent synced'); }
           });
         },
 
@@ -1629,6 +1667,7 @@
           dupDetails: document.getElementById('dupDetails'),
           dupCancel: document.getElementById('dupCancel'),
           dupAddQty: document.getElementById('dupAddQty'),
+          clearAllBtn: document.getElementById('clearAllBtn'),
         },
         _lastProduct: null,
         _lastProductUrl: '',
@@ -1639,6 +1678,7 @@
         _syncTimer: null,
         _isDirty: false,
         _pendingAddData: null,
+        _isLoadingFromFirebase: false,
 
         init() {
           console.log('🚀 Initializing UI...');
@@ -1651,17 +1691,39 @@
           console.log('  - cardStates:', Storage.get('cardStates', {}));
           console.log('  - storage_version:', localStorage.getItem(STORAGE_VERSION_KEY));
 
-          // Load saved data
+          // Load saved data from localStorage first (as fallback)
           this.elements.url.value = Storage.get('url', '');
           this.elements.series.value = Storage.get('series', '');
           this.elements.branch.value = Storage.get('branch', '');
 
-          const saved = Storage.get('tableData', []);
-          if (Array.isArray(saved) && saved.length) { 
-            this._tableData = saved;
-            this.renderInvoice(); 
-          }
-          
+          // ===== LOAD FROM currentTable FIRST =====
+          this._isLoadingFromFirebase = true;
+          Utils.loadCurrentTable((data) => {
+            this._isLoadingFromFirebase = false;
+            if (data && Array.isArray(data) && data.length > 0) {
+              console.log('📥 Loading data from currentTable:', data.length, 'items');
+              this._tableData = data;
+              // Save to localStorage as backup
+              Storage.set('tableData', data);
+              this.renderInvoice();
+              this.showAlert('✅ تم تحميل البيانات من السحابة', 'success');
+            } else {
+              console.log('📥 No data in currentTable, checking localStorage...');
+              // Fallback to localStorage
+              const saved = Storage.get('tableData', []);
+              if (Array.isArray(saved) && saved.length) { 
+                this._tableData = saved;
+                this.renderInvoice();
+                // Also save to Firebase for sync
+                Utils.saveCurrentTable(this._tableData);
+              } else {
+                // No data at all
+                this._tableData = [];
+                this.renderInvoice();
+              }
+            }
+          });
+
           // Load cached product - handle version compatibility
           const cached = Storage.get('cachedProduct', null);
           if (cached) {
@@ -1721,6 +1783,9 @@
           this.elements.dialogCancel.addEventListener('click', () => this.closeExportDialog());
           this.elements.dialogExport.addEventListener('click', () => this.handleExport());
 
+          // Clear All button
+          this.elements.clearAllBtn.addEventListener('click', () => this.clearAllData());
+
           // Close dialog when clicking outside
           this.elements.exportDialog.addEventListener('click', (e) => {
             if (e.target === this.elements.exportDialog) this.closeExportDialog();
@@ -1761,8 +1826,8 @@
 
           // Silent sync - only when data changes
           this._syncTimer = setInterval(() => {
-            if (this._isDirty && this._tableData.length > 0) {
-              Utils.silentSyncTable(this._tableData);
+            if (this._isDirty && this._tableData.length > 0 && !this._isLoadingFromFirebase) {
+              Utils.saveCurrentTable(this._tableData);
               this._isDirty = false;
             }
           }, 2000);
@@ -1938,6 +2003,23 @@
           this.elements.previewSection.classList.remove('show');
           Storage.set('url', '');
           Storage.set('series', '');
+        },
+
+        // ===== CLEAR ALL DATA =====
+        clearAllData() {
+          if (!this._tableData.length) {
+            this.showAlert('⚠️ No data to clear', 'info');
+            return;
+          }
+          if (confirm('هل أنت متأكد من حذف جميع البيانات؟')) {
+            this._tableData = [];
+            this.renderInvoice();
+            this.saveAll();
+            this.markDirty();
+            // Save empty table to Firebase
+            Utils.saveCurrentTable([]);
+            this.showAlert('🗑️ تم مسح جميع البيانات', 'info');
+          }
         },
 
         // ===== RENDER INVOICE =====
@@ -2160,6 +2242,8 @@
             this._tableData = [];
             this.renderInvoice();
             this.saveAll();
+            // Clear Firebase currentTable
+            Utils.saveCurrentTable([]);
             this.loadOldInvoices();
             this.showAlert(`✅ Invoice closed (ID: ${key})`, 'success');
           });
@@ -2294,6 +2378,10 @@
           Storage.set('tableData', this._tableData);
           Storage.set('branch', this.elements.branch.value);
           Storage.set('cardStates', this._productCardStates);
+          // Save to Firebase currentTable
+          if (!this._isLoadingFromFirebase) {
+            Utils.saveCurrentTable(this._tableData);
+          }
         },
 
         // ===== IMAGE MODAL =====
