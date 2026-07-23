@@ -3687,50 +3687,48 @@
                 });
         }
 
-        function toggleNormalColorContent(modelName, colorName) {
-            if (!currentReceiptId) return;
-            const key = getColorStateKey(currentReceiptId, modelName, colorName);
-            if (colorOpenState[currentReceiptId] === undefined) colorOpenState[currentReceiptId] = {};
-            if (colorOpenState[currentReceiptId][key] === undefined) {
-                colorOpenState[currentReceiptId][key] = true;
-            }
-            colorOpenState[currentReceiptId][key] = !colorOpenState[currentReceiptId][key];
+function toggleNormalColorContent(modelName, colorName) {
+    if (!currentReceiptId) return;
+    const key = getColorStateKey(currentReceiptId, modelName, colorName);
+    if (colorOpenState[currentReceiptId] === undefined) colorOpenState[currentReceiptId] = {};
+    if (colorOpenState[currentReceiptId][key] === undefined) {
+        colorOpenState[currentReceiptId][key] = false;
+    }
+    colorOpenState[currentReceiptId][key] = !colorOpenState[currentReceiptId][key];
 
-            const safeModelKey = modelName.replace(/[^a-zA-Z0-9]/g, '_');
-            const safeColorKey = colorName.replace(/[^a-zA-Z0-9]/g, '_');
-            const contentDiv = document.getElementById(`normal-color-content-${safeModelKey}_${safeColorKey}`);
-            if (contentDiv) {
-                contentDiv.classList.toggle('open', colorOpenState[currentReceiptId][key]);
-            }
-            const toggleBtn = document.querySelector(`#normal-color-content-${safeModelKey}_${safeColorKey}`)?.parentElement
-                ?.querySelector('.color-toggle-btn i');
-            if (toggleBtn) {
-                toggleBtn.className = colorOpenState[currentReceiptId][key] ? 'fas fa-chevron-up' :
-                'fas fa-chevron-down';
-            }
-        }
+    const safeModelKey = modelName.replace(/[^a-zA-Z0-9]/g, '_');
+    const safeColorKey = colorName.replace(/[^a-zA-Z0-9]/g, '_');
+    const contentDiv = document.getElementById(`normal-color-content-${safeModelKey}_${safeColorKey}`);
+    if (contentDiv) {
+        contentDiv.style.display = colorOpenState[currentReceiptId][key] ? 'block' : 'none';
+    }
+    const toggleBtn = document.querySelector(`#normal-color-content-${safeModelKey}_${safeColorKey}`)?.parentElement
+        ?.querySelector('.color-toggle-btn i');
+    if (toggleBtn) {
+        toggleBtn.className = colorOpenState[currentReceiptId][key] ? 'fas fa-chevron-up' : 'fas fa-chevron-down';
+    }
+}
 
-        function toggleModelContent(modelName) {
-            if (!currentReceiptId) return;
-            const key = getModelStateKey(currentReceiptId, modelName);
-            if (modelOpenState[currentReceiptId] === undefined) modelOpenState[currentReceiptId] = {};
-            if (modelOpenState[currentReceiptId][key] === undefined) {
-                modelOpenState[currentReceiptId][key] = true;
-            }
-            modelOpenState[currentReceiptId][key] = !modelOpenState[currentReceiptId][key];
+function toggleModelContent(modelName) {
+    if (!currentReceiptId) return;
+    const key = getModelStateKey(currentReceiptId, modelName);
+    if (modelOpenState[currentReceiptId] === undefined) modelOpenState[currentReceiptId] = {};
+    if (modelOpenState[currentReceiptId][key] === undefined) {
+        modelOpenState[currentReceiptId][key] = false;
+    }
+    modelOpenState[currentReceiptId][key] = !modelOpenState[currentReceiptId][key];
 
-            const safeModelKey = modelName.replace(/[^a-zA-Z0-9]/g, '_');
-            const contentDiv = document.getElementById(`model-content-${safeModelKey}`);
-            if (contentDiv) {
-                contentDiv.classList.toggle('open', modelOpenState[currentReceiptId][key]);
-            }
-            const toggleIcon = document.querySelector(`#model-content-${safeModelKey}`)?.parentElement?.querySelector(
-                '.model-title-left .toggle-icon');
-            if (toggleIcon) {
-                toggleIcon.classList.toggle('open', modelOpenState[currentReceiptId][key]);
-                toggleIcon.className = `fas ${modelOpenState[currentReceiptId][key] ? 'fa-chevron-up' : 'fa-chevron-down'} toggle-icon ${modelOpenState[currentReceiptId][key] ? 'open' : ''}`;
-            }
-        }
+    const safeModelKey = modelName.replace(/[^a-zA-Z0-9]/g, '_');
+    const contentDiv = document.getElementById(`model-content-${safeModelKey}`);
+    if (contentDiv) {
+        contentDiv.style.display = modelOpenState[currentReceiptId][key] ? 'block' : 'none';
+    }
+    const toggleIcon = document.querySelector(`#model-content-${safeModelKey}`)?.parentElement?.querySelector(
+        '.model-title-left .toggle-icon');
+    if (toggleIcon) {
+        toggleIcon.className = `fas ${modelOpenState[currentReceiptId][key] ? 'fa-chevron-up' : 'fa-chevron-down'} toggle-icon`;
+    }
+}
 
         function addNewQtyRow(modelName, colorName, sizeId) {
             if (!currentReceiptId || !currentReceiptData) return;
