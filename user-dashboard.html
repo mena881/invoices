@@ -13,7 +13,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
-        /* ====== جميع الأنماط السابقة تبقى كما هي ====== */
+        /* ====== RESET & BASE ====== */
         * {
             margin: 0;
             padding: 0;
@@ -30,6 +30,21 @@
             -webkit-font-smoothing: antialiased;
         }
 
+        /* ====== SCROLLBAR ====== */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #e6edf5;
+            border-radius: 12px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #6c8cff;
+            border-radius: 12px;
+        }
+
+        /* ====== HEADER ====== */
         .header {
             background: #0b1b2f;
             color: #fff;
@@ -102,12 +117,14 @@
             transform: scale(1.02);
         }
 
+        /* ====== CONTAINER ====== */
         .container {
             max-width: 1280px;
             margin: 0 auto;
             padding: 28px 24px 80px;
         }
 
+        /* ====== STATS ====== */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -148,6 +165,7 @@
             letter-spacing: 0.02em;
         }
 
+        /* ====== TABS ====== */
         .tab-container {
             display: flex;
             gap: 4px;
@@ -244,6 +262,7 @@
             color: #6c8cff;
         }
 
+        /* ====== RECEIPT CARDS ====== */
         .receipts-list {
             display: flex;
             flex-direction: column;
@@ -360,6 +379,7 @@
             font-weight: 500;
         }
 
+        /* ====== RECEIPT DETAIL ====== */
         .receipt-detail {
             background: #ffffff;
             border-radius: 24px;
@@ -460,6 +480,7 @@
             color: #0b1b2f;
         }
 
+        /* ====== MODELS ====== */
         .models-grid {
             display: grid;
             gap: 20px;
@@ -806,6 +827,7 @@
             box-shadow: none;
         }
 
+        /* ====== BLANK RECEIPT ====== */
         .blank-receipt-header {
             background: linear-gradient(135deg, #f0f4fe, #e8edfe);
             border-radius: 20px;
@@ -872,54 +894,7 @@
             background: #5a77e0;
         }
 
-        .search-box {
-            background: #ffffff;
-            border-radius: 20px;
-            padding: 16px 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 2px 10px rgba(0, 20, 40, 0.04);
-            display: flex;
-            gap: 14px;
-            flex-wrap: wrap;
-            align-items: center;
-            border: 1px solid rgba(0, 0, 0, 0.02);
-        }
-        .search-box input {
-            flex: 1;
-            padding: 10px 18px;
-            border: 1px solid #e6edf5;
-            border-radius: 40px;
-            font-family: 'Inter', sans-serif;
-            font-size: 0.9rem;
-            min-width: 160px;
-            transition: border-color 0.2s;
-            background: #fafcff;
-        }
-        .search-box input:focus {
-            outline: none;
-            border-color: #6c8cff;
-            box-shadow: 0 0 0 3px rgba(108, 140, 255, 0.12);
-        }
-        .search-box button {
-            background: #6c8cff;
-            border: none;
-            padding: 10px 24px;
-            border-radius: 40px;
-            color: #fff;
-            cursor: pointer;
-            font-family: 'Inter', sans-serif;
-            font-weight: 600;
-            transition: all 0.2s;
-            font-size: 0.9rem;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .search-box button:hover {
-            background: #5a77e0;
-            transform: scale(1.02);
-        }
-
+        /* ====== ADD RECEIPT FORM ====== */
         .add-receipt-form {
             background: #ffffff;
             border-radius: 24px;
@@ -973,28 +948,104 @@
             color: #6d7b93;
         }
 
-        .checkbox-row {
+        .model-row {
             display: flex;
-            gap: 18px;
+            gap: 14px;
+            align-items: center;
+            margin-bottom: 14px;
             flex-wrap: wrap;
-            margin-bottom: 12px;
         }
-        .checkbox-label {
+
+        .model-search-container {
+            position: relative;
+            flex: 2;
+        }
+        .model-search-input {
+            width: 100%;
+            padding: 10px 16px;
+            border: 1px solid #e6edf5;
+            border-radius: 16px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            transition: border-color 0.2s;
+            background: #fafcff;
+        }
+        .model-search-input:focus {
+            outline: none;
+            border-color: #6c8cff;
+            box-shadow: 0 0 0 3px rgba(108, 140, 255, 0.12);
+        }
+        .model-search-results {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: #ffffff;
+            border: 1px solid #e6edf5;
+            border-top: none;
+            border-radius: 0 0 16px 16px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 10;
+            display: none;
+            box-shadow: 0 8px 28px rgba(0, 20, 40, 0.08);
+        }
+        .model-search-result {
+            padding: 10px 16px;
+            cursor: pointer;
+            transition: background 0.15s;
+            border-bottom: 1px solid #f0f4fe;
+            font-size: 0.85rem;
             display: flex;
             align-items: center;
             gap: 8px;
+        }
+        .model-search-result:hover {
+            background: #f0f4fe;
+        }
+
+        .model-smart-badge {
+            font-size: 0.7rem;
+            padding: 3px 14px;
+            border-radius: 30px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .badge-new {
+            background: #fef5e7;
+            color: #b45b0a;
+        }
+        .badge-repeat {
+            background: #e5eeff;
+            color: #1f3a8a;
+        }
+        .badge-sample {
+            background: #ddf4e8;
+            color: #0e7b4a;
+        }
+
+        .model-code-badge {
+            font-size: 0.7rem;
+            background: #e6edf5;
+            padding: 2px 12px;
+            border-radius: 30px;
+            color: #4e5e77;
+        }
+
+        .add-new-link {
+            color: #6c8cff;
             cursor: pointer;
+            font-weight: 600;
             font-size: 0.85rem;
-            font-weight: 500;
+            transition: color 0.2s;
+            display: inline-block;
+            margin-top: 4px;
         }
-        .checkbox-label input {
-            width: 18px;
-            height: 18px;
-            cursor: pointer;
-            accent-color: #6c8cff;
-        }
-        .checkbox-label input:disabled {
-            cursor: not-allowed;
+        .add-new-link:hover {
+            color: #5a77e0;
+            text-decoration: underline;
         }
 
         .btn {
@@ -1045,11 +1096,8 @@
             padding: 6px 16px;
             font-size: 0.75rem;
         }
-        .close-receipt-btn {
-            background: #f5a623;
-            margin-right: 8px;
-        }
 
+        /* ====== MODALS ====== */
         .modal {
             display: none;
             position: fixed;
@@ -1092,6 +1140,7 @@
             margin-top: 16px;
         }
 
+        /* ====== INDICATORS ====== */
         .auto-save-indicator {
             position: fixed;
             bottom: 28px;
@@ -1148,187 +1197,6 @@
             font-size: 0.95rem;
         }
 
-        .model-smart-badge {
-            font-size: 0.7rem;
-            padding: 3px 14px;
-            border-radius: 30px;
-            font-weight: 600;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .badge-new {
-            background: #fef5e7;
-            color: #b45b0a;
-        }
-        .badge-repeat {
-            background: #e5eeff;
-            color: #1f3a8a;
-        }
-        .badge-sample {
-            background: #ddf4e8;
-            color: #0e7b4a;
-        }
-
-        .model-code-badge {
-            font-size: 0.7rem;
-            background: #e6edf5;
-            padding: 2px 12px;
-            border-radius: 30px;
-            color: #4e5e77;
-        }
-        .sample-icon {
-            margin-right: 4px;
-            color: #f5a623;
-        }
-        .model-note-text {
-            background: #fef5e7;
-            padding: 8px 16px;
-            border-radius: 14px;
-            margin-top: 10px;
-            font-size: 0.85rem;
-            border-right: 3px solid #f5a623;
-        }
-
-        .color-image-preview {
-            width: 44px;
-            height: 44px;
-            border-radius: 12px;
-            object-fit: cover;
-            cursor: pointer;
-            border: 2px solid #e6edf5;
-            transition: border-color 0.2s;
-        }
-        .color-image-preview:hover {
-            border-color: #6c8cff;
-        }
-        .color-image-upload {
-            background: #6c8cff;
-            color: #fff;
-            border: none;
-            padding: 4px 14px;
-            border-radius: 30px;
-            cursor: pointer;
-            font-size: 0.75rem;
-            transition: all 0.2s;
-            font-weight: 500;
-        }
-        .color-image-upload:hover {
-            background: #5a77e0;
-        }
-
-        .model-search-container {
-            position: relative;
-            flex: 2;
-        }
-        .model-search-input {
-            width: 100%;
-            padding: 10px 16px;
-            border: 1px solid #e6edf5;
-            border-radius: 16px;
-            font-family: 'Inter', sans-serif;
-            font-size: 0.9rem;
-            transition: border-color 0.2s;
-            background: #fafcff;
-        }
-        .model-search-input:focus {
-            outline: none;
-            border-color: #6c8cff;
-            box-shadow: 0 0 0 3px rgba(108, 140, 255, 0.12);
-        }
-        .model-search-results {
-            position: absolute;
-            top: 100%;
-            left: 0;
-            right: 0;
-            background: #ffffff;
-            border: 1px solid #e6edf5;
-            border-top: none;
-            border-radius: 0 0 16px 16px;
-            max-height: 200px;
-            overflow-y: auto;
-            z-index: 10;
-            display: none;
-            box-shadow: 0 8px 28px rgba(0, 20, 40, 0.08);
-        }
-        .model-search-result {
-            padding: 10px 16px;
-            cursor: pointer;
-            transition: background 0.15s;
-            border-bottom: 1px solid #f0f4fe;
-            font-size: 0.85rem;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .model-search-result:hover {
-            background: #f0f4fe;
-        }
-
-        .model-row {
-            display: flex;
-            gap: 14px;
-            align-items: center;
-            margin-bottom: 14px;
-            flex-wrap: wrap;
-        }
-
-        .add-new-link {
-            color: #6c8cff;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 0.85rem;
-            transition: color 0.2s;
-            display: inline-block;
-            margin-top: 4px;
-        }
-        .add-new-link:hover {
-            color: #5a77e0;
-            text-decoration: underline;
-        }
-
-        .total-amount-box {
-            background: linear-gradient(135deg, #f0f4fe, #e8edfe);
-            border-radius: 16px;
-            padding: 12px 18px;
-            text-align: center;
-            border: 1px solid rgba(108, 140, 255, 0.12);
-            margin: 8px 0;
-        }
-        .total-amount-box .label {
-            font-size: 0.7rem;
-            color: #1f3a8a;
-            font-weight: 600;
-        }
-        .total-amount-box .value {
-            font-size: 2rem;
-            font-weight: 700;
-            color: #0b1b2f;
-            letter-spacing: -0.02em;
-        }
-
-        .image-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.85);
-            backdrop-filter: blur(6px);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 3000;
-            cursor: pointer;
-            padding: 20px;
-        }
-        .image-modal img {
-            max-width: 95%;
-            max-height: 95%;
-            object-fit: contain;
-            border-radius: 12px;
-        }
-
         .load-more-btn {
             background: #f0f4fe;
             border: none;
@@ -1374,6 +1242,121 @@
         }
         .model-content-wrapper.open {
             display: block;
+        }
+
+        .model-type-badge {
+            font-size: 0.7rem;
+            padding: 2px 12px;
+            border-radius: 30px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .model-type-new {
+            background: #fef5e7;
+            color: #b45b0a;
+        }
+        .model-type-repeat {
+            background: #e5eeff;
+            color: #1f3a8a;
+        }
+
+        .color-image-preview {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            object-fit: cover;
+            cursor: pointer;
+            border: 2px solid #e6edf5;
+            transition: border-color 0.2s;
+        }
+        .color-image-preview:hover {
+            border-color: #6c8cff;
+        }
+        .color-image-upload {
+            background: #6c8cff;
+            color: #fff;
+            border: none;
+            padding: 4px 14px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 0.75rem;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+        .color-image-upload:hover {
+            background: #5a77e0;
+        }
+
+        .image-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(6px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 3000;
+            cursor: pointer;
+            padding: 20px;
+        }
+        .image-modal img {
+            max-width: 95%;
+            max-height: 95%;
+            object-fit: contain;
+            border-radius: 12px;
+        }
+
+        .search-box {
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 16px 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0, 20, 40, 0.04);
+            display: flex;
+            gap: 14px;
+            flex-wrap: wrap;
+            align-items: center;
+            border: 1px solid rgba(0, 0, 0, 0.02);
+        }
+        .search-box input {
+            flex: 1;
+            padding: 10px 18px;
+            border: 1px solid #e6edf5;
+            border-radius: 40px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            min-width: 160px;
+            transition: border-color 0.2s;
+            background: #fafcff;
+        }
+        .search-box input:focus {
+            outline: none;
+            border-color: #6c8cff;
+            box-shadow: 0 0 0 3px rgba(108, 140, 255, 0.12);
+        }
+        .search-box button {
+            background: #6c8cff;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 40px;
+            color: #fff;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            transition: all 0.2s;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .search-box button:hover {
+            background: #5a77e0;
+            transform: scale(1.02);
         }
 
         .received-list {
@@ -1436,15 +1419,6 @@
             gap: 6px;
         }
 
-        .status-closed {
-            background: #ddf4e8;
-            color: #0e7b4a;
-        }
-        .status-completed {
-            background: #ddf4e8;
-            color: #0e7b4a;
-        }
-
         .blank-model-search-container {
             position: relative;
             flex: 2;
@@ -1501,24 +1475,68 @@
             flex-wrap: wrap;
         }
 
-        .model-type-badge {
-            font-size: 0.7rem;
-            padding: 2px 12px;
-            border-radius: 30px;
-            font-weight: 600;
-            display: inline-flex;
+        .checkbox-label {
+            display: flex;
             align-items: center;
-            gap: 4px;
+            gap: 8px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 500;
         }
-        .model-type-new {
-            background: #fef5e7;
-            color: #b45b0a;
+        .checkbox-label input {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: #6c8cff;
         }
-        .model-type-repeat {
-            background: #e5eeff;
-            color: #1f3a8a;
+        .checkbox-label input:disabled {
+            cursor: not-allowed;
         }
 
+        .sample-icon {
+            margin-right: 4px;
+            color: #f5a623;
+        }
+
+        .model-note-text {
+            background: #fef5e7;
+            padding: 8px 16px;
+            border-radius: 14px;
+            margin-top: 10px;
+            font-size: 0.85rem;
+            border-right: 3px solid #f5a623;
+        }
+
+        .total-amount-box {
+            background: linear-gradient(135deg, #f0f4fe, #e8edfe);
+            border-radius: 16px;
+            padding: 12px 18px;
+            text-align: center;
+            border: 1px solid rgba(108, 140, 255, 0.12);
+            margin: 8px 0;
+        }
+        .total-amount-box .label {
+            font-size: 0.7rem;
+            color: #1f3a8a;
+            font-weight: 600;
+        }
+        .total-amount-box .value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #0b1b2f;
+            letter-spacing: -0.02em;
+        }
+
+        .status-closed {
+            background: #ddf4e8;
+            color: #0e7b4a;
+        }
+        .status-completed {
+            background: #ddf4e8;
+            color: #0e7b4a;
+        }
+
+        /* ====== RESPONSIVE ====== */
         @media (max-width: 768px) {
             .container {
                 padding: 20px 16px 80px;
@@ -1774,7 +1792,7 @@
     </div>
     <div class="warning-indicator" id="warningIndicator"></div>
 
-    <!-- MODALS -->
+    <!-- ====== MODALS ====== -->
     <div id="customModal" class="modal">
         <div class="modal-content">
             <h3 id="modalTitle">تأكيد</h3>
@@ -1911,7 +1929,9 @@
     </div>
 
     <script>
-        // ====== FIREBASE CONFIG ======
+        // ================================================================
+        //  FIREBASE CONFIG
+        // ================================================================
         const firebaseConfig = {
             apiKey: "AIzaSyB7TgP9zI6LEc6yqfUyZqWYBqJyqL8oGxs",
             authDomain: "exams-fab0f.firebaseapp.com",
@@ -1925,6 +1945,9 @@
         const db = firebase.database();
         const IMGBB_KEY = '3cc5b7303ef6cefad8faa3e0ec83cda1';
 
+        // ================================================================
+        //  GLOBAL STATE
+        // ================================================================
         let currentUser = null;
         let currentReceiptId = null;
         let currentReceiptData = null;
@@ -1937,88 +1960,81 @@
         let allFactoriesList = [];
         let allColorsList = [];
         let newModelRows = [{ id: Date.now(), modelId: '', modelCode: '', quantity: 0 }];
-        
-        // ====== استخدام كائنات منفصلة لحالة الفتح لكل فاتورة ======
-        // المفتاح: receiptId أو blankReceiptId
         let modelOpenState = {};
         let colorOpenState = {};
-
         let receivedModelsHistory = new Set();
         let modalEventListenersAdded = false;
-
         let receiptsPage = 0;
         const RECEIPTS_PER_PAGE = 100;
         let allAssignedReceipts = [];
-
         let historyPage = 0;
         const HISTORY_PER_PAGE = 100;
         let allHistoryData = [];
-
         let blankReceiptsPage = 0;
         const BLANK_PER_PAGE = 100;
         let allBlankReceipts = [];
-
         let isSaving = false;
         let saveTimeout = null;
+        let pendingModelSearchRowId = null;
+        let blankPendingModelSearch = {};
+        let currentSavePromise = null;
 
-        // ========== دالة مساعدة لتحديث الصور ==========
-        async function updateModelImageInModelsNode(modelName, imageUrl) {
-            try {
-                const snapshot = await db.ref('models').once('value');
-                let modelKey = null;
-                snapshot.forEach((child) => {
-                    const val = child.val();
-                    if (val.name === modelName || val.code === modelName) {
-                        modelKey = child.key;
-                    }
-                });
-                if (modelKey) {
-                    await db.ref(`models/${modelKey}`).update({ imageUrl: imageUrl });
-                    console.log(`✅ تم تحديث صورة الموديل ${modelName}: ${imageUrl}`);
-                } else {
-                    console.log(`⚠️ لم يتم العثور على الموديل ${modelName} في قاعدة البيانات`);
-                }
-            } catch (error) {
-                console.error('❌ خطأ في تحديث صورة الموديل:', error);
-            }
+        // ================================================================
+        //  UTILITY FUNCTIONS
+        // ================================================================
+        function getColorStateKey(receiptId, modelName, colorName) {
+            return `${receiptId}_${modelName}_${colorName}`;
         }
 
-        async function updateModelsImagesFromReceipt(receiptId, receiptData) {
-            if (!receiptData.modelColorsImages) return;
-            const modelImages = receiptData.modelColorsImages;
-            for (const modelName in modelImages) {
-                const colorImages = modelImages[modelName];
-                let firstImageUrl = null;
-                for (const colorName in colorImages) {
-                    if (colorImages[colorName]) {
-                        firstImageUrl = colorImages[colorName];
-                        break;
-                    }
-                }
-                if (firstImageUrl) {
-                    await updateModelImageInModelsNode(modelName, firstImageUrl);
-                }
-            }
+        function getModelStateKey(receiptId, modelName) {
+            return `${receiptId}_${modelName}`;
         }
 
-        async function updateModelsImagesFromBlankReceipt(receiptId, receiptData) {
-            if (!receiptData.modelColorsImages) return;
-            const modelImages = receiptData.modelColorsImages;
-            for (const modelName in modelImages) {
-                const colorImages = modelImages[modelName];
-                let firstImageUrl = null;
-                for (const colorName in colorImages) {
-                    if (colorImages[colorName]) {
-                        firstImageUrl = colorImages[colorName];
-                        break;
-                    }
-                }
-                if (firstImageUrl) {
-                    await updateModelImageInModelsNode(modelName, firstImageUrl);
-                }
-            }
+        function formatDate(timestamp) {
+            if (!timestamp) return '-';
+            const date = new Date(timestamp);
+            return date.toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' });
         }
 
+        function getSizesForModel() {
+            return allSizesList.map(s => ({ sizeId: s.id, sizeName: s.name }));
+        }
+
+        function getTotalForColor(modelName, colorName) {
+            let total = 0;
+            const colorData = currentReceiptData?.modelColors?.[modelName]?.[colorName] || {};
+            for (const sizeId in colorData) {
+                const sizeArray = colorData[sizeId] || [0];
+                total += sizeArray.reduce((a, b) => a + b, 0);
+            }
+            return total;
+        }
+
+        function getTotalForModel(modelName) {
+            let total = 0;
+            const modelColors = currentReceiptData?.modelColors?.[modelName] || {};
+            for (const colorName in modelColors) {
+                total += getTotalForColor(modelName, colorName);
+            }
+            return total;
+        }
+
+        function isModelClosed(modelName) {
+            return currentReceiptData?.closedModels?.[modelName] === true;
+        }
+
+        function showFullImage(imageUrl) {
+            if (!imageUrl) return;
+            const modal = document.createElement('div');
+            modal.className = 'image-modal';
+            modal.onclick = function() { modal.remove(); };
+            modal.innerHTML = `<img src="${imageUrl}" alt="صورة مكبرة" onclick="event.stopPropagation()">`;
+            document.body.appendChild(modal);
+        }
+
+        // ================================================================
+        //  MODAL HELPERS
+        // ================================================================
         function setupModalListeners() {
             if (modalEventListenersAdded) return;
             modalEventListenersAdded = true;
@@ -2082,25 +2098,18 @@
             cancelBtn.addEventListener('click', onCancel);
         }
 
-        function customAlert(message) {
-            setupModalListeners();
-            const modal = document.getElementById('customModal');
-            const title = document.getElementById('modalTitle');
-            const msg = document.getElementById('modalMessage');
-            const inputField = document.getElementById('modalInput');
-            const confirmBtn = document.getElementById('modalConfirmBtn');
-            const cancelBtn = document.getElementById('modalCancelBtn');
-            title.innerText = 'تنبيه';
-            msg.innerText = message;
-            inputField.style.display = 'none';
-            modal.style.display = 'flex';
-            cancelBtn.style.display = 'none';
-            const onConfirm = () => { modal.style.display = 'none';
-                confirmBtn.removeEventListener('click', onConfirm);
-                cancelBtn.style.display = 'flex'; };
-            confirmBtn.addEventListener('click', onConfirm);
+        function showWarning(message, isError = false) {
+            const indicator = document.getElementById('warningIndicator');
+            indicator.innerText = message;
+            indicator.className = isError ? 'warning-indicator error' : 'warning-indicator';
+            indicator.style.display = 'flex';
+            clearTimeout(window.warningTimeout);
+            window.warningTimeout = setTimeout(() => { indicator.style.display = 'none'; }, 3000);
         }
 
+        // ================================================================
+        //  FIREBASE DATA LOADING
+        // ================================================================
         async function loadSizes() {
             const snapshot = await db.ref('sizes').once('value');
             sizesData = {};
@@ -2169,12 +2178,14 @@
             });
         }
 
+        // ================================================================
+        //  AUTHENTICATION
+        // ================================================================
         function checkAuth() {
             const user = localStorage.getItem('currentUser');
             if (!user) { window.location.href = 'index.html'; return; }
             try {
                 currentUser = JSON.parse(user);
-                console.log('🔍 Current User:', currentUser);
                 if (!currentUser.userId && !currentUser.uid) {
                     db.ref('users').once('value').then((snapshot) => {
                         snapshot.forEach((child) => {
@@ -2183,7 +2194,6 @@
                                 currentUser.userId = child.key;
                                 currentUser.uid = child.key;
                                 localStorage.setItem('currentUser', JSON.stringify(currentUser));
-                                console.log('✅ تم إضافة userId من قاعدة البيانات:', currentUser.userId);
                             }
                         });
                     });
@@ -2205,6 +2215,9 @@
             }
         }
 
+        // ================================================================
+        //  TABS
+        // ================================================================
         function switchTab(tab) {
             if (currentReceiptId && currentReceiptData) { closeDetail(true); }
             if (currentBlankReceiptId && currentBlankReceiptData) { closeBlankDetail(true); }
@@ -2225,6 +2238,9 @@
             }
         }
 
+        // ================================================================
+        //  BLANK RECEIPT FUNCTIONS
+        // ================================================================
         async function loadBlankFormData() {
             await loadAllFactories();
             const factorySelect = document.getElementById('blankFactorySelect');
@@ -2361,16 +2377,7 @@
             }
         }
 
-        // ====== الحصول على مفتاح حالة اللون ======
-        function getColorStateKey(receiptId, modelName, colorName) {
-            return `${receiptId}_${modelName}_${colorName}`;
-        }
-
-        function getModelStateKey(receiptId, modelName) {
-            return `${receiptId}_${modelName}`;
-        }
-
-        // ====== BLANK RECEIPT FUNCTIONS ======
+        // ====== BLANK RECEIPT DETAIL ======
         function addBlankModelWithSearch() {
             if (!currentBlankReceiptData) return;
             const container = document.getElementById('blankReceiptDetail');
@@ -2400,8 +2407,6 @@
                 if (input) input.focus();
             }, 100);
         }
-
-        let blankPendingModelSearch = {};
 
         function filterBlankModelSearch(rowId, searchTerm) {
             const resultsDiv = document.getElementById(`blankModelSearchResults_${rowId}`);
@@ -2544,7 +2549,7 @@
             addBlankModelWithSearch();
         }
 
-        // ========== فتح وإغلاق Blank ==========
+        // ====== OPEN / CLOSE BLANK ======
         async function openBlankReceipt(receiptId) {
             if (currentBlankReceiptId && currentBlankReceiptData) {
                 await saveBlankToFirebase(true);
@@ -2553,6 +2558,8 @@
             const snapshot = await db.ref(`blankReceipts/${receiptId}`).once('value');
             currentBlankReceiptData = snapshot.val();
             if (!currentBlankReceiptData) { showWarning('حدث خطأ في تحميل الفاتورة', true); return; }
+            
+            // Ensure all required fields exist
             if (!currentBlankReceiptData.modelColors) currentBlankReceiptData.modelColors = {};
             if (!currentBlankReceiptData.modelColorsImages) currentBlankReceiptData.modelColorsImages = {};
             if (!currentBlankReceiptData.modelNotes) currentBlankReceiptData.modelNotes = {};
@@ -2582,7 +2589,7 @@
             currentBlankReceiptData = null;
         }
 
-        // ====== دوال تبديل حالة الفتح والإغلاق ======
+        // ====== BLANK TOGGLES ======
         function toggleBlankColorContent(modelName, colorName) {
             if (!currentBlankReceiptId) return;
             const key = getColorStateKey(currentBlankReceiptId, modelName, colorName);
@@ -2596,48 +2603,11 @@
             const safeColorKey = colorName.replace(/[^a-zA-Z0-9]/g, '_');
             const contentDiv = document.getElementById(`blank-color-content-${safeModelKey}_${safeColorKey}`);
             if (contentDiv) {
-                if (colorOpenState[currentBlankReceiptId][key]) {
-                    contentDiv.classList.add('open');
-                } else {
-                    contentDiv.classList.remove('open');
-                }
+                contentDiv.classList.toggle('open', colorOpenState[currentBlankReceiptId][key]);
             }
             const toggleBtn = document.querySelector(`#blank-color-content-${safeModelKey}_${safeColorKey}`)?.parentElement?.querySelector('.color-toggle-btn i');
             if (toggleBtn) {
-                if (colorOpenState[currentBlankReceiptId][key]) {
-                    toggleBtn.className = 'fas fa-chevron-up';
-                } else {
-                    toggleBtn.className = 'fas fa-chevron-down';
-                }
-            }
-        }
-
-        function toggleNormalColorContent(modelName, colorName) {
-            if (!currentReceiptId) return;
-            const key = getColorStateKey(currentReceiptId, modelName, colorName);
-            if (colorOpenState[currentReceiptId] === undefined) colorOpenState[currentReceiptId] = {};
-            if (colorOpenState[currentReceiptId][key] === undefined) {
-                colorOpenState[currentReceiptId][key] = true;
-            }
-            colorOpenState[currentReceiptId][key] = !colorOpenState[currentReceiptId][key];
-            
-            const safeModelKey = modelName.replace(/[^a-zA-Z0-9]/g, '_');
-            const safeColorKey = colorName.replace(/[^a-zA-Z0-9]/g, '_');
-            const contentDiv = document.getElementById(`normal-color-content-${safeModelKey}_${safeColorKey}`);
-            if (contentDiv) {
-                if (colorOpenState[currentReceiptId][key]) {
-                    contentDiv.classList.add('open');
-                } else {
-                    contentDiv.classList.remove('open');
-                }
-            }
-            const toggleBtn = document.querySelector(`#normal-color-content-${safeModelKey}_${safeColorKey}`)?.parentElement?.querySelector('.color-toggle-btn i');
-            if (toggleBtn) {
-                if (colorOpenState[currentReceiptId][key]) {
-                    toggleBtn.className = 'fas fa-chevron-up';
-                } else {
-                    toggleBtn.className = 'fas fa-chevron-down';
-                }
+                toggleBtn.className = colorOpenState[currentBlankReceiptId][key] ? 'fas fa-chevron-up' : 'fas fa-chevron-down';
             }
         }
 
@@ -2653,50 +2623,15 @@
             const safeModelKey = modelName.replace(/[^a-zA-Z0-9]/g, '_');
             const contentDiv = document.getElementById(`blank-model-content-${safeModelKey}`);
             if (contentDiv) {
-                if (modelOpenState[currentBlankReceiptId][key]) {
-                    contentDiv.classList.add('open');
-                } else {
-                    contentDiv.classList.remove('open');
-                }
+                contentDiv.classList.toggle('open', modelOpenState[currentBlankReceiptId][key]);
             }
             const toggleBtn = document.querySelector(`#blank-model-content-${safeModelKey}`)?.parentElement?.querySelector('.model-title i');
             if (toggleBtn) {
-                if (modelOpenState[currentBlankReceiptId][key]) {
-                    toggleBtn.className = 'fas fa-chevron-up';
-                } else {
-                    toggleBtn.className = 'fas fa-chevron-down';
-                }
+                toggleBtn.className = modelOpenState[currentBlankReceiptId][key] ? 'fas fa-chevron-up' : 'fas fa-chevron-down';
             }
         }
 
-        function toggleModelContent(modelName) {
-            if (!currentReceiptId) return;
-            const key = getModelStateKey(currentReceiptId, modelName);
-            if (modelOpenState[currentReceiptId] === undefined) modelOpenState[currentReceiptId] = {};
-            if (modelOpenState[currentReceiptId][key] === undefined) {
-                modelOpenState[currentReceiptId][key] = true;
-            }
-            modelOpenState[currentReceiptId][key] = !modelOpenState[currentReceiptId][key];
-            
-            const safeModelKey = modelName.replace(/[^a-zA-Z0-9]/g, '_');
-            const contentDiv = document.getElementById(`model-content-${safeModelKey}`);
-            if (contentDiv) {
-                if (modelOpenState[currentReceiptId][key]) {
-                    contentDiv.classList.add('open');
-                } else {
-                    contentDiv.classList.remove('open');
-                }
-            }
-            const toggleBtn = document.querySelector(`#model-content-${safeModelKey}`)?.parentElement?.querySelector('.model-title i');
-            if (toggleBtn) {
-                if (modelOpenState[currentReceiptId][key]) {
-                    toggleBtn.className = 'fas fa-chevron-up';
-                } else {
-                    toggleBtn.className = 'fas fa-chevron-down';
-                }
-            }
-        }
-
+        // ====== BLANK ACTIONS ======
         function addNewBlankColor(modelName) {
             if (!currentBlankReceiptData) return;
             customPrompt('أدخل اسم اللون الجديد:', 'مثال: أحمر', async (newColorName) => {
@@ -2833,7 +2768,7 @@
             fileInput.click();
         }
 
-        // ====== إقفال فاتورة Blank ======
+        // ====== CLOSE BLANK ======
         function openCloseBlankModal() {
             document.getElementById('closeBlankModal').style.display = 'flex';
         }
@@ -2870,16 +2805,27 @@
         async function performCloseBlankReceipt() {
             if (!currentBlankReceiptData) return;
             
+            // Ensure modelColors is preserved
+            const modelColorsBackup = JSON.parse(JSON.stringify(currentBlankReceiptData.modelColors || {}));
+            const modelColorsImagesBackup = JSON.parse(JSON.stringify(currentBlankReceiptData.modelColorsImages || {}));
+            const modelNotesBackup = JSON.parse(JSON.stringify(currentBlankReceiptData.modelNotes || {}));
+            const sampleRequestsBackup = JSON.parse(JSON.stringify(currentBlankReceiptData.sampleRequests || {}));
+            const modelFirstTimeBackup = JSON.parse(JSON.stringify(currentBlankReceiptData.modelFirstTime || {}));
+            
             currentBlankReceiptData.isClosed = true;
             currentBlankReceiptData.closedDate = new Date().toISOString();
-            await saveBlankToFirebase(true);
-
-            await updateModelsImagesFromBlankReceipt(currentBlankReceiptId, currentBlankReceiptData);
-
-            const blankReceiptsRef = db.ref(`blankReceipts/${currentBlankReceiptId}`);
-            await blankReceiptsRef.update({ isClosed: true, closedDate: new Date().toISOString() });
             
-            showWarning('✅ تم إقفال فاتورة Blank بنجاح', false);
+            // Restore modelColors after any potential modification
+            currentBlankReceiptData.modelColors = modelColorsBackup;
+            currentBlankReceiptData.modelColorsImages = modelColorsImagesBackup;
+            currentBlankReceiptData.modelNotes = modelNotesBackup;
+            currentBlankReceiptData.sampleRequests = sampleRequestsBackup;
+            currentBlankReceiptData.modelFirstTime = modelFirstTimeBackup;
+            
+            await saveBlankToFirebase(true);
+            await updateModelsImagesFromBlankReceipt(currentBlankReceiptId, currentBlankReceiptData);
+            
+            showWarning('✅ تم إقفال فاتورة Blank بنجاح مع جميع بيانات الألوان والمقاسات', false);
             closeBlankDetail(true);
             loadBlankReceipts();
             loadReceivedHistory();
@@ -2887,14 +2833,23 @@
             loadAllModels();
         }
 
-        // ====== حفظ البيانات بشكل آمن ======
+        // ================================================================
+        //  SAVE FUNCTIONS (CRITICAL FIX)
+        // ================================================================
         async function saveBlankToFirebase(skipIndicator = false) {
             if (!currentBlankReceiptId || !currentBlankReceiptData) return;
             if (isSaving) return;
             
             isSaving = true;
             try {
-                // استخدام set لحفظ البيانات كاملة
+                // Ensure modelColors is preserved
+                if (!currentBlankReceiptData.modelColors) currentBlankReceiptData.modelColors = {};
+                if (!currentBlankReceiptData.modelColorsImages) currentBlankReceiptData.modelColorsImages = {};
+                if (!currentBlankReceiptData.modelNotes) currentBlankReceiptData.modelNotes = {};
+                if (!currentBlankReceiptData.sampleRequests) currentBlankReceiptData.sampleRequests = {};
+                if (!currentBlankReceiptData.modelFirstTime) currentBlankReceiptData.modelFirstTime = {};
+                
+                // Use set to save the entire object
                 await db.ref(`blankReceipts/${currentBlankReceiptId}`).set(currentBlankReceiptData);
                 if (!skipIndicator) {
                     const indicator = document.getElementById('autoSaveIndicator');
@@ -2903,7 +2858,7 @@
                 }
                 loadBlankReceipts();
             } catch (error) {
-                console.error('خطأ في الحفظ:', error);
+                console.error('❌ خطأ في حفظ Blank:', error);
                 showWarning('حدث خطأ في حفظ البيانات', true);
             } finally {
                 isSaving = false;
@@ -2916,8 +2871,17 @@
             
             isSaving = true;
             try {
+                // Ensure modelColors is preserved
+                if (!currentReceiptData.modelColors) currentReceiptData.modelColors = {};
+                if (!currentReceiptData.modelColorsImages) currentReceiptData.modelColorsImages = {};
+                if (!currentReceiptData.modelNotes) currentReceiptData.modelNotes = {};
+                if (!currentReceiptData.sampleRequests) currentReceiptData.sampleRequests = {};
+                if (!currentReceiptData.modelFirstTime) currentReceiptData.modelFirstTime = {};
+                if (!currentReceiptData.received) currentReceiptData.received = {};
+                
                 currentReceiptData.updatedAt = Date.now();
-                // استخدام set لحفظ البيانات كاملة
+                
+                // Use set to save the entire object
                 await db.ref(`receipts/${currentReceiptId}`).set(currentReceiptData);
                 if (!skipIndicator) {
                     const indicator = document.getElementById('autoSaveIndicator');
@@ -2928,20 +2892,74 @@
                 loadReceivedHistory();
                 loadDashboardStats();
             } catch (error) {
-                console.error('خطأ في الحفظ:', error);
+                console.error('❌ خطأ في الحفظ:', error);
                 showWarning('حدث خطأ في حفظ البيانات', true);
             } finally {
                 isSaving = false;
             }
         }
 
-        function formatDate(timestamp) {
-            if (!timestamp) return '-';
-            const date = new Date(timestamp);
-            return date.toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' });
+        // ================================================================
+        //  UPDATE IMAGES
+        // ================================================================
+        async function updateModelImageInModelsNode(modelName, imageUrl) {
+            try {
+                const snapshot = await db.ref('models').once('value');
+                let modelKey = null;
+                snapshot.forEach((child) => {
+                    const val = child.val();
+                    if (val.name === modelName || val.code === modelName) {
+                        modelKey = child.key;
+                    }
+                });
+                if (modelKey) {
+                    await db.ref(`models/${modelKey}`).update({ imageUrl: imageUrl });
+                    console.log(`✅ تم تحديث صورة الموديل ${modelName}: ${imageUrl}`);
+                }
+            } catch (error) {
+                console.error('❌ خطأ في تحديث صورة الموديل:', error);
+            }
         }
 
-        // ====== عرض تفاصيل Blank ======
+        async function updateModelsImagesFromReceipt(receiptId, receiptData) {
+            if (!receiptData.modelColorsImages) return;
+            const modelImages = receiptData.modelColorsImages;
+            for (const modelName in modelImages) {
+                const colorImages = modelImages[modelName];
+                let firstImageUrl = null;
+                for (const colorName in colorImages) {
+                    if (colorImages[colorName]) {
+                        firstImageUrl = colorImages[colorName];
+                        break;
+                    }
+                }
+                if (firstImageUrl) {
+                    await updateModelImageInModelsNode(modelName, firstImageUrl);
+                }
+            }
+        }
+
+        async function updateModelsImagesFromBlankReceipt(receiptId, receiptData) {
+            if (!receiptData.modelColorsImages) return;
+            const modelImages = receiptData.modelColorsImages;
+            for (const modelName in modelImages) {
+                const colorImages = modelImages[modelName];
+                let firstImageUrl = null;
+                for (const colorName in colorImages) {
+                    if (colorImages[colorName]) {
+                        firstImageUrl = colorImages[colorName];
+                        break;
+                    }
+                }
+                if (firstImageUrl) {
+                    await updateModelImageInModelsNode(modelName, firstImageUrl);
+                }
+            }
+        }
+
+        // ================================================================
+        //  RENDER BLANK RECEIPT DETAIL
+        // ================================================================
         function renderBlankReceiptDetail() {
             if (!currentBlankReceiptData || !currentBlankReceiptId) return;
             const r = currentBlankReceiptData;
@@ -2959,6 +2977,7 @@
                     }
                 }
             }
+            
             let modelsHtml = '';
             const modelNames = Object.keys(r.modelColors);
             if (modelNames.length === 0) {
@@ -3084,6 +3103,7 @@
                     `;
                 });
             }
+            
             const closedDate = r.closedDate;
             const isClosed = r.isClosed === true;
             document.getElementById('blankReceiptDetail').innerHTML = `
@@ -3118,7 +3138,9 @@
             document.getElementById('blankReceiptDetail').style.display = 'block';
         }
 
-        // ====== NORMAL RECEIPT FUNCTIONS ======
+        // ================================================================
+        //  NORMAL RECEIPT FUNCTIONS
+        // ================================================================
         async function loadNewReceiptFormData() {
             const selectedFactory = document.getElementById('newFactorySelect')?.value || '';
             const selectedColor = document.getElementById('newColorSelect')?.value || '';
@@ -3358,7 +3380,9 @@
             }
         }
 
-        // ====== HISTORY FUNCTIONS ======
+        // ================================================================
+        //  HISTORY FUNCTIONS
+        // ================================================================
         async function loadReceivedHistory() {
             const snapshot = await db.ref('receipts').once('value');
             const history = [];
@@ -3639,14 +3663,6 @@
             document.getElementById('receiptDetail').scrollIntoView({ behavior: 'smooth' });
         }
 
-        function showFullImage(imageUrl) {
-            const modal = document.createElement('div');
-            modal.className = 'image-modal';
-            modal.onclick = function() { modal.remove(); };
-            modal.innerHTML = `<img src="${imageUrl}" alt="صورة مكبرة" onclick="event.stopPropagation()">`;
-            document.body.appendChild(modal);
-        }
-
         function filterHistory() {
             const searchTerm = document.getElementById('historySearch').value.toLowerCase();
             const filtered = allHistoryData.filter(item =>
@@ -3661,20 +3677,9 @@
             window._filteredHistoryData = filtered;
         }
 
-        const originalLoadMoreHistory = loadMoreHistory;
-        loadMoreHistory = function() {
-            const data = window._filteredHistoryData || allHistoryData;
-            historyPage++;
-            const start = historyPage * HISTORY_PER_PAGE;
-            const end = start + HISTORY_PER_PAGE;
-            const chunk = data.slice(start, end);
-            if (chunk.length > 0) {
-                renderHistoryList(chunk);
-                updateLoadMoreHistoryBtn(data.length);
-            }
-        };
-
-        // ====== DASHBOARD STATS ======
+        // ================================================================
+        //  DASHBOARD STATS
+        // ================================================================
         async function loadDashboardStats() {
             let totalAssigned = 0;
             let totalReceived = 0;
@@ -3717,7 +3722,9 @@
             document.getElementById('pendingCount').innerText = pending;
         }
 
-        // ====== ASSIGNED RECEIPTS ======
+        // ================================================================
+        //  ASSIGNED RECEIPTS
+        // ================================================================
         function loadAssignedReceipts() {
             const userId = currentUser.userId || currentUser.uid || currentUser.username || '';
             db.ref('receipts').once('value', (snapshot) => {
@@ -3727,6 +3734,12 @@
                     if (receipt.assignedTo && receipt.assignedTo.userId === userId) {
                         if (receipt.status !== 'completed' && receipt.status !== 'cancelled' && receipt
                             .status !== 'closed') {
+                            // Ensure modelColors exists
+                            if (!receipt.modelColors) receipt.modelColors = {};
+                            if (!receipt.modelColorsImages) receipt.modelColorsImages = {};
+                            if (!receipt.modelNotes) receipt.modelNotes = {};
+                            if (!receipt.sampleRequests) receipt.sampleRequests = {};
+                            if (!receipt.modelFirstTime) receipt.modelFirstTime = {};
                             receipts.push({ id: child.key, ...receipt });
                         }
                     }
@@ -3799,7 +3812,9 @@
             }
         }
 
-        // ====== NORMAL RECEIPT FUNCTIONS ======
+        // ================================================================
+        //  NORMAL RECEIPT OPEN / CLOSE
+        // ================================================================
         async function openReceipt(receiptId) {
             if (currentReceiptId && currentReceiptData) { 
                 await saveToFirebase(true);
@@ -3814,7 +3829,7 @@
             currentReceiptData = snapshot.val();
             if (!currentReceiptData) { showWarning('حدث خطأ في تحميل الفاتورة', true); return; }
             
-            // ✅ تأكد من وجود جميع الحقول المطلوبة
+            // ✅ Ensure all required fields exist
             if (!currentReceiptData.closedModels) currentReceiptData.closedModels = {};
             if (!currentReceiptData.modelImages) currentReceiptData.modelImages = {};
             if (!currentReceiptData.modelColors) currentReceiptData.modelColors = {};
@@ -3833,118 +3848,64 @@
             }, 100);
         }
 
-        function isModelClosed(modelName) {
-            return currentReceiptData.closedModels && currentReceiptData.closedModels[modelName] === true;
+        function closeDetail(silent = false) {
+            document.getElementById('receiptDetail').style.display = 'none';
+            if (!silent && currentReceiptId && currentReceiptData) { saveToFirebase(true); }
+            if (currentReceiptId) {
+                delete modelOpenState[currentReceiptId];
+                delete colorOpenState[currentReceiptId];
+            }
+            currentReceiptId = null;
+            currentReceiptData = null;
         }
 
-        function openCompleteModal() { document.getElementById('completeReceiptModal').style.display = 'flex'; }
-
-        function closeCompleteModal() { document.getElementById('completeReceiptModal').style.display = 'none'; }
-
-        async function confirmCompleteReceipt() {
-            closeCompleteModal();
-            if (!currentReceiptData) return;
-            let hasChanges = false;
-            let warningMessage = '';
-            for (const model of currentReceiptData.models) {
-                if (!isModelClosed(model.modelName)) {
-                    const modelTotalReceived = getTotalForModel(model.modelName);
-                    const remaining = model.quantity - modelTotalReceived;
-                    if (modelTotalReceived !== model.quantity) {
-                        warningMessage +=
-                            `الموديل "${model.modelName}" غير مكتمل. المطلوب: ${model.quantity}, المستلم: ${modelTotalReceived}, المتبقي: ${remaining}.\n`;
-                    }
-                }
+        // ================================================================
+        //  TOGGLES FOR NORMAL RECEIPT
+        // ================================================================
+        function toggleNormalColorContent(modelName, colorName) {
+            if (!currentReceiptId) return;
+            const key = getColorStateKey(currentReceiptId, modelName, colorName);
+            if (colorOpenState[currentReceiptId] === undefined) colorOpenState[currentReceiptId] = {};
+            if (colorOpenState[currentReceiptId][key] === undefined) {
+                colorOpenState[currentReceiptId][key] = true;
             }
-            if (warningMessage) {
-                customConfirm(`تحذير:\n${warningMessage}\nهل تريد إنهاء الفاتورة على هذا الوضع؟`, async (confirmed) => {
-                    if (confirmed) { await performCompleteReceipt(); }
-                });
-            } else {
-                await performCompleteReceipt();
+            colorOpenState[currentReceiptId][key] = !colorOpenState[currentReceiptId][key];
+            
+            const safeModelKey = modelName.replace(/[^a-zA-Z0-9]/g, '_');
+            const safeColorKey = colorName.replace(/[^a-zA-Z0-9]/g, '_');
+            const contentDiv = document.getElementById(`normal-color-content-${safeModelKey}_${safeColorKey}`);
+            if (contentDiv) {
+                contentDiv.classList.toggle('open', colorOpenState[currentReceiptId][key]);
             }
-        }
-
-        async function performCompleteReceipt() {
-            if (!currentReceiptData) return;
-            for (const model of currentReceiptData.models) {
-                if (!isModelClosed(model.modelName)) {
-                    if (!currentReceiptData.closedModels) currentReceiptData.closedModels = {};
-                    if (!currentReceiptData.closedModelsDate) currentReceiptData.closedModelsDate = {};
-                    currentReceiptData.closedModels[model.modelName] = true;
-                    currentReceiptData.closedModelsDate[model.modelName] = new Date().toISOString();
-                }
-            }
-            currentReceiptData.status = 'closed';
-            currentReceiptData.completedAt = Date.now();
-            currentReceiptData.completedBy = { userId: currentUser.userId || currentUser.uid || currentUser.username || '',
-                username: currentUser.username || '', fullName: currentUser.fullName || '' };
-            updateTotals();
-            await saveToFirebase(true);
-
-            await updateModelsImagesFromReceipt(currentReceiptId, currentReceiptData);
-
-            await loadReceivedModelsHistory();
-            showWarning('تم إقفال الفاتورة وتحديث صور الموديلات بنجاح', false);
-            closeDetail(true);
-            loadAssignedReceipts();
-            loadReceivedHistory();
-            loadDashboardStats();
-            loadAllModels();
-        }
-
-        async function closeModel(modelName) {
-            const modelData = currentReceiptData.models.find(m => m.modelName === modelName);
-            const modelRequiredQty = modelData?.quantity || 0;
-            let totalReceivedForModel = getTotalForModel(modelName);
-            if (totalReceivedForModel !== modelRequiredQty) {
-                const diff = totalReceivedForModel - modelRequiredQty;
-                const diffText = diff > 0 ? `زيادة ${diff} قطعة` : `نقص ${Math.abs(diff)} قطعة`;
-                customConfirm(
-                    `تحذير: الموديل "${modelName}" ${diffText} عن الكمية المطلوبة (المطلوب: ${modelRequiredQty}, المستلم: ${totalReceivedForModel}).\nهل أنت متأكد من تقفيله؟`,
-                    async (confirmed) => {
-                        if (confirmed) { await performCloseModel(modelName); }
-                    });
-            } else {
-                await performCloseModel(modelName);
+            const toggleBtn = document.querySelector(`#normal-color-content-${safeModelKey}_${safeColorKey}`)?.parentElement?.querySelector('.color-toggle-btn i');
+            if (toggleBtn) {
+                toggleBtn.className = colorOpenState[currentReceiptId][key] ? 'fas fa-chevron-up' : 'fas fa-chevron-down';
             }
         }
 
-        async function performCloseModel(modelName) {
-            if (!currentReceiptData.closedModels) currentReceiptData.closedModels = {};
-            if (!currentReceiptData.closedModelsDate) currentReceiptData.closedModelsDate = {};
-            currentReceiptData.closedModels[modelName] = true;
-            currentReceiptData.closedModelsDate[modelName] = new Date().toISOString();
-
-            const modelColorsImages = currentReceiptData.modelColorsImages;
-            if (modelColorsImages && modelColorsImages[modelName]) {
-                const colorImages = modelColorsImages[modelName];
-                let firstImageUrl = null;
-                for (const colorName in colorImages) {
-                    if (colorImages[colorName]) {
-                        firstImageUrl = colorImages[colorName];
-                        break;
-                    }
-                }
-                if (firstImageUrl) {
-                    await updateModelImageInModelsNode(modelName, firstImageUrl);
-                }
+        function toggleModelContent(modelName) {
+            if (!currentReceiptId) return;
+            const key = getModelStateKey(currentReceiptId, modelName);
+            if (modelOpenState[currentReceiptId] === undefined) modelOpenState[currentReceiptId] = {};
+            if (modelOpenState[currentReceiptId][key] === undefined) {
+                modelOpenState[currentReceiptId][key] = true;
             }
-
-            await saveToFirebase(true);
-            await loadReceivedModelsHistory();
-            renderReceiptDetail();
-            loadAssignedReceipts();
-            loadReceivedHistory();
-            loadDashboardStats();
-            loadAllModels();
-            showWarning(`تم تقفيل المنتج ${modelName} وتحديث صورته`, false);
+            modelOpenState[currentReceiptId][key] = !modelOpenState[currentReceiptId][key];
+            
+            const safeModelKey = modelName.replace(/[^a-zA-Z0-9]/g, '_');
+            const contentDiv = document.getElementById(`model-content-${safeModelKey}`);
+            if (contentDiv) {
+                contentDiv.classList.toggle('open', modelOpenState[currentReceiptId][key]);
+            }
+            const toggleBtn = document.querySelector(`#model-content-${safeModelKey}`)?.parentElement?.querySelector('.model-title i');
+            if (toggleBtn) {
+                toggleBtn.className = modelOpenState[currentReceiptId][key] ? 'fas fa-chevron-up' : 'fas fa-chevron-down';
+            }
         }
 
-        function getSizesForModel() {
-            return allSizesList.map(s => ({ sizeId: s.id, sizeName: s.name }));
-        }
-
+        // ================================================================
+        //  NORMAL RECEIPT ACTIONS
+        // ================================================================
         function addNewColorForModel(modelName) {
             if (isModelClosed(modelName)) return;
             if (!currentReceiptData.modelColors) currentReceiptData.modelColors = {};
@@ -4063,25 +4024,6 @@
             renderReceiptDetail();
         }
 
-        function getTotalForColor(modelName, colorName) {
-            let total = 0;
-            const colorData = currentReceiptData.modelColors[modelName]?.[colorName] || {};
-            for (const sizeId in colorData) {
-                const sizeArray = colorData[sizeId] || [0];
-                total += sizeArray.reduce((a, b) => a + b, 0);
-            }
-            return total;
-        }
-
-        function getTotalForModel(modelName) {
-            let total = 0;
-            const modelColors = currentReceiptData.modelColors[modelName] || {};
-            for (const colorName in modelColors) {
-                total += getTotalForColor(modelName, colorName);
-            }
-            return total;
-        }
-
         function updateTotals() {
             let totalReceived = 0;
             if (currentReceiptData.models) {
@@ -4144,6 +4086,9 @@
             fileInput.click();
         }
 
+        // ================================================================
+        //  RENDER NORMAL RECEIPT DETAIL
+        // ================================================================
         function renderReceiptDetail() {
             if (!currentReceiptData || !currentReceiptId) return;
             const r = currentReceiptData;
@@ -4292,7 +4237,6 @@
                     `;
                 });
             }
-            const isAnyModelOpen = r.models ? r.models.some(m => !isModelClosed(m.modelName)) : true;
             const isClosed = r.status === 'closed' || r.status === 'completed';
             document.getElementById('receiptDetail').innerHTML = `
                 <div class="detail-header">
@@ -4331,17 +4275,144 @@
             document.getElementById('receiptDetail').style.display = 'block';
         }
 
-        function closeDetail(silent = false) {
-            document.getElementById('receiptDetail').style.display = 'none';
-            if (!silent && currentReceiptId && currentReceiptData) { saveToFirebase(true); }
-            if (currentReceiptId) {
-                delete modelOpenState[currentReceiptId];
-                delete colorOpenState[currentReceiptId];
+        // ================================================================
+        //  CLOSE NORMAL RECEIPT
+        // ================================================================
+        function openCompleteModal() { document.getElementById('completeReceiptModal').style.display = 'flex'; }
+
+        function closeCompleteModal() { document.getElementById('completeReceiptModal').style.display = 'none'; }
+
+        async function confirmCompleteReceipt() {
+            closeCompleteModal();
+            if (!currentReceiptData) return;
+            
+            // ✅ Verify that modelColors exists
+            if (!currentReceiptData.modelColors || Object.keys(currentReceiptData.modelColors).length === 0) {
+                showWarning('⚠️ لا توجد بيانات ألوان ومقاسات للحفظ!', true);
+                return;
             }
-            currentReceiptId = null;
-            currentReceiptData = null;
+            
+            let warningMessage = '';
+            for (const model of currentReceiptData.models) {
+                if (!isModelClosed(model.modelName)) {
+                    const modelTotalReceived = getTotalForModel(model.modelName);
+                    const remaining = model.quantity - modelTotalReceived;
+                    if (modelTotalReceived !== model.quantity) {
+                        warningMessage +=
+                            `الموديل "${model.modelName}" غير مكتمل. المطلوب: ${model.quantity}, المستلم: ${modelTotalReceived}, المتبقي: ${remaining}.\n`;
+                    }
+                }
+            }
+            if (warningMessage) {
+                customConfirm(`تحذير:\n${warningMessage}\nهل تريد إنهاء الفاتورة على هذا الوضع؟`, async (confirmed) => {
+                    if (confirmed) { await performCompleteReceipt(); }
+                });
+            } else {
+                await performCompleteReceipt();
+            }
         }
 
+        async function performCompleteReceipt() {
+            if (!currentReceiptData) return;
+            
+            // ✅ Backup modelColors before any modification
+            const modelColorsBackup = JSON.parse(JSON.stringify(currentReceiptData.modelColors || {}));
+            const modelColorsImagesBackup = JSON.parse(JSON.stringify(currentReceiptData.modelColorsImages || {}));
+            const modelNotesBackup = JSON.parse(JSON.stringify(currentReceiptData.modelNotes || {}));
+            const sampleRequestsBackup = JSON.parse(JSON.stringify(currentReceiptData.sampleRequests || {}));
+            const modelFirstTimeBackup = JSON.parse(JSON.stringify(currentReceiptData.modelFirstTime || {}));
+            
+            for (const model of currentReceiptData.models) {
+                if (!isModelClosed(model.modelName)) {
+                    if (!currentReceiptData.closedModels) currentReceiptData.closedModels = {};
+                    if (!currentReceiptData.closedModelsDate) currentReceiptData.closedModelsDate = {};
+                    currentReceiptData.closedModels[model.modelName] = true;
+                    currentReceiptData.closedModelsDate[model.modelName] = new Date().toISOString();
+                }
+            }
+            
+            currentReceiptData.status = 'closed';
+            currentReceiptData.completedAt = Date.now();
+            currentReceiptData.completedBy = {
+                userId: currentUser.userId || currentUser.uid || currentUser.username || '',
+                username: currentUser.username || '',
+                fullName: currentUser.fullName || ''
+            };
+            
+            // ✅ Restore modelColors
+            currentReceiptData.modelColors = modelColorsBackup;
+            currentReceiptData.modelColorsImages = modelColorsImagesBackup;
+            currentReceiptData.modelNotes = modelNotesBackup;
+            currentReceiptData.sampleRequests = sampleRequestsBackup;
+            currentReceiptData.modelFirstTime = modelFirstTimeBackup;
+            
+            updateTotals();
+            await saveToFirebase(true);
+            await updateModelsImagesFromReceipt(currentReceiptId, currentReceiptData);
+            await loadReceivedModelsHistory();
+            
+            showWarning('✅ تم إقفال الفاتورة بنجاح مع جميع بيانات الألوان والمقاسات', false);
+            closeDetail(true);
+            loadAssignedReceipts();
+            loadReceivedHistory();
+            loadDashboardStats();
+            loadAllModels();
+        }
+
+        // ================================================================
+        //  CLOSE SINGLE MODEL
+        // ================================================================
+        async function closeModel(modelName) {
+            const modelData = currentReceiptData.models.find(m => m.modelName === modelName);
+            const modelRequiredQty = modelData?.quantity || 0;
+            let totalReceivedForModel = getTotalForModel(modelName);
+            if (totalReceivedForModel !== modelRequiredQty) {
+                const diff = totalReceivedForModel - modelRequiredQty;
+                const diffText = diff > 0 ? `زيادة ${diff} قطعة` : `نقص ${Math.abs(diff)} قطعة`;
+                customConfirm(
+                    `تحذير: الموديل "${modelName}" ${diffText} عن الكمية المطلوبة (المطلوب: ${modelRequiredQty}, المستلم: ${totalReceivedForModel}).\nهل أنت متأكد من تقفيله؟`,
+                    async (confirmed) => {
+                        if (confirmed) { await performCloseModel(modelName); }
+                    });
+            } else {
+                await performCloseModel(modelName);
+            }
+        }
+
+        async function performCloseModel(modelName) {
+            if (!currentReceiptData.closedModels) currentReceiptData.closedModels = {};
+            if (!currentReceiptData.closedModelsDate) currentReceiptData.closedModelsDate = {};
+            currentReceiptData.closedModels[modelName] = true;
+            currentReceiptData.closedModelsDate[modelName] = new Date().toISOString();
+
+            const modelColorsImages = currentReceiptData.modelColorsImages;
+            if (modelColorsImages && modelColorsImages[modelName]) {
+                const colorImages = modelColorsImages[modelName];
+                let firstImageUrl = null;
+                for (const colorName in colorImages) {
+                    if (colorImages[colorName]) {
+                        firstImageUrl = colorImages[colorName];
+                        break;
+                    }
+                }
+                if (firstImageUrl) {
+                    await updateModelImageInModelsNode(modelName, firstImageUrl);
+                }
+            }
+
+            await saveToFirebase(true);
+            await loadReceivedModelsHistory();
+            renderReceiptDetail();
+            loadAssignedReceipts();
+            loadReceivedHistory();
+            loadDashboardStats();
+            loadAllModels();
+            showWarning(`تم تقفيل المنتج ${modelName} وتحديث صورته`, false);
+        }
+
+        // ================================================================
+        //  SAVE DRAFT
+        // ================================================================
         async function saveDraft() {
             if (!currentReceiptData) return;
             updateTotals();
@@ -4349,15 +4420,9 @@
             showWarning('تم حفظ المسودة بنجاح', false);
         }
 
-        function showWarning(message, isError = false) {
-            const indicator = document.getElementById('warningIndicator');
-            indicator.innerText = message;
-            indicator.className = isError ? 'warning-indicator error' : 'warning-indicator';
-            indicator.style.display = 'flex';
-            clearTimeout(window.warningTimeout);
-            window.warningTimeout = setTimeout(() => { indicator.style.display = 'none'; }, 3000);
-        }
-
+        // ================================================================
+        //  FACTORY / COLOR QUICK ADD
+        // ================================================================
         function openFactoryModal() {
             document.getElementById('factoryModal').style.display = 'flex';
             document.getElementById('quickFactoryName').value = '';
@@ -4424,13 +4489,24 @@
             showWarning('تم إضافة اللون بنجاح', false);
         }
 
-        function logout() { localStorage.removeItem('currentUser');
-            window.location.href = 'index.html'; }
+        // ================================================================
+        //  LOGOUT
+        // ================================================================
+        function logout() { 
+            localStorage.removeItem('currentUser');
+            window.location.href = 'index.html'; 
+        }
 
-        let pendingModelSearchRowId = null;
-
+        // ================================================================
+        //  INIT
+        // ================================================================
         checkAuth();
         document.getElementById('newFactorySelect')?.addEventListener('change', () => { renderNewModelRows(); });
+        
+        console.log('✅ نظام استلام الفواتير - الإصدار المتكامل المستقر');
+        console.log('📌 تم إصلاح مشكلة فقدان modelColors عند إغلاق الفواتير');
+        console.log('📌 جميع البيانات يتم حفظها بشكل آمن باستخدام set()');
+        console.log('📌 تم إضافة نسخ احتياطي للبيانات قبل الإغلاق');
     </script>
 </body>
 </html>
