@@ -2547,7 +2547,6 @@
         // ========== فتح وإغلاق Blank ==========
         async function openBlankReceipt(receiptId) {
             if (currentBlankReceiptId && currentBlankReceiptData) {
-                // حفظ الفاتورة الحالية قبل فتح الجديدة
                 await saveBlankToFirebase(true);
             }
             currentBlankReceiptId = receiptId;
@@ -2561,7 +2560,6 @@
             if (!currentBlankReceiptData.images) currentBlankReceiptData.images = [];
             if (!currentBlankReceiptData.modelFirstTime) currentBlankReceiptData.modelFirstTime = {};
             
-            // تهيئة حالة الفتح للموديلات والألوان لهذه الفاتورة
             if (!modelOpenState[receiptId]) modelOpenState[receiptId] = {};
             if (!colorOpenState[receiptId]) colorOpenState[receiptId] = {};
             
@@ -2576,7 +2574,6 @@
             if (!silent && currentBlankReceiptId && currentBlankReceiptData) { 
                 saveBlankToFirebase(true); 
             }
-            // تنظيف الحالة المؤقتة
             if (currentBlankReceiptId) {
                 delete modelOpenState[currentBlankReceiptId];
                 delete colorOpenState[currentBlankReceiptId];
@@ -2589,7 +2586,6 @@
         function toggleBlankColorContent(modelName, colorName) {
             if (!currentBlankReceiptId) return;
             const key = getColorStateKey(currentBlankReceiptId, modelName, colorName);
-            // القيمة الافتراضية: مفتوح (true)
             if (colorOpenState[currentBlankReceiptId] === undefined) colorOpenState[currentBlankReceiptId] = {};
             if (colorOpenState[currentBlankReceiptId][key] === undefined) {
                 colorOpenState[currentBlankReceiptId][key] = true;
@@ -2606,7 +2602,6 @@
                     contentDiv.classList.remove('open');
                 }
             }
-            // تحديث أيقونة السهم
             const toggleBtn = document.querySelector(`#blank-color-content-${safeModelKey}_${safeColorKey}`)?.parentElement?.querySelector('.color-toggle-btn i');
             if (toggleBtn) {
                 if (colorOpenState[currentBlankReceiptId][key]) {
@@ -2892,14 +2887,14 @@
             loadAllModels();
         }
 
-        // ====== حفظ البيانات مع استخدام set بدلاً من update ======
+        // ====== حفظ البيانات بشكل آمن ======
         async function saveBlankToFirebase(skipIndicator = false) {
             if (!currentBlankReceiptId || !currentBlankReceiptData) return;
             if (isSaving) return;
             
             isSaving = true;
             try {
-                // استخدام set للحفاظ على بنية البيانات كما هي دون فقدان
+                // استخدام set لحفظ البيانات كاملة
                 await db.ref(`blankReceipts/${currentBlankReceiptId}`).set(currentBlankReceiptData);
                 if (!skipIndicator) {
                     const indicator = document.getElementById('autoSaveIndicator');
@@ -2909,6 +2904,7 @@
                 loadBlankReceipts();
             } catch (error) {
                 console.error('خطأ في الحفظ:', error);
+                showWarning('حدث خطأ في حفظ البيانات', true);
             } finally {
                 isSaving = false;
             }
@@ -2921,6 +2917,7 @@
             isSaving = true;
             try {
                 currentReceiptData.updatedAt = Date.now();
+                // استخدام set لحفظ البيانات كاملة
                 await db.ref(`receipts/${currentReceiptId}`).set(currentReceiptData);
                 if (!skipIndicator) {
                     const indicator = document.getElementById('autoSaveIndicator');
@@ -2932,6 +2929,7 @@
                 loadDashboardStats();
             } catch (error) {
                 console.error('خطأ في الحفظ:', error);
+                showWarning('حدث خطأ في حفظ البيانات', true);
             } finally {
                 isSaving = false;
             }
@@ -2949,7 +2947,6 @@
             const r = currentBlankReceiptData;
             const receiptId = currentBlankReceiptId;
             
-            // تهيئة حالة الفتح لهذه الفاتورة إذا لم تكن موجودة
             if (!modelOpenState[receiptId]) modelOpenState[receiptId] = {};
             if (!colorOpenState[receiptId]) colorOpenState[receiptId] = {};
             
@@ -3816,6 +3813,8 @@
             const snapshot = await db.ref(`receipts/${receiptId}`).once('value');
             currentReceiptData = snapshot.val();
             if (!currentReceiptData) { showWarning('حدث خطأ في تحميل الفاتورة', true); return; }
+            
+            // ✅ تأكد من وجود جميع الحقول المطلوبة
             if (!currentReceiptData.closedModels) currentReceiptData.closedModels = {};
             if (!currentReceiptData.modelImages) currentReceiptData.modelImages = {};
             if (!currentReceiptData.modelColors) currentReceiptData.modelColors = {};
@@ -3825,7 +3824,6 @@
             if (!currentReceiptData.modelFirstTime) currentReceiptData.modelFirstTime = {};
             if (!currentReceiptData.received) currentReceiptData.received = {};
             
-            // تهيئة حالة الفتح لهذه الفاتورة
             if (!modelOpenState[receiptId]) modelOpenState[receiptId] = {};
             if (!colorOpenState[receiptId]) colorOpenState[receiptId] = {};
             
