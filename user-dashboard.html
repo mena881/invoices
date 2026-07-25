@@ -1749,6 +1749,63 @@
                 padding: 24px 20px;
             }
         }
+        /* =========================================================
+                   TOGGLE BUTTONS STYLES (احترافية)
+                   ========================================================= */
+        .toggle-controls {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+            padding: 12px 18px;
+            background: #f8faff;
+            border-radius: 16px;
+            border: 1px solid #e6edf5;
+        }
+        .toggle-controls .btn-toggle {
+            background: #fff;
+            border: 1px solid #d0d9e8;
+            color: #1f3a8a;
+            padding: 8px 18px;
+            border-radius: 40px;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.8rem;
+            font-weight: 600;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .toggle-controls .btn-toggle:hover {
+            background: #f0f4fe;
+            border-color: #6c8cff;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(108, 140, 255, 0.15);
+        }
+        .toggle-controls .btn-toggle i {
+            color: #6c8cff;
+        }
+        .toggle-controls .btn-toggle.active {
+            background: #6c8cff;
+            color: #fff;
+            border-color: #6c8cff;
+        }
+        .toggle-controls .btn-toggle.active i {
+            color: #fff;
+        }
+        .toggle-controls .btn-toggle .badge-count {
+            background: rgba(108, 140, 255, 0.15);
+            color: #1f3a8a;
+            border-radius: 30px;
+            padding: 0 10px;
+            font-size: 0.7rem;
+            font-weight: 700;
+        }
+        .toggle-controls .btn-toggle.active .badge-count {
+            background: rgba(255, 255, 255, 0.2);
+            color: #fff;
+        }
     </style>
 </head>
 <body>
@@ -1844,7 +1901,10 @@
                 <h3><i class="fas fa-plus-circle"></i> إضافة استلام جديد</h3>
                 <div class="form-group">
                     <label><i class="fas fa-barcode"></i> كود الفاتورة</label>
-                    <input type="text" id="newInvoiceCode" placeholder="أدخل كود الفاتورة">
+                    <div style="display: flex; gap: 10px;">
+                        <input type="text" id="newInvoiceCode" placeholder="أدخل كود الفاتورة" style="flex:1;">
+                        <button class="btn btn-primary btn-sm" onclick="generateInvoiceCode()" style="white-space: nowrap;"><i class="fas fa-code"></i> إنشاء كود</button>
+                    </div>
                 </div>
                 <div class="form-group">
                     <label><i class="fas fa-factory"></i> المصنع</label>
@@ -1950,7 +2010,10 @@
             <h3><i class="fas fa-file-alt"></i> إنشاء فاتورة Blank جديدة</h3>
             <div class="form-group" style="margin-top:18px;">
                 <label><i class="fas fa-barcode"></i> كود الفاتورة</label>
-                <input type="text" id="blankInvoiceCode" placeholder="أدخل كود الفاتورة">
+                <div style="display: flex; gap: 10px;">
+                    <input type="text" id="blankInvoiceCode" placeholder="أدخل كود الفاتورة" style="flex:1;">
+                    <button class="btn btn-primary btn-sm" onclick="generateBlankInvoiceCode()" style="white-space: nowrap;"><i class="fas fa-code"></i> إنشاء كود</button>
+                </div>
             </div>
             <div class="form-group">
                 <label><i class="fas fa-factory"></i> المصنع</label>
@@ -2080,7 +2143,7 @@
         let currentBlankReceiptData = null;
 
         // ================================================================
-        //  CACHE
+        //  CACHE - استبعاد جداول currentTable و invoices
         // ================================================================
         let sizesData = {};
         let allSizesList = [];
@@ -2472,8 +2535,8 @@
 
                 if (currentReceiptId === receiptId && currentReceiptData) {
                     if (!currentReceiptData.modelColors[modelName]) currentReceiptData.modelColors[modelName] = {};
-                    if (!currentReceiptData.modelColors[modelName][colorName]) currentReceiptData.modelColors[modelName][
-                        colorName] = {};
+                    if (!currentReceiptData.modelColors[modelName][colorName]) currentReceiptData.modelColors[
+                        modelName][colorName] = {};
                     if (!currentReceiptData.modelColors[modelName][colorName][sizeId]) currentReceiptData.modelColors[
                         modelName][colorName][sizeId] = [0];
                     currentReceiptData.modelColors[modelName][colorName][sizeId][index] = numValue;
@@ -2494,8 +2557,8 @@
 
                 if (currentReceiptId === receiptId && currentReceiptData) {
                     if (!currentReceiptData.modelColors[modelName]) currentReceiptData.modelColors[modelName] = {};
-                    if (!currentReceiptData.modelColors[modelName][colorName]) currentReceiptData.modelColors[modelName][
-                        colorName] = {};
+                    if (!currentReceiptData.modelColors[modelName][colorName]) currentReceiptData.modelColors[
+                        modelName][colorName] = {};
                     if (!currentReceiptData.modelColors[modelName][colorName][sizeId]) currentReceiptData.modelColors[
                         modelName][colorName][sizeId] = [0];
                     currentReceiptData.modelColors[modelName][colorName][sizeId].push(0);
@@ -2625,7 +2688,8 @@
                 await ReceiptRepository.updateSampleRequest(receiptId, modelName, colorName, sizeId, isChecked);
                 if (currentReceiptData) {
                     if (!currentReceiptData.sampleRequests) currentReceiptData.sampleRequests = {};
-                    if (!currentReceiptData.sampleRequests[modelName]) currentReceiptData.sampleRequests[modelName] = {};
+                    if (!currentReceiptData.sampleRequests[modelName]) currentReceiptData.sampleRequests[
+                        modelName] = {};
                     if (!currentReceiptData.sampleRequests[modelName][colorName]) currentReceiptData.sampleRequests[
                         modelName][colorName] = {};
                     if (isChecked) {
@@ -3175,6 +3239,7 @@
                 }
                 if (currentUser.role !== 'employee') { window.location.href = 'admin-dashboard.html'; return; }
                 document.getElementById('userName').innerText = currentUser.fullName || currentUser.username;
+                // تحميل البيانات مع استبعاد currentTable و invoices
                 Promise.all([loadSizes(), loadAllModels(), loadAllFactories(), loadAllColors(), loadReceivedModelsHistory()])
                     .then(() => {
                         loadAssignedReceipts();
@@ -3191,7 +3256,7 @@
         }
 
         // ================================================================
-        //  DATA LOADING
+        //  DATA LOADING - استبعاد currentTable و invoices
         // ================================================================
 
         async function loadSizes() {
@@ -3436,6 +3501,187 @@
             currentReceiptData = null;
         }
 
+        // توليد كود فاتورة عشوائي 5 أرقام مع فحص التعارض
+        function generateInvoiceCode() {
+            let code = '';
+            let attempts = 0;
+            let existingCodes = new Set();
+            // جمع الأكواد الموجودة من الفواتير
+            db.ref('receipts').once('value', (snapshot) => {
+                snapshot.forEach((child) => {
+                    const receipt = child.val();
+                    if (receipt.invoiceCode) existingCodes.add(receipt.invoiceCode);
+                });
+                db.ref('blankReceipts').once('value', (snap) => {
+                    snap.forEach((child) => {
+                        const receipt = child.val();
+                        if (receipt.invoiceCode) existingCodes.add(receipt.invoiceCode);
+                    });
+                    // توليد كود جديد غير مكرر
+                    let newCode = '';
+                    while (true) {
+                        let temp = '';
+                        for (let i = 0; i < 5; i++) {
+                            temp += Math.floor(Math.random() * 10);
+                        }
+                        if (!existingCodes.has(temp)) {
+                            newCode = temp;
+                            break;
+                        }
+                        attempts++;
+                        if (attempts > 1000) break;
+                    }
+                    if (newCode) {
+                        document.getElementById('newInvoiceCode').value = newCode;
+                        showWarning('تم إنشاء كود جديد: ' + newCode, false);
+                    } else {
+                        showWarning('تعذر إنشاء كود غير مكرر، حاول مرة أخرى', true);
+                    }
+                });
+            });
+        }
+
+        function generateBlankInvoiceCode() {
+            let code = '';
+            let attempts = 0;
+            let existingCodes = new Set();
+            db.ref('receipts').once('value', (snapshot) => {
+                snapshot.forEach((child) => {
+                    const receipt = child.val();
+                    if (receipt.invoiceCode) existingCodes.add(receipt.invoiceCode);
+                });
+                db.ref('blankReceipts').once('value', (snap) => {
+                    snap.forEach((child) => {
+                        const receipt = child.val();
+                        if (receipt.invoiceCode) existingCodes.add(receipt.invoiceCode);
+                    });
+                    let newCode = '';
+                    while (true) {
+                        let temp = '';
+                        for (let i = 0; i < 5; i++) {
+                            temp += Math.floor(Math.random() * 10);
+                        }
+                        if (!existingCodes.has(temp)) {
+                            newCode = temp;
+                            break;
+                        }
+                        attempts++;
+                        if (attempts > 1000) break;
+                    }
+                    if (newCode) {
+                        document.getElementById('blankInvoiceCode').value = newCode;
+                        showWarning('تم إنشاء كود جديد: ' + newCode, false);
+                    } else {
+                        showWarning('تعذر إنشاء كود غير مكرر، حاول مرة أخرى', true);
+                    }
+                });
+            });
+        }
+
+        // ================================================================
+        //  TOGGLE CONTROLS (فتح/غلق كل الألوان وفتح/غلق كل المنتجات)
+        // ================================================================
+
+        function addToggleControls() {
+            const detailContainer = document.getElementById('receiptDetail');
+            if (!detailContainer) return;
+            // إزالة الأزرار القديمة إذا وجدت
+            const oldControls = detailContainer.querySelector('.toggle-controls');
+            if (oldControls) oldControls.remove();
+
+            if (!currentReceiptData) return;
+            const modelNames = Object.keys(currentReceiptData.modelColors || {});
+            if (modelNames.length === 0) return;
+
+            // حساب عدد الألوان المفتوحة والمغلقة
+            let openColors = 0,
+                totalColors = 0;
+            let openModels = 0,
+                totalModels = modelNames.length;
+            for (const model of modelNames) {
+                const colors = Object.keys(currentReceiptData.modelColors[model] || {});
+                for (const color of colors) {
+                    totalColors++;
+                    const key = getColorStateKey(currentReceiptId, model, color);
+                    if (colorOpenState[currentReceiptId]?.[key] !== false) openColors++;
+                }
+                const mKey = getModelStateKey(currentReceiptId, model);
+                if (modelOpenState[currentReceiptId]?.[mKey] !== false) openModels++;
+            }
+            const allColorsOpen = openColors === totalColors && totalColors > 0;
+            const allModelsOpen = openModels === totalModels;
+
+            const controlsHtml = `
+                <div class="toggle-controls">
+                    <button class="btn-toggle ${allColorsOpen ? 'active' : ''}" onclick="toggleAllColors()">
+                        <i class="fas fa-palette"></i> فتح/غلق كل الألوان
+                        <span class="badge-count">${openColors}/${totalColors}</span>
+                    </button>
+                    <button class="btn-toggle ${allModelsOpen ? 'active' : ''}" onclick="toggleAllModels()">
+                        <i class="fas fa-tshirt"></i> فتح/غلق كل المنتجات
+                        <span class="badge-count">${openModels}/${totalModels}</span>
+                    </button>
+                </div>
+            `;
+            // إضافة الأزرار قبل أول model-card
+            const firstModel = detailContainer.querySelector('.models-grid');
+            if (firstModel) {
+                firstModel.insertAdjacentHTML('beforebegin', controlsHtml);
+            } else {
+                detailContainer.insertAdjacentHTML('beforeend', controlsHtml);
+            }
+        }
+
+        function toggleAllColors() {
+            if (!currentReceiptId || !currentReceiptData) return;
+            const models = Object.keys(currentReceiptData.modelColors || {});
+            let allOpen = true;
+            // تحديد الحالة الحالية: هل كل الألوان مفتوحة؟
+            for (const model of models) {
+                const colors = Object.keys(currentReceiptData.modelColors[model] || {});
+                for (const color of colors) {
+                    const key = getColorStateKey(currentReceiptId, model, color);
+                    if (colorOpenState[currentReceiptId]?.[key] === undefined) colorOpenState[currentReceiptId][key] =
+                    true;
+                    if (colorOpenState[currentReceiptId][key] === false) allOpen = false;
+                }
+            }
+            // تبديل الحالة: إذا كانت كلها مفتوحة نغلقها، وإلا نفتحها
+            const newState = !allOpen;
+            for (const model of models) {
+                const colors = Object.keys(currentReceiptData.modelColors[model] || {});
+                for (const color of colors) {
+                    const key = getColorStateKey(currentReceiptId, model, color);
+                    colorOpenState[currentReceiptId][key] = newState;
+                }
+            }
+            renderReceiptDetail();
+            // تحديث الأزرار بعد الإعادة
+            setTimeout(addToggleControls, 100);
+        }
+
+        function toggleAllModels() {
+            if (!currentReceiptId || !currentReceiptData) return;
+            const models = Object.keys(currentReceiptData.modelColors || {});
+            let allOpen = true;
+            for (const model of models) {
+                const key = getModelStateKey(currentReceiptId, model);
+                if (modelOpenState[currentReceiptId]?.[key] === undefined) modelOpenState[currentReceiptId][key] = true;
+                if (modelOpenState[currentReceiptId][key] === false) allOpen = false;
+            }
+            const newState = !allOpen;
+            for (const model of models) {
+                const key = getModelStateKey(currentReceiptId, model);
+                modelOpenState[currentReceiptId][key] = newState;
+            }
+            renderReceiptDetail();
+            setTimeout(addToggleControls, 100);
+        }
+
+        // ================================================================
+        //  RENDER RECEIPT DETAIL (مع أزرار التحكم المحسنة)
+        // ================================================================
+
         function renderReceiptDetail() {
             if (!currentReceiptData || !currentReceiptId) return;
             const r = currentReceiptData;
@@ -3624,6 +3870,8 @@
                 <div class="models-grid">${modelsHtml}</div>
             `;
             document.getElementById('receiptDetail').style.display = 'block';
+            // إضافة أزرار التحكم بعد التحميل
+            setTimeout(addToggleControls, 50);
         }
 
         // ================================================================
@@ -3708,6 +3956,8 @@
                 toggleBtn.className = colorOpenState[currentReceiptId][key] ? 'fas fa-chevron-up' :
                 'fas fa-chevron-down';
             }
+            // تحديث الأزرار
+            setTimeout(addToggleControls, 50);
         }
 
         function toggleModelContent(modelName) {
@@ -3730,6 +3980,8 @@
                 toggleIcon.classList.toggle('open', modelOpenState[currentReceiptId][key]);
                 toggleIcon.className = `fas ${modelOpenState[currentReceiptId][key] ? 'fa-chevron-up' : 'fa-chevron-down'} toggle-icon ${modelOpenState[currentReceiptId][key] ? 'open' : ''}`;
             }
+            // تحديث الأزرار
+            setTimeout(addToggleControls, 50);
         }
 
         function addNewQtyRow(modelName, colorName, sizeId) {
@@ -5463,6 +5715,9 @@
         console.log('📌 تقفيل احترافي مع تأكيد');
         console.log('📌 صلاحيات المستخدم');
         console.log('📌 فتح وقفل أنيق للمنتجات');
+        console.log('📌 تم استبعاد جدولي currentTable و invoices');
+        console.log('📌 أزرار فتح/غلق كل الألوان والمنتجات');
+        console.log('📌 إنشاء كود فاتورة 5 أرقام غير متعارض');
     </script>
 </body>
 </html>
