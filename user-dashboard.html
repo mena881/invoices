@@ -1749,63 +1749,6 @@
                 padding: 24px 20px;
             }
         }
-        /* =========================================================
-                   TOGGLE BUTTONS STYLES (احترافية)
-                   ========================================================= */
-        .toggle-controls {
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-            margin-bottom: 20px;
-            padding: 12px 18px;
-            background: #f8faff;
-            border-radius: 16px;
-            border: 1px solid #e6edf5;
-        }
-        .toggle-controls .btn-toggle {
-            background: #fff;
-            border: 1px solid #d0d9e8;
-            color: #1f3a8a;
-            padding: 8px 18px;
-            border-radius: 40px;
-            cursor: pointer;
-            font-family: 'Inter', sans-serif;
-            font-size: 0.8rem;
-            font-weight: 600;
-            transition: all 0.2s;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .toggle-controls .btn-toggle:hover {
-            background: #f0f4fe;
-            border-color: #6c8cff;
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(108, 140, 255, 0.15);
-        }
-        .toggle-controls .btn-toggle i {
-            color: #6c8cff;
-        }
-        .toggle-controls .btn-toggle.active {
-            background: #6c8cff;
-            color: #fff;
-            border-color: #6c8cff;
-        }
-        .toggle-controls .btn-toggle.active i {
-            color: #fff;
-        }
-        .toggle-controls .btn-toggle .badge-count {
-            background: rgba(108, 140, 255, 0.15);
-            color: #1f3a8a;
-            border-radius: 30px;
-            padding: 0 10px;
-            font-size: 0.7rem;
-            font-weight: 700;
-        }
-        .toggle-controls .btn-toggle.active .badge-count {
-            background: rgba(255, 255, 255, 0.2);
-            color: #fff;
-        }
     </style>
 </head>
 <body>
@@ -1901,10 +1844,7 @@
                 <h3><i class="fas fa-plus-circle"></i> إضافة استلام جديد</h3>
                 <div class="form-group">
                     <label><i class="fas fa-barcode"></i> كود الفاتورة</label>
-                    <div style="display: flex; gap: 10px;">
-                        <input type="text" id="newInvoiceCode" placeholder="أدخل كود الفاتورة" style="flex:1;">
-                        <button class="btn btn-primary btn-sm" onclick="generateInvoiceCode()" style="white-space: nowrap;"><i class="fas fa-code"></i> إنشاء كود</button>
-                    </div>
+                    <input type="text" id="newInvoiceCode" placeholder="أدخل كود الفاتورة">
                 </div>
                 <div class="form-group">
                     <label><i class="fas fa-factory"></i> المصنع</label>
@@ -2010,10 +1950,7 @@
             <h3><i class="fas fa-file-alt"></i> إنشاء فاتورة Blank جديدة</h3>
             <div class="form-group" style="margin-top:18px;">
                 <label><i class="fas fa-barcode"></i> كود الفاتورة</label>
-                <div style="display: flex; gap: 10px;">
-                    <input type="text" id="blankInvoiceCode" placeholder="أدخل كود الفاتورة" style="flex:1;">
-                    <button class="btn btn-primary btn-sm" onclick="generateBlankInvoiceCode()" style="white-space: nowrap;"><i class="fas fa-code"></i> إنشاء كود</button>
-                </div>
+                <input type="text" id="blankInvoiceCode" placeholder="أدخل كود الفاتورة">
             </div>
             <div class="form-group">
                 <label><i class="fas fa-factory"></i> المصنع</label>
@@ -2143,7 +2080,7 @@
         let currentBlankReceiptData = null;
 
         // ================================================================
-        //  CACHE - استبعاد جداول currentTable و invoices
+        //  CACHE
         // ================================================================
         let sizesData = {};
         let allSizesList = [];
@@ -2176,6 +2113,9 @@
         let saveTimer = null;
         let isSaving = false;
         let pendingSaveData = null;
+
+        // Exclude these tables from loading
+        const EXCLUDED_TABLES = ['currentTable', 'invoices'];
 
         // ================================================================
         //  HELPERS
@@ -2535,8 +2475,8 @@
 
                 if (currentReceiptId === receiptId && currentReceiptData) {
                     if (!currentReceiptData.modelColors[modelName]) currentReceiptData.modelColors[modelName] = {};
-                    if (!currentReceiptData.modelColors[modelName][colorName]) currentReceiptData.modelColors[
-                        modelName][colorName] = {};
+                    if (!currentReceiptData.modelColors[modelName][colorName]) currentReceiptData.modelColors[modelName][
+                        colorName] = {};
                     if (!currentReceiptData.modelColors[modelName][colorName][sizeId]) currentReceiptData.modelColors[
                         modelName][colorName][sizeId] = [0];
                     currentReceiptData.modelColors[modelName][colorName][sizeId][index] = numValue;
@@ -2557,8 +2497,8 @@
 
                 if (currentReceiptId === receiptId && currentReceiptData) {
                     if (!currentReceiptData.modelColors[modelName]) currentReceiptData.modelColors[modelName] = {};
-                    if (!currentReceiptData.modelColors[modelName][colorName]) currentReceiptData.modelColors[
-                        modelName][colorName] = {};
+                    if (!currentReceiptData.modelColors[modelName][colorName]) currentReceiptData.modelColors[modelName][
+                        colorName] = {};
                     if (!currentReceiptData.modelColors[modelName][colorName][sizeId]) currentReceiptData.modelColors[
                         modelName][colorName][sizeId] = [0];
                     currentReceiptData.modelColors[modelName][colorName][sizeId].push(0);
@@ -2688,8 +2628,7 @@
                 await ReceiptRepository.updateSampleRequest(receiptId, modelName, colorName, sizeId, isChecked);
                 if (currentReceiptData) {
                     if (!currentReceiptData.sampleRequests) currentReceiptData.sampleRequests = {};
-                    if (!currentReceiptData.sampleRequests[modelName]) currentReceiptData.sampleRequests[
-                        modelName] = {};
+                    if (!currentReceiptData.sampleRequests[modelName]) currentReceiptData.sampleRequests[modelName] = {};
                     if (!currentReceiptData.sampleRequests[modelName][colorName]) currentReceiptData.sampleRequests[
                         modelName][colorName] = {};
                     if (isChecked) {
@@ -3239,7 +3178,6 @@
                 }
                 if (currentUser.role !== 'employee') { window.location.href = 'admin-dashboard.html'; return; }
                 document.getElementById('userName').innerText = currentUser.fullName || currentUser.username;
-                // تحميل البيانات مع استبعاد currentTable و invoices
                 Promise.all([loadSizes(), loadAllModels(), loadAllFactories(), loadAllColors(), loadReceivedModelsHistory()])
                     .then(() => {
                         loadAssignedReceipts();
@@ -3256,7 +3194,7 @@
         }
 
         // ================================================================
-        //  DATA LOADING - استبعاد currentTable و invoices
+        //  DATA LOADING
         // ================================================================
 
         async function loadSizes() {
@@ -3501,187 +3439,6 @@
             currentReceiptData = null;
         }
 
-        // توليد كود فاتورة عشوائي 5 أرقام مع فحص التعارض
-        function generateInvoiceCode() {
-            let code = '';
-            let attempts = 0;
-            let existingCodes = new Set();
-            // جمع الأكواد الموجودة من الفواتير
-            db.ref('receipts').once('value', (snapshot) => {
-                snapshot.forEach((child) => {
-                    const receipt = child.val();
-                    if (receipt.invoiceCode) existingCodes.add(receipt.invoiceCode);
-                });
-                db.ref('blankReceipts').once('value', (snap) => {
-                    snap.forEach((child) => {
-                        const receipt = child.val();
-                        if (receipt.invoiceCode) existingCodes.add(receipt.invoiceCode);
-                    });
-                    // توليد كود جديد غير مكرر
-                    let newCode = '';
-                    while (true) {
-                        let temp = '';
-                        for (let i = 0; i < 5; i++) {
-                            temp += Math.floor(Math.random() * 10);
-                        }
-                        if (!existingCodes.has(temp)) {
-                            newCode = temp;
-                            break;
-                        }
-                        attempts++;
-                        if (attempts > 1000) break;
-                    }
-                    if (newCode) {
-                        document.getElementById('newInvoiceCode').value = newCode;
-                        showWarning('تم إنشاء كود جديد: ' + newCode, false);
-                    } else {
-                        showWarning('تعذر إنشاء كود غير مكرر، حاول مرة أخرى', true);
-                    }
-                });
-            });
-        }
-
-        function generateBlankInvoiceCode() {
-            let code = '';
-            let attempts = 0;
-            let existingCodes = new Set();
-            db.ref('receipts').once('value', (snapshot) => {
-                snapshot.forEach((child) => {
-                    const receipt = child.val();
-                    if (receipt.invoiceCode) existingCodes.add(receipt.invoiceCode);
-                });
-                db.ref('blankReceipts').once('value', (snap) => {
-                    snap.forEach((child) => {
-                        const receipt = child.val();
-                        if (receipt.invoiceCode) existingCodes.add(receipt.invoiceCode);
-                    });
-                    let newCode = '';
-                    while (true) {
-                        let temp = '';
-                        for (let i = 0; i < 5; i++) {
-                            temp += Math.floor(Math.random() * 10);
-                        }
-                        if (!existingCodes.has(temp)) {
-                            newCode = temp;
-                            break;
-                        }
-                        attempts++;
-                        if (attempts > 1000) break;
-                    }
-                    if (newCode) {
-                        document.getElementById('blankInvoiceCode').value = newCode;
-                        showWarning('تم إنشاء كود جديد: ' + newCode, false);
-                    } else {
-                        showWarning('تعذر إنشاء كود غير مكرر، حاول مرة أخرى', true);
-                    }
-                });
-            });
-        }
-
-        // ================================================================
-        //  TOGGLE CONTROLS (فتح/غلق كل الألوان وفتح/غلق كل المنتجات)
-        // ================================================================
-
-        function addToggleControls() {
-            const detailContainer = document.getElementById('receiptDetail');
-            if (!detailContainer) return;
-            // إزالة الأزرار القديمة إذا وجدت
-            const oldControls = detailContainer.querySelector('.toggle-controls');
-            if (oldControls) oldControls.remove();
-
-            if (!currentReceiptData) return;
-            const modelNames = Object.keys(currentReceiptData.modelColors || {});
-            if (modelNames.length === 0) return;
-
-            // حساب عدد الألوان المفتوحة والمغلقة
-            let openColors = 0,
-                totalColors = 0;
-            let openModels = 0,
-                totalModels = modelNames.length;
-            for (const model of modelNames) {
-                const colors = Object.keys(currentReceiptData.modelColors[model] || {});
-                for (const color of colors) {
-                    totalColors++;
-                    const key = getColorStateKey(currentReceiptId, model, color);
-                    if (colorOpenState[currentReceiptId]?.[key] !== false) openColors++;
-                }
-                const mKey = getModelStateKey(currentReceiptId, model);
-                if (modelOpenState[currentReceiptId]?.[mKey] !== false) openModels++;
-            }
-            const allColorsOpen = openColors === totalColors && totalColors > 0;
-            const allModelsOpen = openModels === totalModels;
-
-            const controlsHtml = `
-                <div class="toggle-controls">
-                    <button class="btn-toggle ${allColorsOpen ? 'active' : ''}" onclick="toggleAllColors()">
-                        <i class="fas fa-palette"></i> فتح/غلق كل الألوان
-                        <span class="badge-count">${openColors}/${totalColors}</span>
-                    </button>
-                    <button class="btn-toggle ${allModelsOpen ? 'active' : ''}" onclick="toggleAllModels()">
-                        <i class="fas fa-tshirt"></i> فتح/غلق كل المنتجات
-                        <span class="badge-count">${openModels}/${totalModels}</span>
-                    </button>
-                </div>
-            `;
-            // إضافة الأزرار قبل أول model-card
-            const firstModel = detailContainer.querySelector('.models-grid');
-            if (firstModel) {
-                firstModel.insertAdjacentHTML('beforebegin', controlsHtml);
-            } else {
-                detailContainer.insertAdjacentHTML('beforeend', controlsHtml);
-            }
-        }
-
-        function toggleAllColors() {
-            if (!currentReceiptId || !currentReceiptData) return;
-            const models = Object.keys(currentReceiptData.modelColors || {});
-            let allOpen = true;
-            // تحديد الحالة الحالية: هل كل الألوان مفتوحة؟
-            for (const model of models) {
-                const colors = Object.keys(currentReceiptData.modelColors[model] || {});
-                for (const color of colors) {
-                    const key = getColorStateKey(currentReceiptId, model, color);
-                    if (colorOpenState[currentReceiptId]?.[key] === undefined) colorOpenState[currentReceiptId][key] =
-                    true;
-                    if (colorOpenState[currentReceiptId][key] === false) allOpen = false;
-                }
-            }
-            // تبديل الحالة: إذا كانت كلها مفتوحة نغلقها، وإلا نفتحها
-            const newState = !allOpen;
-            for (const model of models) {
-                const colors = Object.keys(currentReceiptData.modelColors[model] || {});
-                for (const color of colors) {
-                    const key = getColorStateKey(currentReceiptId, model, color);
-                    colorOpenState[currentReceiptId][key] = newState;
-                }
-            }
-            renderReceiptDetail();
-            // تحديث الأزرار بعد الإعادة
-            setTimeout(addToggleControls, 100);
-        }
-
-        function toggleAllModels() {
-            if (!currentReceiptId || !currentReceiptData) return;
-            const models = Object.keys(currentReceiptData.modelColors || {});
-            let allOpen = true;
-            for (const model of models) {
-                const key = getModelStateKey(currentReceiptId, model);
-                if (modelOpenState[currentReceiptId]?.[key] === undefined) modelOpenState[currentReceiptId][key] = true;
-                if (modelOpenState[currentReceiptId][key] === false) allOpen = false;
-            }
-            const newState = !allOpen;
-            for (const model of models) {
-                const key = getModelStateKey(currentReceiptId, model);
-                modelOpenState[currentReceiptId][key] = newState;
-            }
-            renderReceiptDetail();
-            setTimeout(addToggleControls, 100);
-        }
-
-        // ================================================================
-        //  RENDER RECEIPT DETAIL (مع أزرار التحكم المحسنة)
-        // ================================================================
-
         function renderReceiptDetail() {
             if (!currentReceiptData || !currentReceiptId) return;
             const r = currentReceiptData;
@@ -3839,6 +3596,12 @@
                 <div class="detail-header">
                     <h3><i class="fas fa-receipt"></i> استلام فاتورة: ${r.invoiceCode}</h3>
                     <div class="detail-actions">
+                        <div style="display:flex; gap:6px; flex-wrap:wrap;">
+                            <button class="btn btn-sm btn-primary" onclick="openAllModels()"><i class="fas fa-expand"></i> فتح الكل</button>
+                            <button class="btn btn-sm btn-warning" onclick="closeAllModels()"><i class="fas fa-compress"></i> غلق الكل</button>
+                            <button class="btn btn-sm btn-primary" onclick="openAllColors()"><i class="fas fa-palette"></i> فتح الألوان</button>
+                            <button class="btn btn-sm btn-warning" onclick="closeAllColors()"><i class="fas fa-palette"></i> غلق الألوان</button>
+                        </div>
                         ${!isClosed ? `
                             <button class="btn btn-warning" onclick="saveDraft()"><i class="fas fa-save"></i> حفظ كمسودة</button>
                             <button class="btn btn-success" onclick="openConfirmCloseModal()"><i class="fas fa-check-double"></i> تقفيل الفاتورة</button>
@@ -3870,8 +3633,68 @@
                 <div class="models-grid">${modelsHtml}</div>
             `;
             document.getElementById('receiptDetail').style.display = 'block';
-            // إضافة أزرار التحكم بعد التحميل
-            setTimeout(addToggleControls, 50);
+        }
+
+        // ================================================================
+        //  EXPAND / COLLAPSE FUNCTIONS
+        // ================================================================
+
+        function openAllModels() {
+            if (!currentReceiptId || !currentReceiptData) return;
+            const receiptId = currentReceiptId;
+            if (!modelOpenState[receiptId]) modelOpenState[receiptId] = {};
+
+            (currentReceiptData.models || []).forEach(model => {
+                const key = getModelStateKey(receiptId, model.modelName);
+                modelOpenState[receiptId][key] = true;
+            });
+
+            renderReceiptDetail();
+        }
+
+        function closeAllModels() {
+            if (!currentReceiptId || !currentReceiptData) return;
+            const receiptId = currentReceiptId;
+            if (!modelOpenState[receiptId]) modelOpenState[receiptId] = {};
+
+            (currentReceiptData.models || []).forEach(model => {
+                const key = getModelStateKey(receiptId, model.modelName);
+                modelOpenState[receiptId][key] = false;
+            });
+
+            renderReceiptDetail();
+        }
+
+        function openAllColors() {
+            if (!currentReceiptId || !currentReceiptData) return;
+            const receiptId = currentReceiptId;
+            if (!colorOpenState[receiptId]) colorOpenState[receiptId] = {};
+
+            (currentReceiptData.models || []).forEach(model => {
+                const modelColors = currentReceiptData.modelColors?.[model.modelName] || {};
+                Object.keys(modelColors).forEach(colorName => {
+                    const key = getColorStateKey(receiptId, model.modelName, colorName);
+                    colorOpenState[receiptId][key] = true;
+                });
+            });
+
+            renderReceiptDetail();
+        }
+
+        function closeAllColors() {
+            if (!currentReceiptId || !currentReceiptData) return;
+            const receiptId = currentReceiptId;
+            if (!colorOpenState[receiptId]) colorOpenState[receiptId] = {};
+
+            (currentReceiptData.models || []).forEach(model => {
+                const modelColors = currentReceiptData.modelColors?.[model.modelName] || {};
+                Object.keys(modelColors).forEach(colorName => {
+                    const key = getColorStateKey(receiptId, model.modelName, colorName);
+                    colorOpenState[receiptId][key] = false;
+                });
+            });
+
+            renderReceiptDetail();
         }
 
         // ================================================================
@@ -3956,8 +3779,6 @@
                 toggleBtn.className = colorOpenState[currentReceiptId][key] ? 'fas fa-chevron-up' :
                 'fas fa-chevron-down';
             }
-            // تحديث الأزرار
-            setTimeout(addToggleControls, 50);
         }
 
         function toggleModelContent(modelName) {
@@ -3980,8 +3801,6 @@
                 toggleIcon.classList.toggle('open', modelOpenState[currentReceiptId][key]);
                 toggleIcon.className = `fas ${modelOpenState[currentReceiptId][key] ? 'fa-chevron-up' : 'fa-chevron-down'} toggle-icon ${modelOpenState[currentReceiptId][key] ? 'open' : ''}`;
             }
-            // تحديث الأزرار
-            setTimeout(addToggleControls, 50);
         }
 
         function addNewQtyRow(modelName, colorName, sizeId) {
@@ -4773,6 +4592,7 @@
                 return;
             }
 
+            // Check if model code already exists in same factory
             const exists = allModelsList.some(m => (m.code === modelCode || m.name === modelCode) && m.factory ===
                 currentFactory);
             if (exists) {
@@ -4780,11 +4600,26 @@
                 return;
             }
 
-            const newModelData = { name: modelCode, code: modelCode, factory: currentFactory };
+            // Generate unique code if needed
+            let finalCode = modelCode;
+            // Check if code is already used globally
+            const codeExists = allModelsList.some(m => m.code === modelCode || m.name === modelCode);
+            if (codeExists) {
+                // Try to generate a unique code
+                let counter = 1;
+                let newCode = `${modelCode}-${counter}`;
+                while (allModelsList.some(m => m.code === newCode || m.name === newCode)) {
+                    counter++;
+                    newCode = `${modelCode}-${counter}`;
+                }
+                finalCode = newCode;
+            }
+
+            const newModelData = { name: finalCode, code: finalCode, factory: currentFactory };
             const newRef = await db.ref('models').push(newModelData);
             await loadAllModels();
             await loadReceivedModelsHistory();
-            const newModel = { id: newRef.key, name: modelCode, code: modelCode, factory: currentFactory, imageUrl: '' };
+            const newModel = { id: newRef.key, name: finalCode, code: finalCode, factory: currentFactory, imageUrl: '' };
             allModelsList.push(newModel);
 
             document.getElementById('newModelCodeBlank').value = '';
@@ -4799,17 +4634,17 @@
             }
 
             if (rowId) {
-                document.getElementById(`blankSelectedModel_${rowId}`).value = modelCode;
+                document.getElementById(`blankSelectedModel_${rowId}`).value = finalCode;
                 const input = document.querySelector(`#blank-model-row-${rowId} .blank-model-search-input`);
-                if (input) input.value = modelCode;
+                if (input) input.value = finalCode;
                 document.getElementById(`blankModelSearchResults_${rowId}`).style.display = 'none';
                 confirmAddBlankModel(rowId);
             } else {
-                if (currentBlankReceiptData && !currentBlankReceiptData.modelColors[modelCode]) {
-                    const isFirstTime = !receivedModelsHistory.has(modelCode);
-                    await BlankReceiptService.addModel(currentBlankReceiptId, modelCode, isFirstTime);
+                if (currentBlankReceiptData && !currentBlankReceiptData.modelColors[finalCode]) {
+                    const isFirstTime = !receivedModelsHistory.has(finalCode);
+                    await BlankReceiptService.addModel(currentBlankReceiptId, finalCode, isFirstTime);
                     renderBlankReceiptDetail();
-                    showWarning(`تم إضافة الموديل ${modelCode}`, false);
+                    showWarning(`تم إضافة الموديل ${finalCode}`, false);
                 }
             }
             loadBlankFormData();
@@ -5275,12 +5110,40 @@
                         <input type="hidden" id="selectedModel_${row.id}" value="${row.modelId || ''}">
                         <input type="hidden" id="selectedModelCode_${row.id}" value="${row.modelCode || ''}">
                         ${smartBadgeHtml}
+                        <button class="btn btn-sm btn-primary" onclick="generateUniqueCode(${row.id})" style="margin-top:4px;"><i class="fas fa-code"></i> إنشاء كود</button>
                     </div>
                     <input type="number" placeholder="الكمية" value="${row.quantity || ''}" onchange="updateNewModelRow(${row.id}, 'quantity', this.value)" min="0" style="flex:1;">
                     ${newModelRows.length > 1 ? `<button class="btn btn-danger btn-sm" onclick="removeNewModelRow(${row.id})"><i class="fas fa-trash"></i></button>` : ''}
                 `;
                 container.appendChild(div);
             });
+        }
+
+        function generateUniqueCode(rowId) {
+            const row = newModelRows.find(r => r.id === rowId);
+            if (!row) return;
+
+            // Generate a 5-digit unique code
+            let code = '';
+            let attempts = 0;
+            const maxAttempts = 100;
+            do {
+                code = String(Math.floor(10000 + Math.random() * 90000));
+                attempts++;
+            } while (allModelsList.some(m => m.code === code || m.name === code) && attempts < maxAttempts);
+
+            if (attempts >= maxAttempts) {
+                showWarning('تعذر إنشاء كود فريد، حاول مرة أخرى', true);
+                return;
+            }
+
+            row.modelId = code;
+            row.modelCode = code;
+            const searchInput = document.querySelector(
+                `.model-search-container[data-row-id="${rowId}"] .model-search-input`);
+            if (searchInput) searchInput.value = code;
+            renderNewModelRows();
+            showWarning(`تم إنشاء الكود: ${code}`, false);
         }
 
         function filterModelSearch(rowId, searchTerm) {
@@ -5358,6 +5221,7 @@
                 return;
             }
 
+            // Check if model code already exists in same factory
             const exists = allModelsList.some(m => (m.code === modelCode || m.name === modelCode) && m.factory ===
                 currentFactory);
             if (exists) {
@@ -5365,30 +5229,43 @@
                 return;
             }
 
-            const newModelData = { name: modelCode, code: modelCode, factory: currentFactory };
+            // Generate unique code if needed
+            let finalCode = modelCode;
+            const codeExists = allModelsList.some(m => m.code === modelCode || m.name === modelCode);
+            if (codeExists) {
+                let counter = 1;
+                let newCode = `${modelCode}-${counter}`;
+                while (allModelsList.some(m => m.code === newCode || m.name === newCode)) {
+                    counter++;
+                    newCode = `${modelCode}-${counter}`;
+                }
+                finalCode = newCode;
+            }
+
+            const newModelData = { name: finalCode, code: finalCode, factory: currentFactory };
             const newRef = await db.ref('models').push(newModelData);
             await loadAllModels();
             await loadReceivedModelsHistory();
-            const newModel = { id: newRef.key, name: modelCode, code: modelCode, factory: currentFactory, imageUrl: '' };
+            const newModel = { id: newRef.key, name: finalCode, code: finalCode, factory: currentFactory, imageUrl: '' };
             allModelsList.push(newModel);
 
             if (pendingModelSearchRowId !== null) {
                 const row = newModelRows.find(r => r.id === pendingModelSearchRowId);
                 if (row) {
-                    row.modelId = modelCode;
-                    row.modelCode = modelCode;
+                    row.modelId = finalCode;
+                    row.modelCode = finalCode;
                     const searchInput = document.querySelector(
                         `.model-search-container[data-row-id="${pendingModelSearchRowId}"] .model-search-input`);
-                    if (searchInput) searchInput.value = modelCode;
+                    if (searchInput) searchInput.value = finalCode;
                 }
                 pendingModelSearchRowId = null;
             } else {
                 const activeRow = newModelRows.find(r => r.modelId === '');
                 if (activeRow) {
-                    activeRow.modelId = modelCode;
-                    activeRow.modelCode = modelCode;
+                    activeRow.modelId = finalCode;
+                    activeRow.modelCode = finalCode;
                 } else {
-                    newModelRows.push({ id: Date.now(), modelId: modelCode, modelCode: modelCode, quantity: 0 });
+                    newModelRows.push({ id: Date.now(), modelId: finalCode, modelCode: finalCode, quantity: 0 });
                 }
             }
 
@@ -5702,6 +5579,46 @@
         //  STARTUP
         // ================================================================
 
+        // Override loadAllModels to exclude currentTable and invoices
+        const originalLoadAllModels = loadAllModels;
+        loadAllModels = async function() {
+            const snapshot = await db.ref('models').once('value');
+            allModelsList = [];
+            snapshot.forEach(child => {
+                // Skip excluded tables
+                if (EXCLUDED_TABLES.includes(child.key)) return;
+                allModelsList.push({
+                    id: child.key,
+                    name: child.val().name,
+                    code: child.val().code || '',
+                    factory: child.val().factory,
+                    imageUrl: child.val().imageUrl || ''
+                });
+            });
+        };
+
+        // Override loadAllFactories to exclude currentTable and invoices
+        const originalLoadAllFactories = loadAllFactories;
+        loadAllFactories = async function() {
+            const snapshot = await db.ref('factories').once('value');
+            allFactoriesList = [];
+            snapshot.forEach(child => {
+                if (EXCLUDED_TABLES.includes(child.key)) return;
+                allFactoriesList.push({ id: child.key, name: child.val().name });
+            });
+        };
+
+        // Override loadAllColors to exclude currentTable and invoices
+        const originalLoadAllColors = loadAllColors;
+        loadAllColors = async function() {
+            const snapshot = await db.ref('colors').once('value');
+            allColorsList = [];
+            snapshot.forEach(child => {
+                if (EXCLUDED_TABLES.includes(child.key)) return;
+                allColorsList.push({ id: child.key, name: child.val().name });
+            });
+        };
+
         checkAuth();
 
         document.getElementById('newFactorySelect')?.addEventListener('change', () => { renderNewModelRows(); });
@@ -5715,9 +5632,9 @@
         console.log('📌 تقفيل احترافي مع تأكيد');
         console.log('📌 صلاحيات المستخدم');
         console.log('📌 فتح وقفل أنيق للمنتجات');
-        console.log('📌 تم استبعاد جدولي currentTable و invoices');
-        console.log('📌 أزرار فتح/غلق كل الألوان والمنتجات');
-        console.log('📌 إنشاء كود فاتورة 5 أرقام غير متعارض');
+        console.log('📌 أزرار فتح/غلق الكل للمنتجات والألوان');
+        console.log('📌 إنشاء كود فريد 5 أرقام للموديلات');
+        console.log('📌 استثناء جداول currentTable و invoices');
     </script>
 </body>
 </html>
