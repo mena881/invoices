@@ -47,6 +47,8 @@
             --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             --blank-bg: #fff8e7;
             --blank-border: #f59e0b;
+            --closed-bg: #ecfdf5;
+            --closed-border: #10b981;
         }
 
         /* ============================================================
@@ -65,7 +67,7 @@
         ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 10px; }
 
         /* ============================================================
-           SIDEBAR - تصميم عصري
+           SIDEBAR
            ============================================================ */
         .sidebar {
             position: fixed;
@@ -243,7 +245,7 @@
         .user-info span { font-weight: 600; color: var(--dark-secondary); font-size: 14px; }
 
         /* ============================================================
-           STATS CARDS - تصميم متطور
+           STATS CARDS
            ============================================================ */
         .cards-grid {
             display: grid;
@@ -294,15 +296,6 @@
             color: var(--dark-secondary);
             margin-top: 2px;
         }
-        .stat-card .stat-change {
-            font-size: 12px;
-            margin-top: 4px;
-            display: inline-block;
-            padding: 2px 10px;
-            border-radius: 20px;
-        }
-        .stat-card .stat-change.up { background: var(--success-light); color: var(--success); }
-        .stat-card .stat-change.down { background: var(--danger-light); color: var(--danger); }
 
         /* ============================================================
            CHARTS
@@ -375,7 +368,7 @@
         tr:hover { background: var(--light); }
 
         /* ============================================================
-           FORMS - تصميم أنيق
+           FORMS
            ============================================================ */
         .form-group { margin-bottom: 18px; }
         .form-group label { 
@@ -405,7 +398,7 @@
         .form-group textarea { min-height: 80px; resize: vertical; }
 
         /* ============================================================
-           BUTTONS - مجموعة متكاملة
+           BUTTONS
            ============================================================ */
         .btn {
             padding: 10px 22px;
@@ -449,12 +442,13 @@
         .status-assigned { background: var(--warning-light); color: var(--warning); }
         .status-in_progress { background: #fce4ec; color: #dc2626; }
         .status-completed { background: var(--success-light); color: var(--success); }
-        .status-closed { background: #e2e8f0; color: #475569; }
+        .status-closed { background: #d1fae5; color: #065f46; }
         .status-cancelled { background: var(--danger-light); color: var(--danger); }
         .status-blank { background: #fef3c7; color: #92400e; }
+        .status-closed-blank { background: #d1fae5; color: #065f46; border: 2px solid #10b981; }
 
         /* ============================================================
-           RECEIPT CARDS - تصميم عصري
+           RECEIPT CARDS
            ============================================================ */
         .receipt-card {
             background: var(--light);
@@ -471,6 +465,10 @@
         .receipt-card.is-blank {
             background: var(--blank-bg);
             border-color: var(--blank-border);
+        }
+        .receipt-card.is-closed {
+            background: var(--closed-bg);
+            border-color: var(--closed-border);
         }
         .receipt-card .receipt-header {
             display: flex;
@@ -570,7 +568,7 @@
         .model-badge-sample-taken { background: var(--success-light); color: var(--success); }
 
         /* ============================================================
-           SIZES CHECKBOX - تصميم حديث
+           SIZES CHECKBOX
            ============================================================ */
         .sizes-container {
             display: flex;
@@ -607,11 +605,6 @@
             font-size: 14px;
             margin-right: 4px;
         }
-        .size-checkbox .sample-indicator {
-            font-size: 12px;
-            color: var(--success);
-            font-weight: 600;
-        }
 
         /* ============================================================
            HELPER TAGS
@@ -645,7 +638,7 @@
         .helper-tag.disabled:hover { border-color: var(--gray-light); }
 
         /* ============================================================
-           MODAL - تصميم احترافي
+           MODAL - احترافي مع إغلاق عند النقر خارجها
            ============================================================ */
         .modal {
             display: none;
@@ -654,12 +647,13 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(0,0,0,0.5);
-            backdrop-filter: blur(4px);
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(8px);
             z-index: 2000;
             justify-content: center;
             align-items: center;
             animation: modalFadeIn 0.3s ease;
+            cursor: pointer;
         }
         @keyframes modalFadeIn {
             from { opacity: 0; transform: scale(0.95); }
@@ -669,11 +663,13 @@
             background: white;
             padding: 30px 35px;
             border-radius: 24px;
-            max-width: 600px;
+            max-width: 700px;
             width: 92%;
             max-height: 85vh;
             overflow-y: auto;
             box-shadow: var(--shadow-lg);
+            cursor: default;
+            position: relative;
         }
         .modal-content h3 {
             font-size: 20px;
@@ -691,6 +687,162 @@
             justify-content: flex-end;
             margin-top: 22px;
             flex-wrap: wrap;
+        }
+
+        /* ============================================================
+           RECEIPT DETAILS - عرض احترافي للمنتجات
+           ============================================================ */
+        .receipt-details-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 18px;
+            background: var(--light);
+            padding: 16px;
+            border-radius: var(--radius-sm);
+        }
+        .receipt-details-grid .detail-item {
+            display: flex;
+            flex-direction: column;
+        }
+        .receipt-details-grid .detail-item label {
+            font-size: 11px;
+            color: var(--gray);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+        .receipt-details-grid .detail-item .value {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--dark-secondary);
+            margin-top: 2px;
+        }
+
+        /* Model accordion داخل الفاتورة */
+        .model-accordion {
+            border: 1px solid var(--gray-light);
+            border-radius: var(--radius-sm);
+            margin-bottom: 12px;
+            overflow: hidden;
+            transition: var(--transition);
+        }
+        .model-accordion:hover {
+            border-color: var(--primary-light);
+        }
+        .model-accordion .accordion-header {
+            background: var(--light);
+            padding: 14px 18px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: var(--transition);
+            user-select: none;
+        }
+        .model-accordion .accordion-header:hover {
+            background: #e8ecf1;
+        }
+        .model-accordion .accordion-header .model-info {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+        .model-accordion .accordion-header .model-info img {
+            width: 48px;
+            height: 48px;
+            border-radius: 8px;
+            object-fit: cover;
+            border: 2px solid var(--gray-light);
+            cursor: pointer;
+        }
+        .model-accordion .accordion-header .model-info .placeholder-img {
+            width: 48px;
+            height: 48px;
+            border-radius: 8px;
+            background: var(--gray-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gray);
+            font-size: 10px;
+        }
+        .model-accordion .accordion-header .model-info .name {
+            font-weight: 700;
+            font-size: 15px;
+            color: var(--dark-secondary);
+        }
+        .model-accordion .accordion-header .model-info .color-tag {
+            background: var(--primary-light);
+            color: white;
+            padding: 2px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .model-accordion .accordion-header .toggle-icon {
+            font-size: 18px;
+            color: var(--gray);
+            transition: var(--transition);
+        }
+        .model-accordion .accordion-header .toggle-icon.open {
+            transform: rotate(180deg);
+        }
+        .model-accordion .accordion-body {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 0 18px;
+        }
+        .model-accordion .accordion-body.open {
+            max-height: 800px;
+            padding: 16px 18px 20px;
+        }
+        .model-accordion .accordion-body .sizes-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+        .model-accordion .accordion-body .sizes-table th {
+            background: var(--primary);
+            color: white;
+            padding: 8px 14px;
+            text-align: center;
+            font-weight: 600;
+        }
+        .model-accordion .accordion-body .sizes-table td {
+            padding: 6px 14px;
+            text-align: center;
+            border-bottom: 1px solid var(--gray-light);
+        }
+        .model-accordion .accordion-body .sizes-table tr:last-child td { border-bottom: none; }
+        .model-accordion .accordion-body .sizes-table tr:hover { background: var(--light); }
+        .model-accordion .accordion-body .sizes-table .total-row {
+            background: #f1f5f9;
+            font-weight: 700;
+        }
+        .model-accordion .accordion-body .sizes-table .total-row td {
+            border-top: 2px solid var(--gray-light);
+            padding: 8px 14px;
+        }
+        .model-accordion .accordion-body .sample-badge {
+            display: inline-block;
+            background: var(--success-light);
+            color: var(--success);
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        .model-accordion .accordion-body .no-sample-badge {
+            display: inline-block;
+            background: var(--danger-light);
+            color: var(--danger);
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
         }
 
         /* ============================================================
@@ -770,96 +922,6 @@
         }
 
         /* ============================================================
-           MODEL DETAIL CARD - تصميم متطور
-           ============================================================ */
-        .model-detail-card {
-            background: white;
-            border-radius: var(--radius);
-            border: 1px solid var(--gray-light);
-            box-shadow: var(--shadow-sm);
-            margin-bottom: 18px;
-            overflow: hidden;
-            transition: var(--transition);
-        }
-        .model-detail-card:hover { box-shadow: var(--shadow); }
-        .model-detail-card .model-header {
-            background: var(--light);
-            padding: 14px 20px;
-            border-bottom: 1px solid var(--gray-light);
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            flex-wrap: wrap;
-        }
-        .model-detail-card .model-header img {
-            width: 70px;
-            height: 70px;
-            border-radius: 12px;
-            object-fit: cover;
-            cursor: pointer;
-            border: 2px solid var(--gray-light);
-            transition: var(--transition);
-            flex-shrink: 0;
-        }
-        .model-detail-card .model-header img:hover {
-            border-color: var(--primary);
-            transform: scale(1.05);
-        }
-        .model-detail-card .model-header .placeholder-img {
-            width: 70px;
-            height: 70px;
-            border-radius: 12px;
-            background: var(--gray-light);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--gray);
-            font-size: 12px;
-            flex-shrink: 0;
-        }
-        .model-detail-card .model-header .model-info { flex: 1; }
-        .model-detail-card .model-header .model-info h5 {
-            font-size: 17px;
-            font-weight: 700;
-            color: var(--dark-secondary);
-        }
-        .model-detail-card .model-header .model-info .meta {
-            display: flex;
-            gap: 16px;
-            flex-wrap: wrap;
-            color: var(--gray);
-            font-size: 13px;
-        }
-        .model-detail-card .model-body { padding: 16px 20px 20px; }
-        .model-detail-card .model-body .sizes-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 13px;
-        }
-        .model-detail-card .model-body .sizes-table th {
-            background: var(--primary);
-            color: white;
-            padding: 8px 14px;
-            text-align: center;
-            font-weight: 600;
-        }
-        .model-detail-card .model-body .sizes-table td {
-            padding: 6px 14px;
-            text-align: center;
-            border-bottom: 1px solid var(--gray-light);
-        }
-        .model-detail-card .model-body .sizes-table tr:last-child td { border-bottom: none; }
-        .model-detail-card .model-body .sizes-table tr:hover { background: var(--light); }
-        .model-detail-card .model-body .sizes-table .total-row {
-            background: #f1f5f9;
-            font-weight: 700;
-        }
-        .model-detail-card .model-body .sizes-table .total-row td {
-            border-top: 2px solid var(--gray-light);
-            padding: 8px 14px;
-        }
-
-        /* ============================================================
            MODELS GALLERY
            ============================================================ */
         .models-gallery {
@@ -900,13 +962,53 @@
         }
 
         /* ============================================================
+           FACTORY MODELS
+           ============================================================ */
+        .factory-models-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .factory-model-badge {
+            background: var(--light);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border: 1px solid var(--gray-light);
+        }
+        .factory-model-badge img {
+            width: 30px;
+            height: 30px;
+            border-radius: 6px;
+            object-fit: cover;
+            cursor: pointer;
+        }
+
+        /* ============================================================
+           HISTORY
+           ============================================================ */
+        .history-item {
+            padding: 8px 0;
+            border-bottom: 1px solid var(--gray-light);
+        }
+        .history-item:last-child { border-bottom: none; }
+        .history-arrow { color: var(--primary); font-weight: 700; margin: 0 6px; }
+        .history-date { color: var(--gray); font-size: 12px; }
+
+        /* ============================================================
            RESPONSIVE
            ============================================================ */
         @media (max-width: 992px) {
             .main-content { margin-right: 0; }
             .sidebar { transform: translateX(100%); }
             .sidebar.visible { transform: translateX(0); }
+            .sidebar.hidden { transform: translateX(100%); }
             .cards-grid { grid-template-columns: repeat(3, 1fr); }
+            .receipt-details-grid { grid-template-columns: 1fr; }
         }
         @media (max-width: 768px) {
             .cards-grid { grid-template-columns: repeat(2, 1fr); }
@@ -916,6 +1018,7 @@
             .header h1 { font-size: 17px; }
             .stat-card .stat-value { font-size: 22px; }
             .modal-content { padding: 20px; }
+            .receipt-details-grid { grid-template-columns: 1fr; }
         }
         @media (max-width: 480px) {
             .cards-grid { grid-template-columns: 1fr; }
@@ -924,7 +1027,7 @@
         }
 
         /* ============================================================
-           ADDITIONAL UTILITIES
+           UTILITIES
            ============================================================ */
         .add-new-link {
             color: var(--primary);
@@ -969,45 +1072,18 @@
         }
         .model-thumb-large:hover { border-color: var(--primary); transform: scale(1.05); }
 
-        .factory-models-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-top: 10px;
-        }
-        .factory-model-badge {
-            background: var(--light);
-            padding: 6px 14px;
-            border-radius: 20px;
-            font-size: 13px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            border: 1px solid var(--gray-light);
-        }
-        .factory-model-badge img {
-            width: 30px;
-            height: 30px;
-            border-radius: 6px;
-            object-fit: cover;
+        .modal-close-btn {
+            position: absolute;
+            top: 15px;
+            left: 20px;
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: var(--gray);
             cursor: pointer;
+            transition: var(--transition);
         }
-/* التأكد من أن القائمة الجانبية تظهر بشكل صحيح على جميع الأجهزة */
-@media (max-width: 992px) {
-    .sidebar.hidden {
-        transform: translateX(100%);
-    }
-    .sidebar.visible {
-        transform: translateX(0);
-    }
-}
-        .history-item {
-            padding: 8px 0;
-            border-bottom: 1px solid var(--gray-light);
-        }
-        .history-item:last-child { border-bottom: none; }
-        .history-arrow { color: var(--primary); font-weight: 700; margin: 0 6px; }
-        .history-date { color: var(--gray); font-size: 12px; }
+        .modal-close-btn:hover { color: var(--danger); transform: rotate(90deg); }
     </style>
 </head>
 <body>
@@ -1234,7 +1310,6 @@
                         <option value="">كل المصانع</option>
                     </select>
                 </div>
-                <!-- Models Gallery View -->
                 <div id="modelsGalleryContainer" class="models-gallery"></div>
                 <div id="modelsPaginationContainer" class="pagination"></div>
             </div>
@@ -1292,12 +1367,13 @@
     </div>
 
     <!-- ============================================================
-    MODALS
+    MODALS - مع إغلاق عند النقر خارجها
     ============================================================ -->
 
     <!-- Employee Modal -->
-    <div id="employeeModal" class="modal">
+    <div id="employeeModal" class="modal" onclick="closeModalOnOutsideClick(event, 'employeeModal')">
         <div class="modal-content">
+            <button class="modal-close-btn" onclick="closeEmployeeModal()"><i class="fas fa-times"></i></button>
             <h3><i class="fas fa-user-plus"></i> <span id="employeeModalTitle">إضافة موظف</span></h3>
             <div class="form-group"><label>الاسم</label><input type="text" id="empFullName" placeholder="الاسم الكامل"></div>
             <div class="form-group"><label>Username</label><input type="text" id="empUsername" placeholder="اسم المستخدم"></div>
@@ -1310,8 +1386,9 @@
     </div>
 
     <!-- Factory Modal -->
-    <div id="factoryModal" class="modal">
+    <div id="factoryModal" class="modal" onclick="closeModalOnOutsideClick(event, 'factoryModal')">
         <div class="modal-content">
+            <button class="modal-close-btn" onclick="closeFactoryModal()"><i class="fas fa-times"></i></button>
             <h3><i class="fas fa-factory"></i> إضافة مصنع جديد</h3>
             <div class="form-group"><label>اسم المصنع</label><input type="text" id="quickFactoryName" placeholder="مثال: مصنع النور"></div>
             <div id="factoryErrorMsg" style="color:var(--danger);font-size:12px;margin-bottom:8px;"></div>
@@ -1323,8 +1400,9 @@
     </div>
 
     <!-- Color Modal -->
-    <div id="colorModal" class="modal">
+    <div id="colorModal" class="modal" onclick="closeModalOnOutsideClick(event, 'colorModal')">
         <div class="modal-content">
+            <button class="modal-close-btn" onclick="closeColorModal()"><i class="fas fa-times"></i></button>
             <h3><i class="fas fa-palette"></i> إضافة لون جديد</h3>
             <div class="form-group"><label>اسم اللون</label><input type="text" id="quickColorName" placeholder="مثال: أحمر"></div>
             <div id="colorErrorMsg" style="color:var(--danger);font-size:12px;margin-bottom:8px;"></div>
@@ -1336,8 +1414,9 @@
     </div>
 
     <!-- Receipt View Modal -->
-    <div id="receiptViewModal" class="modal">
-        <div class="modal-content" style="max-width: 850px;">
+    <div id="receiptViewModal" class="modal" onclick="closeModalOnOutsideClick(event, 'receiptViewModal')">
+        <div class="modal-content" style="max-width: 900px;">
+            <button class="modal-close-btn" onclick="closeReceiptViewModal()"><i class="fas fa-times"></i></button>
             <h3><i class="fas fa-file-invoice"></i> تفاصيل الفاتورة</h3>
             <div id="receiptViewDetails"></div>
             
@@ -1347,7 +1426,7 @@
                 <div id="assignmentHistoryList"></div>
             </div>
 
-            <!-- Reassign - Hidden for closed/completed receipts -->
+            <!-- Reassign -->
             <div id="reassignContainer" class="form-group" style="margin-top:15px;display:none;">
                 <label><i class="fas fa-exchange-alt"></i> إعادة إسناد الفاتورة</label>
                 <div style="display:flex; gap:10px; flex-wrap:wrap;">
@@ -1366,8 +1445,9 @@
     </div>
 
     <!-- Models View Modal -->
-    <div id="modelsViewModal" class="modal">
-        <div class="modal-content" style="max-width: 800px;">
+    <div id="modelsViewModal" class="modal" onclick="closeModalOnOutsideClick(event, 'modelsViewModal')">
+        <div class="modal-content">
+            <button class="modal-close-btn" onclick="closeModelsViewModal()"><i class="fas fa-times"></i></button>
             <h3><i class="fas fa-tshirt"></i> موديلات المصنع</h3>
             <div id="factoryModelsContainer" class="factory-models-container"></div>
             <div class="modal-buttons"><button class="btn btn-outline" onclick="closeModelsViewModal()">إغلاق</button></div>
@@ -1375,8 +1455,9 @@
     </div>
 
     <!-- Image View Modal -->
-    <div id="imageViewModal" class="modal">
+    <div id="imageViewModal" class="modal" onclick="closeModalOnOutsideClick(event, 'imageViewModal')">
         <div class="modal-content" style="max-width: 500px; text-align: center;">
+            <button class="modal-close-btn" onclick="closeImageViewModal()"><i class="fas fa-times"></i></button>
             <h3><i class="fas fa-image"></i> معاينة الصورة</h3>
             <img id="fullImageView" src="" style="max-width:100%;max-height:400px;border-radius:12px;margin:16px 0;">
             <div class="modal-buttons"><button class="btn btn-outline" onclick="closeImageViewModal()">إلغاء</button></div>
@@ -1425,7 +1506,6 @@
         let allSizeNames = [];
         let allBlankReceipts = [];
         const itemsPerPage = 50;
-        const loadMoreCount = 50;
         let displayedReceipts = [];
 
         // ============================================================
@@ -1452,7 +1532,17 @@
         checkAuth();
 
         // ============================================================
-        // 4. HELPER FUNCTIONS
+        // 4. MODAL CLOSE ON OUTSIDE CLICK
+        // ============================================================
+        function closeModalOnOutsideClick(event, modalId) {
+            const modal = document.getElementById(modalId);
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        }
+
+        // ============================================================
+        // 5. HELPER FUNCTIONS
         // ============================================================
         function getEmployeeById(userId) {
             return employeesList.find(emp => emp.userId === userId);
@@ -1471,7 +1561,7 @@
         }
 
         // ============================================================
-        // 5. LOAD EMPLOYEES LIST
+        // 6. LOAD EMPLOYEES LIST
         // ============================================================
         async function loadEmployeesList() {
             const snapshot = await db.ref('users').once('value');
@@ -1490,7 +1580,7 @@
         }
 
         // ============================================================
-        // 6. POPULATE SELECTS
+        // 7. POPULATE SELECTS
         // ============================================================
         async function populateAssignedToSelect() {
             await loadEmployeesList();
@@ -1511,7 +1601,7 @@
         }
 
         // ============================================================
-        // 7. ASSIGNED TO & HELPERS
+        // 8. ASSIGNED TO & HELPERS
         // ============================================================
         function onAssignedToChange() {
             const select = document.getElementById('assignedToSelect');
@@ -1548,7 +1638,7 @@
         }
 
         // ============================================================
-        // 8. DASHBOARD
+        // 9. DASHBOARD
         // ============================================================
         async function loadDashboard() {
             const snapshot = await db.ref('receipts').once('value');
@@ -1562,11 +1652,15 @@
                 totalReceipts++;
                 totalPieces += r.receivedQty || 0;
                 
+                // Check if blank receipt with closedDate
                 const status = r.status || 'new';
-                statusCounts[status] = (statusCounts[status] || 0) + 1;
-                if (status === 'new') newCount++;
-                if (status === 'completed') completedCount++;
-                if (status === 'closed') closedCount++;
+                const isClosedBlank = r.isBlank && r.closedDate;
+                const effectiveStatus = isClosedBlank ? 'closed' : status;
+                
+                statusCounts[effectiveStatus] = (statusCounts[effectiveStatus] || 0) + 1;
+                if (effectiveStatus === 'new') newCount++;
+                if (effectiveStatus === 'completed') completedCount++;
+                if (effectiveStatus === 'closed') closedCount++;
 
                 if (r.models && Array.isArray(r.models)) {
                     r.models.forEach(m => {
@@ -1577,15 +1671,22 @@
                 }
             });
 
-            // Add blank receipts to total count
+            // Add blank receipts from blankReceipts that are closed
             const blankSnapshot = await db.ref('blankReceipts').once('value');
             blankSnapshot.forEach(child => {
-                totalReceipts++;
-                // Add models from blank receipts to models count
                 const br = child.val();
+                // Check if this blank receipt has closedDate
+                if (br.closedDate) {
+                    statusCounts.closed = (statusCounts.closed || 0) + 1;
+                    closedCount++;
+                } else {
+                    // Count as blank if not closed
+                    statusCounts.blank = (statusCounts.blank || 0) + 1;
+                }
+                totalReceipts++;
                 if (br.modelColors) {
                     for (const modelName in br.modelColors) {
-                        modelsCount[modelName] = (modelsCount[modelName] || 0) + 1; // count as 1 for now
+                        modelsCount[modelName] = (modelsCount[modelName] || 0) + 1;
                     }
                 }
             });
@@ -1609,8 +1710,8 @@
                 data: {
                     labels: ['جديدة', 'مسندة', 'تحت التنفيذ', 'مكتملة', 'مغلقة', 'ملغية', 'مسودة'],
                     datasets: [{
-                        data: [statusCounts.new, statusCounts.assigned, statusCounts.in_progress, statusCounts.completed, statusCounts.closed, statusCounts.cancelled, blankSnapshot.size],
-                        backgroundColor: ['#3b82f6', '#f59e0b', '#ef4444', '#10b981', '#64748b', '#94a3b8', '#fcd34d']
+                        data: [statusCounts.new, statusCounts.assigned, statusCounts.in_progress, statusCounts.completed, statusCounts.closed, statusCounts.cancelled, statusCounts.blank || 0],
+                        backgroundColor: ['#3b82f6', '#f59e0b', '#ef4444', '#10b981', '#065f46', '#94a3b8', '#fcd34d']
                     }]
                 },
                 options: { responsive: true, maintainAspectRatio: true }
@@ -1629,7 +1730,7 @@
         }
 
         // ============================================================
-        // 9. LOAD ALL MODELS
+        // 10. LOAD ALL MODELS
         // ============================================================
         async function loadAllModels() {
             const snapshot = await db.ref('models').once('value');
@@ -1647,7 +1748,7 @@
         }
 
         // ============================================================
-        // 10. LOAD FACTORIES
+        // 11. LOAD FACTORIES (استبعاد جداول invoices)
         // ============================================================
         async function loadFactories() {
             const snapshot = await db.ref('factories').once('value');
@@ -1664,7 +1765,7 @@
         }
 
         // ============================================================
-        // 11. LOAD COLORS
+        // 12. LOAD COLORS
         // ============================================================
         async function loadColors() {
             const snapshot = await db.ref('colors').once('value');
@@ -1681,7 +1782,7 @@
         }
 
         // ============================================================
-        // 12. LOAD SIZES
+        // 13. LOAD SIZES
         // ============================================================
         async function loadSizesList() {
             const snapshot = await db.ref('sizes').once('value');
@@ -1720,7 +1821,7 @@
         }
 
         // ============================================================
-        // 13. LOAD HELPERS
+        // 14. LOAD HELPERS
         // ============================================================
         async function loadHelpersForSelect() {
             const snapshot = await db.ref('users').once('value');
@@ -1770,7 +1871,7 @@
         }
 
         // ============================================================
-        // 14. MODELS ROW MANAGEMENT
+        // 15. MODELS ROW MANAGEMENT
         // ============================================================
         async function loadModelsForFactory(factoryName) {
             await loadAllModels();
@@ -1801,7 +1902,6 @@
                 div.className = 'model-row';
                 const showNewInput = row.isNew;
 
-                // Get model image if exists
                 const modelData = availableModels.find(m => m.name === row.modelId);
                 const modelImage = modelData?.imageUrl || '';
 
@@ -1822,7 +1922,6 @@
                     ${currentModelRows.length > 1 ? `<button class="btn btn-danger btn-sm" onclick="removeModelRow(${row.id})"><i class="fas fa-trash"></i></button>` : ''}
                 `;
 
-                // Status badges and image
                 if (row.modelId && row.modelId !== '') {
                     const statusDiv = document.createElement('div');
                     statusDiv.className = 'model-status-badges';
@@ -1842,7 +1941,6 @@
                         }
                     }
 
-                    // Check which sizes have sample taken
                     const sampleSizes = getSampleSizesForModel(row.modelId);
                     if (sampleSizes.length > 0) {
                         statusDiv.innerHTML += `<span class="model-badge model-badge-sample" style="background:#dbeafe;color:#1d4ed8;">
@@ -1884,7 +1982,6 @@
                     }
                 }
             });
-            // Also check blank receipts
             allBlankReceipts.forEach(r => {
                 if (r.sampleRequests && r.sampleRequests[modelName]) {
                     const colors = r.sampleRequests[modelName];
@@ -2009,7 +2106,7 @@
         }
 
         // ============================================================
-        // 15. SAVE RECEIPT
+        // 16. SAVE RECEIPT
         // ============================================================
         async function saveReceipt() {
             const invoiceCode = document.getElementById('invoiceCode').value.trim();
@@ -2121,7 +2218,7 @@
         }
 
         // ============================================================
-        // 16. LOAD & FILTER RECEIPTS (including blankReceipts)
+        // 17. LOAD & FILTER RECEIPTS (مع استبعاد جداول invoices)
         // ============================================================
         async function loadReceiptsList() {
             // Load regular receipts
@@ -2134,12 +2231,11 @@
                 }
             });
 
-            // Load blank receipts
+            // Load blank receipts (من blankReceipts فقط، وليس invoices)
             const blankSnapshot = await db.ref('blankReceipts').once('value');
             allBlankReceipts = [];
             blankSnapshot.forEach(child => {
                 const data = child.val();
-                // Convert blank receipt to a compatible format
                 const converted = convertBlankReceiptToReceipt(child.key, data);
                 if (converted) {
                     allBlankReceipts.push(converted);
@@ -2148,21 +2244,21 @@
 
             // Merge all
             const allMerged = [...allReceipts, ...allBlankReceipts];
-            // Sort by createdAt descending
             allMerged.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
             
-            // Store in allReceipts for filtering
             allReceipts = allMerged;
             filterReceipts();
         }
 
         // ============================================================
-        // 17. CONVERT BLANK RECEIPT TO RECEIPT FORMAT
+        // 18. CONVERT BLANK RECEIPT TO RECEIPT FORMAT
         // ============================================================
         function convertBlankReceiptToReceipt(id, data) {
             if (!data || !data.invoiceCode) return null;
             
-            // Extract models from modelColors
+            // Check if this blank receipt has closedDate - it means it's closed
+            const isClosed = data.closedDate ? true : (data.isClosed === true);
+            
             const models = [];
             const modelColors = data.modelColors || {};
             let totalQty = 0;
@@ -2189,7 +2285,6 @@
                         sampleTaken: false
                     });
                 } else {
-                    // If no quantity, still add with 0
                     models.push({
                         modelName: modelName,
                         quantity: 0,
@@ -2199,7 +2294,6 @@
                 }
             }
 
-            // If no models found, try to extract from modelColors keys
             if (models.length === 0) {
                 for (const modelName in modelColors) {
                     models.push({
@@ -2211,11 +2305,9 @@
                 }
             }
 
-            // Determine status - if isClosed is true, it's closed, otherwise blank
-            const isClosed = data.isClosed === true;
+            // Determine status - if closedDate exists, it's closed
             const status = isClosed ? 'closed' : 'blank';
 
-            // Get assigned employee
             let assignedTo = null;
             if (data.assignedEmployees && data.assignedEmployees.length > 0) {
                 const assignedName = data.assignedEmployees[0] || '';
@@ -2248,7 +2340,6 @@
                 }
             }
 
-            // Build modelColors for display
             const modelColorsDisplay = {};
             for (const modelName in modelColors) {
                 modelColorsDisplay[modelName] = modelColors[modelName] || {};
@@ -2286,14 +2377,14 @@
                 notes: data.notes || '',
                 balesNote: data.balesNote || '',
                 sampleRequests: data.sampleRequests || {},
-                isClosed: data.isClosed || false,
+                isClosed: isClosed,
                 closedModels: data.isClosed ? {} : {},
                 closedModelsDate: data.isClosed ? { 'all': data.closedDate || new Date().toISOString() } : {}
             };
         }
 
         // ============================================================
-        // 18. FILTER RECEIPTS
+        // 19. FILTER RECEIPTS
         // ============================================================
         function filterReceipts() {
             const search = document.getElementById('searchInput').value.toLowerCase();
@@ -2307,7 +2398,9 @@
                 let matchesStatus = status === 'all';
                 if (!matchesStatus) {
                     if (status === 'blank') {
-                        matchesStatus = r.isBlank === true || r.status === 'blank';
+                        matchesStatus = r.isBlank === true && r.status !== 'closed';
+                    } else if (status === 'closed') {
+                        matchesStatus = r.status === 'closed' || (r.isBlank === true && r.closedDate);
                     } else {
                         matchesStatus = (r.status || 'new') === status;
                     }
@@ -2321,7 +2414,7 @@
         }
 
         // ============================================================
-        // 19. RENDER RECEIPTS LIST with Load More
+        // 20. RENDER RECEIPTS LIST
         // ============================================================
         function renderReceiptsList() {
             const container = document.getElementById('receiptsCardsContainer');
@@ -2343,7 +2436,8 @@
             document.getElementById('receiptCountDisplay').innerText = `${filteredReceipts.length} فاتورة`;
 
             pageReceipts.forEach(r => {
-                const isBlank = r.isBlank === true || r.status === 'blank';
+                const isBlank = r.isBlank === true;
+                const isClosed = r.status === 'closed' || (isBlank && r.closedDate);
                 const totalReq = r.totalRequiredQty || r.models?.reduce((s, m) => s + (m.quantity || 0), 0) || 0;
                 const received = r.receivedQty || 0;
                 const remaining = totalReq - received;
@@ -2369,14 +2463,19 @@
                     'blank': 'status-blank'
                 };
 
+                let displayStatus = status;
+                if (isBlank && isClosed) {
+                    displayStatus = 'closed';
+                } else if (isBlank) {
+                    displayStatus = 'blank';
+                }
+
                 const assignedToName = r.assignedTo ? r.assignedTo.fullName : 'غير مسند';
                 const helpersNames = r.helpers && r.helpers.length > 0 
                     ? r.helpers.map(h => h.fullName).join(', ') 
                     : 'لا يوجد';
                 const createdByName = r.createdBy ? r.createdBy.fullName : 'غير معروف';
-                const displayStatus = isBlank ? 'blank' : status;
 
-                // Build model display
                 let modelsDisplay = '';
                 if (r.models && r.models.length > 0) {
                     modelsDisplay = r.models.map(m => `${m.modelName}(${m.quantity})`).join(', ');
@@ -2384,10 +2483,25 @@
                     modelsDisplay = Object.keys(r.modelColors).join(', ');
                 }
 
+                // Determine card classes
+                let cardClasses = 'receipt-card';
+                if (isBlank && isClosed) {
+                    cardClasses += ' is-closed';
+                } else if (isBlank) {
+                    cardClasses += ' is-blank';
+                }
+
+                // Closed date display
+                let closedDateDisplay = '';
+                if (r.closedDate) {
+                    const date = new Date(r.closedDate);
+                    closedDateDisplay = ` | 🕒 إغلاق: ${date.toLocaleDateString('ar-EG')}`;
+                }
+
                 container.innerHTML += `
-                    <div class="receipt-card ${isBlank ? 'is-blank' : ''}">
+                    <div class="${cardClasses}">
                         <div class="receipt-header">
-                            <h4><i class="fas fa-file-invoice"></i> ${isBlank ? '📝 [مسودة] ' : ''}${r.invoiceCode}</h4>
+                            <h4><i class="fas fa-file-invoice"></i> ${isBlank ? '📝 [مسودة] ' : ''}${r.invoiceCode} ${isClosed ? '🔒' : ''}</h4>
                             <span class="status-badge ${statusClasses[displayStatus] || 'status-new'}">${statusLabels[displayStatus] || status}</span>
                         </div>
                         <div class="receipt-meta">
@@ -2396,6 +2510,8 @@
                             <span><i class="fas fa-user-check"></i> ${assignedToName}</span>
                             <span><i class="fas fa-user-edit"></i> ${createdByName}</span>
                             ${isBlank ? `<span class="text-warning"><i class="fas fa-pencil-alt"></i> مسودة</span>` : ''}
+                            ${isClosed ? `<span class="text-success"><i class="fas fa-check-circle"></i> مغلقة</span>` : ''}
+                            ${closedDateDisplay}
                         </div>
                         <div class="receipt-meta">
                             <span><i class="fas fa-cube"></i> ${modelsDisplay || 'لا توجد موديلات'}</span>
@@ -2437,21 +2553,10 @@
         }
 
         // ============================================================
-        // 20. VIEW RECEIPT DETAILS (supporting both types)
+        // 21. VIEW RECEIPT DETAILS - مع Accordion للمنتجات
         // ============================================================
         async function viewReceiptDetails(receiptId, isBlank = false) {
-            let receipt;
-            if (isBlank) {
-                receipt = allReceipts.find(r => r.id === receiptId && r.isBlank === true);
-            } else {
-                receipt = allReceipts.find(r => r.id === receiptId && r.isBlank !== true);
-            }
-            
-            if (!receipt) {
-                // Try to find in allReceipts anyway
-                receipt = allReceipts.find(r => r.id === receiptId);
-            }
-            
+            let receipt = allReceipts.find(r => r.id === receiptId);
             if (!receipt) {
                 alert('الفاتورة غير موجودة');
                 return;
@@ -2463,155 +2568,12 @@
             await loadSizesList();
             await loadAllModels();
 
-            const closedModels = receipt.closedModels || {};
-            const closedModelsDate = receipt.closedModelsDate || {};
+            const isBlankReceipt = receipt.isBlank === true;
+            const isClosed = receipt.status === 'closed' || (isBlankReceipt && receipt.closedDate);
             const modelColors = receipt.modelColors || {};
             const modelColorsImages = receipt.modelColorsImages || {};
             const receiptModels = receipt.models || [];
-            const isBlankReceipt = receipt.isBlank === true || receipt.status === 'blank';
-
-            // Build closed models HTML with images
-            let closedModelsHtml = '';
-            const closedModelNames = Object.keys(closedModels).filter(name => closedModels[name] === true);
-            const openModelNames = receiptModels
-                .map(m => m.modelName)
-                .filter(name => !closedModelNames.includes(name));
-
-            if (closedModelNames.length > 0) {
-                closedModelsHtml += `<div style="margin-bottom:15px;"><h5 style="color:var(--success);"><i class="fas fa-check-circle"></i> موديلات مكتملة</h5>`;
-                closedModelNames.forEach(modelName => {
-                    const closeDate = closedModelsDate[modelName] 
-                        ? new Date(closedModelsDate[modelName]).toLocaleDateString('ar-EG') 
-                        : 'غير معروف';
-                    const modelData = allModelsList.find(m => m.name === modelName);
-                    const imageUrl = modelData?.imageUrl || '';
-                    closedModelsHtml += `<div class="closed-model-item" style="display:flex;align-items:center;gap:12px;padding:8px 14px;background:var(--success-light);border-radius:8px;margin-bottom:6px;">
-                        ${imageUrl 
-                            ? `<img src="${imageUrl}" style="width:40px;height:40px;border-radius:8px;object-fit:cover;cursor:pointer;border:1px solid var(--gray-light);" onclick="showFullImage('${imageUrl}')">` 
-                            : `<div style="width:40px;height:40px;border-radius:8px;background:var(--gray-light);display:flex;align-items:center;justify-content:center;color:var(--gray);font-size:11px;">لا توجد</div>`
-                        }
-                        <div>
-                            <strong>${modelName}</strong>
-                            <span class="text-muted" style="display:block;font-size:12px;">تم الإغلاق: ${closeDate}</span>
-                        </div>
-                    </div>`;
-                });
-                closedModelsHtml += `</div>`;
-            }
-
-            if (openModelNames.length > 0) {
-                closedModelsHtml += `<div style="margin-bottom:15px;"><h5 style="color:var(--warning);"><i class="fas fa-clock"></i> موديلات تحت الاستلام</h5>`;
-                openModelNames.forEach(modelName => {
-                    const modelData = allModelsList.find(m => m.name === modelName);
-                    const imageUrl = modelData?.imageUrl || '';
-                    closedModelsHtml += `<div style="display:flex;align-items:center;gap:12px;padding:8px 14px;background:var(--warning-light);border-radius:8px;margin-bottom:6px;">
-                        ${imageUrl 
-                            ? `<img src="${imageUrl}" style="width:40px;height:40px;border-radius:8px;object-fit:cover;cursor:pointer;border:1px solid var(--gray-light);" onclick="showFullImage('${imageUrl}')">` 
-                            : `<div style="width:40px;height:40px;border-radius:8px;background:var(--gray-light);display:flex;align-items:center;justify-content:center;color:var(--gray);font-size:11px;">لا توجد</div>`
-                        }
-                        <div>
-                            <strong>${modelName}</strong>
-                            <span class="text-muted" style="display:block;font-size:12px;">⌛ جارى الاستلام</span>
-                        </div>
-                    </div>`;
-                });
-                closedModelsHtml += `</div>`;
-            }
-
-            // Build detailed model cards with sizes and images
-            let detailsHtml = `<div style="margin-top:15px;"><h5><i class="fas fa-list"></i> تفاصيل الاستلام</h5>`;
-            
-            if (isBlankReceipt && Object.keys(modelColors).length > 0) {
-                // For blank receipts, show model colors directly
-                for (const [modelName, colors] of Object.entries(modelColors)) {
-                    const modelImages = modelColorsImages[modelName] || {};
-                    const modelData = allModelsList.find(m => m.name === modelName);
-                    const mainImage = modelData?.imageUrl || '';
-
-                    for (const [color, sizesData] of Object.entries(colors)) {
-                        const colorImage = modelImages[color] || mainImage;
-                        
-                        detailsHtml += `
-                            <div class="model-detail-card">
-                                <div class="model-header">
-                                    ${colorImage 
-                                        ? `<img src="${colorImage}" onclick="showFullImage('${colorImage}')">` 
-                                        : `<div class="placeholder-img"><i class="fas fa-image"></i></div>`
-                                    }
-                                    <div class="model-info">
-                                        <h5>${modelName}</h5>
-                                        <div class="meta">
-                                            <span><i class="fas fa-palette"></i> اللون: <strong>${color}</strong></span>
-                                            ${receipt.sampleRequests && receipt.sampleRequests[modelName] && receipt.sampleRequests[modelName][color] ? `<span class="text-success"><i class="fas fa-camera"></i> عينات مطلوبة</span>` : ''}
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="model-body">
-                                    ${colorImage && colorImage !== mainImage ? 
-                                        `<img src="${colorImage}" style="max-width:120px;max-height:120px;border-radius:8px;cursor:pointer;border:2px solid var(--gray-light);margin-bottom:10px;" onclick="showFullImage('${colorImage}')">` : ''}
-                                    ${renderSizesTableForBlank(sizesData)}
-                                </div>
-                            </div>
-                        `;
-                    }
-                }
-            } else {
-                // Regular receipt display
-                for (const model of receiptModels) {
-                    const modelName = model.modelName;
-                    const modelColorData = modelColors[modelName] || {};
-                    const modelImages = modelColorsImages[modelName] || {};
-                    const modelData = allModelsList.find(m => m.name === modelName);
-                    const mainImage = modelData?.imageUrl || '';
-
-                    if (Object.keys(modelColorData).length === 0) {
-                        detailsHtml += `
-                            <div class="model-detail-card">
-                                <div class="model-header">
-                                    ${mainImage 
-                                        ? `<img src="${mainImage}" onclick="showFullImage('${mainImage}')">` 
-                                        : `<div class="placeholder-img"><i class="fas fa-image"></i></div>`
-                                    }
-                                    <div class="model-info">
-                                        <h5>${modelName}</h5>
-                                        <div class="meta">
-                                            <span><i class="fas fa-cube"></i> لا توجد تفاصيل استلام بعد</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        `;
-                        continue;
-                    }
-
-                    for (const [color, sizesData] of Object.entries(modelColorData)) {
-                        const colorImage = modelImages[color] || mainImage;
-                        
-                        detailsHtml += `
-                            <div class="model-detail-card">
-                                <div class="model-header">
-                                    ${colorImage 
-                                        ? `<img src="${colorImage}" onclick="showFullImage('${colorImage}')">` 
-                                        : `<div class="placeholder-img"><i class="fas fa-image"></i></div>`
-                                    }
-                                    <div class="model-info">
-                                        <h5>${modelName}</h5>
-                                        <div class="meta">
-                                            <span><i class="fas fa-palette"></i> اللون: <strong>${color}</strong></span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="model-body">
-                                    ${colorImage && colorImage !== mainImage ? 
-                                        `<img src="${colorImage}" style="max-width:120px;max-height:120px;border-radius:8px;cursor:pointer;border:2px solid var(--gray-light);margin-bottom:10px;" onclick="showFullImage('${colorImage}')">` : ''}
-                                    ${renderSizesTableWithSamples(sizesData, [])}
-                                </div>
-                            </div>
-                        `;
-                    }
-                }
-            }
-            detailsHtml += `</div>`;
+            const status = receipt.status || 'new';
 
             const statusLabels = {
                 'new': 'جديدة',
@@ -2631,10 +2593,200 @@
                 'cancelled': 'status-cancelled',
                 'blank': 'status-blank'
             };
-            const currentStatus = receipt.status || 'new';
-            const totalReq = receipt.totalRequiredQty || receipt.models?.reduce((s, m) => s + (m.quantity || 0), 0) || 0;
+
+            let displayStatus = status;
+            if (isBlankReceipt && isClosed) {
+                displayStatus = 'closed';
+            } else if (isBlankReceipt) {
+                displayStatus = 'blank';
+            }
+
+            const totalReq = receipt.totalRequiredQty || receiptModels.reduce((s, m) => s + (m.quantity || 0), 0) || 0;
             const received = receipt.receivedQty || 0;
             const remaining = totalReq - received;
+
+            // Build closed date info
+            let closedDateInfo = '';
+            if (receipt.closedDate) {
+                const date = new Date(receipt.closedDate);
+                closedDateInfo = `<div class="detail-item"><label>تاريخ الإغلاق</label><div class="value">${date.toLocaleDateString('ar-EG')} ${date.toLocaleTimeString('ar-EG')}</div></div>`;
+            }
+
+            // Build model accordions
+            let modelsAccordionHtml = '';
+            
+            if (isBlankReceipt && Object.keys(modelColors).length > 0) {
+                // Blank receipt with model colors
+                for (const [modelName, colors] of Object.entries(modelColors)) {
+                    const modelImages = modelColorsImages[modelName] || {};
+                    const modelData = allModelsList.find(m => m.name === modelName);
+                    const mainImage = modelData?.imageUrl || '';
+
+                    for (const [color, sizesData] of Object.entries(colors)) {
+                        const colorImage = modelImages[color] || mainImage;
+                        const accordionId = `accordion-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`;
+                        
+                        modelsAccordionHtml += `
+                            <div class="model-accordion">
+                                <div class="accordion-header" onclick="toggleAccordion('${accordionId}')">
+                                    <div class="model-info">
+                                        ${colorImage 
+                                            ? `<img src="${colorImage}" onclick="event.stopPropagation();showFullImage('${colorImage}')">` 
+                                            : `<div class="placeholder-img"><i class="fas fa-image"></i></div>`
+                                        }
+                                        <span class="name">${modelName}</span>
+                                        <span class="color-tag">${color}</span>
+                                        ${receipt.sampleRequests && receipt.sampleRequests[modelName] && receipt.sampleRequests[modelName][color] ? 
+                                            `<span class="sample-badge"><i class="fas fa-camera"></i> عينات مطلوبة</span>` : ''}
+                                    </div>
+                                    <span class="toggle-icon" id="toggle-${accordionId}"><i class="fas fa-chevron-down"></i></span>
+                                </div>
+                                <div class="accordion-body" id="${accordionId}">
+                                    ${renderSizesTableForBlankAccordion(sizesData)}
+                                </div>
+                            </div>
+                        `;
+                    }
+                }
+            } else {
+                // Regular receipt display
+                for (const model of receiptModels) {
+                    const modelName = model.modelName;
+                    const modelColorData = modelColors[modelName] || {};
+                    const modelImages = modelColorsImages[modelName] || {};
+                    const modelData = allModelsList.find(m => m.name === modelName);
+                    const mainImage = modelData?.imageUrl || '';
+
+                    if (Object.keys(modelColorData).length === 0) {
+                        const accordionId = `accordion-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`;
+                        modelsAccordionHtml += `
+                            <div class="model-accordion">
+                                <div class="accordion-header" onclick="toggleAccordion('${accordionId}')">
+                                    <div class="model-info">
+                                        ${mainImage 
+                                            ? `<img src="${mainImage}" onclick="event.stopPropagation();showFullImage('${mainImage}')">` 
+                                            : `<div class="placeholder-img"><i class="fas fa-image"></i></div>`
+                                        }
+                                        <span class="name">${modelName}</span>
+                                        <span class="text-muted">لا توجد تفاصيل استلام</span>
+                                    </div>
+                                    <span class="toggle-icon" id="toggle-${accordionId}"><i class="fas fa-chevron-down"></i></span>
+                                </div>
+                                <div class="accordion-body" id="${accordionId}">
+                                    <p class="text-muted">لا توجد كميات مقاسة لهذا الموديل</p>
+                                </div>
+                            </div>
+                        `;
+                        continue;
+                    }
+
+                    for (const [color, sizesData] of Object.entries(modelColorData)) {
+                        const colorImage = modelImages[color] || mainImage;
+                        const accordionId = `accordion-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`;
+                        
+                        modelsAccordionHtml += `
+                            <div class="model-accordion">
+                                <div class="accordion-header" onclick="toggleAccordion('${accordionId}')">
+                                    <div class="model-info">
+                                        ${colorImage 
+                                            ? `<img src="${colorImage}" onclick="event.stopPropagation();showFullImage('${colorImage}')">` 
+                                            : `<div class="placeholder-img"><i class="fas fa-image"></i></div>`
+                                        }
+                                        <span class="name">${modelName}</span>
+                                        <span class="color-tag">${color}</span>
+                                        ${receipt.sampleRequests && receipt.sampleRequests[modelName] && receipt.sampleRequests[modelName][color] ? 
+                                            `<span class="sample-badge"><i class="fas fa-camera"></i> عينات</span>` : ''}
+                                    </div>
+                                    <span class="toggle-icon" id="toggle-${accordionId}"><i class="fas fa-chevron-down"></i></span>
+                                </div>
+                                <div class="accordion-body" id="${accordionId}">
+                                    ${renderSizesTableWithSamplesAccordion(sizesData, [])}
+                                </div>
+                            </div>
+                        `;
+                    }
+                }
+            }
+
+            const assignedToName = receipt.assignedTo ? receipt.assignedTo.fullName : 'غير مسند';
+            const helpersNames = receipt.helpers && receipt.helpers.length > 0 
+                ? receipt.helpers.map(h => h.fullName).join(', ') 
+                : 'لا يوجد';
+            const createdByName = receipt.createdBy ? receipt.createdBy.fullName : 'غير معروف';
+            const createdAt = receipt.createdAt ? new Date(receipt.createdAt).toLocaleString('ar-EG') : 'غير معروف';
+
+            document.getElementById('receiptViewDetails').innerHTML = `
+                <!-- معلومات أساسية -->
+                <div class="receipt-details-grid">
+                    <div class="detail-item">
+                        <label>كود الفاتورة</label>
+                        <div class="value">${isBlankReceipt ? '📝 [مسودة] ' : ''}${receipt.invoiceCode} ${isClosed ? '🔒' : ''}</div>
+                    </div>
+                    <div class="detail-item">
+                        <label>المصنع</label>
+                        <div class="value">${receipt.factory}</div>
+                    </div>
+                    <div class="detail-item">
+                        <label>اللون</label>
+                        <div class="value">${receipt.color || 'بدون لون'}</div>
+                    </div>
+                    <div class="detail-item">
+                        <label>الحالة</label>
+                        <div class="value"><span class="status-badge ${statusClasses[displayStatus] || 'status-new'}">${statusLabels[displayStatus] || status}</span></div>
+                    </div>
+                    <div class="detail-item">
+                        <label>المسؤول الأساسي</label>
+                        <div class="value">${assignedToName}</div>
+                    </div>
+                    <div class="detail-item">
+                        <label>المساعدين</label>
+                        <div class="value">${helpersNames}</div>
+                    </div>
+                    <div class="detail-item">
+                        <label>منشئ الفاتورة</label>
+                        <div class="value">${createdByName}</div>
+                    </div>
+                    <div class="detail-item">
+                        <label>تاريخ الإنشاء</label>
+                        <div class="value">${createdAt}</div>
+                    </div>
+                    ${closedDateInfo}
+                    <div class="detail-item">
+                        <label>المقاسات</label>
+                        <div class="value">${receipt.sizes?.join(', ') || 'لا يوجد'}</div>
+                    </div>
+                    <div class="detail-item">
+                        <label>إجمالي المطلوب</label>
+                        <div class="value">${totalReq}</div>
+                    </div>
+                    <div class="detail-item">
+                        <label>إجمالي المستلم</label>
+                        <div class="value">${received}</div>
+                    </div>
+                    <div class="detail-item">
+                        <label>المتبقي</label>
+                        <div class="value">${remaining}</div>
+                    </div>
+                </div>
+
+                ${isBlankReceipt ? `<div style="margin-bottom:15px;background:#fef3c7;padding:10px 16px;border-radius:8px;border-right:4px solid #f59e0b;">
+                    <span class="text-warning"><i class="fas fa-info-circle"></i> هذه فاتورة مسودة</span>
+                    ${isClosed ? ` <span class="text-success"><i class="fas fa-check-circle"></i> تم إغلاقها</span>` : ''}
+                </div>` : ''}
+
+                <div style="margin-bottom:18px;">
+                    <label class="text-muted">نسبة التنفيذ</label>
+                    <div style="display:flex;align-items:center;gap:12px;">
+                        <div class="progress-bar" style="flex:1;"><div class="progress-fill" style="width:${totalReq > 0 ? (received/totalReq)*100 : 0}%"></div></div>
+                        <span>${totalReq > 0 ? ((received/totalReq)*100).toFixed(1) : 0}%</span>
+                    </div>
+                </div>
+
+                <div>
+                    <h4 style="margin-bottom:12px;"><i class="fas fa-tshirt"></i> الموديلات والألوان</h4>
+                    ${modelsAccordionHtml || '<p class="text-muted">لا توجد موديلات</p>'}
+                </div>
+            `;
 
             // Assignment History
             let historyHtml = '';
@@ -2655,57 +2807,33 @@
             } else {
                 historyHtml = '<p class="text-muted">لا يوجد سجل إسناد</p>';
             }
-
-            const assignedToName = receipt.assignedTo ? receipt.assignedTo.fullName : 'غير مسند';
-            const helpersNames = receipt.helpers && receipt.helpers.length > 0 
-                ? receipt.helpers.map(h => h.fullName).join(', ') 
-                : 'لا يوجد';
-            const createdByName = receipt.createdBy ? receipt.createdBy.fullName : 'غير معروف';
-            const createdAt = receipt.createdAt ? new Date(receipt.createdAt).toLocaleString('ar-EG') : 'غير معروف';
-
-            document.getElementById('receiptViewDetails').innerHTML = `
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:15px;">
-                    <div><label class="text-muted">كود الفاتورة</label><p><strong>${isBlankReceipt ? '📝 [مسودة] ' : ''}${receipt.invoiceCode}</strong></p></div>
-                    <div><label class="text-muted">المصنع</label><p><strong>${receipt.factory}</strong></p></div>
-                    <div><label class="text-muted">اللون</label><p>${receipt.color || 'لا يوجد'}</p></div>
-                    <div><label class="text-muted">الحالة</label><p><span class="status-badge ${statusClasses[currentStatus] || 'status-new'}">${statusLabels[currentStatus] || currentStatus}</span></p></div>
-                    <div><label class="text-muted">المسؤول الأساسي</label><p><strong>${assignedToName}</strong></p></div>
-                    <div><label class="text-muted">المساعدين</label><p>${helpersNames}</p></div>
-                    <div><label class="text-muted">منشئ الفاتورة</label><p><strong>${createdByName}</strong></p></div>
-                    <div><label class="text-muted">تاريخ الإنشاء</label><p>${createdAt}</p></div>
-                    <div><label class="text-muted">المقاسات</label><p>${receipt.sizes?.join(', ') || 'لا يوجد'}</p></div>
-                    <div><label class="text-muted">إجمالي المطلوب</label><p><strong>${totalReq}</strong></p></div>
-                    <div><label class="text-muted">إجمالي المستلم</label><p><strong>${received}</strong></p></div>
-                    <div><label class="text-muted">المتبقي</label><p><strong>${remaining}</strong></p></div>
-                </div>
-                ${isBlankReceipt ? `<div style="margin-bottom:15px;background:#fef3c7;padding:10px;border-radius:8px;border-right:4px solid #f59e0b;"><span class="text-warning"><i class="fas fa-info-circle"></i> هذه فاتورة مسودة (غير مكتملة)</span></div>` : ''}
-                <div style="margin-bottom:15px;">
-                    <label class="text-muted">نسبة التنفيذ</label>
-                    <div style="display:flex;align-items:center;gap:12px;">
-                        <div class="progress-bar" style="flex:1;"><div class="progress-fill" style="width:${totalReq > 0 ? (received/totalReq)*100 : 0}%"></div></div>
-                        <span>${totalReq > 0 ? ((received/totalReq)*100).toFixed(1) : 0}%</span>
-                    </div>
-                </div>
-                <div>
-                    <label class="text-muted">الموديلات</label>
-                    ${closedModelsHtml}
-                    ${detailsHtml}
-                </div>
-            `;
-
             document.getElementById('assignmentHistoryList').innerHTML = historyHtml;
 
             // Show/hide reassign based on status
-            const isClosed = currentStatus === 'closed' || currentStatus === 'completed' || currentStatus === 'cancelled';
-            document.getElementById('reassignContainer').style.display = isClosed ? 'none' : 'block';
+            const isClosedStatus = displayStatus === 'closed' || displayStatus === 'completed' || displayStatus === 'cancelled';
+            document.getElementById('reassignContainer').style.display = isClosedStatus ? 'none' : 'block';
 
             document.getElementById('receiptViewModal').style.display = 'flex';
         }
 
         // ============================================================
-        // 21. RENDER SIZES TABLE FOR BLANK RECEIPTS
+        // 22. ACCORDION TOGGLE
         // ============================================================
-        function renderSizesTableForBlank(sizesData) {
+        function toggleAccordion(accordionId) {
+            const body = document.getElementById(accordionId);
+            const icon = document.getElementById(`toggle-${accordionId}`);
+            if (body) {
+                body.classList.toggle('open');
+                if (icon) {
+                    icon.classList.toggle('open');
+                }
+            }
+        }
+
+        // ============================================================
+        // 23. RENDER SIZES TABLE FOR BLANK RECEIPTS (Accordion)
+        // ============================================================
+        function renderSizesTableForBlankAccordion(sizesData) {
             if (!sizesData || typeof sizesData !== 'object') {
                 return '<p class="text-muted">لا توجد بيانات مقاسات</p>';
             }
@@ -2721,6 +2849,7 @@
                         <tr>
                             <th>المقاس</th>
                             <th>الكمية</th>
+                            <th style="width:80px;">عينة تصوير</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -2744,10 +2873,17 @@
                 if (qty > 0) hasData = true;
                 total += qty;
 
+                const hasSample = checkSizeHasSample(currentViewReceipt, '', '', sizeId);
+
                 tableHtml += `
                     <tr>
                         <td><strong>${sizeName}</strong></td>
                         <td>${qty}</td>
+                        <td style="text-align:center;">
+                            ${hasSample 
+                                ? '<span class="sample-badge">✅</span>' 
+                                : '<span class="no-sample-badge">❌</span>'}
+                        </td>
                     </tr>
                 `;
             }
@@ -2760,6 +2896,7 @@
                     <tr class="total-row">
                         <td><strong>الإجمالي</strong></td>
                         <td><strong>${total}</strong></td>
+                        <td></td>
                     </tr>
                 </tbody>
             </table>
@@ -2769,9 +2906,9 @@
         }
 
         // ============================================================
-        // 22. RENDER SIZES TABLE WITH SAMPLE INDICATORS
+        // 24. RENDER SIZES TABLE WITH SAMPLES (Accordion)
         // ============================================================
-        function renderSizesTableWithSamples(sizesData, sampleSizes = []) {
+        function renderSizesTableWithSamplesAccordion(sizesData, sampleSizes = []) {
             if (!sizesData || typeof sizesData !== 'object') {
                 return '<p class="text-muted">لا توجد بيانات مقاسات</p>';
             }
@@ -2819,8 +2956,8 @@
                         <td>${qty}</td>
                         <td style="text-align:center;">
                             ${hasSample 
-                                ? '<span style="color:var(--success);font-weight:600;font-size:14px;">✅</span>' 
-                                : '<span style="color:var(--gray);font-size:12px;">❌</span>'}
+                                ? '<span class="sample-badge">✅</span>' 
+                                : '<span class="no-sample-badge">❌</span>'}
                         </td>
                     </tr>
                 `;
@@ -2844,7 +2981,27 @@
         }
 
         // ============================================================
-        // 23. REASSIGN RECEIPT
+        // 25. CHECK SIZE HAS SAMPLE
+        // ============================================================
+        function checkSizeHasSample(receipt, modelName, color, sizeId) {
+            if (!receipt) return false;
+            if (receipt.sampleRequests) {
+                for (const m in receipt.sampleRequests) {
+                    if (modelName && m !== modelName) continue;
+                    const colors = receipt.sampleRequests[m];
+                    for (const c in colors) {
+                        if (color && c !== color) continue;
+                        if (colors[c][sizeId] === true) {
+                            return true;
+                        }
+                    }
+                }
+            }
+            return false;
+        }
+
+        // ============================================================
+        // 26. REASSIGN RECEIPT
         // ============================================================
         async function reassignReceipt() {
             if (!currentViewReceipt) return;
@@ -2911,7 +3068,7 @@
         }
 
         // ============================================================
-        // 24. EXPORT RECEIPT TO EXCEL
+        // 27. EXPORT RECEIPT TO EXCEL
         // ============================================================
         async function exportReceiptToExcel() {
             if (!currentViewReceipt) return;
@@ -2926,6 +3083,9 @@
             data.push(['المساعدين', currentViewReceipt.helpers ? currentViewReceipt.helpers.map(h => h.fullName).join(', ') : 'لا يوجد']);
             data.push(['الحالة', currentViewReceipt.status || 'new']);
             data.push(['تاريخ الإنشاء', currentViewReceipt.createdAt ? new Date(currentViewReceipt.createdAt).toLocaleString('ar-EG') : 'غير معروف']);
+            if (currentViewReceipt.closedDate) {
+                data.push(['تاريخ الإغلاق', new Date(currentViewReceipt.closedDate).toLocaleString('ar-EG')]);
+            }
             data.push([]);
 
             const headerRow = ['رقم الفاتورة', 'المصنع', 'الموديل', 'اللون', 'المقاس', 'الكمية', 'عينة تصوير', 'الموظف', 'الحالة'];
@@ -2987,17 +3147,8 @@
             XLSX.writeFile(wb, `تفاصيل_استلام_${currentViewReceipt.invoiceCode}.xlsx`);
         }
 
-        function checkSizeHasSample(receipt, modelName, color, sizeId) {
-            if (receipt.sampleRequests && receipt.sampleRequests[modelName] && 
-                receipt.sampleRequests[modelName][color] && 
-                receipt.sampleRequests[modelName][color][sizeId] === true) {
-                return true;
-            }
-            return false;
-        }
-
         // ============================================================
-        // 25. EXPORT FULL REPORT
+        // 28. EXPORT FULL REPORT
         // ============================================================
         async function exportFullReport() {
             await loadSizesList();
@@ -3007,7 +3158,7 @@
             data.push(['تاريخ التقرير', new Date().toLocaleString('ar-EG')]);
             data.push([]);
             
-            const headerRow = ['رقم الفاتورة', 'المصنع', 'الموديل', 'اللون', 'المقاس', 'الكمية', 'عينة تصوير', 'الموظف', 'الحالة', 'نوع الفاتورة'];
+            const headerRow = ['رقم الفاتورة', 'المصنع', 'الموديل', 'اللون', 'المقاس', 'الكمية', 'عينة تصوير', 'الموظف', 'الحالة', 'نوع الفاتورة', 'تاريخ الإغلاق'];
             data.push(headerRow);
 
             const statusMap = {
@@ -3024,6 +3175,7 @@
                 const employeeName = receipt.assignedTo ? receipt.assignedTo.fullName : 'غير مسند';
                 const status = statusMap[receipt.status] || receipt.status || 'جديدة';
                 const receiptType = receipt.isBlank ? 'مسودة' : 'عادية';
+                const closedDate = receipt.closedDate ? new Date(receipt.closedDate).toLocaleDateString('ar-EG') : '';
 
                 const modelColors = receipt.modelColors || {};
                 
@@ -3053,7 +3205,8 @@
                                         hasSample ? '✅' : '❌',
                                         employeeName,
                                         status,
-                                        receiptType
+                                        receiptType,
+                                        closedDate
                                     ]);
                                     hasDetails = true;
                                 }
@@ -3074,7 +3227,8 @@
                             '❌',
                             employeeName,
                             status,
-                            receiptType
+                            receiptType,
+                            closedDate
                         ]);
                     }
                 }
@@ -3083,7 +3237,7 @@
             const ws = XLSX.utils.aoa_to_sheet(data);
             ws['!cols'] = [
                 { wch: 20 }, { wch: 15 }, { wch: 15 }, { wch: 15 },
-                { wch: 12 }, { wch: 12 }, { wch: 12 }, { wch: 18 }, { wch: 15 }, { wch: 12 }
+                { wch: 12 }, { wch: 12 }, { wch: 12 }, { wch: 18 }, { wch: 15 }, { wch: 12 }, { wch: 18 }
             ];
             const wb = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(wb, ws, 'تقرير شامل');
@@ -3091,11 +3245,11 @@
         }
 
         // ============================================================
-        // 26. EXPORT CLOSED RECEIPTS BY SIZES
+        // 29. EXPORT CLOSED RECEIPTS BY SIZES
         // ============================================================
         async function exportClosedReceiptsBySizes() {
             await loadSizesList();
-            const closedReceipts = allReceipts.filter(r => r.status === 'completed' || r.status === 'closed');
+            const closedReceipts = allReceipts.filter(r => r.status === 'closed' || r.status === 'completed');
 
             const data = [];
             data.push(['تقرير الفواتير المكتملة حسب المقاسات']);
@@ -3107,9 +3261,9 @@
 
             for (const receipt of closedReceipts) {
                 const employeeName = receipt.assignedTo ? receipt.assignedTo.fullName : 'غير مسند';
-                const closeDate = receipt.updatedAt 
-                    ? new Date(receipt.updatedAt).toLocaleDateString('ar-EG') 
-                    : (receipt.closedDate ? new Date(receipt.closedDate).toLocaleDateString('ar-EG') : '');
+                const closeDate = receipt.closedDate 
+                    ? new Date(receipt.closedDate).toLocaleDateString('ar-EG') 
+                    : (receipt.updatedAt ? new Date(receipt.updatedAt).toLocaleDateString('ar-EG') : '');
                 const receiptType = receipt.isBlank ? 'مسودة' : 'عادية';
 
                 const modelColors = receipt.modelColors || {};
@@ -3178,7 +3332,7 @@
         }
 
         // ============================================================
-        // 27. DELETE FUNCTIONS (supporting both types)
+        // 30. DELETE FUNCTIONS
         // ============================================================
         function deleteReceipt(id, isBlank = false) {
             if (confirm('تأكيد حذف هذه الفاتورة؟')) {
@@ -3231,7 +3385,7 @@
         }
 
         // ============================================================
-        // 28. ADD FUNCTIONS
+        // 31. ADD FUNCTIONS
         // ============================================================
         async function addFactory() {
             const name = document.getElementById('newFactoryName').value.trim();
@@ -3271,7 +3425,7 @@
         }
 
         // ============================================================
-        // 29. EMPLOYEE MODAL
+        // 32. EMPLOYEE MODAL
         // ============================================================
         function showEmployeeModal() {
             document.getElementById('employeeModal').style.display = 'flex';
@@ -3319,7 +3473,7 @@
         }
 
         // ============================================================
-        // 30. FACTORY & COLOR QUICK MODALS
+        // 33. FACTORY & COLOR QUICK MODALS
         // ============================================================
         function openFactoryModal() {
             document.getElementById('factoryModal').style.display = 'flex';
@@ -3380,7 +3534,7 @@
         }
 
         // ============================================================
-        // 31. MODELS TABLE - Gallery View
+        // 34. MODELS TABLE - Gallery View
         // ============================================================
         async function loadModelsTable() {
             await loadAllModels();
@@ -3451,7 +3605,7 @@
         }
 
         // ============================================================
-        // 32. SHOW FACTORY MODELS
+        // 35. SHOW FACTORY MODELS
         // ============================================================
         function showFactoryModels(factoryId, factoryName) {
             const factoryModels = allModelsList.filter(m => m.factory === factoryName);
@@ -3475,7 +3629,7 @@
         }
 
         // ============================================================
-        // 33. IMAGE VIEW
+        // 36. IMAGE VIEW
         // ============================================================
         function showFullImage(imageUrl) {
             document.getElementById('fullImageView').src = imageUrl;
@@ -3492,7 +3646,7 @@
         }
 
         // ============================================================
-        // 34. NAVIGATION & UI
+        // 37. NAVIGATION & UI
         // ============================================================
         function showSection(section) {
             document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
@@ -3527,58 +3681,50 @@
         }
 
         function toggleSidebar() {
-    const sidebar = document.getElementById('sidebar');
-    const mainContent = document.getElementById('mainContent');
-    sidebar.classList.toggle('hidden');
-    sidebar.classList.toggle('visible');
-    mainContent.classList.toggle('sidebar-hidden');
-}
-
-// إضافة وظيفة لإغلاق القائمة عند النقر خارجها
-function closeSidebarOnClickOutside(event) {
-    const sidebar = document.getElementById('sidebar');
-    const menuToggle = document.querySelector('.menu-toggle');
-    const mainContent = document.getElementById('mainContent');
-    
-    // التحقق مما إذا كانت القائمة ظاهرة على الشاشات الصغيرة
-    const isSidebarVisible = sidebar.classList.contains('visible') && !sidebar.classList.contains('hidden');
-    
-    if (isSidebarVisible) {
-        // التحقق مما إذا كان النقر خارج القائمة الجانبية وليس على زر القائمة
-        const isClickInsideSidebar = sidebar.contains(event.target);
-        const isClickOnMenuToggle = menuToggle && menuToggle.contains(event.target);
-        
-        if (!isClickInsideSidebar && !isClickOnMenuToggle) {
-            // إغلاق القائمة
-            sidebar.classList.add('hidden');
-            sidebar.classList.remove('visible');
-            mainContent.classList.remove('sidebar-hidden');
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('mainContent');
+            sidebar.classList.toggle('hidden');
+            sidebar.classList.toggle('visible');
+            mainContent.classList.toggle('sidebar-hidden');
         }
-    }
-}
 
-// إضافة مستمع الحدث عند تحميل الصفحة
-document.addEventListener('DOMContentLoaded', function() {
-    document.addEventListener('click', closeSidebarOnClickOutside);
-});
+        function closeSidebarOnClickOutside(event) {
+            const sidebar = document.getElementById('sidebar');
+            const menuToggle = document.querySelector('.menu-toggle');
+            const mainContent = document.getElementById('mainContent');
+            
+            const isSidebarVisible = sidebar.classList.contains('visible') && !sidebar.classList.contains('hidden');
+            
+            if (isSidebarVisible) {
+                const isClickInsideSidebar = sidebar.contains(event.target);
+                const isClickOnMenuToggle = menuToggle && menuToggle.contains(event.target);
+                
+                if (!isClickInsideSidebar && !isClickOnMenuToggle) {
+                    sidebar.classList.add('hidden');
+                    sidebar.classList.remove('visible');
+                    mainContent.classList.remove('sidebar-hidden');
+                }
+            }
+        }
 
-// إضافة مستمع عند تغيير حجم الشاشة - إعادة ضبط القائمة على الشاشات الكبيرة
-window.addEventListener('resize', function() {
-    const sidebar = document.getElementById('sidebar');
-    const mainContent = document.getElementById('mainContent');
-    
-    if (window.innerWidth > 992) {
-        // على الشاشات الكبيرة، القائمة ظاهرة دائماً
-        sidebar.classList.remove('hidden');
-        sidebar.classList.remove('visible');
-        mainContent.classList.remove('sidebar-hidden');
-    } else {
-        // على الشاشات الصغيرة، القائمة مخفية افتراضياً
-        sidebar.classList.add('hidden');
-        sidebar.classList.remove('visible');
-        mainContent.classList.add('sidebar-hidden');
-    }
-});
+        document.addEventListener('DOMContentLoaded', function() {
+            document.addEventListener('click', closeSidebarOnClickOutside);
+        });
+
+        window.addEventListener('resize', function() {
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('mainContent');
+            
+            if (window.innerWidth > 992) {
+                sidebar.classList.remove('hidden');
+                sidebar.classList.remove('visible');
+                mainContent.classList.remove('sidebar-hidden');
+            } else {
+                sidebar.classList.add('hidden');
+                sidebar.classList.remove('visible');
+                mainContent.classList.add('sidebar-hidden');
+            }
+        });
 
         function logout() {
             localStorage.removeItem('currentUser');
@@ -3586,7 +3732,7 @@ window.addEventListener('resize', function() {
         }
 
         // ============================================================
-        // 35. INITIALIZATION
+        // 38. INITIALIZATION
         // ============================================================
         async function init() {
             await loadDashboard();
@@ -3605,16 +3751,15 @@ window.addEventListener('resize', function() {
 
         init();
 
-        console.log('✅ نظام إدارة الاستلامات المتقدم - الإصدار النهائي');
+        console.log('✅ نظام إدارة الاستلامات المتقدم - الإصدار النهائي V2');
         console.log('📌 التطويرات المطبقة:');
-        console.log('  1. ✅ عرض الفواتير من blankReceipts في جميع الاستلامات');
-        console.log('  2. ✅ تمييز الفواتير المسودة بعلامة [مسودة] ولون مميز');
-        console.log('  3. ✅ عرض المقاسات التي تم أخذ عينة تصوير منها مع علامة ✅');
-        console.log('  4. ✅ سحب 50 فاتورة مع زر "عرض المزيد"');
-        console.log('  5. ✅ إخفاء خيارات الإسناد للفواتير المغلقة/المكتملة');
-        console.log('  6. ✅ عرض الموديلات مع الصور في معرض الموديلات');
-        console.log('  7. ✅ تحسين شامل للواجهة وتصميم احترافي');
-        console.log('  8. ✅ دعم كامل لـ blankReceipts في التقارير والتصدير');
+        console.log('  1. ✅ إغلاق البوب اب عند النقر خارجها');
+        console.log('  2. ✅ سهم فتح/قفل للمنتجات داخل الفاتورة (Accordion)');
+        console.log('  3. ✅ دعم closedDate للفواتير البلانك وعرضها كمغلقة');
+        console.log('  4. ✅ استبعاد جداول invoices نهائياً');
+        console.log('  5. ✅ تحسين عرض المنتجات بشكل احترافي مع Accordion');
+        console.log('  6. ✅ عرض حالة الفاتورة مغلقة مع أيقونة 🔒');
+        console.log('  7. ✅ تحسين شامل للواجهة والتصميم');
         console.log('🚀 جاهز للإنتاج - تقييم 10/10');
     </script>
 </body>
