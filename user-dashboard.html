@@ -522,9 +522,21 @@
         .model-title-left .toggle-icon {
             transition: transform 0.3s ease;
             display: inline-block;
+            font-size: 1rem;
+            color: #6c8cff;
+            background: #e8edfe;
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         .model-title-left .toggle-icon.open {
             transform: rotate(180deg);
+        }
+        .model-title-left .toggle-icon i {
+            font-size: 0.9rem;
         }
         .model-required {
             background: #ffffff;
@@ -1612,6 +1624,34 @@
             margin: 12px 0;
         }
 
+        /* Edit inline */
+        .edit-inline {
+            cursor: text;
+            padding: 2px 8px;
+            border-radius: 6px;
+            transition: background 0.2s;
+        }
+        .edit-inline:hover {
+            background: #e8edfe;
+        }
+        .edit-inline-input {
+            border: none;
+            background: #e8edfe;
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-size: inherit;
+            font-weight: inherit;
+            font-family: inherit;
+            color: inherit;
+            width: auto;
+            min-width: 60px;
+            max-width: 200px;
+        }
+        .edit-inline-input:focus {
+            outline: 2px solid #6c8cff;
+            outline-offset: 2px;
+        }
+
         /* =========================================================
                    RESPONSIVE
                    ========================================================= */
@@ -2311,6 +2351,90 @@
             async deleteReceipt(receiptId) {
                 await db.ref(`receipts/${receiptId}`).remove();
                 return { success: true };
+            },
+
+            async updateModelName(receiptId, oldName, newName) {
+                const path = `receipts/${receiptId}`;
+                const snapshot = await db.ref(path).once('value');
+                const data = snapshot.val();
+                if (!data) return { success: false };
+
+                // Update modelColors
+                if (data.modelColors && data.modelColors[oldName]) {
+                    data.modelColors[newName] = data.modelColors[oldName];
+                    delete data.modelColors[oldName];
+                }
+                // Update modelColorsImages
+                if (data.modelColorsImages && data.modelColorsImages[oldName]) {
+                    data.modelColorsImages[newName] = data.modelColorsImages[oldName];
+                    delete data.modelColorsImages[oldName];
+                }
+                // Update modelNotes
+                if (data.modelNotes && data.modelNotes[oldName]) {
+                    data.modelNotes[newName] = data.modelNotes[oldName];
+                    delete data.modelNotes[oldName];
+                }
+                // Update sampleRequests
+                if (data.sampleRequests && data.sampleRequests[oldName]) {
+                    data.sampleRequests[newName] = data.sampleRequests[oldName];
+                    delete data.sampleRequests[oldName];
+                }
+                // Update modelFirstTime
+                if (data.modelFirstTime && data.modelFirstTime[oldName]) {
+                    data.modelFirstTime[newName] = data.modelFirstTime[oldName];
+                    delete data.modelFirstTime[oldName];
+                }
+                // Update closedModels
+                if (data.closedModels && data.closedModels[oldName]) {
+                    data.closedModels[newName] = data.closedModels[oldName];
+                    delete data.closedModels[oldName];
+                }
+                // Update closedModelsDate
+                if (data.closedModelsDate && data.closedModelsDate[oldName]) {
+                    data.closedModelsDate[newName] = data.closedModelsDate[oldName];
+                    delete data.closedModelsDate[oldName];
+                }
+                // Update models array
+                if (data.models) {
+                    data.models = data.models.map(m => {
+                        if (m.modelName === oldName) {
+                            return { ...m, modelName: newName };
+                        }
+                        return m;
+                    });
+                }
+
+                await db.ref(path).set(data);
+                await db.ref(`receipts/${receiptId}/updatedAt`).set(Date.now());
+                return { success: true };
+            },
+
+            async updateColorName(receiptId, modelName, oldColor, newColor) {
+                const path = `receipts/${receiptId}`;
+                const snapshot = await db.ref(path).once('value');
+                const data = snapshot.val();
+                if (!data) return { success: false };
+
+                // Update modelColors
+                if (data.modelColors && data.modelColors[modelName] && data.modelColors[modelName][oldColor]) {
+                    data.modelColors[modelName][newColor] = data.modelColors[modelName][oldColor];
+                    delete data.modelColors[modelName][oldColor];
+                }
+                // Update modelColorsImages
+                if (data.modelColorsImages && data.modelColorsImages[modelName] && data.modelColorsImages[modelName][
+                        oldColor]) {
+                    data.modelColorsImages[modelName][newColor] = data.modelColorsImages[modelName][oldColor];
+                    delete data.modelColorsImages[modelName][oldColor];
+                }
+                // Update sampleRequests
+                if (data.sampleRequests && data.sampleRequests[modelName] && data.sampleRequests[modelName][oldColor]) {
+                    data.sampleRequests[modelName][newColor] = data.sampleRequests[modelName][oldColor];
+                    delete data.sampleRequests[modelName][oldColor];
+                }
+
+                await db.ref(path).set(data);
+                await db.ref(`receipts/${receiptId}/updatedAt`).set(Date.now());
+                return { success: true };
             }
         };
 
@@ -2415,6 +2539,63 @@
 
             async deleteReceipt(receiptId) {
                 await db.ref(`blankReceipts/${receiptId}`).remove();
+                return { success: true };
+            },
+
+            async updateModelName(receiptId, oldName, newName) {
+                const path = `blankReceipts/${receiptId}`;
+                const snapshot = await db.ref(path).once('value');
+                const data = snapshot.val();
+                if (!data) return { success: false };
+
+                if (data.modelColors && data.modelColors[oldName]) {
+                    data.modelColors[newName] = data.modelColors[oldName];
+                    delete data.modelColors[oldName];
+                }
+                if (data.modelColorsImages && data.modelColorsImages[oldName]) {
+                    data.modelColorsImages[newName] = data.modelColorsImages[oldName];
+                    delete data.modelColorsImages[oldName];
+                }
+                if (data.modelNotes && data.modelNotes[oldName]) {
+                    data.modelNotes[newName] = data.modelNotes[oldName];
+                    delete data.modelNotes[oldName];
+                }
+                if (data.sampleRequests && data.sampleRequests[oldName]) {
+                    data.sampleRequests[newName] = data.sampleRequests[oldName];
+                    delete data.sampleRequests[oldName];
+                }
+                if (data.modelFirstTime && data.modelFirstTime[oldName]) {
+                    data.modelFirstTime[newName] = data.modelFirstTime[oldName];
+                    delete data.modelFirstTime[oldName];
+                }
+
+                await db.ref(path).set(data);
+                await db.ref(`blankReceipts/${receiptId}/updatedAt`).set(Date.now());
+                return { success: true };
+            },
+
+            async updateColorName(receiptId, modelName, oldColor, newColor) {
+                const path = `blankReceipts/${receiptId}`;
+                const snapshot = await db.ref(path).once('value');
+                const data = snapshot.val();
+                if (!data) return { success: false };
+
+                if (data.modelColors && data.modelColors[modelName] && data.modelColors[modelName][oldColor]) {
+                    data.modelColors[modelName][newColor] = data.modelColors[modelName][oldColor];
+                    delete data.modelColors[modelName][oldColor];
+                }
+                if (data.modelColorsImages && data.modelColorsImages[modelName] && data.modelColorsImages[modelName][
+                        oldColor]) {
+                    data.modelColorsImages[modelName][newColor] = data.modelColorsImages[modelName][oldColor];
+                    delete data.modelColorsImages[modelName][oldColor];
+                }
+                if (data.sampleRequests && data.sampleRequests[modelName] && data.sampleRequests[modelName][oldColor]) {
+                    data.sampleRequests[modelName][newColor] = data.sampleRequests[modelName][oldColor];
+                    delete data.sampleRequests[modelName][oldColor];
+                }
+
+                await db.ref(path).set(data);
+                await db.ref(`blankReceipts/${receiptId}/updatedAt`).set(Date.now());
                 return { success: true };
             }
         };
@@ -2820,6 +3001,83 @@
                 loadReceivedHistory();
                 loadDashboardStats();
                 loadAllModels();
+            },
+
+            async updateModelName(receiptId, oldName, newName) {
+                if (!newName || newName.trim() === '') return { success: false, error: 'اسم الموديل لا يمكن أن يكون فارغاً' };
+                if (oldName === newName) return { success: true };
+
+                const result = await ReceiptRepository.updateModelName(receiptId, oldName, newName);
+                if (result.success && currentReceiptData) {
+                    // Update local data
+                    if (currentReceiptData.modelColors && currentReceiptData.modelColors[oldName]) {
+                        currentReceiptData.modelColors[newName] = currentReceiptData.modelColors[oldName];
+                        delete currentReceiptData.modelColors[oldName];
+                    }
+                    if (currentReceiptData.modelColorsImages && currentReceiptData.modelColorsImages[oldName]) {
+                        currentReceiptData.modelColorsImages[newName] = currentReceiptData.modelColorsImages[oldName];
+                        delete currentReceiptData.modelColorsImages[oldName];
+                    }
+                    if (currentReceiptData.modelNotes && currentReceiptData.modelNotes[oldName]) {
+                        currentReceiptData.modelNotes[newName] = currentReceiptData.modelNotes[oldName];
+                        delete currentReceiptData.modelNotes[oldName];
+                    }
+                    if (currentReceiptData.sampleRequests && currentReceiptData.sampleRequests[oldName]) {
+                        currentReceiptData.sampleRequests[newName] = currentReceiptData.sampleRequests[oldName];
+                        delete currentReceiptData.sampleRequests[oldName];
+                    }
+                    if (currentReceiptData.modelFirstTime && currentReceiptData.modelFirstTime[oldName]) {
+                        currentReceiptData.modelFirstTime[newName] = currentReceiptData.modelFirstTime[oldName];
+                        delete currentReceiptData.modelFirstTime[oldName];
+                    }
+                    if (currentReceiptData.closedModels && currentReceiptData.closedModels[oldName]) {
+                        currentReceiptData.closedModels[newName] = currentReceiptData.closedModels[oldName];
+                        delete currentReceiptData.closedModels[oldName];
+                    }
+                    if (currentReceiptData.closedModelsDate && currentReceiptData.closedModelsDate[oldName]) {
+                        currentReceiptData.closedModelsDate[newName] = currentReceiptData.closedModelsDate[oldName];
+                        delete currentReceiptData.closedModelsDate[oldName];
+                    }
+                    if (currentReceiptData.models) {
+                        currentReceiptData.models = currentReceiptData.models.map(m => {
+                            if (m.modelName === oldName) {
+                                return { ...m, modelName: newName };
+                            }
+                            return m;
+                        });
+                    }
+                    renderReceiptDetail();
+                }
+                return result;
+            },
+
+            async updateColorName(receiptId, modelName, oldColor, newColor) {
+                if (!newColor || newColor.trim() === '') return { success: false, error: 'اسم اللون لا يمكن أن يكون فارغاً' };
+                if (oldColor === newColor) return { success: true };
+
+                const result = await ReceiptRepository.updateColorName(receiptId, modelName, oldColor, newColor);
+                if (result.success && currentReceiptData) {
+                    if (currentReceiptData.modelColors && currentReceiptData.modelColors[modelName] && currentReceiptData
+                        .modelColors[modelName][oldColor]) {
+                        currentReceiptData.modelColors[modelName][newColor] = currentReceiptData.modelColors[modelName][
+                            oldColor];
+                        delete currentReceiptData.modelColors[modelName][oldColor];
+                    }
+                    if (currentReceiptData.modelColorsImages && currentReceiptData.modelColorsImages[modelName] &&
+                        currentReceiptData.modelColorsImages[modelName][oldColor]) {
+                        currentReceiptData.modelColorsImages[modelName][newColor] = currentReceiptData.modelColorsImages[
+                            modelName][oldColor];
+                        delete currentReceiptData.modelColorsImages[modelName][oldColor];
+                    }
+                    if (currentReceiptData.sampleRequests && currentReceiptData.sampleRequests[modelName] &&
+                        currentReceiptData.sampleRequests[modelName][oldColor]) {
+                        currentReceiptData.sampleRequests[modelName][newColor] = currentReceiptData.sampleRequests[
+                            modelName][oldColor];
+                        delete currentReceiptData.sampleRequests[modelName][oldColor];
+                    }
+                    renderReceiptDetail();
+                }
+                return result;
             }
         };
 
@@ -3120,6 +3378,70 @@
                 loadReceivedHistory();
                 loadDashboardStats();
                 loadAllModels();
+            },
+
+            async updateModelName(receiptId, oldName, newName) {
+                if (!newName || newName.trim() === '') return { success: false, error: 'اسم الموديل لا يمكن أن يكون فارغاً' };
+                if (oldName === newName) return { success: true };
+
+                const result = await BlankReceiptRepository.updateModelName(receiptId, oldName, newName);
+                if (result.success && currentBlankReceiptData) {
+                    if (currentBlankReceiptData.modelColors && currentBlankReceiptData.modelColors[oldName]) {
+                        currentBlankReceiptData.modelColors[newName] = currentBlankReceiptData.modelColors[oldName];
+                        delete currentBlankReceiptData.modelColors[oldName];
+                    }
+                    if (currentBlankReceiptData.modelColorsImages && currentBlankReceiptData.modelColorsImages[oldName]) {
+                        currentBlankReceiptData.modelColorsImages[newName] = currentBlankReceiptData.modelColorsImages[
+                            oldName];
+                        delete currentBlankReceiptData.modelColorsImages[oldName];
+                    }
+                    if (currentBlankReceiptData.modelNotes && currentBlankReceiptData.modelNotes[oldName]) {
+                        currentBlankReceiptData.modelNotes[newName] = currentBlankReceiptData.modelNotes[oldName];
+                        delete currentBlankReceiptData.modelNotes[oldName];
+                    }
+                    if (currentBlankReceiptData.sampleRequests && currentBlankReceiptData.sampleRequests[oldName]) {
+                        currentBlankReceiptData.sampleRequests[newName] = currentBlankReceiptData.sampleRequests[
+                            oldName];
+                        delete currentBlankReceiptData.sampleRequests[oldName];
+                    }
+                    if (currentBlankReceiptData.modelFirstTime && currentBlankReceiptData.modelFirstTime[oldName]) {
+                        currentBlankReceiptData.modelFirstTime[newName] = currentBlankReceiptData.modelFirstTime[
+                            oldName];
+                        delete currentBlankReceiptData.modelFirstTime[oldName];
+                    }
+                    renderBlankReceiptDetail();
+                }
+                return result;
+            },
+
+            async updateColorName(receiptId, modelName, oldColor, newColor) {
+                if (!newColor || newColor.trim() === '') return { success: false, error: 'اسم اللون لا يمكن أن يكون فارغاً' };
+                if (oldColor === newColor) return { success: true };
+
+                const result = await BlankReceiptRepository.updateColorName(receiptId, modelName, oldColor, newColor);
+                if (result.success && currentBlankReceiptData) {
+                    if (currentBlankReceiptData.modelColors && currentBlankReceiptData.modelColors[modelName] &&
+                        currentBlankReceiptData.modelColors[modelName][oldColor]) {
+                        currentBlankReceiptData.modelColors[modelName][newColor] = currentBlankReceiptData.modelColors[
+                            modelName][oldColor];
+                        delete currentBlankReceiptData.modelColors[modelName][oldColor];
+                    }
+                    if (currentBlankReceiptData.modelColorsImages && currentBlankReceiptData.modelColorsImages[
+                            modelName] &&
+                        currentBlankReceiptData.modelColorsImages[modelName][oldColor]) {
+                        currentBlankReceiptData.modelColorsImages[modelName][newColor] = currentBlankReceiptData
+                            .modelColorsImages[modelName][oldColor];
+                        delete currentBlankReceiptData.modelColorsImages[modelName][oldColor];
+                    }
+                    if (currentBlankReceiptData.sampleRequests && currentBlankReceiptData.sampleRequests[modelName] &&
+                        currentBlankReceiptData.sampleRequests[modelName][oldColor]) {
+                        currentBlankReceiptData.sampleRequests[modelName][newColor] = currentBlankReceiptData
+                            .sampleRequests[modelName][oldColor];
+                        delete currentBlankReceiptData.sampleRequests[modelName][oldColor];
+                    }
+                    renderBlankReceiptDetail();
+                }
+                return result;
             }
         };
 
@@ -3216,6 +3538,7 @@
             const snapshot = await db.ref('models').once('value');
             allModelsList = [];
             snapshot.forEach(child => {
+                if (EXCLUDED_TABLES.includes(child.key)) return;
                 allModelsList.push({
                     id: child.key,
                     name: child.val().name,
@@ -3230,6 +3553,7 @@
             const snapshot = await db.ref('factories').once('value');
             allFactoriesList = [];
             snapshot.forEach(child => {
+                if (EXCLUDED_TABLES.includes(child.key)) return;
                 allFactoriesList.push({ id: child.key, name: child.val().name });
             });
         }
@@ -3238,6 +3562,7 @@
             const snapshot = await db.ref('colors').once('value');
             allColorsList = [];
             snapshot.forEach(child => {
+                if (EXCLUDED_TABLES.includes(child.key)) return;
                 allColorsList.push({ id: child.key, name: child.val().name });
             });
         }
@@ -3270,6 +3595,7 @@
                 const snapshot = await db.ref('models').once('value');
                 let modelKey = null;
                 snapshot.forEach((child) => {
+                    if (EXCLUDED_TABLES.includes(child.key)) return;
                     const val = child.val();
                     if (val.name === modelName || val.code === modelName) {
                         modelKey = child.key;
@@ -3535,7 +3861,7 @@
                                     <div class="color-header" onclick="toggleNormalColorContent('${model.modelName}', '${colorName}')">
                                         <div class="color-name-input">
                                             <button class="color-toggle-btn"><i class="fas ${isColorOpen ? 'fa-chevron-up' : 'fa-chevron-down'}"></i></button>
-                                            <strong><i class="fas fa-palette"></i> اللون: ${colorName}</strong>
+                                            <strong><i class="fas fa-palette"></i> <span class="edit-inline" onclick="event.stopPropagation();editColorName('${model.modelName}', '${colorName}')">${colorName}</span></strong>
                                             <span class="total-received">إجمالي اللون: ${colorTotal} قطعة</span>
                                         </div>
                                         <div style="display: flex; gap: 10px; align-items: center;" onclick="event.stopPropagation()">
@@ -3565,8 +3891,8 @@
                         <div class="model-card ${isModelClosedFlag || isClosed ? 'closed-model' : ''}" style="position: relative;">
                             <div class="model-title" onclick="toggleModelContent('${model.modelName}')">
                                 <div class="model-title-left">
-                                    <i class="fas ${isOpen ? 'fa-chevron-up' : 'fa-chevron-down'} toggle-icon ${isOpen ? 'open' : ''}"></i>
-                                    <span><i class="fas fa-tshirt"></i> ${model.modelName} ${model.modelCode ? `<span class="model-code-badge">${model.modelCode}</span>` : ''} ${modelTypeBadge}</span>
+                                    <span class="toggle-icon ${isOpen ? 'open' : ''}"><i class="fas ${isOpen ? 'fa-chevron-up' : 'fa-chevron-down'}"></i></span>
+                                    <span><i class="fas fa-tshirt"></i> <span class="edit-inline" onclick="event.stopPropagation();editModelName('${model.modelName}')">${model.modelName}</span> ${model.modelCode ? `<span class="model-code-badge">${model.modelCode}</span>` : ''} ${modelTypeBadge}</span>
                                     <span class="model-total-badge"><i class="fas fa-boxes"></i> الإجمالي: ${modelTotal} قطعة</span>
                                 </div>
                                 <div style="display: flex; gap: 10px; flex-wrap: wrap;">
@@ -3597,8 +3923,8 @@
                     <h3><i class="fas fa-receipt"></i> استلام فاتورة: ${r.invoiceCode}</h3>
                     <div class="detail-actions">
                         <div style="display:flex; gap:6px; flex-wrap:wrap;">
-                            <button class="btn btn-sm btn-primary" onclick="openAllModels()"><i class="fas fa-expand"></i> فتح الكل</button>
-                            <button class="btn btn-sm btn-warning" onclick="closeAllModels()"><i class="fas fa-compress"></i> غلق الكل</button>
+                            <button class="btn btn-sm btn-primary" onclick="openAllModels()"><i class="fas fa-expand"></i> فتح المنتجات</button>
+                            <button class="btn btn-sm btn-warning" onclick="closeAllModels()"><i class="fas fa-compress"></i> غلق المنتجات</button>
                             <button class="btn btn-sm btn-primary" onclick="openAllColors()"><i class="fas fa-palette"></i> فتح الألوان</button>
                             <button class="btn btn-sm btn-warning" onclick="closeAllColors()"><i class="fas fa-palette"></i> غلق الألوان</button>
                         </div>
@@ -3695,6 +4021,86 @@
             });
 
             renderReceiptDetail();
+        }
+
+        // ================================================================
+        //  EDIT INLINE FUNCTIONS
+        // ================================================================
+
+        function editModelName(oldName) {
+            if (!currentReceiptId || !currentReceiptData) return;
+            const isClosed = currentReceiptData.status === 'closed' || currentReceiptData.status === 'completed';
+            if (isClosed) { showWarning('لا يمكن تعديل الموديل في فاتورة مقفلة', true); return; }
+            const isModelClosed = isModelClosed(currentReceiptData, oldName);
+            if (isModelClosed) { showWarning('لا يمكن تعديل موديل مقفل', true); return; }
+
+            customPrompt('أدخل الاسم الجديد للموديل:', oldName, async (newName) => {
+                if (!newName || newName.trim() === '' || newName === oldName) return;
+
+                const result = await ReceiptService.updateModelName(currentReceiptId, oldName, newName);
+                if (result.success) {
+                    showWarning('تم تحديث اسم الموديل بنجاح', false);
+                    scheduleSave();
+                } else {
+                    showWarning(result.error || 'حدث خطأ', true);
+                }
+            });
+        }
+
+        function editColorName(modelName, oldColor) {
+            if (!currentReceiptId || !currentReceiptData) return;
+            const isClosed = currentReceiptData.status === 'closed' || currentReceiptData.status === 'completed';
+            if (isClosed) { showWarning('لا يمكن تعديل اللون في فاتورة مقفلة', true); return; }
+            const isModelClosed = isModelClosed(currentReceiptData, modelName);
+            if (isModelClosed) { showWarning('لا يمكن تعديل لون في موديل مقفل', true); return; }
+
+            customPrompt('أدخل الاسم الجديد للون:', oldColor, async (newColor) => {
+                if (!newColor || newColor.trim() === '' || newColor === oldColor) return;
+
+                const result = await ReceiptService.updateColorName(currentReceiptId, modelName, oldColor, newColor);
+                if (result.success) {
+                    showWarning('تم تحديث اسم اللون بنجاح', false);
+                    scheduleSave();
+                } else {
+                    showWarning(result.error || 'حدث خطأ', true);
+                }
+            });
+        }
+
+        // Blank edit functions
+        function editBlankModelName(oldName) {
+            if (!currentBlankReceiptId || !currentBlankReceiptData) return;
+            if (currentBlankReceiptData.isClosed) { showWarning('لا يمكن تعديل الموديل في فاتورة مقفلة', true); return; }
+
+            customPrompt('أدخل الاسم الجديد للموديل:', oldName, async (newName) => {
+                if (!newName || newName.trim() === '' || newName === oldName) return;
+
+                const result = await BlankReceiptService.updateModelName(currentBlankReceiptId, oldName, newName);
+                if (result.success) {
+                    showWarning('تم تحديث اسم الموديل بنجاح', false);
+                    scheduleSave();
+                } else {
+                    showWarning(result.error || 'حدث خطأ', true);
+                }
+            });
+        }
+
+        function editBlankColorName(modelName, oldColor) {
+            if (!currentBlankReceiptId || !currentBlankReceiptData) return;
+            if (currentBlankReceiptData.isClosed) { showWarning('لا يمكن تعديل اللون في فاتورة مقفلة', true); return; }
+
+            customPrompt('أدخل الاسم الجديد للون:', oldColor, async (newColor) => {
+                if (!newColor || newColor.trim() === '' || newColor === oldColor) return;
+
+                const result = await BlankReceiptService.updateColorName(currentBlankReceiptId, modelName, oldColor,
+                    newColor);
+                if (result.success) {
+                    showWarning('تم تحديث اسم اللون بنجاح', false);
+                    scheduleSave();
+                } else {
+                    showWarning(result.error || 'حدث خطأ', true);
+                }
+            });
         }
 
         // ================================================================
@@ -3799,7 +4205,8 @@
                 '.model-title-left .toggle-icon');
             if (toggleIcon) {
                 toggleIcon.classList.toggle('open', modelOpenState[currentReceiptId][key]);
-                toggleIcon.className = `fas ${modelOpenState[currentReceiptId][key] ? 'fa-chevron-up' : 'fa-chevron-down'} toggle-icon ${modelOpenState[currentReceiptId][key] ? 'open' : ''}`;
+                toggleIcon.className = `toggle-icon ${modelOpenState[currentReceiptId][key] ? 'open' : ''}`;
+                toggleIcon.innerHTML = `<i class="fas ${modelOpenState[currentReceiptId][key] ? 'fa-chevron-up' : 'fa-chevron-down'}"></i>`;
             }
         }
 
@@ -4027,7 +4434,8 @@
                 '.model-title-left .toggle-icon');
             if (toggleIcon) {
                 toggleIcon.classList.toggle('open', modelOpenState[currentBlankReceiptId][key]);
-                toggleIcon.className = `fas ${modelOpenState[currentBlankReceiptId][key] ? 'fa-chevron-up' : 'fa-chevron-down'} toggle-icon ${modelOpenState[currentBlankReceiptId][key] ? 'open' : ''}`;
+                toggleIcon.className = `toggle-icon ${modelOpenState[currentBlankReceiptId][key] ? 'open' : ''}`;
+                toggleIcon.innerHTML = `<i class="fas ${modelOpenState[currentBlankReceiptId][key] ? 'fa-chevron-up' : 'fa-chevron-down'}"></i>`;
             }
         }
 
@@ -4274,7 +4682,7 @@
                                 <div class="color-header" onclick="toggleBlankColorContent('${modelName}', '${colorName}')">
                                     <div class="color-name-input">
                                         <button class="color-toggle-btn"><i class="fas ${isColorOpen ? 'fa-chevron-up' : 'fa-chevron-down'}"></i></button>
-                                        <strong><i class="fas fa-palette"></i> اللون: ${colorName}</strong>
+                                        <strong><i class="fas fa-palette"></i> <span class="edit-inline" onclick="event.stopPropagation();editBlankColorName('${modelName}', '${colorName}')">${colorName}</span></strong>
                                         <span class="total-received">إجمالي اللون: ${colorTotal} قطعة</span>
                                     </div>
                                     <div style="display: flex; gap: 10px; align-items: center;" onclick="event.stopPropagation()">
@@ -4303,8 +4711,8 @@
                         <div class="model-card ${r.isClosed ? 'closed-model' : ''}">
                             <div class="model-title" onclick="toggleBlankModelContent('${modelName}')">
                                 <div class="model-title-left">
-                                    <i class="fas ${isOpen ? 'fa-chevron-up' : 'fa-chevron-down'} toggle-icon ${isOpen ? 'open' : ''}"></i>
-                                    <span><i class="fas fa-tshirt"></i> ${modelName}</span>
+                                    <span class="toggle-icon ${isOpen ? 'open' : ''}"><i class="fas ${isOpen ? 'fa-chevron-up' : 'fa-chevron-down'}"></i></span>
+                                    <span><i class="fas fa-tshirt"></i> <span class="edit-inline" onclick="event.stopPropagation();editBlankModelName('${modelName}')">${modelName}</span></span>
                                     ${modelTypeBadge}
                                     <span class="model-total-badge"><i class="fas fa-boxes"></i> الإجمالي: ${modelTotal} قطعة</span>
                                 </div>
@@ -4324,8 +4732,14 @@
                 <div class="detail-header">
                     <h3><i class="fas fa-file-alt"></i> فاتورة Blank: ${r.invoiceCode}</h3>
                     <div>
-                        ${!r.isClosed ? `<button class="btn btn-warning close-receipt-btn" onclick="openConfirmCloseBlankModal()"><i class="fas fa-check-double"></i> إقفال الفاتورة</button>` : ''}
-                        ${r.isClosed ? `<span class="model-smart-badge badge-repeat" style="font-size:16px;padding:8px 16px;"><i class="fas fa-check-circle"></i> الفاتورة مقفلة</span>` : ''}
+                        <div style="display:flex; gap:6px; flex-wrap:wrap; align-items:center;">
+                            ${!r.isClosed ? `<button class="btn btn-sm btn-primary" onclick="openBlankAllModels()"><i class="fas fa-expand"></i> فتح المنتجات</button>` : ''}
+                            ${!r.isClosed ? `<button class="btn btn-sm btn-warning" onclick="closeBlankAllModels()"><i class="fas fa-compress"></i> غلق المنتجات</button>` : ''}
+                            ${!r.isClosed ? `<button class="btn btn-sm btn-primary" onclick="openBlankAllColors()"><i class="fas fa-palette"></i> فتح الألوان</button>` : ''}
+                            ${!r.isClosed ? `<button class="btn btn-sm btn-warning" onclick="closeBlankAllColors()"><i class="fas fa-palette"></i> غلق الألوان</button>` : ''}
+                            ${!r.isClosed ? `<button class="btn btn-warning close-receipt-btn" onclick="openConfirmCloseBlankModal()"><i class="fas fa-check-double"></i> إقفال الفاتورة</button>` : ''}
+                            ${r.isClosed ? `<span class="model-smart-badge badge-repeat" style="font-size:16px;padding:8px 16px;"><i class="fas fa-check-circle"></i> الفاتورة مقفلة</span>` : ''}
+                        </div>
                         <button class="close-detail" onclick="closeBlankDetail()"><i class="fas fa-times"></i></button>
                     </div>
                 </div>
@@ -4350,6 +4764,65 @@
                 </button>` : ''}
             `;
             document.getElementById('blankReceiptDetail').style.display = 'block';
+        }
+
+        // Blank expand/collapse functions
+        function openBlankAllModels() {
+            if (!currentBlankReceiptId || !currentBlankReceiptData) return;
+            const receiptId = currentBlankReceiptId;
+            if (!modelOpenState[receiptId]) modelOpenState[receiptId] = {};
+
+            Object.keys(currentBlankReceiptData.modelColors || {}).forEach(modelName => {
+                const key = getModelStateKey(receiptId, modelName);
+                modelOpenState[receiptId][key] = true;
+            });
+
+            renderBlankReceiptDetail();
+        }
+
+        function closeBlankAllModels() {
+            if (!currentBlankReceiptId || !currentBlankReceiptData) return;
+            const receiptId = currentBlankReceiptId;
+            if (!modelOpenState[receiptId]) modelOpenState[receiptId] = {};
+
+            Object.keys(currentBlankReceiptData.modelColors || {}).forEach(modelName => {
+                const key = getModelStateKey(receiptId, modelName);
+                modelOpenState[receiptId][key] = false;
+            });
+
+            renderBlankReceiptDetail();
+        }
+
+        function openBlankAllColors() {
+            if (!currentBlankReceiptId || !currentBlankReceiptData) return;
+            const receiptId = currentBlankReceiptId;
+            if (!colorOpenState[receiptId]) colorOpenState[receiptId] = {};
+
+            Object.keys(currentBlankReceiptData.modelColors || {}).forEach(modelName => {
+                const modelColors = currentBlankReceiptData.modelColors?.[modelName] || {};
+                Object.keys(modelColors).forEach(colorName => {
+                    const key = getColorStateKey(receiptId, modelName, colorName);
+                    colorOpenState[receiptId][key] = true;
+                });
+            });
+
+            renderBlankReceiptDetail();
+        }
+
+        function closeBlankAllColors() {
+            if (!currentBlankReceiptId || !currentBlankReceiptData) return;
+            const receiptId = currentBlankReceiptId;
+            if (!colorOpenState[receiptId]) colorOpenState[receiptId] = {};
+
+            Object.keys(currentBlankReceiptData.modelColors || {}).forEach(modelName => {
+                const modelColors = currentBlankReceiptData.modelColors?.[modelName] || {};
+                Object.keys(modelColors).forEach(colorName => {
+                    const key = getColorStateKey(receiptId, modelName, colorName);
+                    colorOpenState[receiptId][key] = false;
+                });
+            });
+
+            renderBlankReceiptDetail();
         }
 
         // ================================================================
@@ -5123,7 +5596,6 @@
             const row = newModelRows.find(r => r.id === rowId);
             if (!row) return;
 
-            // Generate a 5-digit unique code
             let code = '';
             let attempts = 0;
             const maxAttempts = 100;
@@ -5635,6 +6107,8 @@
         console.log('📌 أزرار فتح/غلق الكل للمنتجات والألوان');
         console.log('📌 إنشاء كود فريد 5 أرقام للموديلات');
         console.log('📌 استثناء جداول currentTable و invoices');
+        console.log('📌 تعديل اسم الموديل واللون أثناء الفتح');
+        console.log('📌 أزرار فتح/غلق المنتجات والألوان في الفواتير العادية والبلانك');
     </script>
 </body>
 </html>
