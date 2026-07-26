@@ -13,104 +13,86 @@
   <!-- SheetJS -->
   <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js">
   </script>
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
 
   <style>
-    /* ===== DESIGN SYSTEM ===== */
-    :root {
-      --primary: #1E3A5F;
-      --primary-dark: #0F2A44;
-      --bg: #F8FAFC;
-      --card: #FFFFFF;
-      --border: #E5E7EB;
-      --text: #0F172A;
-      --subtext: #64748B;
-      --success: #16A34A;
-      --warning: #F59E0B;
-      --danger: #DC2626;
-      --purple: #7C3AED;
-      --orange: #F97316;
-      --teal: #0D9488;
-      --radius: 20px;
-      --radius-card: 24px;
-      --radius-btn: 16px;
-      --shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-      --shadow-hover: 0 18px 45px rgba(0, 0, 0, 0.08);
-      --transition: 250ms ease;
-      --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    }
-
+    /* =========================================================
+       RESET & BASE (موحد مع باقي الصفحات)
+       ========================================================= */
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
-      font-family: var(--font);
     }
 
     body {
-      background: var(--bg);
+      font-family: 'Inter', 'Tajawal', sans-serif;
+      background: #f6f8fc;
       min-height: 100vh;
+      font-size: 15px;
+      color: #0b1b2f;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
       padding: 24px 20px 100px;
-      color: var(--text);
     }
 
-    .app {
-      max-width: 1200px;
-      margin: 0 auto;
-      display: flex;
-      flex-direction: column;
-      gap: 24px;
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #e6edf5;
+      border-radius: 12px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #6c8cff;
+      border-radius: 12px;
     }
 
-    /* ===== CARDS ===== */
-    .card {
-      background: var(--card);
-      border-radius: var(--radius-card);
-      box-shadow: var(--shadow);
-      border: 1px solid var(--border);
-      transition: all var(--transition);
-      padding: 24px;
-    }
-
-    .card:hover {
-      box-shadow: var(--shadow-hover);
-      border-color: #D1D5DB;
-      transform: translateY(-2px);
-    }
-
-    /* ===== HEADER ===== */
+    /* =========================================================
+       HEADER (موحد مع باقي الصفحات)
+       ========================================================= */
     .header {
+      background: #0b1b2f;
+      color: #fff;
+      padding: 14px 32px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 16px 24px;
-      background: var(--card);
-      border-radius: var(--radius-card);
-      box-shadow: var(--shadow);
-      border: 1px solid var(--border);
       flex-wrap: wrap;
-      gap: 10px;
+      gap: 16px;
+      box-shadow: 0 4px 24px rgba(0, 20, 40, 0.12);
+      position: sticky;
+      top: 0;
+      z-index: 120;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 20px 20px 0 0;
+      margin: -24px -20px 24px;
+      padding: 14px 32px;
     }
 
-    .header-brand {
+    @media (max-width: 768px) {
+      .header {
+        margin: -16px -16px 16px;
+        padding: 12px 16px;
+        border-radius: 16px 16px 0 0;
+      }
+    }
+
+    .header h1 {
+      font-size: 1.25rem;
+      font-weight: 700;
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
     }
 
-    .header-brand h1 {
-      font-size: 22px;
-      font-weight: 700;
-      color: var(--primary);
-      letter-spacing: -0.3px;
-    }
-
-    .header-brand span {
-      font-size: 12px;
-      background: var(--teal);
-      color: white;
-      padding: 2px 12px;
-      border-radius: 40px;
-      font-weight: 500;
+    .header h1 i {
+      color: #6c8cff;
+      font-size: 1.4rem;
     }
 
     .header-actions {
@@ -120,58 +102,84 @@
       flex-wrap: wrap;
     }
 
-    .header-actions .status {
+    .status-badge {
       font-size: 12px;
       font-weight: 500;
       padding: 6px 16px;
       border-radius: 40px;
       background: #E8F5E9;
-      color: var(--success);
+      color: #16A34A;
       border: 1px solid #C8E6C9;
       display: flex;
       align-items: center;
       gap: 6px;
     }
 
-    .btn-ghost {
-      background: transparent;
-      border: 1px solid var(--border);
-      padding: 8px 18px;
-      border-radius: var(--radius-btn);
+    .btn-ghost-header {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      padding: 6px 18px;
+      border-radius: 30px;
+      color: #fff;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
       font-weight: 500;
-      font-size: 13px;
-      color: var(--text);
-      cursor: pointer;
-      transition: all var(--transition);
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .btn-ghost:hover {
-      background: var(--bg);
-      border-color: #CBD5E1;
-    }
-
-    .btn-ghost.active {
-      background: var(--primary);
-      color: white;
-      border-color: var(--primary);
-    }
-
-    /* ===== BUTTONS ===== */
-    .btn {
-      padding: 10px 24px;
-      border: none;
-      border-radius: var(--radius-btn);
-      font-weight: 600;
-      font-size: 14px;
-      cursor: pointer;
-      transition: all var(--transition);
+      font-size: 0.8rem;
+      transition: all 0.2s;
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      touch-action: manipulation;
+    }
+
+    .btn-ghost-header:hover {
+      background: rgba(255, 255, 255, 0.15);
+      transform: scale(1.02);
+    }
+
+    /* =========================================================
+       CONTAINER
+       ========================================================= */
+    .container {
+      max-width: 1280px;
+      margin: 0 auto;
+    }
+
+    /* =========================================================
+       CARDS (موحد مع باقي الصفحات)
+       ========================================================= */
+    .card {
+      background: #ffffff;
+      border-radius: 20px;
+      box-shadow: 0 2px 12px rgba(0, 20, 40, 0.04);
+      border: 1px solid rgba(0, 0, 0, 0.02);
+      transition: all 0.2s;
+      padding: 24px;
+      margin-bottom: 24px;
+    }
+
+    .card:hover {
+      box-shadow: 0 8px 28px rgba(0, 20, 40, 0.08);
+    }
+
+    /* =========================================================
+       BUTTONS (موحد مع باقي الصفحات)
+       ========================================================= */
+    .btn {
+      padding: 10px 24px;
+      border: none;
+      border-radius: 40px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 600;
+      font-family: 'Inter', sans-serif;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn:hover {
+      transform: scale(1.02);
     }
 
     .btn:active {
@@ -179,88 +187,61 @@
     }
 
     .btn-primary {
-      background: var(--primary);
-      color: white;
-      box-shadow: 0 4px 14px rgba(30, 58, 95, 0.25);
+      background: #6c8cff;
+      color: #fff;
     }
-
     .btn-primary:hover {
-      background: var(--primary-dark);
-      transform: translateY(-2px);
-      box-shadow: 0 8px 25px rgba(30, 58, 95, 0.35);
+      background: #5a77e0;
     }
 
     .btn-success {
-      background: var(--success);
-      color: white;
-      box-shadow: 0 4px 14px rgba(22, 163, 74, 0.25);
+      background: #3dbb7a;
+      color: #fff;
     }
-
     .btn-success:hover {
-      background: #15803D;
-      transform: translateY(-2px);
-      box-shadow: 0 8px 25px rgba(22, 163, 74, 0.35);
+      background: #2ea36a;
     }
 
     .btn-warning {
-      background: var(--warning);
-      color: white;
-      box-shadow: 0 4px 14px rgba(245, 158, 11, 0.25);
+      background: #f5a623;
+      color: #fff;
     }
-
     .btn-warning:hover {
-      background: #D97706;
-      transform: translateY(-2px);
+      background: #d98e1a;
     }
 
     .btn-danger {
-      background: var(--danger);
-      color: white;
-      box-shadow: 0 4px 14px rgba(220, 38, 38, 0.2);
+      background: #e14c4c;
+      color: #fff;
     }
-
     .btn-danger:hover {
-      background: #B91C1C;
-      transform: translateY(-2px);
-    }
-
-    .btn-purple {
-      background: var(--purple);
-      color: white;
-      box-shadow: 0 4px 14px rgba(124, 58, 237, 0.25);
-    }
-
-    .btn-purple:hover {
-      background: #6D28D9;
-      transform: translateY(-2px);
-    }
-
-    .btn-teal {
-      background: var(--teal);
-      color: white;
-      box-shadow: 0 4px 14px rgba(13, 148, 136, 0.25);
-    }
-
-    .btn-teal:hover {
-      background: #0F766E;
-      transform: translateY(-2px);
+      background: #c03939;
     }
 
     .btn-secondary {
       background: transparent;
-      border: 1.5px solid var(--border);
-      color: var(--text);
+      border: 1.5px solid #e6edf5;
+      color: #0b1b2f;
+    }
+    .btn-secondary:hover {
+      background: #f0f4fe;
+      border-color: #6c8cff;
     }
 
-    .btn-secondary:hover {
-      background: var(--bg);
-      border-color: #CBD5E1;
+    .btn-teal {
+      background: #0d9488;
+      color: #fff;
+      box-shadow: 0 4px 14px rgba(13, 148, 136, 0.25);
+    }
+
+    .btn-teal:hover {
+      background: #0f766e;
+      transform: translateY(-2px);
     }
 
     .btn-sm {
-      padding: 6px 14px;
-      font-size: 12px;
-      border-radius: 12px;
+      padding: 6px 16px;
+      font-size: 0.75rem;
     }
 
     .btn:disabled {
@@ -269,7 +250,9 @@
       transform: none !important;
     }
 
-    /* ===== FILTER SECTION ===== */
+    /* =========================================================
+       FILTER SECTION
+       ========================================================= */
     .filter-section {
       display: flex;
       gap: 12px;
@@ -279,38 +262,74 @@
 
     .filter-section select {
       padding: 10px 16px;
-      border: 1.5px solid var(--border);
-      border-radius: var(--radius);
+      border: 1.5px solid #e6edf5;
+      border-radius: 16px;
       font-size: 14px;
-      background: white;
+      background: #fafcff;
       min-width: 200px;
       outline: none;
-      transition: all var(--transition);
+      transition: all 0.2s;
+      font-family: 'Inter', sans-serif;
+      color: #0b1b2f;
     }
 
     .filter-section select:focus {
-      border-color: var(--primary);
-      box-shadow: 0 0 0 4px rgba(30, 58, 95, 0.08);
+      border-color: #6c8cff;
+      box-shadow: 0 0 0 4px rgba(108, 140, 255, 0.08);
     }
 
     .filter-section .search-input {
       padding: 10px 16px;
-      border: 1.5px solid var(--border);
-      border-radius: var(--radius);
+      border: 1.5px solid #e6edf5;
+      border-radius: 16px;
       font-size: 14px;
-      background: white;
+      background: #fafcff;
       flex: 1;
       min-width: 150px;
       outline: none;
-      transition: all var(--transition);
+      transition: all 0.2s;
+      font-family: 'Inter', sans-serif;
+      color: #0b1b2f;
     }
 
     .filter-section .search-input:focus {
-      border-color: var(--primary);
-      box-shadow: 0 0 0 4px rgba(30, 58, 95, 0.08);
+      border-color: #6c8cff;
+      box-shadow: 0 0 0 4px rgba(108, 140, 255, 0.08);
     }
 
-    /* ===== INVOICE LIST ===== */
+    .filter-section .search-input::placeholder {
+      color: #6d7b93;
+    }
+
+    /* =========================================================
+       INVOICE LIST
+       ========================================================= */
+    .invoice-list-header {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .invoice-list-header h4 {
+      font-size: 18px;
+      font-weight: 700;
+      color: #0b1b2f;
+    }
+
+    .invoice-list-header h4 i {
+      color: #6c8cff;
+    }
+
+    .invoice-list-header .count {
+      font-size: 13px;
+      color: #6d7b93;
+      background: #f0f4fe;
+      padding: 4px 16px;
+      border-radius: 30px;
+    }
+
     .invoice-list {
       display: flex;
       flex-direction: column;
@@ -318,28 +337,30 @@
     }
 
     .invoice-item {
-      background: var(--card);
-      border-radius: var(--radius-card);
-      border: 1px solid var(--border);
+      background: #ffffff;
+      border-radius: 20px;
+      border: 1px solid rgba(0, 0, 0, 0.02);
       padding: 16px 20px;
-      transition: all var(--transition);
+      transition: all 0.2s;
       display: flex;
       justify-content: space-between;
       align-items: center;
       flex-wrap: wrap;
       gap: 12px;
       cursor: pointer;
+      box-shadow: 0 2px 10px rgba(0, 20, 40, 0.04);
     }
 
     .invoice-item:hover {
-      box-shadow: var(--shadow-hover);
-      border-color: #D1D5DB;
+      box-shadow: 0 8px 28px rgba(0, 20, 40, 0.08);
+      border-color: #6c8cff40;
       transform: translateY(-2px);
     }
 
     .invoice-item.selected {
-      border-color: var(--primary);
-      background: #F0F4FF;
+      border-color: #6c8cff;
+      background: #f8faff;
+      box-shadow: 0 0 0 4px rgba(108, 140, 255, 0.08);
     }
 
     .invoice-item .info {
@@ -350,15 +371,25 @@
     .invoice-item .info .branch {
       font-weight: 600;
       font-size: 16px;
+      color: #0b1b2f;
+    }
+
+    .invoice-item .info .branch i {
+      color: #6c8cff;
+      margin-left: 6px;
     }
 
     .invoice-item .info .meta {
       font-size: 13px;
-      color: var(--subtext);
+      color: #6d7b93;
       display: flex;
       gap: 12px;
       flex-wrap: wrap;
       margin-top: 4px;
+    }
+
+    .invoice-item .info .meta i {
+      margin-left: 4px;
     }
 
     .invoice-item .stats {
@@ -368,16 +399,10 @@
       flex-wrap: wrap;
     }
 
-    .invoice-item .stats .stat {
-      font-size: 13px;
-    }
-
-    .invoice-item .stats .stat strong {
-      font-weight: 700;
-      color: var(--primary);
-    }
-
-    .invoice-item .badge {
+    /* =========================================================
+       BADGES (موحد)
+       ========================================================= */
+    .badge {
       font-size: 11px;
       font-weight: 600;
       padding: 4px 14px;
@@ -415,7 +440,9 @@
       color: #4B5563;
     }
 
-    /* ===== PREVIEW CARD ===== */
+    /* =========================================================
+       PREVIEW CARD
+       ========================================================= */
     .preview-card {
       display: none;
       animation: fadeSlide 0.3s ease;
@@ -425,20 +452,66 @@
       display: block;
     }
 
-    /* ===== PRODUCT CARDS IN PREVIEW ===== */
-    .product-card {
-      background: var(--card);
-      border-radius: var(--radius-card);
-      border: 1px solid var(--border);
-      overflow: hidden;
-      transition: all var(--transition);
+    .preview-header {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .preview-header .title {
+      font-size: 18px;
+      font-weight: 700;
+      color: #0b1b2f;
+    }
+
+    .preview-header .title i {
+      color: #6c8cff;
+      margin-left: 8px;
+    }
+
+    .preview-header .meta {
+      font-size: 13px;
+      color: #6d7b93;
+    }
+
+    .preview-header .meta i {
+      margin-left: 4px;
+    }
+
+    .preview-header .badge {
+      margin-right: auto;
+    }
+
+    /* =========================================================
+       ACCORDION CONTROLS
+       ========================================================= */
+    .accordion-controls {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
       margin-bottom: 12px;
+      padding: 8px 0;
+      border-bottom: 1px solid #e6edf5;
+    }
+
+    /* =========================================================
+       PRODUCT CARDS (موحد مع باقي الصفحات)
+       ========================================================= */
+    .product-card {
+      background: #ffffff;
+      border-radius: 20px;
+      border: 1px solid rgba(0, 0, 0, 0.02);
+      overflow: hidden;
+      transition: all 0.2s;
+      margin-bottom: 12px;
+      box-shadow: 0 2px 10px rgba(0, 20, 40, 0.04);
     }
 
     .product-card:hover {
-      box-shadow: var(--shadow-hover);
-      border-color: #D1D5DB;
-      transform: translateY(-2px);
+      box-shadow: 0 8px 28px rgba(0, 20, 40, 0.08);
+      border-color: #6c8cff40;
     }
 
     .product-card-header {
@@ -448,21 +521,21 @@
       padding: 16px 20px;
       cursor: pointer;
       user-select: none;
-      transition: all var(--transition);
+      transition: all 0.2s;
     }
 
     .product-card-header:hover {
-      background: #F8FAFC;
+      background: #f8faff;
     }
 
     .product-card-header .thumb {
       width: 60px;
       height: 60px;
-      border-radius: var(--radius);
+      border-radius: 14px;
       object-fit: cover;
-      border: 1px solid var(--border);
+      border: 1px solid #e6edf5;
       flex-shrink: 0;
-      transition: all var(--transition);
+      transition: all 0.2s;
       cursor: pointer;
     }
 
@@ -481,16 +554,20 @@
     .product-card-header .meta .name {
       font-weight: 600;
       font-size: 15px;
+      color: #0b1b2f;
     }
 
     .product-card-header .meta .sku {
       font-size: 12px;
-      color: var(--subtext);
+      color: #6d7b93;
+      background: #f0f4fe;
+      padding: 2px 12px;
+      border-radius: 30px;
     }
 
     .product-card-header .meta .price {
       font-weight: 600;
-      color: var(--primary);
+      color: #6c8cff;
       font-size: 14px;
     }
 
@@ -524,8 +601,8 @@
     .product-card-header .chevron {
       margin-right: auto;
       font-size: 18px;
-      color: var(--subtext);
-      transition: transform var(--transition);
+      color: #6d7b93;
+      transition: transform 0.3s ease;
     }
 
     .product-card-header .chevron.open {
@@ -542,8 +619,11 @@
       display: block;
     }
 
+    /* =========================================================
+       COLOR ACCORDION (موحد مع باقي الصفحات)
+       ========================================================= */
     .color-accordion {
-      border-top: 1px solid var(--border);
+      border-top: 1px solid #e6edf5;
       padding-top: 12px;
       margin-top: 4px;
     }
@@ -560,22 +640,31 @@
       padding: 8px 0;
       cursor: pointer;
       user-select: none;
-      transition: all var(--transition);
+      transition: all 0.2s;
       font-weight: 500;
     }
 
     .color-header:hover {
-      color: var(--primary);
+      color: #6c8cff;
     }
 
     .color-header .chevron-sm {
       font-size: 14px;
-      color: var(--subtext);
-      transition: transform var(--transition);
+      color: #6d7b93;
+      transition: transform 0.3s ease;
     }
 
     .color-header .chevron-sm.open {
       transform: rotate(180deg);
+    }
+
+    .color-header .color-total {
+      font-size: 12px;
+      color: #6d7b93;
+      margin-right: auto;
+      background: #f0f4fe;
+      padding: 2px 14px;
+      border-radius: 30px;
     }
 
     .color-sizes {
@@ -601,6 +690,7 @@
     .size-row .size-label {
       min-width: 40px;
       font-weight: 500;
+      color: #0b1b2f;
     }
 
     .size-row .qty-control {
@@ -612,22 +702,23 @@
     .size-row .qty-control button {
       width: 30px;
       height: 30px;
-      border: 1px solid var(--border);
+      border: 1px solid #e6edf5;
       border-radius: 10px;
-      background: white;
+      background: #ffffff;
       cursor: pointer;
       font-size: 16px;
       font-weight: 600;
-      transition: all var(--transition);
+      transition: all 0.2s;
       display: flex;
       align-items: center;
       justify-content: center;
       touch-action: manipulation;
+      color: #0b1b2f;
     }
 
     .size-row .qty-control button:hover:not(:disabled) {
-      background: var(--bg);
-      border-color: #CBD5E1;
+      background: #f0f4fe;
+      border-color: #6c8cff;
     }
 
     .size-row .qty-control button:active:not(:disabled) {
@@ -644,49 +735,126 @@
       text-align: center;
       font-weight: 600;
       font-size: 15px;
+      color: #0b1b2f;
       padding: 0 4px;
     }
 
     .size-row .qty-control .qty-val.received {
-      color: var(--success);
+      color: #3dbb7a;
     }
 
     .size-row .qty-control .qty-val.partial {
-      color: var(--warning);
+      color: #f5a623;
     }
 
     .size-row .qty-control .qty-val.shortage {
-      color: var(--danger);
+      color: #e14c4c;
     }
 
     .size-row .qty-control .qty-val.pending {
-      color: var(--subtext);
+      color: #6d7b93;
     }
 
     .size-row .qty-control .qty-val.zero {
-      color: var(--danger);
+      color: #e14c4c;
       font-weight: 700;
     }
 
     .product-card-footer {
       padding: 12px 20px 16px;
-      border-top: 1px solid var(--border);
+      border-top: 1px solid #e6edf5;
       display: flex;
       justify-content: flex-end;
       gap: 8px;
       flex-wrap: wrap;
+      background: #fafcff;
     }
 
-    /* ===== STICKY BOTTOM ===== */
+    /* =========================================================
+       STATISTICS (موحد مع باقي الصفحات)
+       ========================================================= */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .stat-card {
+      background: #ffffff;
+      border-radius: 20px;
+      padding: 18px 20px;
+      box-shadow: 0 2px 12px rgba(0, 20, 40, 0.04);
+      border: 1px solid rgba(0, 0, 0, 0.02);
+      transition: all 0.2s;
+      text-align: center;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 28px rgba(0, 20, 40, 0.08);
+    }
+
+    .stat-card .stat-label {
+      font-size: 12px;
+      color: #6d7b93;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    .stat-card .stat-label i {
+      margin-left: 4px;
+    }
+
+    .stat-card .stat-value {
+      font-size: 28px;
+      font-weight: 700;
+      color: #0b1b2f;
+      margin-top: 4px;
+    }
+
+    .stat-card .stat-value.green {
+      color: #3dbb7a;
+    }
+    .stat-card .stat-value.primary {
+      color: #6c8cff;
+    }
+    .stat-card .stat-value.orange {
+      color: #f5a623;
+    }
+    .stat-card .stat-value.red {
+      color: #e14c4c;
+    }
+
+    @media (max-width: 768px) {
+      .stats-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+      }
+      .stat-card .stat-value {
+        font-size: 22px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* =========================================================
+       STICKY BOTTOM (موحد مع باقي الصفحات)
+       ========================================================= */
     .sticky-bottom {
       position: fixed;
       bottom: 0;
       left: 0;
       right: 0;
-      background: var(--card);
-      border-top: 1px solid var(--border);
+      background: #ffffff;
+      border-top: 1px solid #e6edf5;
       padding: 12px 24px;
-      box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.05);
+      box-shadow: 0 -10px 30px rgba(0, 20, 40, 0.05);
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -694,7 +862,7 @@
       gap: 12px;
       z-index: 100;
       backdrop-filter: blur(12px);
-      background: rgba(255, 255, 255, 0.92);
+      background: rgba(255, 255, 255, 0.95);
     }
 
     .sticky-bottom .summary {
@@ -708,11 +876,16 @@
       display: flex;
       align-items: center;
       gap: 6px;
+      color: #4e5e77;
+    }
+
+    .sticky-bottom .summary .item i {
+      color: #6c8cff;
     }
 
     .sticky-bottom .summary .item strong {
       font-weight: 700;
-      color: var(--primary);
+      color: #0b1b2f;
     }
 
     .sticky-bottom .actions {
@@ -721,7 +894,213 @@
       flex-wrap: wrap;
     }
 
-    /* ===== DIALOG / MODAL ===== */
+    @media (max-width: 768px) {
+      .sticky-bottom {
+        flex-direction: column;
+        align-items: stretch;
+        padding: 12px 16px;
+      }
+      .sticky-bottom .summary {
+        justify-content: center;
+      }
+      .sticky-bottom .actions {
+        justify-content: center;
+      }
+    }
+
+    /* =========================================================
+       OLD RECEIVED INVOICES SECTION
+       ========================================================= */
+    .old-orders-section {
+      margin-top: 24px;
+    }
+
+    .old-orders-header {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 12px;
+      align-items: center;
+    }
+
+    .old-orders-header h4 {
+      font-size: 18px;
+      font-weight: 700;
+      color: #0b1b2f;
+    }
+
+    .old-orders-header h4 i {
+      color: #6c8cff;
+    }
+
+    .old-orders-header .count {
+      font-size: 13px;
+      color: #6d7b93;
+      background: #f0f4fe;
+      padding: 4px 16px;
+      border-radius: 30px;
+    }
+
+    .old-orders-header .actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .old-orders-list {
+      max-height: 500px;
+      overflow-y: auto;
+      border-radius: 16px;
+      border: 1px solid #e6edf5;
+    }
+
+    .old-order-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      border-bottom: 1px solid #e6edf5;
+      flex-wrap: wrap;
+      transition: background 0.2s;
+    }
+
+    .old-order-item:hover {
+      background: #f8faff;
+    }
+
+    .old-order-item:last-child {
+      border-bottom: none;
+    }
+
+    .old-order-item .order-number {
+      font-weight: 700;
+      min-width: 30px;
+      color: #6c8cff;
+      font-size: 13px;
+    }
+
+    .old-order-item .order-branch {
+      min-width: 80px;
+      font-weight: 600;
+      color: #0b1b2f;
+      font-size: 14px;
+    }
+
+    .old-order-item .order-branch i {
+      color: #6c8cff;
+      margin-left: 4px;
+    }
+
+    .old-order-item .order-date {
+      font-size: 12px;
+      color: #6d7b93;
+      min-width: 120px;
+    }
+
+    .old-order-item .order-date i {
+      margin-left: 4px;
+    }
+
+    .old-order-item .order-pieces {
+      font-weight: 600;
+      min-width: 60px;
+      color: #0b1b2f;
+      font-size: 13px;
+    }
+
+    .old-order-item .order-pieces i {
+      color: #6c8cff;
+      margin-left: 4px;
+    }
+
+    .old-order-item .order-received {
+      font-weight: 600;
+      min-width: 60px;
+      color: #3dbb7a;
+      font-size: 13px;
+    }
+
+    .old-order-item .order-received i {
+      color: #3dbb7a;
+      margin-left: 4px;
+    }
+
+    .old-order-item .order-shortage {
+      font-weight: 600;
+      min-width: 60px;
+      color: #e14c4c;
+      font-size: 13px;
+    }
+
+    .old-order-item .order-shortage i {
+      color: #e14c4c;
+      margin-left: 4px;
+    }
+
+    .old-order-item .order-value {
+      font-weight: 600;
+      color: #6c8cff;
+      min-width: 80px;
+      font-size: 14px;
+    }
+
+    .old-order-item .order-value i {
+      color: #6c8cff;
+      margin-left: 4px;
+    }
+
+    .old-order-item .order-status {
+      min-width: 80px;
+    }
+
+    .old-order-item .order-details {
+      font-size: 12px;
+      color: #6d7b93;
+      flex: 2;
+      min-width: 100px;
+    }
+
+    .old-order-item .order-details i {
+      margin-left: 4px;
+    }
+
+    .old-order-item .order-actions {
+      display: flex;
+      gap: 6px;
+    }
+
+    .old-order-item .badge-sm {
+      font-size: 10px;
+      font-weight: 600;
+      padding: 2px 10px;
+      border-radius: 30px;
+      text-transform: uppercase;
+    }
+
+    .badge-sm.received {
+      background: #E8F5E9;
+      color: #16A34A;
+    }
+
+    .badge-sm.shortage {
+      background: #FEE2E2;
+      color: #DC2626;
+    }
+
+    .badge-sm.partial {
+      background: #FCE4EC;
+      color: #C62828;
+    }
+
+    .badge-sm.pending {
+      background: #FEF3C7;
+      color: #92400E;
+    }
+
+    /* =========================================================
+       DIALOG / MODAL (موحد مع باقي الصفحات)
+       ========================================================= */
     .dialog-overlay {
       display: none;
       position: fixed;
@@ -729,40 +1108,49 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(0, 0, 0, 0.5);
-      backdrop-filter: blur(4px);
+      background: rgba(11, 27, 47, 0.5);
+      backdrop-filter: blur(6px);
       z-index: 9999;
       justify-content: center;
       align-items: center;
+      padding: 20px;
+      animation: fadeIn 0.25s ease;
     }
 
     .dialog-overlay.show {
       display: flex;
-      animation: fadeIn 0.25s ease;
     }
 
     .dialog-box {
-      background: var(--card);
-      border-radius: var(--radius-card);
+      background: #ffffff;
+      border-radius: 24px;
       padding: 32px;
       max-width: 600px;
-      width: 95%;
-      max-height: 90vh;
-      overflow-y: auto;
-      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.2);
+      width: 100%;
+      box-shadow: 0 24px 64px rgba(0, 20, 40, 0.2);
       animation: slideUp 0.3s ease;
-      position: relative;
+      max-height: 80vh;
+      overflow-y: auto;
     }
 
     .dialog-box h3 {
       font-size: 20px;
-      margin-bottom: 8px;
+      font-weight: 700;
+      color: #0b1b2f;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .dialog-box h3 i {
+      color: #6c8cff;
     }
 
     .dialog-box .subtitle {
-      color: var(--subtext);
-      font-size: 14px;
+      color: #4e5e77;
       margin-bottom: 16px;
+      font-size: 14px;
     }
 
     .dialog-box .dialog-actions {
@@ -782,8 +1170,8 @@
       display: flex;
       align-items: center;
       gap: 12px;
-      padding: 10px;
-      border-bottom: 1px solid var(--border);
+      padding: 10px 12px;
+      border-bottom: 1px solid #e6edf5;
     }
 
     .dialog-product-item:last-child {
@@ -795,7 +1183,7 @@
       height: 40px;
       border-radius: 10px;
       object-fit: cover;
-      border: 1px solid var(--border);
+      border: 1px solid #e6edf5;
     }
 
     .dialog-product-item .info {
@@ -805,11 +1193,12 @@
     .dialog-product-item .info .name {
       font-weight: 500;
       font-size: 14px;
+      color: #0b1b2f;
     }
 
     .dialog-product-item .info .details {
       font-size: 12px;
-      color: var(--subtext);
+      color: #6d7b93;
     }
 
     .dialog-product-item .qty-info {
@@ -819,113 +1208,229 @@
       text-align: center;
     }
 
-    /* ===== SHORTAGE DIALOG ===== */
+    .dialog-product-item .qty-info.done {
+      color: #3dbb7a;
+    }
+    .dialog-product-item .qty-info.partial {
+      color: #f5a623;
+    }
+    .dialog-product-item .qty-info.shortage {
+      color: #e14c4c;
+    }
+
+    /* =========================================================
+       SHORTAGE ITEMS
+       ========================================================= */
     .shortage-item {
       display: flex;
       align-items: center;
       gap: 12px;
       padding: 8px 0;
-      border-bottom: 1px solid var(--border);
+      border-bottom: 1px solid #e6edf5;
       flex-wrap: wrap;
     }
 
     .shortage-item .label {
       font-weight: 500;
       min-width: 60px;
+      color: #0b1b2f;
     }
 
     .shortage-item input {
       width: 60px;
       padding: 4px 8px;
-      border: 1.5px solid var(--border);
+      border: 1.5px solid #e6edf5;
       border-radius: 8px;
       text-align: center;
       font-size: 14px;
       outline: none;
-      transition: all var(--transition);
+      transition: all 0.2s;
+      font-family: 'Inter', sans-serif;
     }
 
     .shortage-item input:focus {
-      border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(30, 58, 95, 0.08);
+      border-color: #6c8cff;
+      box-shadow: 0 0 0 3px rgba(108, 140, 255, 0.08);
     }
 
     .shortage-item input.shortage-input {
-      border-color: var(--danger);
+      border-color: #e14c4c;
     }
 
     .shortage-item input.shortage-input:focus {
-      border-color: var(--danger);
+      border-color: #e14c4c;
       box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.08);
     }
 
     .shortage-item .qty-display {
       font-weight: 600;
-      color: var(--subtext);
+      color: #6d7b93;
       font-size: 13px;
     }
 
-    /* ===== STATISTICS ===== */
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 16px;
-    }
-
-    .stat-card {
-      background: var(--card);
-      border-radius: var(--radius-card);
-      padding: 18px 20px;
-      border: 1px solid var(--border);
-      box-shadow: var(--shadow);
-      transition: all var(--transition);
-      text-align: center;
-    }
-
-    .stat-card:hover {
-      box-shadow: var(--shadow-hover);
-      transform: translateY(-3px);
-      border-color: #D1D5DB;
-    }
-
-    .stat-card .stat-label {
+    .shortage-highlight {
+      background: #FEF2F2;
+      border: 1px solid #FCA5A5;
+      border-radius: 8px;
+      padding: 4px 8px;
+      color: #e14c4c;
       font-size: 12px;
-      color: var(--subtext);
-      font-weight: 500;
-      text-transform: uppercase;
-      letter-spacing: 0.3px;
+      font-weight: 600;
     }
 
-    .stat-card .stat-value {
-      font-size: 28px;
+    .no-prepare {
+      background: #FEE2E2;
+      border: 1px solid #FCA5A5;
+      border-radius: 8px;
+      padding: 4px 8px;
+      color: #e14c4c;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    /* =========================================================
+       PROGRESS BAR
+       ========================================================= */
+    .progress-container {
+      min-width: 80px;
+    }
+
+    .progress-container .label {
+      font-size: 12px;
+      color: #6d7b93;
+    }
+
+    .progress-container .value {
       font-weight: 700;
-      color: var(--text);
-      margin-top: 4px;
+      font-size: 14px;
+      color: #0b1b2f;
     }
 
-    .stat-card .stat-value.green {
-      color: var(--success);
-    }
-    .stat-card .stat-value.primary {
-      color: var(--primary);
-    }
-    .stat-card .stat-value.orange {
-      color: var(--orange);
-    }
-    .stat-card .stat-value.purple {
-      color: var(--purple);
-    }
-    .stat-card .stat-value.red {
-      color: var(--danger);
+    .progress-bar {
+      width: 100%;
+      height: 6px;
+      background: #e6edf5;
+      border-radius: 10px;
+      overflow: hidden;
+      margin: 4px 0;
     }
 
-    @media (max-width: 640px) {
-      .stats-grid {
-        grid-template-columns: 1fr 1fr;
-      }
+    .progress-bar .fill {
+      height: 100%;
+      border-radius: 10px;
+      background: #3dbb7a;
+      transition: width 0.5s ease;
     }
 
-    /* ===== ANIMATIONS ===== */
+    .progress-bar .fill.warning {
+      background: #f5a623;
+    }
+
+    .progress-bar .fill.danger {
+      background: #e14c4c;
+    }
+
+    /* =========================================================
+       EMPTY STATE
+       ========================================================= */
+    .empty-state {
+      text-align: center;
+      padding: 48px 20px;
+      color: #6d7b93;
+    }
+
+    .empty-state i {
+      font-size: 2.8rem;
+      color: #6c8cff;
+      opacity: 0.4;
+      margin-bottom: 12px;
+    }
+
+    .empty-state h3 {
+      font-size: 20px;
+      color: #0b1b2f;
+      margin-bottom: 8px;
+    }
+
+    .empty-state p {
+      font-size: 0.95rem;
+    }
+
+    /* =========================================================
+       TOAST / ALERT (موحد مع باقي الصفحات)
+       ========================================================= */
+    .toast-alert {
+      position: fixed;
+      bottom: 90px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 12px 24px;
+      border-radius: 16px;
+      font-weight: 500;
+      font-size: 14px;
+      z-index: 9999;
+      animation: fadeSlide 0.3s ease;
+      max-width: 90vw;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    }
+
+    /* =========================================================
+       IMAGE MODAL
+       ========================================================= */
+    .image-modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(8px);
+      z-index: 99999;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      cursor: pointer;
+    }
+
+    .image-modal-overlay.show {
+      display: flex;
+    }
+
+    .image-modal-overlay img {
+      max-width: 95%;
+      max-height: 85vh;
+      border-radius: 16px;
+      object-fit: contain;
+    }
+
+    .image-modal-overlay .close-btn {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      background: rgba(255, 255, 255, 0.15);
+      border: none;
+      color: #fff;
+      font-size: 24px;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .image-modal-overlay .close-btn:hover {
+      background: rgba(255, 255, 255, 0.25);
+      transform: scale(1.05);
+    }
+
+    /* =========================================================
+       ANIMATIONS
+       ========================================================= */
     @keyframes fadeSlide {
       from {
         opacity: 0;
@@ -957,16 +1462,29 @@
       }
     }
 
-    /* ===== RESPONSIVE ===== */
-    @media (max-width: 780px) {
+    /* =========================================================
+       RESPONSIVE
+       ========================================================= */
+    @media (max-width: 768px) {
       body {
         padding: 16px 12px 110px;
       }
-      .header {
-        padding: 14px 16px;
+      .header h1 {
+        font-size: 1rem;
       }
-      .header-brand h1 {
-        font-size: 18px;
+      .product-card-header {
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .product-card-header .meta {
+        width: 100%;
+      }
+      .card {
+        padding: 16px;
+      }
+      .sticky-bottom .summary {
+        flex-wrap: wrap;
+        gap: 8px;
       }
       .filter-section {
         flex-direction: column;
@@ -983,24 +1501,73 @@
       .invoice-item .stats {
         justify-content: flex-start;
       }
-      .sticky-bottom {
+      .preview-header {
         flex-direction: column;
         align-items: stretch;
+      }
+      .preview-header .badge {
+        margin-right: 0;
+        align-self: flex-start;
+      }
+      .accordion-controls {
+        justify-content: center;
+      }
+      .old-order-item {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 4px;
         padding: 12px 16px;
       }
-      .sticky-bottom .summary {
-        justify-content: center;
+      .old-order-item .order-number {
+        min-width: auto;
       }
-      .sticky-bottom .actions {
-        justify-content: center;
+      .old-order-item .order-branch {
+        min-width: auto;
       }
-      .stats-grid {
-        grid-template-columns: 1fr 1fr;
+      .old-order-item .order-date {
+        min-width: auto;
+      }
+      .old-order-item .order-pieces {
+        min-width: auto;
+      }
+      .old-order-item .order-received {
+        min-width: auto;
+      }
+      .old-order-item .order-shortage {
+        min-width: auto;
+      }
+      .old-order-item .order-value {
+        min-width: auto;
+      }
+      .old-order-item .order-status {
+        min-width: auto;
+      }
+      .old-order-item .order-details {
+        flex: none;
+        min-width: auto;
+      }
+      .old-order-item .order-actions {
+        justify-content: flex-start;
+      }
+      .old-orders-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+      }
+      .old-orders-header .actions {
+        justify-content: flex-start;
       }
       .dialog-box {
-        padding: 20px;
-        width: 98%;
-        max-height: 95vh;
+        padding: 24px 20px;
+      }
+      .shortage-item {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 4px;
+        padding: 12px 0;
+      }
+      .shortage-item .qty-display {
+        font-size: 12px;
       }
     }
 
@@ -1008,20 +1575,27 @@
       .stats-grid {
         grid-template-columns: 1fr;
       }
-      .product-card-header {
-        flex-wrap: wrap;
-        gap: 8px;
-      }
-      .product-card-header .meta {
-        width: 100%;
+      .stat-card .stat-value {
+        font-size: 20px;
       }
       .size-row {
         flex-wrap: wrap;
         gap: 6px;
       }
+      .toast-alert {
+        bottom: 80px;
+        font-size: 12px;
+        padding: 10px 16px;
+        max-width: 95vw;
+      }
+      .old-order-item .order-details {
+        font-size: 11px;
+      }
     }
 
-    /* ===== UTILITY ===== */
+    /* =========================================================
+       HIDDEN UTILITY
+       ========================================================= */
     .hidden {
       display: none !important;
     }
@@ -1050,135 +1624,61 @@
       text-align: center;
     }
     .text-muted {
-      color: var(--subtext);
-    }
-
-    /* Toast */
-    .toast-alert {
-      position: fixed;
-      bottom: 90px;
-      left: 50%;
-      transform: translateX(-50%);
-      padding: 12px 24px;
-      border-radius: 16px;
-      font-weight: 500;
-      font-size: 14px;
-      z-index: 9999;
-      animation: fadeSlide 0.3s ease;
-      max-width: 90vw;
-      text-align: center;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-    }
-
-    /* Empty state */
-    .empty-state {
-      text-align: center;
-      padding: 60px 20px;
-      color: var(--subtext);
-    }
-
-    .empty-state .icon {
-      font-size: 64px;
-      margin-bottom: 16px;
-    }
-
-    .empty-state h3 {
-      font-size: 20px;
-      color: var(--text);
-      margin-bottom: 8px;
-    }
-
-    .empty-state p {
-      font-size: 14px;
-    }
-
-    /* Progress bar */
-    .progress-bar {
-      width: 100%;
-      height: 6px;
-      background: var(--border);
-      border-radius: 10px;
-      overflow: hidden;
-      margin: 8px 0;
-    }
-
-    .progress-bar .fill {
-      height: 100%;
-      border-radius: 10px;
-      background: var(--success);
-      transition: width 0.5s ease;
-    }
-
-    .progress-bar .fill.warning {
-      background: var(--warning);
-    }
-
-    .progress-bar .fill.danger {
-      background: var(--danger);
-    }
-
-    /* Highlight shortage */
-    .shortage-highlight {
-      background: #FEF2F2;
-      border: 1px solid #FCA5A5;
-      border-radius: 8px;
-      padding: 4px 8px;
-      color: var(--danger);
-      font-size: 12px;
-      font-weight: 600;
-    }
-
-    .no-prepare {
-      background: #FEE2E2;
-      border: 1px solid #FCA5A5;
-      border-radius: 8px;
-      padding: 4px 8px;
-      color: var(--danger);
-      font-size: 12px;
-      font-weight: 600;
+      color: #6d7b93;
     }
   </style>
 </head>
 <body>
 
-  <div class="app" id="app">
+  <!-- =========================================================
+  HEADER (موحد مع باقي الصفحات)
+  ========================================================= -->
+  <header class="header">
+    <h1><i class="fas fa-boxes"></i> Order Receiving · استلام الأوردرات</h1>
+    <div class="header-actions">
+      <button class="btn-ghost-header" id="refreshBtn">
+        <i class="fas fa-sync-alt"></i> تحديث
+      </button>
+      <button class="btn-ghost-header" id="showOldOrdersBtn">
+        <i class="fas fa-history"></i> الفواتير المستلمة
+      </button>
+      <span class="status-badge" id="storeStatus">
+        <i class="fas fa-circle" style="font-size:8px;"></i> جاهز
+      </span>
+    </div>
+  </header>
 
-    <!-- HEADER -->
-    <header class="header">
-      <div class="header-brand">
-        <h1>📦 Order Receiving</h1>
-        <span>استلام</span>
-      </div>
-      <div class="header-actions">
-        <button class="btn-ghost" id="refreshBtn">🔄 Refresh</button>
-        <span class="status" id="storeStatus">🟢 Ready</span>
-      </div>
-    </header>
+  <!-- =========================================================
+  CONTAINER
+  ========================================================= -->
+  <div class="container">
 
     <!-- FILTERS -->
     <section class="card">
       <div class="filter-section">
         <select id="invoiceFilter">
-          <option value="all">📋 جميع الفواتير الجاهزة</option>
-          <option value="pending">⏳ غير مستلمة</option>
-          <option value="partial">⚠️ استلام جزئي</option>
-          <option value="received">✅ مستلمة</option>
-          <option value="shortage">📉 يوجد نقص</option>
+          <option value="all"><i class="fas fa-list"></i> جميع الفواتير الجاهزة</option>
+          <option value="pending"><i class="fas fa-clock"></i> غير مستلمة</option>
+          <option value="partial"><i class="fas fa-exclamation-triangle"></i> استلام جزئي</option>
+          <option value="received"><i class="fas fa-check-circle"></i> مستلمة</option>
+          <option value="shortage"><i class="fas fa-exclamation-circle"></i> يوجد نقص</option>
         </select>
         <input type="text" class="search-input" id="searchInput" placeholder="🔍 بحث عن فرع أو منتج..." />
-        <button class="btn btn-teal" id="loadSelectedBtn">📥 تحميل الفاتورة</button>
+        <button class="btn btn-teal" id="loadSelectedBtn">
+          <i class="fas fa-download"></i> تحميل الفاتورة
+        </button>
       </div>
     </section>
 
     <!-- INVOICE LIST -->
     <section class="card">
-      <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:12px;">
-        <h4 style="font-size:18px;">📜 الفواتير الجاهزة للاستلام</h4>
-        <span id="invoicesCount" style="font-size:13px;color:var(--subtext);">0 فاتورة</span>
+      <div class="invoice-list-header">
+        <h4><i class="fas fa-file-invoice"></i> الفواتير الجاهزة للاستلام</h4>
+        <span class="count" id="invoicesCount">0 فاتورة</span>
       </div>
       <div class="invoice-list" id="invoiceList">
         <div class="empty-state" id="emptyInvoiceList">
-          <div class="icon">📭</div>
+          <i class="fas fa-inbox"></i>
           <h3>لا توجد فواتير جاهزة</h3>
           <p>جميع الفواتير التي حالتها "prepared" تظهر هنا</p>
         </div>
@@ -1187,74 +1687,121 @@
 
     <!-- INVOICE PREVIEW -->
     <section class="card preview-card" id="previewSection">
-      <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:16px;">
+      <div class="preview-header">
         <div>
-          <h4 style="font-size:18px;" id="previewTitle">📋 تفاصيل الفاتورة</h4>
-          <div style="font-size:13px;color:var(--subtext);" id="previewMeta">Branch: — | Date: —</div>
+          <div class="title" id="previewTitle"><i class="fas fa-receipt"></i> تفاصيل الفاتورة</div>
+          <div class="meta" id="previewMeta"><i class="fas fa-store"></i> الفرع: — | <i class="fas fa-calendar-alt"></i> التاريخ: —</div>
         </div>
-        <div style="display:flex;gap:8px;flex-wrap:wrap;">
-          <span class="badge" id="previewStatus">⏳ جارٍ الاستلام</span>
-        </div>
+        <span class="badge" id="previewStatus">⏳ جارٍ الاستلام</span>
       </div>
+
+      <!-- ACCORDION CONTROLS -->
+      <div class="accordion-controls">
+        <button class="btn btn-secondary btn-sm" id="expandAllColorsBtn">
+          <i class="fas fa-chevron-down"></i> فتح كل الألوان
+        </button>
+        <button class="btn btn-secondary btn-sm" id="collapseAllColorsBtn">
+          <i class="fas fa-chevron-left"></i> غلق كل الألوان
+        </button>
+        <button class="btn btn-secondary btn-sm" id="expandAllProductsBtn">
+          <i class="fas fa-chevron-down"></i> فتح كل المنتجات
+        </button>
+        <button class="btn btn-secondary btn-sm" id="collapseAllProductsBtn">
+          <i class="fas fa-chevron-left"></i> غلق كل المنتجات
+        </button>
+      </div>
+
       <div id="previewContainer">
         <div class="empty-state">
-          <div class="icon">👆</div>
+          <i class="fas fa-hand-pointer"></i>
           <h3>اختر فاتورة</h3>
           <p>اضغط على أي فاتورة لعرض تفاصيلها</p>
         </div>
       </div>
       <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:16px;flex-wrap:wrap;">
-        <button class="btn btn-secondary" id="closePreviewBtn">✕ إغلاق</button>
-        <button class="btn btn-warning" id="shortageBtn">📉 تسجيل نقص</button>
-        <button class="btn btn-success" id="completeReceiveBtn">✅ تأكيد الاستلام الكامل</button>
+        <button class="btn btn-secondary" id="closePreviewBtn">
+          <i class="fas fa-times"></i> إغلاق
+        </button>
+        <button class="btn btn-warning" id="shortageBtn">
+          <i class="fas fa-exclamation-circle"></i> تسجيل نقص
+        </button>
+        <button class="btn btn-success" id="completeReceiveBtn">
+          <i class="fas fa-check-double"></i> تأكيد الاستلام الكامل
+        </button>
       </div>
     </section>
 
-    <!-- STATISTICS -->
+    <!-- STATISTICS (موحد مع باقي الصفحات) -->
     <section class="stats-grid" id="statsGrid">
       <div class="stat-card">
-        <div class="stat-label">إجمالي الفواتير الجاهزة</div>
+        <div class="stat-label"><i class="fas fa-file-invoice"></i> إجمالي الفواتير الجاهزة</div>
         <div class="stat-value primary" id="statTotalInvoices">0</div>
       </div>
       <div class="stat-card">
-        <div class="stat-label">غير مستلمة</div>
+        <div class="stat-label"><i class="fas fa-clock"></i> غير مستلمة</div>
         <div class="stat-value orange" id="statPending">0</div>
       </div>
       <div class="stat-card">
-        <div class="stat-label">تم الاستلام ✅</div>
+        <div class="stat-label"><i class="fas fa-check-circle"></i> تم الاستلام ✅</div>
         <div class="stat-value green" id="statReceived">0</div>
       </div>
       <div class="stat-card">
-        <div class="stat-label">يوجد نقص</div>
+        <div class="stat-label"><i class="fas fa-exclamation-circle"></i> يوجد نقص</div>
         <div class="stat-value red" id="statShortage">0</div>
       </div>
     </section>
 
-    <!-- STICKY BOTTOM BAR -->
+    <!-- OLD RECEIVED INVOICES -->
+    <section class="card old-orders-section" id="oldOrdersSection" style="display:none;">
+      <div class="old-orders-header">
+        <div>
+          <h4><i class="fas fa-history"></i> الفواتير المستلمة سابقاً</h4>
+          <span class="count" id="oldOrdersCount">0 فاتورة</span>
+        </div>
+        <div class="actions">
+          <button class="btn btn-secondary btn-sm" id="refreshOldOrdersBtn">
+            <i class="fas fa-sync-alt"></i> تحديث
+          </button>
+          <button class="btn btn-primary btn-sm" id="exportOldOrdersBtn">
+            <i class="fas fa-file-excel"></i> تصدير الكل
+          </button>
+        </div>
+      </div>
+      <div class="old-orders-list" id="oldOrdersList">
+        <div class="empty-state" style="padding:20px;">
+          <i class="fas fa-spinner fa-spin" style="font-size:1.5rem;"></i>
+          <p style="margin-top:8px;">جاري التحميل...</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- STICKY BOTTOM (موحد مع باقي الصفحات) -->
     <div class="sticky-bottom" id="stickyBottom">
       <div class="summary">
-        <span class="item">📦 المنتجات: <strong id="bottomProducts">0</strong></span>
-        <span class="item">🧮 القطع: <strong id="bottomPieces">0</strong></span>
-        <span class="item">✅ المستلمة: <strong id="bottomReceived">0</strong></span>
+        <span class="item"><i class="fas fa-boxes"></i> المنتجات: <strong id="bottomProducts">0</strong></span>
+        <span class="item"><i class="fas fa-cubes"></i> القطع: <strong id="bottomPieces">0</strong></span>
+        <span class="item"><i class="fas fa-check-circle" style="color:#3dbb7a;"></i> المستلمة: <strong id="bottomReceived">0</strong></span>
         <span class="item" id="bottomProgress" style="display:flex;align-items:center;gap:8px;">
-          <span style="font-size:12px;color:var(--subtext);">التقدم:</span>
-          <span style="font-weight:700;" id="bottomPercent">0%</span>
+          <span style="font-size:12px;color:#6d7b93;">التقدم:</span>
+          <span style="font-weight:700;color:#0b1b2f;" id="bottomPercent">0%</span>
         </span>
       </div>
       <div class="actions">
-        <button class="btn btn-success" id="receiveSelectedBtn">📥 استلام الفاتورة</button>
+        <button class="btn btn-success" id="receiveSelectedBtn">
+          <i class="fas fa-download"></i> استلام الفاتورة
+        </button>
       </div>
     </div>
 
     <!-- SHORTAGE DIALOG -->
     <div class="dialog-overlay" id="shortageDialog">
       <div class="dialog-box">
-        <h3>📉 تسجيل النقص</h3>
+        <h3><i class="fas fa-exclamation-circle" style="color:#e14c4c;"></i> تسجيل النقص</h3>
         <p class="subtitle">حدد الكميات الناقصة لكل منتج ومقاس ولون</p>
         <div id="shortageProductList"></div>
         <div class="dialog-actions">
-          <button class="btn btn-secondary" id="shortageDialogCancel">إلغاء</button>
-          <button class="btn btn-danger" id="shortageDialogConfirm">📉 تأكيد النقص</button>
+          <button class="btn btn-secondary" id="shortageDialogCancel"><i class="fas fa-times"></i> إلغاء</button>
+          <button class="btn btn-danger" id="shortageDialogConfirm"><i class="fas fa-exclamation-circle"></i> تأكيد النقص</button>
         </div>
       </div>
     </div>
@@ -1262,23 +1809,54 @@
     <!-- RECEIVE DIALOG (for individual product) -->
     <div class="dialog-overlay" id="receiveDialog">
       <div class="dialog-box">
-        <h3>📥 استلام المنتج</h3>
+        <h3><i class="fas fa-download" style="color:#0d9488;"></i> استلام المنتج</h3>
         <p class="subtitle" id="receiveProductName">اسم المنتج</p>
         <div id="receiveProductDetails"></div>
         <div class="dialog-actions">
-          <button class="btn btn-secondary" id="receiveDialogCancel">إلغاء</button>
-          <button class="btn btn-teal" id="receiveDialogConfirm">💾 حفظ الاستلام</button>
+          <button class="btn btn-secondary" id="receiveDialogCancel"><i class="fas fa-times"></i> إلغاء</button>
+          <button class="btn btn-teal" id="receiveDialogConfirm"><i class="fas fa-save"></i> حفظ الاستلام</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- VIEW OLD INVOICE DIALOG -->
+    <div class="dialog-overlay" id="viewOldInvoiceDialog">
+      <div class="dialog-box" style="max-width:700px;">
+        <h3><i class="fas fa-receipt" style="color:#6c8cff;"></i> تفاصيل الفاتورة المستلمة</h3>
+        <p class="subtitle" id="viewOldInvoiceMeta">الفرع: — | التاريخ: —</p>
+        <div id="viewOldInvoiceContainer">
+          <div class="empty-state" style="padding:20px;">
+            <i class="fas fa-spinner fa-spin"></i>
+            <p>جاري التحميل...</p>
+          </div>
+        </div>
+        <div class="dialog-actions">
+          <button class="btn btn-secondary" id="viewOldInvoiceClose"><i class="fas fa-times"></i> إغلاق</button>
+          <button class="btn btn-primary" id="viewOldInvoiceExport"><i class="fas fa-file-excel"></i> تصدير</button>
         </div>
       </div>
     </div>
 
   </div>
 
+  <!-- =========================================================
+  IMAGE MODAL
+  ========================================================= -->
+  <div class="image-modal-overlay" id="imageModal" onclick="closeModal()">
+    <button class="close-btn" onclick="event.stopPropagation();closeModal();"><i class="fas fa-times"></i></button>
+    <img id="modalImage" src="" alt="Product" onclick="event.stopPropagation();" />
+  </div>
+
+  <!-- =========================================================
+  JAVASCRIPT
+  ========================================================= -->
   <script>
     (function() {
       'use strict';
 
-      // ===== STORAGE VERSION CONTROL =====
+      // ================================================================
+      //  STORAGE VERSION
+      // ================================================================
       const STORAGE_VERSION = 4;
       const STORAGE_VERSION_KEY = 'shopify_storage_version';
 
@@ -1297,7 +1875,9 @@
         console.log('✅ Storage cleared and version set to', STORAGE_VERSION);
       }
 
-      // ===== STORAGE =====
+      // ================================================================
+      //  STORAGE
+      // ================================================================
       const Storage = {
         get(key, fallback = '') {
           try {
@@ -1319,7 +1899,9 @@
         }
       };
 
-      // ===== FIREBASE CONFIG =====
+      // ================================================================
+      //  FIREBASE CONFIG
+      // ================================================================
       const firebaseConfig = {
         apiKey: "AIzaSyC7M4JhDl7KGZdrPj78W0nPqQy2I4P4I6I",
         authDomain: "exams-fab0f.firebaseapp.com",
@@ -1337,7 +1919,9 @@
         console.log('✅ Firebase ready');
       } catch (e) { console.warn('⚠️ Firebase init error', e); }
 
-      // ===== UTILS =====
+      // ================================================================
+      //  UTILITIES
+      // ================================================================
       const Utils = {
         cleanText(t) { return t ? t.replace(/\s+/g, ' ').trim() : ''; },
         formatCurrency(v) { return v ? Number(v).toLocaleString('en-EG') : '0'; },
@@ -1413,6 +1997,16 @@
           };
           return map[status] || status;
         },
+        getStatusClass(status) {
+          const map = {
+            pending: 'pending',
+            partial: 'partial',
+            received: 'received',
+            shortage: 'shortage',
+            closed: 'closed'
+          };
+          return map[status] || 'pending';
+        },
         isPrepared(invoice) {
           return invoice && invoice.status === 'prepared';
         },
@@ -1424,7 +2018,9 @@
         }
       };
 
-      // ===== UI CONTROLLER =====
+      // ================================================================
+      //  UI CONTROLLER
+      // ================================================================
       const UI = {
         elements: {
           invoiceList: document.getElementById('invoiceList'),
@@ -1461,6 +2057,25 @@
           receiveProductDetails: document.getElementById('receiveProductDetails'),
           receiveDialogCancel: document.getElementById('receiveDialogCancel'),
           receiveDialogConfirm: document.getElementById('receiveDialogConfirm'),
+          imageModal: document.getElementById('imageModal'),
+          modalImage: document.getElementById('modalImage'),
+          expandAllColorsBtn: document.getElementById('expandAllColorsBtn'),
+          collapseAllColorsBtn: document.getElementById('collapseAllColorsBtn'),
+          expandAllProductsBtn: document.getElementById('expandAllProductsBtn'),
+          collapseAllProductsBtn: document.getElementById('collapseAllProductsBtn'),
+          // Old orders
+          showOldOrdersBtn: document.getElementById('showOldOrdersBtn'),
+          oldOrdersSection: document.getElementById('oldOrdersSection'),
+          oldOrdersList: document.getElementById('oldOrdersList'),
+          oldOrdersCount: document.getElementById('oldOrdersCount'),
+          refreshOldOrdersBtn: document.getElementById('refreshOldOrdersBtn'),
+          exportOldOrdersBtn: document.getElementById('exportOldOrdersBtn'),
+          // View old invoice
+          viewOldInvoiceDialog: document.getElementById('viewOldInvoiceDialog'),
+          viewOldInvoiceMeta: document.getElementById('viewOldInvoiceMeta'),
+          viewOldInvoiceContainer: document.getElementById('viewOldInvoiceContainer'),
+          viewOldInvoiceClose: document.getElementById('viewOldInvoiceClose'),
+          viewOldInvoiceExport: document.getElementById('viewOldInvoiceExport'),
         },
         _invoices: [],
         _filteredInvoices: [],
@@ -1470,10 +2085,14 @@
         _pendingReceiveData: null,
         _shortageData: {},
         _isClosing: false,
+        _oldInvoices: [],
+        _viewingOldInvoice: null,
 
+        // ===== INIT =====
         init() {
           console.log('🚀 Initializing Receiving UI...');
           this.loadInvoices();
+          this.loadOldInvoices();
 
           // Event listeners
           this.elements.refreshBtn.addEventListener('click', () => this.loadInvoices());
@@ -1484,6 +2103,12 @@
           this.elements.completeReceiveBtn.addEventListener('click', () => this.confirmFullReceive());
           this.elements.shortageBtn.addEventListener('click', () => this.openShortageDialog());
           this.elements.receiveSelectedBtn.addEventListener('click', () => this.confirmFullReceive());
+
+          // Accordion controls
+          this.elements.expandAllColorsBtn.addEventListener('click', () => this.expandAllColors(true));
+          this.elements.collapseAllColorsBtn.addEventListener('click', () => this.expandAllColors(false));
+          this.elements.expandAllProductsBtn.addEventListener('click', () => this.expandAllProducts(true));
+          this.elements.collapseAllProductsBtn.addEventListener('click', () => this.expandAllProducts(false));
 
           // Shortage dialog events
           this.elements.shortageDialogCancel.addEventListener('click', () => this.closeShortageDialog());
@@ -1499,9 +2124,54 @@
             if (e.target === this.elements.receiveDialog) this.closeReceiveDialog();
           });
 
+          // View old invoice dialog
+          this.elements.viewOldInvoiceClose.addEventListener('click', () => this.closeViewOldInvoice());
+          this.elements.viewOldInvoiceExport.addEventListener('click', () => this.exportViewingInvoice());
+          this.elements.viewOldInvoiceDialog.addEventListener('click', (e) => {
+            if (e.target === this.elements.viewOldInvoiceDialog) this.closeViewOldInvoice();
+          });
+
+          // Old orders events
+          this.elements.showOldOrdersBtn.addEventListener('click', () => this.toggleOldOrders());
+          this.elements.refreshOldOrdersBtn.addEventListener('click', () => this.loadOldInvoices());
+          this.elements.exportOldOrdersBtn.addEventListener('click', () => this.exportAllOldInvoices());
+
+          // Image modal
+          this.elements.imageModal.addEventListener('click', (e) => {
+            if (e.target === this.elements.imageModal) this.closeModal();
+          });
+
           this.loadFromURL();
         },
 
+        // ===== IMAGE MODAL =====
+        openModal(imgSrc) {
+          if (!imgSrc) return;
+          this.elements.modalImage.src = imgSrc;
+          this.elements.imageModal.classList.add('show');
+        },
+
+        closeModal() {
+          this.elements.imageModal.classList.remove('show');
+          this.elements.modalImage.src = '';
+        },
+
+        // ===== ACCORDION CONTROLS =====
+        expandAllColors(open) {
+          for (const key in this._productCardStates) {
+            if (key.includes('_color_')) this._productCardStates[key] = open;
+          }
+          if (this._selectedInvoice) this.renderInvoicePreview(this._selectedInvoice);
+        },
+
+        expandAllProducts(open) {
+          for (const key in this._productCardStates) {
+            if (!key.includes('_color_')) this._productCardStates[key] = open;
+          }
+          if (this._selectedInvoice) this.renderInvoicePreview(this._selectedInvoice);
+        },
+
+        // ===== LOAD FROM URL =====
         loadFromURL() {
           const params = new URLSearchParams(window.location.search);
           const id = params.get('invoice');
@@ -1517,13 +2187,14 @@
           }
         },
 
+        // ===== LOAD INVOICES =====
         loadInvoices() {
           if (!database) {
             this.showAlert('⚠️ Firebase not ready', 'error');
             return;
           }
 
-          this.elements.storeStatus.textContent = '⏳ Loading...';
+          this.elements.storeStatus.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري التحميل...';
           this.elements.storeStatus.style.background = '#FEF3C7';
           this.elements.storeStatus.style.color = '#92400E';
 
@@ -1534,7 +2205,6 @@
             if (data) {
               for (const key in data) {
                 const inv = data[key];
-                // ONLY INCLUDE INVOICES WITH status === "prepared" (not closed)
                 if (inv.status === 'prepared') {
                   if (inv.items) {
                     inv.items.forEach(item => {
@@ -1553,19 +2223,20 @@
             }
             this.renderInvoiceList();
             this.updateStats();
-            this.elements.storeStatus.textContent = '✅ Ready';
+            this.elements.storeStatus.innerHTML = '<i class="fas fa-circle" style="font-size:8px;"></i> جاهز';
             this.elements.storeStatus.style.background = '#E8F5E9';
             this.elements.storeStatus.style.color = '#16A34A';
-            this.showAlert(`✅ Loaded ${this._invoices.length} prepared invoices`, 'success');
+            this.showAlert(`✅ تم تحميل ${this._invoices.length} فاتورة جاهزة`, 'success');
           }, (error) => {
             console.error('❌ Error loading invoices:', error);
-            this.elements.storeStatus.textContent = '⚠️ Error';
+            this.elements.storeStatus.innerHTML = '<i class="fas fa-circle" style="font-size:8px;"></i> خطأ';
             this.elements.storeStatus.style.background = '#FEE2E2';
             this.elements.storeStatus.style.color = '#DC2626';
-            this.showAlert('❌ Failed to load invoices', 'error');
+            this.showAlert('❌ فشل تحميل الفواتير', 'error');
           });
         },
 
+        // ===== RENDER INVOICE LIST =====
         renderInvoiceList() {
           const filter = this.elements.filter.value;
           const search = this.elements.searchInput.value.toLowerCase().trim();
@@ -1591,7 +2262,7 @@
           if (!filtered.length) {
             list.innerHTML = `
               <div class="empty-state">
-                <div class="icon">📭</div>
+                <i class="fas ${this._invoices.length ? 'fa-search' : 'fa-inbox'}"></i>
                 <h3>${this._invoices.length ? 'لا توجد نتائج مطابقة' : 'لا توجد فواتير جاهزة'}</h3>
                 <p>${this._invoices.length ? 'حاول تغيير الفلتر أو البحث' : 'جميع الفواتير التي حالتها "prepared" تظهر هنا'}</p>
               </div>
@@ -1615,23 +2286,23 @@
               <div class="invoice-item ${isSelected ? 'selected' : ''}" 
                    onclick="window.UI.selectInvoice('${inv.id}')">
                 <div class="info">
-                  <div class="branch">🏢 ${Utils.escapeHtml(inv.branch || 'Branch not set')}</div>
+                  <div class="branch"><i class="fas fa-store"></i> ${Utils.escapeHtml(inv.branch || 'Branch not set')}</div>
                   <div class="meta">
-                    <span>📅 ${dateStr}</span>
-                    <span>📦 ${inv.items ? inv.items.length : 0} منتج</span>
-                    <span>🧮 ${inv.totalPieces || Utils.calculateTotalPrepared(inv.items)} قطعة</span>
-                    <span>💰 ${Utils.formatCurrency(inv.totalValue || 0)} LE</span>
+                    <span><i class="fas fa-calendar-alt"></i> ${dateStr}</span>
+                    <span><i class="fas fa-boxes"></i> ${inv.items ? inv.items.length : 0} منتج</span>
+                    <span><i class="fas fa-cubes"></i> ${inv.totalPieces || Utils.calculateTotalPrepared(inv.items)} قطعة</span>
+                    <span><i class="fas fa-money-bill-wave"></i> ${Utils.formatCurrency(inv.totalValue || 0)} LE</span>
                   </div>
                 </div>
                 <div class="stats">
-                  <div style="min-width:80px;">
-                    <div style="font-size:12px;color:var(--subtext);">التقدم</div>
-                    <div style="font-weight:700;font-size:14px;">${progress}%</div>
-                    <div class="progress-bar" style="width:80px;">
+                  <div class="progress-container">
+                    <div class="label">التقدم</div>
+                    <div class="value">${progress}%</div>
+                    <div class="progress-bar">
                       <div class="fill ${progress < 50 ? 'danger' : progress < 100 ? 'warning' : ''}" style="width:${progress}%;"></div>
                     </div>
                   </div>
-                  <span class="badge ${status}">${Utils.getStatusText(status)}</span>
+                  <span class="badge ${status}"><i class="fas ${this.getStatusIcon(status)}"></i> ${Utils.getStatusText(status)}</span>
                 </div>
               </div>
             `;
@@ -1641,10 +2312,22 @@
           this.elements.invoicesCount.textContent = `${filtered.length} فاتورة`;
         },
 
+        getStatusIcon(status) {
+          const map = {
+            pending: 'fa-clock',
+            partial: 'fa-exclamation-triangle',
+            received: 'fa-check-circle',
+            shortage: 'fa-exclamation-circle',
+            closed: 'fa-lock'
+          };
+          return map[status] || 'fa-circle';
+        },
+
+        // ===== SELECT INVOICE =====
         selectInvoice(invoiceId) {
           const invoice = this._invoices.find(inv => inv.id === invoiceId);
           if (!invoice) {
-            this.showAlert('⚠️ Invoice not found', 'error');
+            this.showAlert('⚠️ الفاتورة غير موجودة', 'error');
             return;
           }
           this._selectedInvoice = invoice;
@@ -1675,6 +2358,7 @@
           }
         },
 
+        // ===== RENDER INVOICE PREVIEW =====
         renderInvoicePreview(invoice) {
           const container = this.elements.previewContainer;
           this.elements.previewSection.classList.add('show');
@@ -1689,19 +2373,23 @@
           const progress = Utils.getProgress(invoice.items);
           const shortage = Utils.calculateShortage(invoice.items);
 
-          this.elements.previewTitle.textContent = `📋 ${Utils.escapeHtml(branch)}`;
-          this.elements.previewMeta.textContent = `📅 ${dateStr} | 🧮 ${invoice.totalPieces || Utils.calculateTotalPrepared(invoice.items)} قطعة | 💰 ${Utils.formatCurrency(invoice.totalValue || 0)} LE`;
+          this.elements.previewTitle.innerHTML = `<i class="fas fa-receipt"></i> ${Utils.escapeHtml(branch)}`;
+          this.elements.previewMeta.innerHTML = `
+            <i class="fas fa-calendar-alt"></i> ${dateStr} | 
+            <i class="fas fa-cubes"></i> ${invoice.totalPieces || Utils.calculateTotalPrepared(invoice.items)} قطعة | 
+            <i class="fas fa-money-bill-wave"></i> ${Utils.formatCurrency(invoice.totalValue || 0)} LE
+          `;
           this.elements.previewStatus.textContent = Utils.getStatusText(status);
           this.elements.previewStatus.className = `badge ${status}`;
 
           if (shortage > 0) {
-            this.elements.previewMeta.textContent += ` | 📉 نقص: ${shortage} قطعة`;
+            this.elements.previewMeta.textContent += ` | <i class="fas fa-exclamation-circle" style="color:#e14c4c;"></i> نقص: ${shortage} قطعة`;
           }
 
           if (!invoice.items || !invoice.items.length) {
             container.innerHTML = `
               <div class="empty-state">
-                <div class="icon">📭</div>
+                <i class="fas fa-box-open"></i>
                 <h3>لا توجد منتجات</h3>
                 <p>هذه الفاتورة فارغة</p>
               </div>
@@ -1759,20 +2447,22 @@
             html += `
               <div class="product-card" data-product-id="${productId}">
                 <div class="product-card-header" onclick="window.UI.toggleProductPreview('${productId}')">
-                  <img class="thumb" src="${g.image || ''}" alt="${g.name}" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2260%22 height=%2260%22/%3E'" onclick="event.stopPropagation();window.openModal('${g.image || ''}')" />
+                  <img class="thumb" src="${g.image || ''}" alt="${g.name}" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2260%22 height=%2260%22/%3E'" onclick="event.stopPropagation();window.UI.openModal('${g.image || ''}')" />
                   <div class="meta">
                     <span class="name">${Utils.escapeHtml(g.name)}</span>
                     <span class="sku">SKU: ${Utils.escapeHtml(g.sku)}</span>
                     <span class="price">${Utils.formatCurrency(g.unitPrice)} LE</span>
                     <span class="status-badge ${statusClass}">${prodProgress}%</span>
                   </div>
-                  <span class="chevron ${isOpen ? 'open' : ''}">▼</span>
+                  <span class="chevron ${isOpen ? 'open' : ''}"><i class="fas fa-chevron-down"></i></span>
                 </div>
                 <div class="product-card-body ${isOpen ? 'open' : ''}">
                   ${this.renderPreviewColors(g, productId)}
                 </div>
                 <div class="product-card-footer">
-                  <button class="btn btn-teal btn-sm" onclick="window.UI.openReceiveDialog('${key}', '${productId}')">📥 استلام</button>
+                  <button class="btn btn-teal btn-sm" onclick="window.UI.openReceiveDialog('${key}', '${productId}')">
+                    <i class="fas fa-download"></i> استلام
+                  </button>
                 </div>
               </div>
             `;
@@ -1783,6 +2473,7 @@
           this.updateBottomBar(invoice);
         },
 
+        // ===== RENDER PREVIEW COLORS =====
         renderPreviewColors(g, productId) {
           let html = '';
           let colorIdx = 0;
@@ -1802,12 +2493,10 @@
             html += `
               <div class="color-accordion">
                 <div class="color-header" onclick="window.UI.toggleColorPreview('${colorId}')">
-                  <span class="chevron-sm ${isColorOpen ? 'open' : ''}">▼</span>
-                  <span>${Utils.escapeHtml(color)}</span>
-                  <span style="font-size:12px;color:var(--subtext);margin-right:auto;">
-                    ${totalReceived}/${totalPrepared} pcs (${colorProgress}%)
-                    ${hasShortage ? '<span class="shortage-highlight">⚠️ نقص</span>' : ''}
-                  </span>
+                  <span class="chevron-sm ${isColorOpen ? 'open' : ''}"><i class="fas fa-chevron-down"></i></span>
+                  <span><i class="fas fa-palette" style="color:#6c8cff;"></i> ${Utils.escapeHtml(color)}</span>
+                  <span class="color-total">${totalReceived}/${totalPrepared} (${colorProgress}%)</span>
+                  ${hasShortage ? '<span class="shortage-highlight"><i class="fas fa-exclamation-circle"></i> نقص</span>' : ''}
                 </div>
                 <div class="color-sizes ${isColorOpen ? 'open' : ''}">
                   ${sizes.map((s, idx) => {
@@ -1818,7 +2507,6 @@
                     const isPartial = received > 0 && received < prepared;
                     const statusClass = canReceive ? (isReceived ? 'received' : isPartial ? 'partial' : 'pending') : 'zero';
                     
-                    // Disable minus if received is 0, disable plus if received >= prepared
                     const disableMinus = received <= 0;
                     const disablePlus = received >= prepared || prepared === 0;
                     
@@ -1827,12 +2515,12 @@
                         <span class="size-label">${Utils.escapeHtml(s.size)}</span>
                         <div class="qty-control">
                           <button onclick="window.UI.changeReceiveQty('${productId}', '${color}', '${s.size}', -1)" 
-                                  ${disableMinus ? 'disabled' : ''}>−</button>
+                                  ${disableMinus ? 'disabled' : ''}><i class="fas fa-minus"></i></button>
                           <span class="qty-val ${statusClass}">${received}/${prepared}</span>
                           <button onclick="window.UI.changeReceiveQty('${productId}', '${color}', '${s.size}', 1)" 
-                                  ${disablePlus ? 'disabled' : ''}>+</button>
+                                  ${disablePlus ? 'disabled' : ''}><i class="fas fa-plus"></i></button>
                         </div>
-                        ${!canReceive ? '<span class="no-prepare">🚫 غير متاح للاستلام</span>' : ''}
+                        ${!canReceive ? '<span class="no-prepare"><i class="fas fa-ban"></i> غير متاح للاستلام</span>' : ''}
                       </div>
                     `;
                   }).join('')}
@@ -1844,18 +2532,21 @@
           return html;
         },
 
+        // ===== TOGGLE PRODUCT =====
         toggleProductPreview(productId) {
           const state = this._productCardStates[productId];
           this._productCardStates[productId] = state === false ? true : false;
           if (this._selectedInvoice) this.renderInvoicePreview(this._selectedInvoice);
         },
 
+        // ===== TOGGLE COLOR =====
         toggleColorPreview(colorId) {
           const state = this._productCardStates[colorId];
           this._productCardStates[colorId] = state === false ? true : false;
           if (this._selectedInvoice) this.renderInvoicePreview(this._selectedInvoice);
         },
 
+        // ===== CHANGE RECEIVE QTY =====
         changeReceiveQty(productId, color, size, delta) {
           if (!this._selectedInvoice || !this._selectedInvoice.items) return;
 
@@ -1910,6 +2601,7 @@
           });
         },
 
+        // ===== OPEN RECEIVE DIALOG =====
         openReceiveDialog(productKey, productId) {
           if (!this._selectedInvoice) return;
 
@@ -1930,7 +2622,7 @@
 
           const group = groups[productKey];
           if (!group) {
-            this.showAlert('⚠️ Product not found', 'error');
+            this.showAlert('⚠️ المنتج غير موجود', 'error');
             return;
           }
 
@@ -1952,8 +2644,10 @@
 
           for (const color in colorMap) {
             detailsHtml += `
-              <div style="padding:8px 0;border-bottom:1px solid var(--border);">
-                <div style="font-weight:600;margin-bottom:4px;">🎨 ${Utils.escapeHtml(color)}</div>
+              <div style="padding:8px 0;border-bottom:1px solid #e6edf5;">
+                <div style="font-weight:600;margin-bottom:4px;color:#0b1b2f;">
+                  <i class="fas fa-palette" style="color:#6c8cff;"></i> ${Utils.escapeHtml(color)}
+                </div>
             `;
             const sorted = colorMap[color].sort((a, b) => {
               const sizes = Utils.sortSizes([a.size || 'No Size', b.size || 'No Size']);
@@ -1971,15 +2665,15 @@
               
               detailsHtml += `
                 <div style="display:flex;align-items:center;gap:12px;padding:4px 0;font-size:14px;flex-wrap:wrap;">
-                  <span style="min-width:50px;font-weight:500;">${Utils.escapeHtml(item.size || 'No Size')}</span>
-                  <span style="color:var(--subtext);">المتاح: ${prepared}</span>
-                  <span style="color:${isReceived ? 'var(--success)' : 'var(--warning)'};">
-                    المستلم: ${received}
+                  <span style="min-width:50px;font-weight:500;color:#0b1b2f;">${Utils.escapeHtml(item.size || 'No Size')}</span>
+                  <span style="color:#6d7b93;"><i class="fas fa-cube"></i> المتاح: ${prepared}</span>
+                  <span style="color:${isReceived ? '#3dbb7a' : '#f5a623'};">
+                    <i class="fas ${isReceived ? 'fa-check-circle' : 'fa-clock'}"></i> المستلم: ${received}
                   </span>
-                  ${!canReceive ? '<span class="no-prepare">🚫 غير متاح</span>' : ''}
+                  ${!canReceive ? '<span class="no-prepare"><i class="fas fa-ban"></i> غير متاح</span>' : ''}
                   <div style="display:flex;gap:4px;margin-right:auto;">
-                    <button class="btn btn-secondary btn-sm" onclick="window.UI.adjustReceiveQtyFromDialog('${item.color || 'No Color'}', '${item.size || 'No Size'}', -1)" ${received <= 0 ? 'disabled' : ''}>−</button>
-                    <button class="btn btn-secondary btn-sm" onclick="window.UI.adjustReceiveQtyFromDialog('${item.color || 'No Color'}', '${item.size || 'No Size'}', 1)" ${received >= prepared || prepared === 0 ? 'disabled' : ''}>+</button>
+                    <button class="btn btn-secondary btn-sm" onclick="window.UI.adjustReceiveQtyFromDialog('${item.color || 'No Color'}', '${item.size || 'No Size'}', -1)" ${received <= 0 ? 'disabled' : ''}><i class="fas fa-minus"></i></button>
+                    <button class="btn btn-secondary btn-sm" onclick="window.UI.adjustReceiveQtyFromDialog('${item.color || 'No Color'}', '${item.size || 'No Size'}', 1)" ${received >= prepared || prepared === 0 ? 'disabled' : ''}><i class="fas fa-plus"></i></button>
                   </div>
                 </div>
               `;
@@ -2032,6 +2726,7 @@
           this.showAlert('✅ تم حفظ الاستلام', 'success');
         },
 
+        // ===== CONFIRM FULL RECEIVE =====
         confirmFullReceive() {
           if (!this._selectedInvoice) {
             this.showAlert('⚠️ اختر فاتورة أولاً', 'error');
@@ -2043,18 +2738,13 @@
 
           const invoice = this._selectedInvoice;
           
-          // Close the invoice by setting status to 'closed'
           invoice.status = 'closed';
           
-          // Keep the received quantities as they are (don't auto-fill)
-          // The user has already set receivedQty using the +/- buttons
-
           invoice.totalPieces = Utils.calculateTotalPrepared(invoice.items);
           invoice.totalValue = this.calculateTotalValue(invoice.items);
 
           this.saveInvoiceToFirebase(invoice);
           
-          // Remove from the list of prepared invoices
           const index = this._invoices.findIndex(inv => inv.id === invoice.id);
           if (index !== -1) {
             this._invoices.splice(index, 1);
@@ -2062,14 +2752,15 @@
 
           this.showAlert('✅ تم إغلاق الفاتورة بنجاح', 'success');
           
-          // Close preview and refresh
           this.closePreview();
           this.renderInvoiceList();
           this.updateStats();
+          this.loadOldInvoices();
           
           this._isClosing = false;
         },
 
+        // ===== OPEN SHORTAGE DIALOG =====
         openShortageDialog() {
           if (!this._selectedInvoice) {
             this.showAlert('⚠️ اختر فاتورة أولاً', 'error');
@@ -2106,12 +2797,12 @@
             });
 
             html += `
-              <div style="padding:12px 0;border-bottom:2px solid var(--border);">
+              <div style="padding:12px 0;border-bottom:2px solid #e6edf5;">
                 <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">
-                  <img src="${p.image || ''}" style="width:40px;height:40px;border-radius:10px;object-fit:cover;border:1px solid var(--border);" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2240%22 height=%2240%22/%3E'" />
+                  <img src="${p.image || ''}" style="width:40px;height:40px;border-radius:10px;object-fit:cover;border:1px solid #e6edf5;" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2240%22 height=%2240%22/%3E'" />
                   <div>
-                    <div style="font-weight:600;font-size:15px;">${Utils.escapeHtml(p.name)}</div>
-                    <div style="font-size:12px;color:var(--subtext);">SKU: ${Utils.escapeHtml(p.sku)}</div>
+                    <div style="font-weight:600;font-size:15px;color:#0b1b2f;">${Utils.escapeHtml(p.name)}</div>
+                    <div style="font-size:12px;color:#6d7b93;">SKU: ${Utils.escapeHtml(p.sku)}</div>
                   </div>
                 </div>
             `;
@@ -2119,7 +2810,9 @@
             for (const color in colorMap) {
               html += `
                 <div style="padding:4px 0 4px 20px;">
-                  <div style="font-weight:500;font-size:13px;color:var(--subtext);">🎨 ${Utils.escapeHtml(color)}</div>
+                  <div style="font-weight:500;font-size:13px;color:#6d7b93;">
+                    <i class="fas fa-palette" style="color:#6c8cff;"></i> ${Utils.escapeHtml(color)}
+                  </div>
               `;
               const sorted = colorMap[color].sort((a, b) => {
                 const sizes = Utils.sortSizes([a.size || 'No Size', b.size || 'No Size']);
@@ -2139,9 +2832,11 @@
                 html += `
                   <div class="shortage-item">
                     <span class="label">${Utils.escapeHtml(item.size || 'No Size')}</span>
-                    <span class="qty-display">المتاح: ${prepared}</span>
-                    <span class="qty-display">المستلم: ${currentReceived}</span>
-                    <span style="font-weight:600;color:${shortage > 0 ? 'var(--danger)' : 'var(--success)'};">${shortage > 0 ? 'النقص: ' + shortage : '✅ مكتمل'}</span>
+                    <span class="qty-display"><i class="fas fa-cube"></i> المتاح: ${prepared}</span>
+                    <span class="qty-display"><i class="fas fa-check-circle" style="color:#3dbb7a;"></i> المستلم: ${currentReceived}</span>
+                    <span style="font-weight:600;color:${shortage > 0 ? '#e14c4c' : '#3dbb7a'};">
+                      ${shortage > 0 ? '<i class="fas fa-exclamation-circle"></i> النقص: ' + shortage : '<i class="fas fa-check-circle"></i> مكتمل'}
+                    </span>
                     ${shortage > 0 ? `
                       <input type="number" class="shortage-input" 
                              id="shortage_${itemKey.replace(/[^a-zA-Z0-9]/g, '_')}"
@@ -2204,6 +2899,370 @@
           }
         },
 
+        // ===== OLD INVOICES =====
+        toggleOldOrders() {
+          const sec = this.elements.oldOrdersSection;
+          if (sec.style.display === 'none') {
+            sec.style.display = 'block';
+            this.elements.showOldOrdersBtn.innerHTML = '<i class="fas fa-chevron-up"></i> إخفاء الفواتير المستلمة';
+            this.loadOldInvoices();
+          } else {
+            sec.style.display = 'none';
+            this.elements.showOldOrdersBtn.innerHTML = '<i class="fas fa-history"></i> الفواتير المستلمة';
+          }
+        },
+
+        loadOldInvoices() {
+          if (!database) {
+            this.elements.oldOrdersList.innerHTML = `
+              <div class="empty-state" style="padding:20px;">
+                <i class="fas fa-exclamation-circle" style="color:#e14c4c;"></i>
+                <p>⚠️ Firebase غير جاهز</p>
+              </div>
+            `;
+            return;
+          }
+
+          this.elements.oldOrdersList.innerHTML = `
+            <div class="empty-state" style="padding:20px;">
+              <i class="fas fa-spinner fa-spin" style="font-size:1.5rem;"></i>
+              <p style="margin-top:8px;">جاري التحميل...</p>
+            </div>
+          `;
+
+          const oneMonthAgo = Date.now() - (30 * 24 * 60 * 60 * 1000);
+          database.ref('invoices').orderByChild('createdAt').startAt(oneMonthAgo).once('value', (snapshot) => {
+            const data = snapshot.val();
+            this._oldInvoices = [];
+            if (data) {
+              for (const key in data) {
+                const inv = data[key];
+                // Only show closed invoices (status = 'closed')
+                if (inv.status === 'closed') {
+                  if (inv.items) {
+                    inv.items.forEach(item => {
+                      if (item.receivedQty === undefined) item.receivedQty = 0;
+                      if (item.preparedQty === undefined) item.preparedQty = 0;
+                    });
+                  }
+                  this._oldInvoices.push({
+                    id: key,
+                    ...inv,
+                    createdAt: inv.createdAt || 0
+                  });
+                }
+              }
+              this._oldInvoices.sort((a, b) => b.createdAt - a.createdAt);
+            }
+            this.renderOldInvoices();
+          }, (error) => {
+            console.error('❌ Error loading old invoices:', error);
+            this.elements.oldOrdersList.innerHTML = `
+              <div class="empty-state" style="padding:20px;">
+                <i class="fas fa-exclamation-circle" style="color:#e14c4c;"></i>
+                <p>❌ فشل تحميل الفواتير المستلمة</p>
+              </div>
+            `;
+          });
+        },
+
+        renderOldInvoices() {
+          const list = this.elements.oldOrdersList;
+          const invoices = this._oldInvoices;
+
+          if (!invoices || !invoices.length) {
+            list.innerHTML = `
+              <div class="empty-state" style="padding:20px;">
+                <i class="fas fa-history" style="color:#6d7b93;"></i>
+                <h3 style="font-size:16px;">لا توجد فواتير مستلمة سابقاً</h3>
+                <p style="font-size:13px;">سيتم ظهور الفواتير التي تم استلامها هنا</p>
+              </div>
+            `;
+            this.elements.oldOrdersCount.textContent = '0 فاتورة';
+            return;
+          }
+
+          let html = '';
+          invoices.forEach((inv, idx) => {
+            const date = new Date(inv.createdAt);
+            const dateStr = date.toLocaleDateString('ar-EG') + ' ' + date.toLocaleTimeString('ar-EG', {
+              hour: '2-digit',
+              minute: '2-digit'
+            });
+            const totalPrepared = Utils.calculateTotalPrepared(inv.items);
+            const totalReceived = Utils.calculateReceived(inv.items);
+            const totalShortage = Utils.calculateShortage(inv.items);
+            const status = Utils.getStatus(inv);
+            const statusText = Utils.getStatusText(status);
+            const statusClass = Utils.getStatusClass(status);
+
+            let details = '';
+            if (inv.items && inv.items.length) {
+              const items = inv.items.slice(0, 3);
+              details = items.map(item =>
+                `${item.name} (${item.color||''} ${item.size||''} × ${item.preparedQty||0})`
+              ).join('، ');
+              if (inv.items.length > 3) details += ` ... +${inv.items.length-3} أكثر`;
+            }
+
+            html += `
+              <div class="old-order-item">
+                <span class="order-number">#${idx+1}</span>
+                <span class="order-branch"><i class="fas fa-store"></i> ${Utils.escapeHtml(inv.branch || 'الفرع')}</span>
+                <span class="order-date"><i class="fas fa-calendar-alt"></i> ${dateStr}</span>
+                <span class="order-pieces"><i class="fas fa-cubes"></i> ${totalPrepared}</span>
+                <span class="order-received"><i class="fas fa-check-circle"></i> ${totalReceived}</span>
+                ${totalShortage > 0 ? `<span class="order-shortage"><i class="fas fa-exclamation-circle"></i> ${totalShortage}</span>` : ''}
+                <span class="order-value"><i class="fas fa-money-bill-wave"></i> ${Utils.formatCurrency(inv.totalValue || 0)}</span>
+                <span class="order-status">
+                  <span class="badge-sm ${statusClass}">${statusText}</span>
+                </span>
+                <span class="order-details"><i class="fas fa-info-circle"></i> ${details || '—'}</span>
+                <div class="order-actions">
+                  <button class="btn btn-secondary btn-sm" onclick="window.UI.viewOldInvoice('${inv.id}')">
+                    <i class="fas fa-eye"></i>
+                  </button>
+                  <button class="btn btn-primary btn-sm" onclick="window.UI.exportOldInvoice('${inv.id}')">
+                    <i class="fas fa-file-excel"></i>
+                  </button>
+                </div>
+              </div>
+            `;
+          });
+
+          list.innerHTML = html;
+          this.elements.oldOrdersCount.textContent = `${invoices.length} فاتورة`;
+        },
+
+        viewOldInvoice(invoiceId) {
+          const invoice = this._oldInvoices.find(inv => inv.id === invoiceId);
+          if (!invoice) {
+            this.showAlert('⚠️ الفاتورة غير موجودة', 'error');
+            return;
+          }
+
+          this._viewingOldInvoice = invoice;
+          const date = new Date(invoice.createdAt);
+          const dateStr = date.toLocaleDateString('ar-EG') + ' ' + date.toLocaleTimeString('ar-EG', {
+            hour: '2-digit',
+            minute: '2-digit'
+          });
+
+          this.elements.viewOldInvoiceMeta.textContent = `الفرع: ${Utils.escapeHtml(invoice.branch || 'الفرع')} | التاريخ: ${dateStr} | القيمة: ${Utils.formatCurrency(invoice.totalValue || 0)} LE`;
+
+          const container = this.elements.viewOldInvoiceContainer;
+          
+          if (!invoice.items || !invoice.items.length) {
+            container.innerHTML = `
+              <div class="empty-state" style="padding:20px;">
+                <i class="fas fa-box-open"></i>
+                <p>لا توجد منتجات في هذه الفاتورة</p>
+              </div>
+            `;
+            this.elements.viewOldInvoiceDialog.classList.add('show');
+            return;
+          }
+
+          // Group by product
+          const groups = {};
+          invoice.items.forEach(item => {
+            const key = (item.name || 'Unknown') + '|' + (item.sku || '');
+            if (!groups[key]) {
+              groups[key] = {
+                name: item.name || 'Unknown',
+                sku: item.sku || '',
+                unitPrice: item.unitPrice || 0,
+                image: item.image || '',
+                colors: {}
+              };
+            }
+            const color = item.color || 'No Color';
+            if (!groups[key].colors[color]) groups[key].colors[color] = [];
+            groups[key].colors[color].push({
+              size: item.size || 'No Size',
+              preparedQty: item.preparedQty || 0,
+              receivedQty: item.receivedQty || 0
+            });
+          });
+
+          let html = '';
+          for (const key in groups) {
+            const g = groups[key];
+            let totalPrepared = 0,
+              totalReceived = 0;
+            for (const color in g.colors) {
+              g.colors[color].forEach(s => {
+                totalPrepared += s.preparedQty || 0;
+                totalReceived += s.receivedQty || 0;
+              });
+            }
+            const isDone = totalPrepared > 0 && totalReceived >= totalPrepared;
+
+            html += `
+              <div style="padding:8px 0;border-bottom:1px solid #e6edf5;">
+                <div style="display:flex;align-items:center;gap:12px;margin-bottom:4px;">
+                  <img src="${g.image || ''}" style="width:40px;height:40px;border-radius:8px;object-fit:cover;border:1px solid #e6edf5;" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2240%22 height=%2240%22/%3E'" />
+                  <div style="flex:1;">
+                    <div style="font-weight:600;font-size:14px;color:#0b1b2f;">${Utils.escapeHtml(g.name)}</div>
+                    <div style="font-size:12px;color:#6d7b93;">SKU: ${Utils.escapeHtml(g.sku)}</div>
+                  </div>
+                  <span style="font-size:13px;font-weight:600;color:${isDone ? '#3dbb7a' : '#e14c4c'};">
+                    ${totalReceived}/${totalPrepared} (${Math.round((totalReceived/totalPrepared)*100)||0}%)
+                  </span>
+                </div>
+            `;
+            
+            for (const color in g.colors) {
+              html += `
+                <div style="padding:4px 0 4px 20px;">
+                  <div style="font-size:12px;font-weight:500;color:#6d7b93;">
+                    <i class="fas fa-palette" style="color:#6c8cff;"></i> ${Utils.escapeHtml(color)}
+                  </div>
+              `;
+              g.colors[color].forEach(s => {
+                const isComplete = s.preparedQty > 0 && s.receivedQty >= s.preparedQty;
+                html += `
+                  <div style="display:flex;gap:12px;padding:2px 0;font-size:13px;flex-wrap:wrap;">
+                    <span style="font-weight:500;min-width:40px;color:#0b1b2f;">${Utils.escapeHtml(s.size)}</span>
+                    <span style="color:${isComplete ? '#3dbb7a' : '#e14c4c'};">
+                      <i class="fas ${isComplete ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i>
+                      ${s.receivedQty}/${s.preparedQty}
+                    </span>
+                  </div>
+                `;
+              });
+              html += `</div>`;
+            }
+            html += `</div>`;
+          }
+
+          container.innerHTML = html;
+          this.elements.viewOldInvoiceDialog.classList.add('show');
+        },
+
+        closeViewOldInvoice() {
+          this.elements.viewOldInvoiceDialog.classList.remove('show');
+          this._viewingOldInvoice = null;
+        },
+
+        exportViewingInvoice() {
+          if (this._viewingOldInvoice) {
+            this.exportSingleInvoice(this._viewingOldInvoice);
+          }
+        },
+
+        exportSingleInvoice(invoice) {
+          if (!invoice) return;
+          
+          const wb = XLSX.utils.book_new();
+          const headers = ['#', 'Name', 'Color', 'Size', 'SKU', 'Prepared', 'Received', 'Unit Price', 'Total'];
+          const data = [headers];
+          
+          if (invoice.items) {
+            invoice.items.forEach((item, i) => {
+              data.push([
+                i + 1,
+                item.name || '',
+                item.color || '',
+                item.size || '',
+                item.sku || '',
+                item.preparedQty || 0,
+                item.receivedQty || 0,
+                item.unitPrice || 0,
+                (item.unitPrice || 0) * (item.preparedQty || 0)
+              ]);
+            });
+          }
+          
+          const totalPrepared = Utils.calculateTotalPrepared(invoice.items);
+          const totalReceived = Utils.calculateReceived(invoice.items);
+          const totalShortage = Utils.calculateShortage(invoice.items);
+          
+          data.push(['', '', '', '', '', 'Total', '', '', '']);
+          data.push(['', '', '', '', '', totalPrepared, totalReceived, '', invoice.totalValue || 0]);
+          if (totalShortage > 0) {
+            data.push(['', '', '', '', '', 'Shortage:', totalShortage, '', '']);
+          }
+
+          const ws = XLSX.utils.aoa_to_sheet(data);
+          XLSX.utils.book_append_sheet(wb, ws, 'Invoice');
+          const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+          const blob = new Blob([wbout], { type: 'application/octet-stream' });
+          const link = document.createElement('a');
+          link.href = URL.createObjectURL(blob);
+          const dateStr = new Date(invoice.createdAt).toISOString().slice(0, 10);
+          link.download = `invoice_${invoice.branch || 'branch'}_${dateStr}.xlsx`;
+          link.click();
+          URL.revokeObjectURL(link.href);
+          this.showAlert('✅ تم تصدير الفاتورة', 'success');
+        },
+
+        exportOldInvoice(invoiceId) {
+          const invoice = this._oldInvoices.find(inv => inv.id === invoiceId);
+          if (invoice) {
+            this.exportSingleInvoice(invoice);
+          }
+        },
+
+        exportAllOldInvoices() {
+          if (!this._oldInvoices || !this._oldInvoices.length) {
+            this.showAlert('⚠️ لا توجد فواتير', 'error');
+            return;
+          }
+
+          const wb = XLSX.utils.book_new();
+          this._oldInvoices.forEach((invoice, idx) => {
+            const headers = ['#', 'Name', 'Color', 'Size', 'SKU', 'Prepared', 'Received', 'Unit Price', 'Total'];
+            const data = [
+              [`Invoice: ${invoice.branch || 'Branch'}`],
+              [`Date: ${new Date(invoice.createdAt).toLocaleDateString('ar-EG')}`],
+              [`Status: ${Utils.getStatusText(Utils.getStatus(invoice))}`],
+              [],
+              headers
+            ];
+            
+            if (invoice.items) {
+              invoice.items.forEach((item, i) => {
+                data.push([
+                  i + 1,
+                  item.name || '',
+                  item.color || '',
+                  item.size || '',
+                  item.sku || '',
+                  item.preparedQty || 0,
+                  item.receivedQty || 0,
+                  item.unitPrice || 0,
+                  (item.unitPrice || 0) * (item.preparedQty || 0)
+                ]);
+              });
+            }
+            
+            const totalPrepared = Utils.calculateTotalPrepared(invoice.items);
+            const totalReceived = Utils.calculateReceived(invoice.items);
+            const totalShortage = Utils.calculateShortage(invoice.items);
+            
+            data.push(['', '', '', '', '', 'Total', '', '', '']);
+            data.push(['', '', '', '', '', totalPrepared, totalReceived, '', invoice.totalValue || 0]);
+            if (totalShortage > 0) {
+              data.push(['', '', '', '', '', 'Shortage:', totalShortage, '', '']);
+            }
+
+            const ws = XLSX.utils.aoa_to_sheet(data);
+            const sheetName = `Invoice_${idx+1}`.slice(0, 31);
+            XLSX.utils.book_append_sheet(wb, ws, sheetName);
+          });
+
+          const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+          const blob = new Blob([wbout], { type: 'application/octet-stream' });
+          const link = document.createElement('a');
+          link.href = URL.createObjectURL(blob);
+          link.download = `all_received_invoices_${new Date().toISOString().slice(0,10)}.xlsx`;
+          link.click();
+          URL.revokeObjectURL(link.href);
+          this.showAlert(`✅ تم تصدير ${this._oldInvoices.length} فاتورة`, 'success');
+        },
+
+        // ===== CLOSE PREVIEW =====
         closePreview() {
           this.elements.previewSection.classList.remove('show');
           this._selectedInvoice = null;
@@ -2216,6 +3275,7 @@
           this.updateStats();
         },
 
+        // ===== UPDATE STATS =====
         updateStats() {
           const total = this._invoices.length;
           let pending = 0,
@@ -2235,6 +3295,7 @@
           this.elements.statShortage.textContent = shortage;
         },
 
+        // ===== UPDATE BOTTOM BAR =====
         updateBottomBar(invoice) {
           if (!invoice) return;
           const items = invoice.items || [];
@@ -2250,10 +3311,11 @@
           this.elements.bottomPercent.textContent = progress + '%';
           
           if (shortage > 0) {
-            this.elements.bottomPercent.textContent += ` 📉 نقص: ${shortage}`;
+            this.elements.bottomPercent.textContent += ` <i class="fas fa-exclamation-circle" style="color:#e14c4c;"></i> نقص: ${shortage}`;
           }
         },
 
+        // ===== SHOW ALERT =====
         showAlert(msg, type = 'info') {
           const existing = document.querySelector('.toast-alert');
           if (existing) existing.remove();
@@ -2280,24 +3342,12 @@
 
       // ===== GLOBAL EXPOSURE =====
       window.UI = UI;
-      window.openModal = function(img) {
-        if (!img) return;
-        const modal = document.createElement('div');
-        modal.style.cssText = `
-          position:fixed;top:0;left:0;width:100%;height:100%;
-          background:rgba(0,0,0,0.8);z-index:99999;
-          display:flex;justify-content:center;align-items:center;
-          cursor:pointer;
-        `;
-        modal.innerHTML = `
-          <img src="${img}" style="max-width:90%;max-height:90%;border-radius:20px;object-fit:contain;" />
-          <button style="position:absolute;top:20px;right:20px;background:rgba(0,0,0,0.5);border:none;color:white;font-size:24px;width:40px;height:40px;border-radius:50%;cursor:pointer;">✕</button>
-        `;
-        modal.onclick = () => modal.remove();
-        document.body.appendChild(modal);
-      };
+      window.openModal = function(img) { if (window.UI) window.UI.openModal(img); };
+      window.closeModal = function() { if (window.UI) window.UI.closeModal(); };
 
-      // ===== BOOT =====
+      // ================================================================
+      //  BOOT
+      // ================================================================
       document.addEventListener('DOMContentLoaded', () => {
         UI.init();
       });
