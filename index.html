@@ -380,12 +380,9 @@
                 btn.disabled = true;
                 btn.textContent = '⏳ جاري التحقق...';
 
-                // استدعاء API التحقق من الكود
-                const response = await fetch(`${SCRIPT_URL}?code=${encodeURIComponent(code)}`, {
-                    method: 'GET',
-                    headers: { 'Content-Type': 'application/json' },
-                    cache: 'no-store'
-                });
+               const response = await fetch(`${SCRIPT_URL}?code=${encodeURIComponent(code)}`, {
+    cache: "no-store"
+});
 
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
