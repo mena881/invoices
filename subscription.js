@@ -1,11 +1,18 @@
-// subscription.js - ملف للتحقق من الاشتراك وإدارة الصلاحيات
+// ============================================================
+// subscription.js - نظام التحقق من الاشتراك المتكامل v2.0
+// ============================================================
 
 // رابط الـ Google Apps Script
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbysZjQMWPbmY4N1wOUhzrvI_fx3LgQvORh-a3eEE2KSbIwH0TURgOnc45PHQ4LlLEh-/exec';
 
-// مفتاح التخزين المحلي
+// مفاتيح التخزين المحلي
 const STORAGE_KEY = 'subscription_data';
 const CODE_KEY = 'subscription_code';
+const USER_KEY = 'currentUser';
+
+// ============================================================
+// 1. دوال التحقق من الكود مع السيرفر
+// ============================================================
 
 /**
  * التحقق من الكود مع السيرفر
@@ -14,7 +21,7 @@ const CODE_KEY = 'subscription_code';
  */
 async function verifyCodeWithServer(code) {
     try {
-        const response = await fetch(`${SCRIPT_URL}?code=${encodeURIComponent(code)}`);
+        const response = await fetch(`${SCRIPT_URL}?code=${encodeURIComponent(code)}&t=${Date.now()}`);
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -26,24 +33,25 @@ async function verifyCodeWithServer(code) {
     }
 }
 
+// ============================================================
+// 2. دوال جلب بيانات الاشتراك
+// ============================================================
+
 /**
- * التحقق من حالة الاشتراك المخزنة
- * @returns {Promise<Object>} حالة الاشتراك
+ * جلب بيانات الاشتراك من السيرفر (تحديث فوري)
+ * @returns {Promise<Object>} بيانات الاشتراك
  */
-async function checkSubscription() {
+async function fetchSubscriptionFromServer() {
     try {
-        console.log('🔄 جاري التحقق من الاشتراك...');
-        
-        // جلب البيانات من السيرفر مباشرة (بدون استخدام الكاش)
+        console.log('🔄 جاري جلب بيانات الاشتراك من السيرفر...');
         const response = await fetch(`${SCRIPT_URL}?t=${Date.now()}`);
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
-        
         const data = await response.json();
         console.log('📊 بيانات الاشتراك المستلمة:', data);
         
-        // تخزين البيانات في التخزين المحلي مع الوقت
+        // تخزين البيانات في التخزين المحلي
         localStorage.setItem(STORAGE_KEY, JSON.stringify({
             data: data,
             timestamp: Date.now()
@@ -52,7 +60,6 @@ async function checkSubscription() {
         return data;
     } catch (error) {
         console.error('❌ فشل في جلب بيانات الاشتراك:', error);
-        
         // في حالة الخطأ، محاولة استخدام البيانات المخزنة مؤقتاً
         const cachedData = localStorage.getItem(STORAGE_KEY);
         if (cachedData) {
@@ -63,6 +70,18 @@ async function checkSubscription() {
         throw error;
     }
 }
+
+/**
+ * التحقق من حالة الاشتراك المخزنة
+ * @returns {Promise<Object>} حالة الاشتراك
+ */
+async function checkSubscription() {
+    return await fetchSubscriptionFromServer();
+}
+
+// ============================================================
+// 3. دوال التحقق من الصلاحية
+// ============================================================
 
 /**
  * التحقق من صلاحية الاشتراك وعرض النتائج في الكونسول
@@ -104,11 +123,8 @@ function validateSubscription(subscriptionData) {
     }
 
     if (status === 'Active' && remainingDays !== undefined) {
-        // عرض رسالة حسب عدد الأيام المتبقية
         if (remainingDays > 0) {
             console.log(`✅ الاشتراك نشط - متبقي ${remainingDays} يوم`);
-            
-            // تحذير إذا كانت الأيام المتبقية قليلة
             if (remainingDays <= 3) {
                 console.log(`⚠️ تنبيه: الاشتراك سينتهي خلال ${remainingDays} أيام فقط!`);
             }
@@ -130,7 +146,6 @@ function validateSubscription(subscriptionData) {
         };
     }
 
-    // حالات أخرى
     console.log(`⚠️ حالة غير معروفة: ${status || 'غير محدد'}`);
     return {
         isValid: false,
@@ -140,9 +155,12 @@ function validateSubscription(subscriptionData) {
     };
 }
 
+// ============================================================
+// 4. دوال إدارة الكود المخزن
+// ============================================================
+
 /**
  * حفظ الكود في التخزين المحلي
- * @param {string} code كود الاشتراك
  */
 function saveCode(code) {
     localStorage.setItem(CODE_KEY, code);
@@ -151,7 +169,6 @@ function saveCode(code) {
 
 /**
  * جلب الكود المخزن
- * @returns {string|null} الكود المخزن
  */
 function getSavedCode() {
     return localStorage.getItem(CODE_KEY);
@@ -166,123 +183,28 @@ function clearSavedCode() {
     console.log('🗑 تم حذف الكود المخزن');
 }
 
+// ============================================================
+// 5. دوال عرض الحالة في الواجهة
+// ============================================================
+
 /**
- * عرض رسالة خطأ
+ * عرض رسالة في الكونسول وفي الواجهة
  */
-function showCodeError(message) {
-    const errorDiv = document.getElementById('codeError');
-    if (errorDiv) {
-        errorDiv.textContent = message;
-        errorDiv.style.display = 'block';
+function showMessage(elementId, message, type = 'error') {
+    const element = document.getElementById(elementId);
+    if (element) {
+        element.textContent = message;
+        element.style.display = 'block';
+        element.className = `message-box message-${type}`;
         setTimeout(() => {
-            errorDiv.style.display = 'none';
-        }, 4000);
+            element.style.display = 'none';
+        }, 5000);
     }
-    console.log(`❌ ${message}`);
+    console.log(`${type === 'error' ? '❌' : type === 'success' ? '✅' : '⚠️'} ${message}`);
 }
 
 /**
- * عرض رسالة نجاح
- */
-function showCodeSuccess(message) {
-    const successDiv = document.getElementById('codeSuccess');
-    if (successDiv) {
-        successDiv.textContent = message;
-        successDiv.style.display = 'block';
-        setTimeout(() => {
-            successDiv.style.display = 'none';
-        }, 4000);
-    }
-    console.log(`✅ ${message}`);
-}
-
-/**
- * التحقق من الكود المدخل
- */
-async function verifyCode() {
-    const input = document.getElementById('activationCode');
-    const errorDiv = document.getElementById('codeError');
-    const successDiv = document.getElementById('codeSuccess');
-    const code = input.value.trim().toUpperCase();
-
-    // إخفاء الرسائل السابقة
-    if (errorDiv) errorDiv.style.display = 'none';
-    if (successDiv) successDiv.style.display = 'none';
-
-    if (!code) {
-        showCodeError('⚠️ يرجى إدخال كود التفعيل');
-        input.focus();
-        return;
-    }
-
-    console.log(`🔑 جاري التحقق من الكود: ${code}`);
-
-    // إظهار حالة التحميل
-    const btn = document.querySelector('#verifyBtn');
-    const originalText = btn.textContent;
-    btn.textContent = '⏳ جاري التحقق...';
-    btn.disabled = true;
-
-    try {
-        // التحقق من الكود مع السيرفر
-        const result = await verifyCodeWithServer(code);
-        console.log('📊 نتيجة التحقق من السيرفر:', result);
-
-        if (result.success && result.status === 'Active') {
-            // الكود صالح
-            saveCode(code);
-            // تخزين بيانات الاشتراك
-            localStorage.setItem(STORAGE_KEY, JSON.stringify({
-                data: result,
-                timestamp: Date.now()
-            }));
-            
-            // عرض رسالة نجاح
-            showCodeSuccess(`✅ تم التفعيل بنجاح! متبقي ${result.remainingDays} يوم`);
-            
-            // عرض معلومات إضافية في الكونسول
-            console.log('🎉 تم تفعيل الاشتراك بنجاح!');
-            console.log(`   📅 تاريخ البدء: ${result.startDate}`);
-            console.log(`   ⏱ مدة التفعيل: ${result.activationDuration} شهر`);
-            console.log(`   📆 الأيام المتبقية: ${result.remainingDays} يوم`);
-            
-            // إعادة تعيين الزر
-            btn.textContent = '✅ تم التفعيل';
-            btn.style.background = '#4caf50';
-            
-            // إظهار نموذج تسجيل الدخول بعد 1.5 ثانية
-            setTimeout(() => {
-                // إخفاء قسم إدخال الكود
-                document.getElementById('codeSection').style.display = 'none';
-                // إظهار نموذج تسجيل الدخول
-                document.getElementById('loginSection').style.display = 'block';
-                // إظهار حالة الاشتراك
-                showSubscriptionStatus(result);
-            }, 1500);
-        } else {
-            // الكود غير صالح
-            const errorMsg = result.message || '❌ كود التفعيل غير صالح أو منتهي الصلاحية';
-            showCodeError(errorMsg);
-            console.log(`❌ الكود غير صالح: ${errorMsg}`);
-            
-            // إعادة تعيين الزر
-            btn.textContent = originalText;
-            btn.disabled = false;
-            
-            // تحديد النص
-            input.select();
-        }
-    } catch (error) {
-        console.error('❌ خطأ في التحقق:', error);
-        showCodeError('⚠️ حدث خطأ في التحقق، يرجى المحاولة مرة أخرى');
-        
-        btn.textContent = originalText;
-        btn.disabled = false;
-    }
-}
-
-/**
- * عرض حالة الاشتراك
+ * عرض حالة الاشتراك في الواجهة
  */
 function showSubscriptionStatus(subscriptionData) {
     const statusDiv = document.getElementById('subscriptionStatus');
@@ -291,16 +213,93 @@ function showSubscriptionStatus(subscriptionData) {
         const days = subscriptionData.remainingDays || 0;
         statusDiv.textContent = `✅ الاشتراك نشط - متبقي ${days} يوم`;
         
-        // إذا تبقى أقل من 3 أيام، تغيير اللون للتحذير
         if (days <= 3) {
-            statusDiv.style.background = '#fff3e0';
-            statusDiv.style.color = '#e65100';
+            statusDiv.className = 'subscription-status warning';
             statusDiv.textContent = `⚠️ تنبيه: الاشتراك سينتهي خلال ${days} أيام`;
+        } else {
+            statusDiv.className = 'subscription-status active';
         }
-        
-        console.log(`📊 تم عرض حالة الاشتراك: ${statusDiv.textContent}`);
     }
 }
+
+// ============================================================
+// 6. دوال التحقق من الكود المدخل
+// ============================================================
+
+/**
+ * التحقق من الكود المدخل
+ */
+async function verifyCode() {
+    const input = document.getElementById('activationCode');
+    const code = input?.value?.trim()?.toUpperCase();
+
+    if (!code) {
+        showMessage('codeError', '⚠️ يرجى إدخال كود التفعيل');
+        input?.focus();
+        return;
+    }
+
+    console.log(`🔑 جاري التحقق من الكود: ${code}`);
+
+    const btn = document.querySelector('#verifyBtn');
+    const originalText = btn?.textContent || 'تحقق';
+    if (btn) {
+        btn.textContent = '⏳ جاري التحقق...';
+        btn.disabled = true;
+    }
+
+    try {
+        const result = await verifyCodeWithServer(code);
+        console.log('📊 نتيجة التحقق من السيرفر:', result);
+
+        if (result.success && result.status === 'Active') {
+            saveCode(code);
+            localStorage.setItem(STORAGE_KEY, JSON.stringify({
+                data: result,
+                timestamp: Date.now()
+            }));
+            
+            showMessage('codeSuccess', `✅ تم التفعيل بنجاح! متبقي ${result.remainingDays} يوم`, 'success');
+            
+            console.log('🎉 تم تفعيل الاشتراك بنجاح!');
+            console.log(`   📅 تاريخ البدء: ${result.startDate}`);
+            console.log(`   ⏱ مدة التفعيل: ${result.activationDuration} شهر`);
+            console.log(`   📆 الأيام المتبقية: ${result.remainingDays} يوم`);
+            
+            if (btn) {
+                btn.textContent = '✅ تم التفعيل';
+                btn.style.background = '#4caf50';
+            }
+            
+            setTimeout(() => {
+                // إعادة تحميل الصفحة لعرض البيانات المحدثة
+                window.location.reload();
+            }, 1500);
+        } else {
+            const errorMsg = result.message || '❌ كود التفعيل غير صالح أو منتهي الصلاحية';
+            showMessage('codeError', errorMsg);
+            console.log(`❌ الكود غير صالح: ${errorMsg}`);
+            
+            if (btn) {
+                btn.textContent = originalText;
+                btn.disabled = false;
+            }
+            input?.select();
+        }
+    } catch (error) {
+        console.error('❌ خطأ في التحقق:', error);
+        showMessage('codeError', '⚠️ حدث خطأ في التحقق، يرجى المحاولة مرة أخرى');
+        
+        if (btn) {
+            btn.textContent = originalText;
+            btn.disabled = false;
+        }
+    }
+}
+
+// ============================================================
+// 7. الوظيفة الرئيسية للتحقق من الاشتراك
+// ============================================================
 
 /**
  * التحقق من الاشتراك عند تحميل الصفحة (الوظيفة الرئيسية)
@@ -309,27 +308,22 @@ function showSubscriptionStatus(subscriptionData) {
 async function checkSubscriptionOnLoad() {
     console.log('🚀 ===== بدء التحقق من الاشتراك =====');
     console.log(`📅 الوقت: ${new Date().toLocaleString('ar-EG')}`);
+    console.log(`🌐 الصفحة: ${window.location.pathname}`);
     
     try {
-        // التحقق من وجود كود مخزن
         const savedCode = getSavedCode();
         
         if (!savedCode) {
             console.log('ℹ️ لا يوجد كود اشتراك مخزن');
-            // لا يوجد كود - عرض قسم إدخال الكود
-            const codeSection = document.getElementById('codeSection');
-            const loginSection = document.getElementById('loginSection');
-            if (codeSection) codeSection.style.display = 'block';
-            if (loginSection) loginSection.style.display = 'none';
-            console.log('📌 تم عرض صفحة إدخال الكود');
-            console.log('🚀 ===== انتهى التحقق =====');
+            showCodeSection();
+            console.log('🚀 ===== انتهى التحقق (لا يوجد كود) =====');
             return false;
         }
 
         console.log(`🔑 الكود المخزن: ${savedCode}`);
 
         // جلب بيانات الاشتراك من السيرفر (تحديث فوري)
-        const subscriptionData = await checkSubscription();
+        const subscriptionData = await fetchSubscriptionFromServer();
         console.log('📊 بيانات الاشتراك المستلمة:', subscriptionData);
 
         // التحقق من الصلاحية
@@ -344,88 +338,75 @@ async function checkSubscriptionOnLoad() {
         console.log('💡 =====================================');
 
         if (validationResult.isValid) {
-            // الاشتراك صالح - عرض نموذج تسجيل الدخول
             console.log('✅ الاشتراك صالح، مرحباً بك!');
-            
-            const codeSection = document.getElementById('codeSection');
-            const loginSection = document.getElementById('loginSection');
-            if (codeSection) codeSection.style.display = 'none';
-            if (loginSection) loginSection.style.display = 'block';
-            
+            showLoginSection();
             showSubscriptionStatus(subscriptionData);
-            console.log('📌 تم عرض نموذج تسجيل الدخول');
             console.log('🚀 ===== انتهى التحقق بنجاح =====');
             return true;
         } else {
-            // الاشتراك منتهي - عرض قسم إدخال الكود مع رسالة
             console.log('❌ الاشتراك غير صالح:', validationResult.message);
-            
-            const codeSection = document.getElementById('codeSection');
-            const loginSection = document.getElementById('loginSection');
-            if (codeSection) codeSection.style.display = 'block';
-            if (loginSection) loginSection.style.display = 'none';
-            
-            showCodeError(`⚠️ ${validationResult.message}. يرجى إدخال كود جديد.`);
-            // حذف الكود المنتهي
+            showCodeSection();
+            showMessage('codeError', `⚠️ ${validationResult.message}. يرجى إدخال كود جديد.`);
             clearSavedCode();
-            console.log('📌 تم عرض صفحة إدخال الكود (الاشتراك منتهي)');
             console.log('🚀 ===== انتهى التحقق (الاشتراك منتهي) =====');
             return false;
         }
     } catch (error) {
         console.error('❌ فشل التحقق من الاشتراك:', error);
         console.log('🚀 ===== انتهى التحقق بخطأ =====');
-        
-        // في حالة الخطأ، عرض قسم إدخال الكود
-        const codeSection = document.getElementById('codeSection');
-        const loginSection = document.getElementById('loginSection');
-        if (codeSection) codeSection.style.display = 'block';
-        if (loginSection) loginSection.style.display = 'none';
-        
-        showCodeError('⚠️ تعذر التحقق من الاشتراك، يرجى إدخال الكود يدوياً');
+        showCodeSection();
+        showMessage('codeError', '⚠️ تعذر التحقق من الاشتراك، يرجى إدخال الكود يدوياً');
         return false;
     }
 }
 
+// ============================================================
+// 8. دوال التحكم في عرض الأقسام
+// ============================================================
+
 /**
- * وظيفة التهيئة - يتم استدعاؤها عند تحميل الصفحة
- * تقوم بالتحقق من الاشتراك وعرض النتائج في الكونسول
+ * إظهار قسم إدخال الكود وإخفاء قسم تسجيل الدخول
  */
-function initSubscriptionCheck() {
-    console.log('🌟 ===== تهيئة نظام الاشتراك =====');
-    console.log(`🌐 الصفحة: ${window.location.pathname}`);
-    console.log(`🕐 الوقت: ${new Date().toLocaleString('ar-EG')}`);
-    
-    // تنفيذ التحقق بعد تحميل الصفحة بالكامل
-    if (document.readyState === 'complete') {
-        // الصفحة محملة بالكامل
-        setTimeout(() => {
-            checkSubscriptionOnLoad();
-        }, 100);
-    } else {
-        // انتظار تحميل الصفحة
-        window.addEventListener('load', function() {
-            setTimeout(() => {
-                checkSubscriptionOnLoad();
-            }, 100);
-        });
-    }
+function showCodeSection() {
+    const codeSection = document.getElementById('codeSection');
+    const loginSection = document.getElementById('loginSection');
+    if (codeSection) codeSection.style.display = 'block';
+    if (loginSection) loginSection.style.display = 'none';
+    console.log('📌 تم عرض صفحة إدخال الكود');
 }
 
-// ===== جعل الدوال متاحة عالمياً =====
-window.verifyCode = verifyCode;
-window.checkSubscriptionOnLoad = checkSubscriptionOnLoad;
-window.initSubscriptionCheck = initSubscriptionCheck;
-window.clearSavedCode = clearSavedCode;
-window.resetSubscription = function() {
+/**
+ * إظهار قسم تسجيل الدخول وإخفاء قسم إدخال الكود
+ */
+function showLoginSection() {
+    const codeSection = document.getElementById('codeSection');
+    const loginSection = document.getElementById('loginSection');
+    if (codeSection) codeSection.style.display = 'none';
+    if (loginSection) loginSection.style.display = 'block';
+    console.log('📌 تم عرض نموذج تسجيل الدخول');
+}
+
+// ============================================================
+// 9. دوال إعادة تعيين الاشتراك
+// ============================================================
+
+/**
+ * إعادة تعيين الاشتراك (تغيير الكود)
+ */
+function resetSubscription() {
     if (confirm('هل أنت متأكد من رغبتك في تغيير كود الاشتراك؟')) {
         clearSavedCode();
-        document.getElementById('loginSection').style.display = 'none';
-        document.getElementById('codeSection').style.display = 'block';
-        document.getElementById('activationCode').value = '';
-        document.getElementById('activationCode').focus();
-        document.getElementById('codeError').style.display = 'none';
-        document.getElementById('codeSuccess').style.display = 'none';
+        showCodeSection();
+        const input = document.getElementById('activationCode');
+        if (input) {
+            input.value = '';
+            input.focus();
+        }
+        const errorDiv = document.getElementById('codeError');
+        const successDiv = document.getElementById('codeSuccess');
+        if (errorDiv) errorDiv.style.display = 'none';
+        if (successDiv) successDiv.style.display = 'none';
+        
         const btn = document.getElementById('verifyBtn');
         if (btn) {
             btn.textContent = '🔓 تحقق من الكود';
@@ -434,29 +415,198 @@ window.resetSubscription = function() {
         }
         console.log('🔄 تم إعادة تعيين الاشتراك');
     }
-};
-
-// ===== بدء التهيئة التلقائية =====
-// يتم تشغيلها عند تحميل الصفحة
-initSubscriptionCheck();
-
-// ===== تصدير الدوال للاستخدام في الصفحات الأخرى =====
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = {
-        checkSubscription,
-        validateSubscription,
-        checkSubscriptionOnLoad,
-        verifyCodeWithServer,
-        verifyCode,
-        saveCode,
-        getSavedCode,
-        clearSavedCode,
-        initSubscriptionCheck,
-        SCRIPT_URL,
-        STORAGE_KEY,
-        CODE_KEY
-    };
 }
+
+// ============================================================
+// 10. دوال تسجيل الدخول (للتكامل مع Firebase)
+// ============================================================
+
+/**
+ * تسجيل الدخول (يتم استدعاؤها من الصفحة)
+ */
+async function login() {
+    const username = document.getElementById('username')?.value?.trim();
+    const password = document.getElementById('password')?.value;
+    const errorDiv = document.getElementById('loginError');
+
+    if (!username || !password) {
+        if (errorDiv) {
+            errorDiv.textContent = 'يرجى إدخال اسم المستخدم وكلمة المرور';
+            errorDiv.style.display = 'block';
+            setTimeout(() => { errorDiv.style.display = 'none'; }, 3000);
+        }
+        return;
+    }
+
+    try {
+        // التحقق من المستخدم (admin أولاً)
+        if (username === 'admin') {
+            const adminSnapshot = await firebase.database().ref('users/admin').once('value');
+            if (adminSnapshot.exists() && adminSnapshot.val().password === password) {
+                localStorage.setItem(USER_KEY, JSON.stringify({
+                    username: 'admin',
+                    role: 'admin',
+                    fullName: 'مدير النظام'
+                }));
+                window.location.href = 'admin-dashboard.html';
+                return;
+            }
+        }
+
+        // التحقق من الموظفين
+        const usersSnapshot = await firebase.database().ref('users').once('value');
+        let found = false;
+        usersSnapshot.forEach((childSnapshot) => {
+            const user = childSnapshot.val();
+            if (user.username === username && user.password === password && user.role === 'employee') {
+                found = true;
+                localStorage.setItem(USER_KEY, JSON.stringify({
+                    id: childSnapshot.key,
+                    username: user.username,
+                    role: user.role,
+                    fullName: user.fullName
+                }));
+                window.location.href = 'user-dashboard.html';
+            }
+        });
+
+        if (!found && errorDiv) {
+            errorDiv.textContent = 'اسم المستخدم أو كلمة المرور غير صحيحة';
+            errorDiv.style.display = 'block';
+            setTimeout(() => { errorDiv.style.display = 'none'; }, 3000);
+        }
+    } catch (error) {
+        console.error('Login error:', error);
+        if (errorDiv) {
+            errorDiv.textContent = 'حدث خطأ في تسجيل الدخول';
+            errorDiv.style.display = 'block';
+            setTimeout(() => { errorDiv.style.display = 'none'; }, 3000);
+        }
+    }
+}
+
+// ============================================================
+// 11. دوال التحقق من حالة المستخدم
+// ============================================================
+
+/**
+ * التحقق من حالة تسجيل الدخول
+ */
+function getCurrentUser() {
+    const user = localStorage.getItem(USER_KEY);
+    return user ? JSON.parse(user) : null;
+}
+
+/**
+ * تسجيل الخروج
+ */
+function logout() {
+    localStorage.removeItem(USER_KEY);
+    window.location.href = 'index.html';
+}
+
+// ============================================================
+// 12. تهيئة النظام
+// ============================================================
+
+/**
+ * تهيئة نظام الاشتراك
+ */
+function initSubscriptionSystem() {
+    console.log('🌟 ===== تهيئة نظام الاشتراك =====');
+    console.log(`🌐 الصفحة: ${window.location.pathname}`);
+    console.log(`🕐 الوقت: ${new Date().toLocaleString('ar-EG')}`);
+    
+    // تنفيذ التحقق بعد تحميل الصفحة بالكامل
+    if (document.readyState === 'complete') {
+        setTimeout(() => {
+            checkSubscriptionOnLoad();
+        }, 200);
+    } else {
+        window.addEventListener('load', function() {
+            setTimeout(() => {
+                checkSubscriptionOnLoad();
+            }, 200);
+        });
+    }
+}
+
+// ============================================================
+// 13. جعل الدوال متاحة عالمياً
+// ============================================================
+
+window.verifyCode = verifyCode;
+window.checkSubscriptionOnLoad = checkSubscriptionOnLoad;
+window.initSubscriptionSystem = initSubscriptionSystem;
+window.resetSubscription = resetSubscription;
+window.clearSavedCode = clearSavedCode;
+window.login = login;
+window.logout = logout;
+window.getCurrentUser = getCurrentUser;
+window.saveCode = saveCode;
+window.getSavedCode = getSavedCode;
+window.showMessage = showMessage;
+window.showSubscriptionStatus = showSubscriptionStatus;
+window.showCodeSection = showCodeSection;
+window.showLoginSection = showLoginSection;
+window.validateSubscription = validateSubscription;
+window.fetchSubscriptionFromServer = fetchSubscriptionFromServer;
+window.verifyCodeWithServer = verifyCodeWithServer;
+
+// ============================================================
+// 14. دعم مفتاح Enter
+// ============================================================
+
+document.addEventListener('DOMContentLoaded', function() {
+    const codeInput = document.getElementById('activationCode');
+    if (codeInput) {
+        codeInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                verifyCode();
+            }
+        });
+    }
+    
+    const passwordInput = document.getElementById('password');
+    if (passwordInput) {
+        passwordInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                login();
+            }
+        });
+    }
+    
+    const usernameInput = document.getElementById('username');
+    if (usernameInput) {
+        usernameInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                const password = document.getElementById('password');
+                if (password) password.focus();
+            }
+        });
+    }
+});
+
+// ============================================================
+// 15. بدء التهيئة التلقائية
+// ============================================================
+
+// بدء التهيئة عند تحميل الصفحة
+initSubscriptionSystem();
+
+// إعادة التحقق عند العودة إلى الصفحة (من back/forward)
+window.addEventListener('pageshow', function(event) {
+    if (event.persisted) {
+        console.log('🔄 إعادة التحقق من الاشتراك (من الكاش)');
+        setTimeout(() => {
+            checkSubscriptionOnLoad();
+        }, 300);
+    }
+});
 
 console.log('✅ تم تحميل ملف subscription.js بنجاح');
 console.log('📌 سيتم التحقق من الاشتراك تلقائياً عند تحميل أي صفحة');
+
+// ============================================================
+// نهاية الملف
+// ============================================================
