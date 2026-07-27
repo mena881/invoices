@@ -156,6 +156,13 @@ function clearSavedCode() {
 // ============================================================
 
 function createSubscriptionUI() {
+    // التحقق من وجود body
+    if (!document.body) {
+        console.log('⏳ انتظار تحميل body...');
+        setTimeout(createSubscriptionUI, 100);
+        return;
+    }
+
     // التحقق من وجود العناصر بالفعل
     if (document.getElementById('subscriptionOverlay')) {
         return;
@@ -193,30 +200,49 @@ function createSubscriptionUI() {
         animation: subscriptionFadeIn 0.5s ease;
         text-align: center;
         position: relative;
+        max-height: 90vh;
+        overflow-y: auto;
     `;
 
     // إضافة الأنيميشن
-    const style = document.createElement('style');
-    style.textContent = `
-        @keyframes subscriptionFadeIn {
-            from { opacity: 0; transform: translateY(-30px) scale(0.95); }
-            to { opacity: 1; transform: translateY(0) scale(1); }
-        }
-        @keyframes subscriptionSpin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        .sub-spinner {
-            width: 40px;
-            height: 40px;
-            border: 4px solid #e0e0e0;
-            border-top: 4px solid #667eea;
-            border-radius: 50%;
-            animation: subscriptionSpin 1s linear infinite;
-            margin: 10px auto;
-        }
-    `;
-    document.head.appendChild(style);
+    let style = document.getElementById('subscriptionStyles');
+    if (!style) {
+        style = document.createElement('style');
+        style.id = 'subscriptionStyles';
+        style.textContent = `
+            @keyframes subscriptionFadeIn {
+                from { opacity: 0; transform: translateY(-30px) scale(0.95); }
+                to { opacity: 1; transform: translateY(0) scale(1); }
+            }
+            @keyframes subscriptionSpin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
+            .sub-spinner {
+                width: 40px;
+                height: 40px;
+                border: 4px solid #e0e0e0;
+                border-top: 4px solid #667eea;
+                border-radius: 50%;
+                animation: subscriptionSpin 1s linear infinite;
+                margin: 10px auto;
+            }
+            #subActivationCode:focus {
+                outline: none;
+                border-color: #667eea !important;
+                box-shadow: 0 0 0 3px rgba(102,126,234,0.1) !important;
+            }
+            #subVerifyBtn:hover:not(:disabled) {
+                transform: translateY(-2px) !important;
+            }
+            #subVerifyBtn:disabled {
+                opacity: 0.7;
+                cursor: not-allowed;
+                transform: none !important;
+            }
+        `;
+        document.head.appendChild(style);
+    }
 
     // محتوى البطاقة - الإصدار 1: إدخال الكود
     card.innerHTML = `
@@ -244,7 +270,7 @@ function createSubscriptionUI() {
                 display: none;
             "></div>
             
-            <input type="text" id="subActivationCode" placeholder="أدخل كود التفعيل" style="
+            <input type="text" id="subActivationCode" placeholder="أدخل كود التفعيل" autocomplete="off" maxlength="20" style="
                 width: 100%;
                 padding: 15px;
                 border: 2px solid #e0e0e0;
@@ -256,6 +282,7 @@ function createSubscriptionUI() {
                 transition: all 0.3s;
                 margin-bottom: 15px;
                 font-family: inherit;
+                box-sizing: border-box;
             ">
             <button id="subVerifyBtn" style="
                 width: 100%;
@@ -269,7 +296,8 @@ function createSubscriptionUI() {
                 cursor: pointer;
                 transition: all 0.3s;
                 font-family: inherit;
-            " onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
+                box-sizing: border-box;
+            ">
                 🔓 تحقق من الكود
             </button>
             <p style="margin-top: 15px; font-size: 12px; color: #999;">
@@ -300,7 +328,8 @@ function createSubscriptionUI() {
                 cursor: pointer;
                 transition: all 0.3s;
                 font-family: inherit;
-            " onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
+                box-sizing: border-box;
+            ">
                 🔄 إدخال كود جديد
             </button>
         </div>
@@ -344,6 +373,8 @@ function createSubscriptionUI() {
     window.showCodeInput = showCodeInput;
     window.showLoading = showLoading;
     window.showExpired = showExpired;
+
+    console.log('✅ تم إنشاء واجهة الاشتراك');
 }
 
 // دوال التحكم في الـ UI
@@ -358,23 +389,32 @@ function hideSubscriptionOverlay() {
 }
 
 function showCodeInput() {
-    document.getElementById('subCodeContent').style.display = 'block';
-    document.getElementById('subLoadingContent').style.display = 'none';
-    document.getElementById('subExpiredContent').style.display = 'none';
+    const codeContent = document.getElementById('subCodeContent');
+    const loadingContent = document.getElementById('subLoadingContent');
+    const expiredContent = document.getElementById('subExpiredContent');
+    if (codeContent) codeContent.style.display = 'block';
+    if (loadingContent) loadingContent.style.display = 'none';
+    if (expiredContent) expiredContent.style.display = 'none';
 }
 
 function showLoading(message = 'جاري التحقق من الاشتراك...') {
-    document.getElementById('subCodeContent').style.display = 'none';
-    document.getElementById('subLoadingContent').style.display = 'block';
-    document.getElementById('subExpiredContent').style.display = 'none';
+    const codeContent = document.getElementById('subCodeContent');
+    const loadingContent = document.getElementById('subLoadingContent');
+    const expiredContent = document.getElementById('subExpiredContent');
+    if (codeContent) codeContent.style.display = 'none';
+    if (loadingContent) loadingContent.style.display = 'block';
+    if (expiredContent) expiredContent.style.display = 'none';
     const text = document.getElementById('subLoadingText');
     if (text) text.textContent = message;
 }
 
 function showExpired(message) {
-    document.getElementById('subCodeContent').style.display = 'none';
-    document.getElementById('subLoadingContent').style.display = 'none';
-    document.getElementById('subExpiredContent').style.display = 'block';
+    const codeContent = document.getElementById('subCodeContent');
+    const loadingContent = document.getElementById('subLoadingContent');
+    const expiredContent = document.getElementById('subExpiredContent');
+    if (codeContent) codeContent.style.display = 'none';
+    if (loadingContent) loadingContent.style.display = 'none';
+    if (expiredContent) expiredContent.style.display = 'block';
     const msg = document.getElementById('subExpiredMessage');
     if (msg) msg.textContent = message;
 }
@@ -572,19 +612,19 @@ function initSubscriptionSystem() {
     console.log(`🌐 الصفحة: ${window.location.pathname}`);
     console.log(`🕐 الوقت: ${new Date().toLocaleString('ar-EG')}`);
     
-    // إنشاء الـ UI أولاً
+    // إنشاء الـ UI أولاً (مع التحقق من وجود body)
     createSubscriptionUI();
     
     // تنفيذ التحقق بعد تحميل الصفحة
     if (document.readyState === 'complete') {
         setTimeout(() => {
             checkSubscriptionOnLoad();
-        }, 200);
+        }, 300);
     } else {
         window.addEventListener('load', function() {
             setTimeout(() => {
                 checkSubscriptionOnLoad();
-            }, 200);
+            }, 300);
         });
     }
 }
@@ -604,11 +644,24 @@ window.fetchSubscriptionFromServer = fetchSubscriptionFromServer;
 window.verifyCodeWithServer = verifyCodeWithServer;
 
 // ============================================================
-// 11. بدء التهيئة التلقائية
+// 11. بدء التهيئة التلقائية - مع التأكد من وجود body
 // ============================================================
 
-// بدء التهيئة عند تحميل الصفحة
-initSubscriptionSystem();
+function startSubscriptionSystem() {
+    if (document.body) {
+        // body موجود - ابدأ التهيئة
+        initSubscriptionSystem();
+    } else {
+        // body مش موجود - انتظر
+        console.log('⏳ انتظار تحميل body...');
+        document.addEventListener('DOMContentLoaded', function() {
+            initSubscriptionSystem();
+        });
+    }
+}
+
+// بدء التهيئة
+startSubscriptionSystem();
 
 // إعادة التحقق عند العودة إلى الصفحة (من back/forward)
 window.addEventListener('pageshow', function(event) {
