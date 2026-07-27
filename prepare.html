@@ -6,13 +6,10 @@
   <title>Order Preparation · تحضير الأوردرات</title>
 
   <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js">
-  </script>
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js">
-  </script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
   <!-- SheetJS -->
-  <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js">
-  </script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
   <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
   <!-- Google Fonts -->
@@ -2027,47 +2024,53 @@
             return;
           }
 
-          // Group by product (name + sku)
+          // ============================================================
+          // 🔥 الحل الجذري: الاحتفاظ بمعرف فريد لكل صف (SKU + Color + Size)
+          // ============================================================
+          // نقوم بتجميع المنتجات حسب الـ SKU فقط (بدون دمج الألوان والمقاسات)
+          // بحيث كل عنصر يحتفظ بهويته الفريدة
+          // ============================================================
           const groups = {};
           invoice.items.forEach(item => {
-            const key = (item.name || 'Unknown') + '|' + (item.sku || '');
-            if (!groups[key]) {
-              groups[key] = {
+            const sku = item.sku || 'Unknown';
+            if (!groups[sku]) {
+              groups[sku] = {
+                sku: sku,
                 name: item.name || 'Unknown',
-                sku: item.sku || '',
                 unitPrice: item.unitPrice || 0,
                 image: item.image || '',
-                colors: {}
+                items: [] // سنخزن كل العناصر الفريدة هنا (كل لون + مقاس)
               };
             }
-            const color = item.color || 'No Color';
-            if (!groups[key].colors[color]) groups[key].colors[color] = [];
-            groups[key].colors[color].push({
+            // نضيف العنصر كاملاً مع هويته الفريدة (لون + مقاس)
+            groups[sku].items.push({
+              color: item.color || 'No Color',
               size: item.size || 'No Size',
               qty: item.qty || 0,
               total: item.total || 0,
-              preparedQty: item.preparedQty || 0
+              preparedQty: item.preparedQty || 0,
+              // 🔑 المفتاح الفريد الذي سيستخدم للتحديث
+              uniqueKey: `${sku}|${item.color || 'No Color'}|${item.size || 'No Size'}`
             });
           });
 
           let html = '';
           let productIdx = 0;
-          for (const key in groups) {
-            const g = groups[key];
+          for (const sku in groups) {
+            const g = groups[sku];
             const productId = 'preview_prod_' + productIdx;
             if (this._productCardStates[productId] === undefined) {
               this._productCardStates[productId] = true;
             }
             const isOpen = this._productCardStates[productId];
 
+            // حساب التقدم الكلي للمنتج
             let totalQty = 0,
               totalPrepared = 0;
-            for (const color in g.colors) {
-              g.colors[color].forEach(s => {
-                totalQty += s.qty || 0;
-                totalPrepared += s.preparedQty || 0;
-              });
-            }
+            g.items.forEach(item => {
+              totalQty += item.qty || 0;
+              totalPrepared += item.preparedQty || 0;
+            });
             const prodProgress = totalQty === 0 ? 0 : Math.round((totalPrepared / totalQty) * 100);
             const isDone = prodProgress === 100;
 
@@ -2098,17 +2101,29 @@
         // ===== RENDER PREVIEW COLORS =====
         renderPreviewColors(g, productId) {
           let html = '';
+          // ============================================================
+          // 🔥 تجميع حسب اللون ولكن مع الاحتفاظ بالعناصر الفريدة
+          // ============================================================
+          const colorMap = {};
+          g.items.forEach(item => {
+            const color = item.color;
+            if (!colorMap[color]) {
+              colorMap[color] = [];
+            }
+            colorMap[color].push(item);
+          });
+
           let colorIdx = 0;
-          for (const color in g.colors) {
-            const sizes = g.colors[color];
+          for (const color in colorMap) {
+            const colorItems = colorMap[color];
             const colorId = productId + '_color_' + colorIdx;
             if (this._productCardStates[colorId] === undefined) {
               this._productCardStates[colorId] = true;
             }
             const isColorOpen = this._productCardStates[colorId];
 
-            const totalQty = sizes.reduce((sum, s) => sum + s.qty, 0);
-            const totalPrepared = sizes.reduce((sum, s) => sum + (s.preparedQty || 0), 0);
+            const totalQty = colorItems.reduce((sum, item) => sum + item.qty, 0);
+            const totalPrepared = colorItems.reduce((sum, item) => sum + (item.preparedQty || 0), 0);
             const colorProgress = totalQty === 0 ? 0 : Math.round((totalPrepared / totalQty) * 100);
 
             html += `
@@ -2119,17 +2134,19 @@
                   <span class="color-total">${totalPrepared}/${totalQty} (${colorProgress}%)</span>
                 </div>
                 <div class="color-sizes ${isColorOpen ? 'open' : ''}">
-                  ${sizes.map((s) => {
-                    const isPrepared = (s.preparedQty || 0) >= (s.qty || 0);
-                    const isPartial = (s.preparedQty || 0) > 0 && (s.preparedQty || 0) < (s.qty || 0);
+                  ${colorItems.map((item) => {
+                    const isPrepared = (item.preparedQty || 0) >= (item.qty || 0);
+                    const isPartial = (item.preparedQty || 0) > 0 && (item.preparedQty || 0) < (item.qty || 0);
                     const statusClass = isPrepared ? 'prepared' : isPartial ? 'partial' : 'pending';
+                    // 🔑 نمرر المفتاح الفريد بدلاً من productId
+                    const uniqueKey = item.uniqueKey;
                     return `
                       <div class="size-row">
-                        <span class="size-label">${Utils.escapeHtml(s.size)}</span>
+                        <span class="size-label">${Utils.escapeHtml(item.size)}</span>
                         <div class="qty-control">
-                          <button onclick="window.UI.changePrepareQty('${productId}', '${color}', '${s.size}', -1)"><i class="fas fa-minus"></i></button>
-                          <span class="qty-val ${statusClass}">${s.preparedQty || 0}/${s.qty || 0}</span>
-                          <button onclick="window.UI.changePrepareQty('${productId}', '${color}', '${s.size}', 1)"><i class="fas fa-plus"></i></button>
+                          <button onclick="window.UI.changePrepareQty('${uniqueKey}', -1)"><i class="fas fa-minus"></i></button>
+                          <span class="qty-val ${statusClass}">${item.preparedQty || 0}/${item.qty || 0}</span>
+                          <button onclick="window.UI.changePrepareQty('${uniqueKey}', 1)"><i class="fas fa-plus"></i></button>
                         </div>
                       </div>
                     `;
@@ -2157,7 +2174,8 @@
         },
 
         // ===== CHANGE PREPARE QTY (مستقل تمامًا لكل منتج/لون/مقاس) =====
-        changePrepareQty(productId, color, size, delta) {
+        // 🔥 الآن نستقبل المفتاح الفريد بدلاً من productId
+        changePrepareQty(uniqueKey, delta) {
           if (!this._selectedInvoice || !this._selectedInvoice.items) return;
 
           if (Utils.isInvoiceClosed(this._selectedInvoice)) {
@@ -2165,24 +2183,28 @@
             return;
           }
 
-          let found = false;
-          this._selectedInvoice.items.forEach(item => {
-            const itemColor = item.color || 'No Color';
-            const itemSize = item.size || 'No Size';
-            // نطابق تمامًا: نفس المنتج (via productId غير مستخدم مباشرة، لكن نطابق بالاسم+SKU)
-            // لكننا نستخدم اللون والمقاس فقط لضمان استقلالية كل صف.
-            if (itemColor === color && itemSize === size) {
-              const current = item.preparedQty || 0;
-              const max = item.qty || 0;
-              const newQty = Math.max(0, Math.min(max, current + delta));
-              if (newQty !== current) {
-                item.preparedQty = newQty;
-                found = true;
-              }
-            }
+          // ============================================================
+          // 🔥 البحث عن العنصر باستخدام المفتاح الفريد
+          // ============================================================
+          const item = this._selectedInvoice.items.find(it => {
+            const sku = it.sku || 'Unknown';
+            const color = it.color || 'No Color';
+            const size = it.size || 'No Size';
+            return `${sku}|${color}|${size}` === uniqueKey;
           });
 
-          if (found) {
+          if (!item) {
+            console.warn('⚠️ العنصر غير موجود:', uniqueKey);
+            return;
+          }
+
+          const current = item.preparedQty || 0;
+          const max = item.qty || 0;
+          const newQty = Math.max(0, Math.min(max, current + delta));
+
+          if (newQty !== current) {
+            item.preparedQty = newQty;
+
             this._selectedInvoice.totalPieces = Utils.calculateTotalPieces(this._selectedInvoice.items);
             this._selectedInvoice.totalValue = Utils.calculateTotalValue(this._selectedInvoice.items);
 
