@@ -1,5 +1,5 @@
 // ============================================================
-// subscription.js - نظام التحقق من الاشتراك المتكامل v2.0
+// subscription.js - نظام التحقق من الاشتراك (ذاتي التشغيل)
 // ============================================================
 
 // رابط الـ Google Apps Script
@@ -8,17 +8,11 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbysZjQMWPbmY4N1wOUhz
 // مفاتيح التخزين المحلي
 const STORAGE_KEY = 'subscription_data';
 const CODE_KEY = 'subscription_code';
-const USER_KEY = 'currentUser';
 
 // ============================================================
 // 1. دوال التحقق من الكود مع السيرفر
 // ============================================================
 
-/**
- * التحقق من الكود مع السيرفر
- * @param {string} code كود الاشتراك
- * @returns {Promise<Object>} نتيجة التحقق
- */
 async function verifyCodeWithServer(code) {
     try {
         const response = await fetch(`${SCRIPT_URL}?code=${encodeURIComponent(code)}&t=${Date.now()}`);
@@ -37,10 +31,6 @@ async function verifyCodeWithServer(code) {
 // 2. دوال جلب بيانات الاشتراك
 // ============================================================
 
-/**
- * جلب بيانات الاشتراك من السيرفر (تحديث فوري)
- * @returns {Promise<Object>} بيانات الاشتراك
- */
 async function fetchSubscriptionFromServer() {
     try {
         console.log('🔄 جاري جلب بيانات الاشتراك من السيرفر...');
@@ -51,7 +41,6 @@ async function fetchSubscriptionFromServer() {
         const data = await response.json();
         console.log('📊 بيانات الاشتراك المستلمة:', data);
         
-        // تخزين البيانات في التخزين المحلي
         localStorage.setItem(STORAGE_KEY, JSON.stringify({
             data: data,
             timestamp: Date.now()
@@ -60,7 +49,6 @@ async function fetchSubscriptionFromServer() {
         return data;
     } catch (error) {
         console.error('❌ فشل في جلب بيانات الاشتراك:', error);
-        // في حالة الخطأ، محاولة استخدام البيانات المخزنة مؤقتاً
         const cachedData = localStorage.getItem(STORAGE_KEY);
         if (cachedData) {
             const parsed = JSON.parse(cachedData);
@@ -71,10 +59,6 @@ async function fetchSubscriptionFromServer() {
     }
 }
 
-/**
- * التحقق من حالة الاشتراك المخزنة
- * @returns {Promise<Object>} حالة الاشتراك
- */
 async function checkSubscription() {
     return await fetchSubscriptionFromServer();
 }
@@ -83,11 +67,6 @@ async function checkSubscription() {
 // 3. دوال التحقق من الصلاحية
 // ============================================================
 
-/**
- * التحقق من صلاحية الاشتراك وعرض النتائج في الكونسول
- * @param {Object} subscriptionData بيانات الاشتراك
- * @returns {Object} { isValid: boolean, status: string, message: string, remainingDays: number }
- */
 function validateSubscription(subscriptionData) {
     console.log('🔍 بدء التحقق من صلاحية الاشتراك...');
     
@@ -103,7 +82,6 @@ function validateSubscription(subscriptionData) {
 
     const { status, remainingDays, code, startDate, activationDuration } = subscriptionData;
 
-    // عرض معلومات الاشتراك في الكونسول
     console.log('📋 معلومات الاشتراك:');
     console.log(`   🆔 كود الاشتراك: ${code}`);
     console.log(`   📅 تاريخ البدء: ${startDate}`);
@@ -111,7 +89,6 @@ function validateSubscription(subscriptionData) {
     console.log(`   📊 الحالة: ${status}`);
     console.log(`   📆 الأيام المتبقية: ${remainingDays} يوم`);
 
-    // التحقق من الحالة
     if (status === 'Expired') {
         console.log('❌ الاشتراك منتهي الصلاحية');
         return {
@@ -159,24 +136,15 @@ function validateSubscription(subscriptionData) {
 // 4. دوال إدارة الكود المخزن
 // ============================================================
 
-/**
- * حفظ الكود في التخزين المحلي
- */
 function saveCode(code) {
     localStorage.setItem(CODE_KEY, code);
     console.log(`💾 تم حفظ الكود: ${code}`);
 }
 
-/**
- * جلب الكود المخزن
- */
 function getSavedCode() {
     return localStorage.getItem(CODE_KEY);
 }
 
-/**
- * حذف الكود المخزن
- */
 function clearSavedCode() {
     localStorage.removeItem(CODE_KEY);
     localStorage.removeItem(STORAGE_KEY);
@@ -184,41 +152,252 @@ function clearSavedCode() {
 }
 
 // ============================================================
-// 5. دوال عرض الحالة في الواجهة
+// 5. دوال إنشاء وعرض واجهة الاشتراك (تلقائياً)
 // ============================================================
 
-/**
- * عرض رسالة في الكونسول وفي الواجهة
- */
-function showMessage(elementId, message, type = 'error') {
-    const element = document.getElementById(elementId);
-    if (element) {
-        element.textContent = message;
-        element.style.display = 'block';
-        element.className = `message-box message-${type}`;
-        setTimeout(() => {
-            element.style.display = 'none';
-        }, 5000);
+function createSubscriptionUI() {
+    // التحقق من وجود العناصر بالفعل
+    if (document.getElementById('subscriptionOverlay')) {
+        return;
     }
-    console.log(`${type === 'error' ? '❌' : type === 'success' ? '✅' : '⚠️'} ${message}`);
+
+    // إنشاء الـ Overlay
+    const overlay = document.createElement('div');
+    overlay.id = 'subscriptionOverlay';
+    overlay.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.7);
+        backdrop-filter: blur(10px);
+        display: none;
+        justify-content: center;
+        align-items: center;
+        z-index: 999999;
+        padding: 20px;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    `;
+
+    // إنشاء البطاقة
+    const card = document.createElement('div');
+    card.id = 'subscriptionCard';
+    card.style.cssText = `
+        background: white;
+        border-radius: 20px;
+        padding: 40px;
+        max-width: 450px;
+        width: 100%;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        animation: subscriptionFadeIn 0.5s ease;
+        text-align: center;
+        position: relative;
+    `;
+
+    // إضافة الأنيميشن
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes subscriptionFadeIn {
+            from { opacity: 0; transform: translateY(-30px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        @keyframes subscriptionSpin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .sub-spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #e0e0e0;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            animation: subscriptionSpin 1s linear infinite;
+            margin: 10px auto;
+        }
+    `;
+    document.head.appendChild(style);
+
+    // محتوى البطاقة - الإصدار 1: إدخال الكود
+    card.innerHTML = `
+        <div id="subCodeContent">
+            <div style="font-size: 60px; margin-bottom: 15px;">🔑</div>
+            <h2 style="color: #333; font-size: 24px; margin-bottom: 10px;">تفعيل الاشتراك</h2>
+            <p style="color: #666; font-size: 14px; margin-bottom: 25px;">أدخل كود التفعيل الخاص بك للوصول إلى النظام</p>
+            
+            <div id="subError" style="
+                background: #fee;
+                color: #c33;
+                padding: 12px;
+                border-radius: 10px;
+                margin-bottom: 15px;
+                text-align: center;
+                display: none;
+            "></div>
+            <div id="subSuccess" style="
+                background: #e8f5e9;
+                color: #2e7d32;
+                padding: 12px;
+                border-radius: 10px;
+                margin-bottom: 15px;
+                text-align: center;
+                display: none;
+            "></div>
+            
+            <input type="text" id="subActivationCode" placeholder="أدخل كود التفعيل" style="
+                width: 100%;
+                padding: 15px;
+                border: 2px solid #e0e0e0;
+                border-radius: 12px;
+                font-size: 18px;
+                text-align: center;
+                letter-spacing: 3px;
+                font-weight: bold;
+                transition: all 0.3s;
+                margin-bottom: 15px;
+                font-family: inherit;
+            ">
+            <button id="subVerifyBtn" style="
+                width: 100%;
+                padding: 15px;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                border: none;
+                border-radius: 12px;
+                font-size: 18px;
+                font-weight: bold;
+                cursor: pointer;
+                transition: all 0.3s;
+                font-family: inherit;
+            " onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
+                🔓 تحقق من الكود
+            </button>
+            <p style="margin-top: 15px; font-size: 12px; color: #999;">
+                إذا كنت تواجه مشكلة، يرجى <a href="mailto:support@example.com" style="color: #667eea; text-decoration: none;">التواصل مع الدعم</a>
+            </p>
+        </div>
+        
+        <div id="subLoadingContent" style="display: none;">
+            <div style="font-size: 40px; margin-bottom: 15px;">⏳</div>
+            <h2 style="color: #333; font-size: 20px; margin-bottom: 10px;">جاري التحقق...</h2>
+            <div class="sub-spinner"></div>
+            <p id="subLoadingText" style="color: #666; font-size: 14px; margin-top: 15px;">يرجى الانتظار</p>
+        </div>
+        
+        <div id="subExpiredContent" style="display: none;">
+            <div style="font-size: 60px; margin-bottom: 15px;">⛔</div>
+            <h2 style="color: #d32f2f; font-size: 24px; margin-bottom: 10px;">انتهت صلاحية الاشتراك</h2>
+            <p id="subExpiredMessage" style="color: #666; font-size: 16px; line-height: 1.8; margin-bottom: 15px;"></p>
+            <button id="subRetryBtn" style="
+                width: 100%;
+                padding: 15px;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                border: none;
+                border-radius: 12px;
+                font-size: 16px;
+                font-weight: bold;
+                cursor: pointer;
+                transition: all 0.3s;
+                font-family: inherit;
+            " onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
+                🔄 إدخال كود جديد
+            </button>
+        </div>
+    `;
+
+    overlay.appendChild(card);
+    document.body.appendChild(overlay);
+
+    // إضافة event listeners
+    const verifyBtn = document.getElementById('subVerifyBtn');
+    const codeInput = document.getElementById('subActivationCode');
+    const retryBtn = document.getElementById('subRetryBtn');
+
+    if (verifyBtn) {
+        verifyBtn.addEventListener('click', handleCodeVerification);
+    }
+    if (codeInput) {
+        codeInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                handleCodeVerification();
+            }
+        });
+        setTimeout(() => codeInput.focus(), 300);
+    }
+    if (retryBtn) {
+        retryBtn.addEventListener('click', () => {
+            showCodeInput();
+            const input = document.getElementById('subActivationCode');
+            if (input) {
+                input.value = '';
+                input.focus();
+            }
+            document.getElementById('subError').style.display = 'none';
+            document.getElementById('subSuccess').style.display = 'none';
+        });
+    }
+
+    // جعل الدوال متاحة عالمياً
+    window.showSubscriptionOverlay = showSubscriptionOverlay;
+    window.hideSubscriptionOverlay = hideSubscriptionOverlay;
+    window.showCodeInput = showCodeInput;
+    window.showLoading = showLoading;
+    window.showExpired = showExpired;
 }
 
-/**
- * عرض حالة الاشتراك في الواجهة
- */
-function showSubscriptionStatus(subscriptionData) {
-    const statusDiv = document.getElementById('subscriptionStatus');
-    if (statusDiv && subscriptionData) {
-        statusDiv.style.display = 'block';
-        const days = subscriptionData.remainingDays || 0;
-        statusDiv.textContent = `✅ الاشتراك نشط - متبقي ${days} يوم`;
-        
-        if (days <= 3) {
-            statusDiv.className = 'subscription-status warning';
-            statusDiv.textContent = `⚠️ تنبيه: الاشتراك سينتهي خلال ${days} أيام`;
-        } else {
-            statusDiv.className = 'subscription-status active';
-        }
+// دوال التحكم في الـ UI
+function showSubscriptionOverlay() {
+    const overlay = document.getElementById('subscriptionOverlay');
+    if (overlay) overlay.style.display = 'flex';
+}
+
+function hideSubscriptionOverlay() {
+    const overlay = document.getElementById('subscriptionOverlay');
+    if (overlay) overlay.style.display = 'none';
+}
+
+function showCodeInput() {
+    document.getElementById('subCodeContent').style.display = 'block';
+    document.getElementById('subLoadingContent').style.display = 'none';
+    document.getElementById('subExpiredContent').style.display = 'none';
+}
+
+function showLoading(message = 'جاري التحقق من الاشتراك...') {
+    document.getElementById('subCodeContent').style.display = 'none';
+    document.getElementById('subLoadingContent').style.display = 'block';
+    document.getElementById('subExpiredContent').style.display = 'none';
+    const text = document.getElementById('subLoadingText');
+    if (text) text.textContent = message;
+}
+
+function showExpired(message) {
+    document.getElementById('subCodeContent').style.display = 'none';
+    document.getElementById('subLoadingContent').style.display = 'none';
+    document.getElementById('subExpiredContent').style.display = 'block';
+    const msg = document.getElementById('subExpiredMessage');
+    if (msg) msg.textContent = message;
+}
+
+function showSubError(message) {
+    const errorDiv = document.getElementById('subError');
+    if (errorDiv) {
+        errorDiv.textContent = message;
+        errorDiv.style.display = 'block';
+        setTimeout(() => {
+            errorDiv.style.display = 'none';
+        }, 4000);
+    }
+}
+
+function showSubSuccess(message) {
+    const successDiv = document.getElementById('subSuccess');
+    if (successDiv) {
+        successDiv.textContent = message;
+        successDiv.style.display = 'block';
+        setTimeout(() => {
+            successDiv.style.display = 'none';
+        }, 3000);
     }
 }
 
@@ -226,22 +405,19 @@ function showSubscriptionStatus(subscriptionData) {
 // 6. دوال التحقق من الكود المدخل
 // ============================================================
 
-/**
- * التحقق من الكود المدخل
- */
-async function verifyCode() {
-    const input = document.getElementById('activationCode');
+async function handleCodeVerification() {
+    const input = document.getElementById('subActivationCode');
     const code = input?.value?.trim()?.toUpperCase();
 
     if (!code) {
-        showMessage('codeError', '⚠️ يرجى إدخال كود التفعيل');
+        showSubError('⚠️ يرجى إدخال كود التفعيل');
         input?.focus();
         return;
     }
 
     console.log(`🔑 جاري التحقق من الكود: ${code}`);
 
-    const btn = document.querySelector('#verifyBtn');
+    const btn = document.getElementById('subVerifyBtn');
     const originalText = btn?.textContent || 'تحقق';
     if (btn) {
         btn.textContent = '⏳ جاري التحقق...';
@@ -259,7 +435,7 @@ async function verifyCode() {
                 timestamp: Date.now()
             }));
             
-            showMessage('codeSuccess', `✅ تم التفعيل بنجاح! متبقي ${result.remainingDays} يوم`, 'success');
+            showSubSuccess(`✅ تم التفعيل بنجاح! متبقي ${result.remainingDays} يوم`);
             
             console.log('🎉 تم تفعيل الاشتراك بنجاح!');
             console.log(`   📅 تاريخ البدء: ${result.startDate}`);
@@ -271,13 +447,13 @@ async function verifyCode() {
                 btn.style.background = '#4caf50';
             }
             
+            // إعادة تحميل الصفحة بعد 1.5 ثانية
             setTimeout(() => {
-                // إعادة تحميل الصفحة لعرض البيانات المحدثة
                 window.location.reload();
             }, 1500);
         } else {
             const errorMsg = result.message || '❌ كود التفعيل غير صالح أو منتهي الصلاحية';
-            showMessage('codeError', errorMsg);
+            showSubError(errorMsg);
             console.log(`❌ الكود غير صالح: ${errorMsg}`);
             
             if (btn) {
@@ -288,7 +464,7 @@ async function verifyCode() {
         }
     } catch (error) {
         console.error('❌ خطأ في التحقق:', error);
-        showMessage('codeError', '⚠️ حدث خطأ في التحقق، يرجى المحاولة مرة أخرى');
+        showSubError('⚠️ حدث خطأ في التحقق، يرجى المحاولة مرة أخرى');
         
         if (btn) {
             btn.textContent = originalText;
@@ -301,10 +477,6 @@ async function verifyCode() {
 // 7. الوظيفة الرئيسية للتحقق من الاشتراك
 // ============================================================
 
-/**
- * التحقق من الاشتراك عند تحميل الصفحة (الوظيفة الرئيسية)
- * يتم استدعاؤها تلقائياً عند تحميل أي صفحة
- */
 async function checkSubscriptionOnLoad() {
     console.log('🚀 ===== بدء التحقق من الاشتراك =====');
     console.log(`📅 الوقت: ${new Date().toLocaleString('ar-EG')}`);
@@ -315,22 +487,22 @@ async function checkSubscriptionOnLoad() {
         
         if (!savedCode) {
             console.log('ℹ️ لا يوجد كود اشتراك مخزن');
-            showCodeSection();
+            showSubscriptionOverlay();
+            showCodeInput();
             console.log('🚀 ===== انتهى التحقق (لا يوجد كود) =====');
             return false;
         }
 
         console.log(`🔑 الكود المخزن: ${savedCode}`);
+        showSubscriptionOverlay();
+        showLoading('جاري التحقق من صلاحية الاشتراك...');
 
-        // جلب بيانات الاشتراك من السيرفر (تحديث فوري)
         const subscriptionData = await fetchSubscriptionFromServer();
         console.log('📊 بيانات الاشتراك المستلمة:', subscriptionData);
 
-        // التحقق من الصلاحية
         const validationResult = validateSubscription(subscriptionData);
         console.log('📊 نتيجة التحقق النهائية:', validationResult);
 
-        // عرض المدة الجديدة في الكونسول بشكل مميز
         console.log('💡 ===== معلومات الاشتراك المحدثة =====');
         console.log(`   ✅ الحالة: ${validationResult.status}`);
         console.log(`   📆 الأيام المتبقية: ${validationResult.remainingDays} يوم`);
@@ -339,14 +511,12 @@ async function checkSubscriptionOnLoad() {
 
         if (validationResult.isValid) {
             console.log('✅ الاشتراك صالح، مرحباً بك!');
-            showLoginSection();
-            showSubscriptionStatus(subscriptionData);
+            hideSubscriptionOverlay();
             console.log('🚀 ===== انتهى التحقق بنجاح =====');
             return true;
         } else {
             console.log('❌ الاشتراك غير صالح:', validationResult.message);
-            showCodeSection();
-            showMessage('codeError', `⚠️ ${validationResult.message}. يرجى إدخال كود جديد.`);
+            showExpired(validationResult.message);
             clearSavedCode();
             console.log('🚀 ===== انتهى التحقق (الاشتراك منتهي) =====');
             return false;
@@ -354,170 +524,58 @@ async function checkSubscriptionOnLoad() {
     } catch (error) {
         console.error('❌ فشل التحقق من الاشتراك:', error);
         console.log('🚀 ===== انتهى التحقق بخطأ =====');
-        showCodeSection();
-        showMessage('codeError', '⚠️ تعذر التحقق من الاشتراك، يرجى إدخال الكود يدوياً');
+        
+        // في حالة الخطأ، محاولة استخدام البيانات المخزنة مؤقتاً
+        const cachedData = localStorage.getItem(STORAGE_KEY);
+        if (cachedData) {
+            try {
+                const parsed = JSON.parse(cachedData);
+                const validationResult = validateSubscription(parsed.data);
+                if (validationResult.isValid) {
+                    console.log('✅ استخدام البيانات المخزنة مؤقتاً - اشتراك صالح');
+                    hideSubscriptionOverlay();
+                    return true;
+                } else {
+                    showExpired(validationResult.message);
+                    clearSavedCode();
+                    return false;
+                }
+            } catch (e) {
+                // تجاهل
+            }
+        }
+
+        showSubscriptionOverlay();
+        showCodeInput();
+        showSubError('⚠️ تعذر التحقق من الاشتراك، يرجى إدخال الكود يدوياً');
         return false;
     }
 }
 
 // ============================================================
-// 8. دوال التحكم في عرض الأقسام
+// 8. إعادة تعيين الاشتراك (للاستخدام الخارجي)
 // ============================================================
 
-/**
- * إظهار قسم إدخال الكود وإخفاء قسم تسجيل الدخول
- */
-function showCodeSection() {
-    const codeSection = document.getElementById('codeSection');
-    const loginSection = document.getElementById('loginSection');
-    if (codeSection) codeSection.style.display = 'block';
-    if (loginSection) loginSection.style.display = 'none';
-    console.log('📌 تم عرض صفحة إدخال الكود');
-}
-
-/**
- * إظهار قسم تسجيل الدخول وإخفاء قسم إدخال الكود
- */
-function showLoginSection() {
-    const codeSection = document.getElementById('codeSection');
-    const loginSection = document.getElementById('loginSection');
-    if (codeSection) codeSection.style.display = 'none';
-    if (loginSection) loginSection.style.display = 'block';
-    console.log('📌 تم عرض نموذج تسجيل الدخول');
-}
-
-// ============================================================
-// 9. دوال إعادة تعيين الاشتراك
-// ============================================================
-
-/**
- * إعادة تعيين الاشتراك (تغيير الكود)
- */
 function resetSubscription() {
     if (confirm('هل أنت متأكد من رغبتك في تغيير كود الاشتراك؟')) {
         clearSavedCode();
-        showCodeSection();
-        const input = document.getElementById('activationCode');
-        if (input) {
-            input.value = '';
-            input.focus();
-        }
-        const errorDiv = document.getElementById('codeError');
-        const successDiv = document.getElementById('codeSuccess');
-        if (errorDiv) errorDiv.style.display = 'none';
-        if (successDiv) successDiv.style.display = 'none';
-        
-        const btn = document.getElementById('verifyBtn');
-        if (btn) {
-            btn.textContent = '🔓 تحقق من الكود';
-            btn.style.background = '';
-            btn.disabled = false;
-        }
-        console.log('🔄 تم إعادة تعيين الاشتراك');
+        window.location.reload();
     }
 }
 
 // ============================================================
-// 10. دوال تسجيل الدخول (للتكامل مع Firebase)
+// 9. تهيئة النظام وتشغيله تلقائياً
 // ============================================================
 
-/**
- * تسجيل الدخول (يتم استدعاؤها من الصفحة)
- */
-async function login() {
-    const username = document.getElementById('username')?.value?.trim();
-    const password = document.getElementById('password')?.value;
-    const errorDiv = document.getElementById('loginError');
-
-    if (!username || !password) {
-        if (errorDiv) {
-            errorDiv.textContent = 'يرجى إدخال اسم المستخدم وكلمة المرور';
-            errorDiv.style.display = 'block';
-            setTimeout(() => { errorDiv.style.display = 'none'; }, 3000);
-        }
-        return;
-    }
-
-    try {
-        // التحقق من المستخدم (admin أولاً)
-        if (username === 'admin') {
-            const adminSnapshot = await firebase.database().ref('users/admin').once('value');
-            if (adminSnapshot.exists() && adminSnapshot.val().password === password) {
-                localStorage.setItem(USER_KEY, JSON.stringify({
-                    username: 'admin',
-                    role: 'admin',
-                    fullName: 'مدير النظام'
-                }));
-                window.location.href = 'admin-dashboard.html';
-                return;
-            }
-        }
-
-        // التحقق من الموظفين
-        const usersSnapshot = await firebase.database().ref('users').once('value');
-        let found = false;
-        usersSnapshot.forEach((childSnapshot) => {
-            const user = childSnapshot.val();
-            if (user.username === username && user.password === password && user.role === 'employee') {
-                found = true;
-                localStorage.setItem(USER_KEY, JSON.stringify({
-                    id: childSnapshot.key,
-                    username: user.username,
-                    role: user.role,
-                    fullName: user.fullName
-                }));
-                window.location.href = 'user-dashboard.html';
-            }
-        });
-
-        if (!found && errorDiv) {
-            errorDiv.textContent = 'اسم المستخدم أو كلمة المرور غير صحيحة';
-            errorDiv.style.display = 'block';
-            setTimeout(() => { errorDiv.style.display = 'none'; }, 3000);
-        }
-    } catch (error) {
-        console.error('Login error:', error);
-        if (errorDiv) {
-            errorDiv.textContent = 'حدث خطأ في تسجيل الدخول';
-            errorDiv.style.display = 'block';
-            setTimeout(() => { errorDiv.style.display = 'none'; }, 3000);
-        }
-    }
-}
-
-// ============================================================
-// 11. دوال التحقق من حالة المستخدم
-// ============================================================
-
-/**
- * التحقق من حالة تسجيل الدخول
- */
-function getCurrentUser() {
-    const user = localStorage.getItem(USER_KEY);
-    return user ? JSON.parse(user) : null;
-}
-
-/**
- * تسجيل الخروج
- */
-function logout() {
-    localStorage.removeItem(USER_KEY);
-    window.location.href = 'index.html';
-}
-
-// ============================================================
-// 12. تهيئة النظام
-// ============================================================
-
-/**
- * تهيئة نظام الاشتراك
- */
 function initSubscriptionSystem() {
     console.log('🌟 ===== تهيئة نظام الاشتراك =====');
     console.log(`🌐 الصفحة: ${window.location.pathname}`);
     console.log(`🕐 الوقت: ${new Date().toLocaleString('ar-EG')}`);
     
-    // تنفيذ التحقق بعد تحميل الصفحة بالكامل
+    // إنشاء الـ UI أولاً
+    createSubscriptionUI();
+    
+    // تنفيذ التحقق بعد تحميل الصفحة
     if (document.readyState === 'complete') {
         setTimeout(() => {
             checkSubscriptionOnLoad();
@@ -532,63 +590,21 @@ function initSubscriptionSystem() {
 }
 
 // ============================================================
-// 13. جعل الدوال متاحة عالمياً
+// 10. جعل الدوال متاحة عالمياً
 // ============================================================
 
-window.verifyCode = verifyCode;
+window.verifyCode = handleCodeVerification;
 window.checkSubscriptionOnLoad = checkSubscriptionOnLoad;
-window.initSubscriptionSystem = initSubscriptionSystem;
 window.resetSubscription = resetSubscription;
 window.clearSavedCode = clearSavedCode;
-window.login = login;
-window.logout = logout;
-window.getCurrentUser = getCurrentUser;
 window.saveCode = saveCode;
 window.getSavedCode = getSavedCode;
-window.showMessage = showMessage;
-window.showSubscriptionStatus = showSubscriptionStatus;
-window.showCodeSection = showCodeSection;
-window.showLoginSection = showLoginSection;
 window.validateSubscription = validateSubscription;
 window.fetchSubscriptionFromServer = fetchSubscriptionFromServer;
 window.verifyCodeWithServer = verifyCodeWithServer;
 
 // ============================================================
-// 14. دعم مفتاح Enter
-// ============================================================
-
-document.addEventListener('DOMContentLoaded', function() {
-    const codeInput = document.getElementById('activationCode');
-    if (codeInput) {
-        codeInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                verifyCode();
-            }
-        });
-    }
-    
-    const passwordInput = document.getElementById('password');
-    if (passwordInput) {
-        passwordInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                login();
-            }
-        });
-    }
-    
-    const usernameInput = document.getElementById('username');
-    if (usernameInput) {
-        usernameInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                const password = document.getElementById('password');
-                if (password) password.focus();
-            }
-        });
-    }
-});
-
-// ============================================================
-// 15. بدء التهيئة التلقائية
+// 11. بدء التهيئة التلقائية
 // ============================================================
 
 // بدء التهيئة عند تحميل الصفحة
