@@ -1,18 +1,27 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>تسجيل الدخول - نظام استلام الفواتير</title>
-    
-    <!-- التحقق من الاشتراك -->
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>نظام إدارة الفواتير</title>
+
+    <!-- ============================================================ -->
+    <!-- 1. التحقق من الاشتراك (يتم تحميله أولاً)                       -->
+    <!-- ============================================================ -->
     <script src="subscription.js"></script>
-    
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
-    
+
+    <!-- ============================================================ -->
+    <!-- 2. Firebase SDK                                              -->
+    <!-- ============================================================ -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js">
+    </script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js">
+    </script>
+
     <style>
+        /* ==============================================================
+                   RESET & BASE
+                ============================================================== */
         * {
             margin: 0;
             padding: 0;
@@ -21,422 +30,1099 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
             padding: 20px;
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            background-attachment: fixed;
+            position: relative;
         }
 
+        /* خلفية متحركة خفيفة */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background:
+                radial-gradient(circle at 20% 80%, rgba(102, 126, 234, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(118, 75, 162, 0.15) 0%, transparent 50%);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* ==============================================================
+                   MAIN CONTAINER
+                ============================================================== */
         .main-container {
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            overflow: hidden;
+            position: relative;
+            z-index: 1;
             width: 100%;
-            max-width: 450px;
-            animation: fadeIn 0.5s ease;
+            max-width: 460px;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(20px);
+            border-radius: 28px;
+            box-shadow:
+                0 30px 80px rgba(0, 0, 0, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            overflow: hidden;
+            animation: containerFadeIn 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+            transition: transform 0.3s ease;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-20px); }
-            to { opacity: 1; transform: translateY(0); }
+        @keyframes containerFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px) scale(0.96);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
         }
 
+        /* ==============================================================
+                   HEADER
+                ============================================================== */
         .header {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 40px;
+            padding: 40px 30px 35px;
             text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.06) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .header-icon {
+            font-size: 48px;
+            display: block;
+            margin-bottom: 8px;
+            animation: iconFloat 3s ease-in-out infinite;
+        }
+
+        @keyframes iconFloat {
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-6px);
+            }
         }
 
         .header h1 {
-            font-size: 28px;
-            margin-bottom: 10px;
+            color: #fff;
+            font-size: 26px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            position: relative;
+            z-index: 1;
         }
 
         .header p {
-            opacity: 0.9;
+            color: rgba(255, 255, 255, 0.85);
             font-size: 14px;
+            margin-top: 6px;
+            position: relative;
+            z-index: 1;
         }
 
+        /* ==============================================================
+                   CONTENT
+                ============================================================== */
         .content {
-            padding: 40px;
+            padding: 32px 28px 28px;
         }
 
-        /* ===== قسم إدخال الكود ===== */
+        /* ==============================================================
+                   CODE SECTION
+                ============================================================== */
         #codeSection {
             display: none;
+            animation: sectionFadeIn 0.4s ease;
         }
 
-        .code-icon {
+        #codeSection.active {
+            display: block;
+        }
+
+        @keyframes sectionFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .code-icon-big {
             text-align: center;
-            font-size: 60px;
-            margin-bottom: 15px;
+            font-size: 52px;
+            margin-bottom: 6px;
         }
 
         .code-title {
             text-align: center;
-            color: #333;
-            font-size: 24px;
-            margin-bottom: 10px;
+            color: #1a1a2e;
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 4px;
         }
 
         .code-subtitle {
             text-align: center;
-            color: #666;
+            color: #6b7280;
             font-size: 14px;
-            margin-bottom: 25px;
+            margin-bottom: 24px;
+            line-height: 1.6;
         }
 
+        /* ===== رسائل ===== */
+        .message-box {
+            padding: 12px 16px;
+            border-radius: 12px;
+            margin-bottom: 18px;
+            text-align: center;
+            font-size: 14px;
+            font-weight: 500;
+            display: none;
+            animation: messagePop 0.3s ease;
+        }
+
+        @keyframes messagePop {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .message-error {
+            background: #fef2f2;
+            color: #dc2626;
+            border: 1px solid #fecaca;
+        }
+
+        .message-success {
+            background: #f0fdf4;
+            color: #16a34a;
+            border: 1px solid #bbf7d0;
+        }
+
+        .message-warning {
+            background: #fffbeb;
+            color: #d97706;
+            border: 1px solid #fde68a;
+        }
+
+        /* ===== إدخال الكود ===== */
         .input-group {
-            margin-bottom: 20px;
+            margin-bottom: 18px;
         }
 
         .input-group label {
             display: block;
-            margin-bottom: 8px;
-            color: #333;
-            font-weight: 500;
+            margin-bottom: 6px;
+            color: #374151;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .input-group .label-hint {
+            font-weight: 400;
+            color: #9ca3af;
+            font-size: 12px;
         }
 
         .input-group input {
             width: 100%;
-            padding: 15px;
-            border: 2px solid #e0e0e0;
-            border-radius: 12px;
+            padding: 14px 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 14px;
             font-size: 20px;
             text-align: center;
-            letter-spacing: 5px;
-            font-weight: bold;
+            letter-spacing: 6px;
+            font-weight: 700;
             transition: all 0.3s;
             font-family: inherit;
+            background: #fafafa;
+            color: #1a1a2e;
+            direction: ltr;
         }
 
         .input-group input:focus {
             outline: none;
             border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102,126,234,0.1);
+            background: #fff;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.12);
         }
 
         .input-group input::placeholder {
             letter-spacing: 2px;
-            font-weight: normal;
-            font-size: 16px;
+            font-weight: 400;
+            font-size: 15px;
+            color: #b0b8c4;
         }
 
+        /* ===== أزرار ===== */
         .btn-primary {
             width: 100%;
             padding: 15px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            color: #fff;
             border: none;
-            border-radius: 12px;
-            font-size: 18px;
-            font-weight: bold;
+            border-radius: 14px;
+            font-size: 17px;
+            font-weight: 700;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+            font-family: inherit;
+            position: relative;
+            overflow: hidden;
         }
 
         .btn-primary:hover:not(:disabled) {
             transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(102,126,234,0.3);
+            box-shadow: 0 12px 28px rgba(102, 126, 234, 0.35);
         }
 
         .btn-primary:active:not(:disabled) {
             transform: translateY(0);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.25);
         }
 
         .btn-primary:disabled {
             opacity: 0.7;
             cursor: not-allowed;
+            transform: none !important;
         }
 
-        .message-box {
-            padding: 12px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            text-align: center;
+        .btn-primary .spinner {
+            display: none;
+            width: 22px;
+            height: 22px;
+            border: 3px solid rgba(255, 255, 255, 0.2);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .btn-primary.loading .btn-text {
             display: none;
         }
-
-        .message-error {
-            background: #fee;
-            color: #c33;
+        .btn-primary.loading .spinner {
+            display: block;
         }
 
-        .message-success {
-            background: #e8f5e9;
-            color: #2e7d32;
+        /* ===== روابط ===== */
+        .footer-links {
+            text-align: center;
+            margin-top: 20px;
+            color: #9ca3af;
+            font-size: 13px;
         }
 
-        .message-warning {
-            background: #fff3e0;
-            color: #e65100;
+        .footer-links a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
         }
 
-        /* ===== قسم تسجيل الدخول ===== */
+        .footer-links a:hover {
+            color: #5a6fd6;
+            text-decoration: underline;
+        }
+
+        /* ==============================================================
+                   LOGIN SECTION
+                ============================================================== */
         #loginSection {
             display: none;
+            animation: sectionFadeIn 0.4s ease;
+        }
+
+        #loginSection.active {
+            display: block;
         }
 
         .subscription-status {
-            padding: 12px;
-            border-radius: 10px;
-            margin-bottom: 20px;
+            padding: 12px 16px;
+            border-radius: 12px;
+            margin-bottom: 18px;
             text-align: center;
             font-size: 14px;
+            font-weight: 500;
             display: none;
-            background: #e8f5e9;
-            color: #2e7d32;
+            background: #f0fdf4;
+            color: #16a34a;
+            border: 1px solid #bbf7d0;
+        }
+
+        .subscription-status.show {
+            display: block;
+            animation: messagePop 0.3s ease;
         }
 
         .login-error {
-            background: #fee;
-            color: #c33;
-            padding: 12px;
-            border-radius: 10px;
-            margin-bottom: 20px;
+            padding: 12px 16px;
+            border-radius: 12px;
+            margin-bottom: 18px;
             text-align: center;
+            font-size: 14px;
+            font-weight: 500;
             display: none;
+            background: #fef2f2;
+            color: #dc2626;
+            border: 1px solid #fecaca;
+        }
+
+        .login-error.show {
+            display: block;
+            animation: messagePop 0.3s ease;
         }
 
         .login-btn {
             width: 100%;
             padding: 15px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            color: #fff;
             border: none;
-            border-radius: 12px;
-            font-size: 18px;
-            font-weight: bold;
+            border-radius: 14px;
+            font-size: 17px;
+            font-weight: 700;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+            font-family: inherit;
         }
 
         .login-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(102,126,234,0.3);
+            box-shadow: 0 12px 28px rgba(102, 126, 234, 0.35);
         }
 
         .login-btn:active {
             transform: translateY(0);
         }
 
-        .footer-text {
-            text-align: center;
-            margin-top: 20px;
-            color: #999;
-            font-size: 12px;
+        .login-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none !important;
         }
 
-        .footer-text a {
-            color: #667eea;
-            text-decoration: none;
-        }
-
-        .footer-text a:hover {
-            text-decoration: underline;
-        }
-
+        /* ==============================================================
+                   RESPONSIVE
+                ============================================================== */
         @media (max-width: 480px) {
-            .header { padding: 30px; }
-            .content { padding: 25px; }
-            .header h1 { font-size: 24px; }
+            .header {
+                padding: 30px 20px 25px;
+            }
+            .header h1 {
+                font-size: 22px;
+            }
+            .content {
+                padding: 24px 18px 22px;
+            }
+            .code-title {
+                font-size: 19px;
+            }
+            .input-group input {
+                font-size: 17px;
+                padding: 12px 14px;
+                letter-spacing: 4px;
+            }
+            .btn-primary,
+            .login-btn {
+                font-size: 15px;
+                padding: 13px;
+            }
+        }
+
+        @media (max-width: 380px) {
+            .header {
+                padding: 24px 16px 20px;
+            }
+            .header h1 {
+                font-size: 19px;
+            }
+            .content {
+                padding: 18px 14px 18px;
+            }
+            .code-icon-big {
+                font-size: 40px;
+            }
+            .input-group input {
+                font-size: 15px;
+                padding: 10px 12px;
+                letter-spacing: 3px;
+            }
+        }
+
+        /* ==============================================================
+                   UTILITY
+                ============================================================== */
+        .hidden {
+            display: none !important;
+        }
+
+        .mt-1 {
+            margin-top: 6px;
+        }
+        .mt-2 {
+            margin-top: 12px;
+        }
+        .text-center {
+            text-align: center;
+        }
+
+        /* Divider */
+        .divider {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin: 18px 0 16px;
+        }
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: #e5e7eb;
+        }
+        .divider span {
+            color: #9ca3af;
+            font-size: 12px;
+            font-weight: 500;
+            white-space: nowrap;
         }
     </style>
 </head>
 <body>
-    <div class="main-container">
+
+    <!-- ============================================================ -->
+    <!-- MAIN CONTAINER                                                -->
+    <!-- ============================================================ -->
+    <div class="main-container" id="appContainer">
+
+        <!-- HEADER -->
         <div class="header">
-            <h1>📋 نظام استلام الفواتير</h1>
-            <p>تسجيل الدخول إلى النظام</p>
+            <span class="header-icon">📋</span>
+            <h1>نظام إدارة الفواتير</h1>
+            <p>تسجيل الدخول الآمن</p>
         </div>
-        
+
+        <!-- CONTENT -->
         <div class="content">
-            <!-- ===== قسم إدخال الكود ===== -->
-            <div id="codeSection">
-                <div class="code-icon">🔑</div>
+
+            <!-- ========================================================== -->
+            <!--  قسم إدخال كود التفعيل                                      -->
+            <!-- ========================================================== -->
+            <div id="codeSection" class="active">
+                <div class="code-icon-big">🔑</div>
                 <h2 class="code-title">تفعيل الاشتراك</h2>
-                <p class="code-subtitle">أدخل كود التفعيل الخاص بك للوصول إلى النظام</p>
-                
+                <p class="code-subtitle">
+                    أدخل كود التفعيل الخاص بك للوصول إلى النظام
+                </p>
+
+                <!-- رسائل -->
                 <div id="codeError" class="message-box message-error"></div>
                 <div id="codeSuccess" class="message-box message-success"></div>
-                
+                <div id="codeWarning" class="message-box message-warning"></div>
+
+                <!-- حقل الكود -->
                 <div class="input-group">
-                    <label>📝 كود التفعيل</label>
-                    <input type="text" id="activationCode" placeholder="مثال: ABC123" autocomplete="off" maxlength="20">
+                    <label>
+                        📝 كود التفعيل
+                        <span class="label-hint">(مكون من أحرف وأرقام)</span>
+                    </label>
+                    <input
+                    type="text"
+                    id="activationCode"
+                    placeholder="مثال: ABC123"
+                    autocomplete="off"
+                    maxlength="20"
+                    spellcheck="false"
+                    dir="ltr"
+                    >
                 </div>
-                
-                <button id="verifyBtn" class="btn-primary" onclick="verifyCode()">
-                    🔓 تحقق من الكود
+
+                <!-- زر التحقق -->
+                <button id="verifyBtn" class="btn-primary">
+                    <span class="btn-text">🔓 تحقق من الكود</span>
+                    <span class="spinner"></span>
                 </button>
-                
-                <p class="footer-text">
-                    إذا كنت تواجه مشكلة، يرجى <a href="mailto:support@example.com">التواصل مع الدعم</a>
-                </p>
+
+                <div class="footer-links">
+                    إذا كنت تواجه مشكلة، يرجى
+                    <a href="mailto:support@example.com">التواصل مع الدعم</a>
+                </div>
             </div>
 
-            <!-- ===== قسم تسجيل الدخول ===== -->
+            <!-- ========================================================== -->
+            <!--  قسم تسجيل الدخول                                           -->
+            <!-- ========================================================== -->
             <div id="loginSection">
+                <!-- حالة الاشتراك -->
                 <div id="subscriptionStatus" class="subscription-status"></div>
+
+                <!-- خطأ تسجيل الدخول -->
                 <div id="loginError" class="login-error"></div>
-                
+
+                <!-- اسم المستخدم -->
                 <div class="input-group">
                     <label>👤 اسم المستخدم</label>
-                    <input type="text" id="username" placeholder="أدخل اسم المستخدم" autocomplete="off">
+                    <input
+                    type="text"
+                    id="username"
+                    placeholder="أدخل اسم المستخدم"
+                    autocomplete="username"
+                    >
                 </div>
-                
+
+                <!-- كلمة المرور -->
                 <div class="input-group">
                     <label>🔒 كلمة المرور</label>
-                    <input type="password" id="password" placeholder="أدخل كلمة المرور">
+                    <input
+                    type="password"
+                    id="password"
+                    placeholder="أدخل كلمة المرور"
+                    autocomplete="current-password"
+                    >
                 </div>
-                
-                <button class="login-btn" onclick="login()">تسجيل الدخول</button>
-                
-                <p class="footer-text">
-                    <a href="#" onclick="resetSubscription()">تغيير كود الاشتراك</a>
-                </p>
+
+                <!-- زر تسجيل الدخول -->
+                <button id="loginBtn" class="login-btn">
+                    🚪 تسجيل الدخول
+                </button>
+
+                <div class="divider">
+                    <span>أو</span>
+                </div>
+
+                <div class="footer-links">
+                    <a href="#" id="changeCodeLink">🔄 تغيير كود الاشتراك</a>
+                </div>
             </div>
+
         </div>
+        <!-- /content -->
     </div>
+    <!-- /main-container -->
 
+
+    <!-- ============================================================ -->
+    <!-- JAVASCRIPT - تكامل كامل مع subscription.js                     -->
+    <!-- ============================================================ -->
     <script>
-        // Firebase Configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyB7TgP9zI6LEc6yqfUyZqWYBqJyqL8oGxs",
-            authDomain: "exams-fab0f.firebaseapp.com",
-            databaseURL: "https://exams-fab0f-default-rtdb.firebaseio.com",
-            projectId: "exams-fab0f",
-            storageBucket: "exams-fab0f.firebasestorage.app",
-            messagingSenderId: "123456789012",
-            appId: "1:123456789012:web:abc123def456"
-        };
+        (function() {
+            'use strict';
 
-        // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
-        const database = firebase.database();
+            // ==============================================================
+            // 1. FIREBASE - الإعدادات والتهيئة
+            // ==============================================================
 
-        // Admin default account
-        const defaultAdmin = {
-            username: "admin",
-            password: "admin123",
-            role: "admin",
-            fullName: "مدير النظام"
-        };
+            const firebaseConfig = {
+                apiKey: "AIzaSyB7TgP9zI6LEc6yqfUyZqWYBqJyqL8oGxs",
+                authDomain: "exams-fab0f.firebaseapp.com",
+                databaseURL: "https://exams-fab0f-default-rtdb.firebaseio.com",
+                projectId: "exams-fab0f",
+                storageBucket: "exams-fab0f.firebasestorage.app",
+                messagingSenderId: "123456789012",
+                appId: "1:123456789012:web:abc123def456"
+            };
 
-        // Ensure admin exists
-        function initAdmin() {
-            const adminRef = database.ref('users/admin');
-            adminRef.once('value', (snapshot) => {
-                if (!snapshot.exists()) {
-                    adminRef.set(defaultAdmin);
-                }
-            });
-        }
-        initAdmin();
+            firebase.initializeApp(firebaseConfig);
+            const database = firebase.database();
 
-        // ===== وظائف تسجيل الدخول =====
-        async function login() {
-            const username = document.getElementById('username').value.trim();
-            const password = document.getElementById('password').value;
-            const errorDiv = document.getElementById('loginError');
+            // ==============================================================
+            // 2. الحساب الافتراضي للمدير
+            // ==============================================================
 
-            if (!username || !password) {
-                showLoginError('يرجى إدخال اسم المستخدم وكلمة المرور');
-                return;
-            }
+            const defaultAdmin = {
+                username: "admin",
+                password: "admin123",
+                role: "admin",
+                fullName: "مدير النظام"
+            };
 
-            try {
-                // Check admin first
-                if (username === 'admin') {
-                    const adminSnapshot = await database.ref('users/admin').once('value');
-                    if (adminSnapshot.exists() && adminSnapshot.val().password === password) {
-                        localStorage.setItem('currentUser', JSON.stringify({
-                            username: 'admin',
-                            role: 'admin',
-                            fullName: 'مدير النظام'
-                        }));
-                        window.location.href = 'admin-dashboard.html';
-                        return;
-                    }
-                }
-
-                // Check employees
-                const usersSnapshot = await database.ref('users').once('value');
-                let found = false;
-                usersSnapshot.forEach((childSnapshot) => {
-                    const user = childSnapshot.val();
-                    if (user.username === username && user.password === password && user.role === 'employee') {
-                        found = true;
-                        localStorage.setItem('currentUser', JSON.stringify({
-                            id: childSnapshot.key,
-                            username: user.username,
-                            role: user.role,
-                            fullName: user.fullName
-                        }));
-                        window.location.href = 'user-dashboard.html';
+            function initAdmin() {
+                const adminRef = database.ref('users/admin');
+                adminRef.once('value', (snapshot) => {
+                    if (!snapshot.exists()) {
+                        adminRef.set(defaultAdmin)
+                            .then(() => console.log('✅ Admin account created'))
+                            .catch(err => console.error('❌ Admin creation failed:', err));
                     }
                 });
+            }
+            initAdmin();
 
-                if (!found) {
-                    showLoginError('اسم المستخدم أو كلمة المرور غير صحيحة');
+            // ==============================================================
+            // 3. عناصر DOM
+            // ==============================================================
+
+            const $ = (id) => document.getElementById(id);
+
+            const codeSection = $('codeSection');
+            const loginSection = $('loginSection');
+
+            const activationCode = $('activationCode');
+            const verifyBtn = $('verifyBtn');
+            const codeError = $('codeError');
+            const codeSuccess = $('codeSuccess');
+            const codeWarning = $('codeWarning');
+
+            const username = $('username');
+            const password = $('password');
+            const loginBtn = $('loginBtn');
+            const loginError = $('loginError');
+            const subscriptionStatus = $('subscriptionStatus');
+            const changeCodeLink = $('changeCodeLink');
+
+            // ==============================================================
+            // 4. دوال مساعدة للـ UI
+            // ==============================================================
+
+            function hideAllMessages() {
+                [codeError, codeSuccess, codeWarning, loginError].forEach(el => {
+                    if (el) {
+                        el.style.display = 'none';
+                        el.textContent = '';
+                    }
+                });
+                if (subscriptionStatus) {
+                    subscriptionStatus.style.display = 'none';
+                    subscriptionStatus.textContent = '';
+                    subscriptionStatus.className = 'subscription-status';
                 }
-            } catch (error) {
-                console.error('Login error:', error);
-                showLoginError('حدث خطأ في تسجيل الدخول');
             }
-        }
 
-        function showLoginError(message) {
-            const errorDiv = document.getElementById('loginError');
-            errorDiv.textContent = message;
-            errorDiv.style.display = 'block';
-            setTimeout(() => {
-                errorDiv.style.display = 'none';
-            }, 3000);
-        }
-
-        // ===== إعادة تعيين الاشتراك =====
-        function resetSubscription() {
-            if (confirm('هل أنت متأكد من رغبتك في تغيير كود الاشتراك؟')) {
-                clearSavedCode();
-                document.getElementById('loginSection').style.display = 'none';
-                document.getElementById('codeSection').style.display = 'block';
-                document.getElementById('activationCode').value = '';
-                document.getElementById('activationCode').focus();
-                // إخفاء أي رسائل
-                document.getElementById('codeError').style.display = 'none';
-                document.getElementById('codeSuccess').style.display = 'none';
-                // إعادة تعيين الزر
-                const btn = document.getElementById('verifyBtn');
-                btn.textContent = '🔓 تحقق من الكود';
-                btn.style.background = '';
-                btn.disabled = false;
+            function showCodeError(msg) {
+                codeError.textContent = msg;
+                codeError.style.display = 'block';
+                codeSuccess.style.display = 'none';
+                codeWarning.style.display = 'none';
             }
-        }
 
-        // ===== دعم مفتاح Enter =====
-        document.getElementById('activationCode').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                verifyCode();
+            function showCodeSuccess(msg) {
+                codeSuccess.textContent = msg;
+                codeSuccess.style.display = 'block';
+                codeError.style.display = 'none';
+                codeWarning.style.display = 'none';
             }
-        });
 
-        document.getElementById('password').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') login();
-        });
+            function showCodeWarning(msg) {
+                codeWarning.textContent = msg;
+                codeWarning.style.display = 'block';
+                codeError.style.display = 'none';
+                codeSuccess.style.display = 'none';
+            }
 
-        document.getElementById('username').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') document.getElementById('password').focus();
-        });
+            function showLoginError(msg) {
+                loginError.textContent = msg;
+                loginError.style.display = 'block';
+                loginError.className = 'login-error show';
+            }
 
-        // ===== التحقق من الاشتراك عند تحميل الصفحة =====
-        document.addEventListener('DOMContentLoaded', async function() {
-            // التحقق من الاشتراك
-            //await checkSubscriptionOnLoad();
-        });
+            function showSubscriptionStatus(msg, type) {
+                subscriptionStatus.textContent = msg;
+                subscriptionStatus.style.display = 'block';
+                subscriptionStatus.className = 'subscription-status show';
+                if (type === 'success') {
+                    subscriptionStatus.style.background = '#f0fdf4';
+                    subscriptionStatus.style.color = '#16a34a';
+                    subscriptionStatus.style.borderColor = '#bbf7d0';
+                } else if (type === 'warning') {
+                    subscriptionStatus.style.background = '#fffbeb';
+                    subscriptionStatus.style.color = '#d97706';
+                    subscriptionStatus.style.borderColor = '#fde68a';
+                } else {
+                    subscriptionStatus.style.background = '#fef2f2';
+                    subscriptionStatus.style.color = '#dc2626';
+                    subscriptionStatus.style.borderColor = '#fecaca';
+                }
+            }
+
+            function setLoading(btn, loading) {
+                if (!btn) return;
+                if (loading) {
+                    btn.classList.add('loading');
+                    btn.disabled = true;
+                } else {
+                    btn.classList.remove('loading');
+                    btn.disabled = false;
+                }
+            }
+
+            function focusCodeInput() {
+                setTimeout(() => {
+                    activationCode?.focus();
+                    activationCode?.select();
+                }, 200);
+            }
+
+            // ==============================================================
+            // 5. التحقق من الكود (يستخدم verifyCodeWithServer من subscription.js)
+            // ==============================================================
+
+            async function verifyCode() {
+                const code = activationCode?.value?.trim()?.toUpperCase() || '';
+
+                if (!code) {
+                    showCodeError('⚠️ يرجى إدخال كود التفعيل');
+                    focusCodeInput();
+                    return;
+                }
+
+                hideAllMessages();
+                setLoading(verifyBtn, true);
+
+                try {
+                    const result = await window.verifyCodeWithServer(code);
+                    console.log('📊 نتيجة التحقق:', result);
+
+                    if (result.success && result.status === 'Active') {
+                        // حفظ الكود والبيانات
+                        window.saveCode(code);
+                        localStorage.setItem('subscription_data', JSON.stringify({
+                            data: result,
+                            timestamp: Date.now()
+                        }));
+
+                        showCodeSuccess(`✅ تم التفعيل بنجاح! متبقي ${result.remainingDays} يوم`);
+
+                        // تغيير مظهر الزر
+                        verifyBtn.querySelector('.btn-text').textContent = '✅ تم التفعيل';
+                        verifyBtn.style.background = 'linear-gradient(135deg, #22c55e, #16a34a)';
+
+                        // الانتقال إلى صفحة تسجيل الدخول بعد 1.5 ثانية
+                        setTimeout(() => {
+                            showLoginScreen(result);
+                        }, 1200);
+
+                    } else {
+                        const msg = result.message || '❌ كود غير صالح أو منتهي الصلاحية';
+                        showCodeError(msg);
+                        setLoading(verifyBtn, false);
+                        focusCodeInput();
+                    }
+
+                } catch (error) {
+                    console.error('❌ خطأ في التحقق:', error);
+                    showCodeError('⚠️ حدث خطأ في التحقق، يرجى المحاولة مرة أخرى');
+                    setLoading(verifyBtn, false);
+                    focusCodeInput();
+                }
+            }
+
+            // ==============================================================
+            // 6. عرض شاشة تسجيل الدخول
+            // ==============================================================
+
+            function showLoginScreen(subscriptionData) {
+                codeSection.classList.remove('active');
+                codeSection.style.display = 'none';
+                loginSection.style.display = 'block';
+                loginSection.classList.add('active');
+
+                // إظهار حالة الاشتراك
+                if (subscriptionData) {
+                    const days = subscriptionData.remainingDays || 0;
+                    let msg = `✅ اشتراك نشط - متبقي ${days} يوم`;
+                    let type = 'success';
+                    if (days <= 3) {
+                        msg = `⚠️ تنبيه: الاشتراك سينتهي خلال ${days} أيام`;
+                        type = 'warning';
+                    }
+                    showSubscriptionStatus(msg, type);
+                }
+
+                // تركيز على اسم المستخدم
+                setTimeout(() => username?.focus(), 300);
+
+                // إعادة تعيين زر التحقق
+                verifyBtn.querySelector('.btn-text').textContent = '🔓 تحقق من الكود';
+                verifyBtn.style.background = '';
+                setLoading(verifyBtn, false);
+            }
+
+            // ==============================================================
+            // 7. تسجيل الدخول
+            // ==============================================================
+
+            async function login() {
+                const user = username?.value?.trim() || '';
+                const pass = password?.value || '';
+
+                if (!user || !pass) {
+                    showLoginError('يرجى إدخال اسم المستخدم وكلمة المرور');
+                    return;
+                }
+
+                hideAllMessages();
+                loginBtn.disabled = true;
+                loginBtn.textContent = '⏳ جاري التحقق...';
+
+                try {
+                    // التحقق من المدير أولاً
+                    if (user === 'admin') {
+                        const snapshot = await database.ref('users/admin').once('value');
+                        if (snapshot.exists() && snapshot.val().password === pass) {
+                            localStorage.setItem('currentUser', JSON.stringify({
+                                username: 'admin',
+                                role: 'admin',
+                                fullName: 'مدير النظام'
+                            }));
+                            window.location.href = 'admin-dashboard.html';
+                            return;
+                        }
+                    }
+
+                    // التحقق من الموظفين
+                    const usersSnapshot = await database.ref('users').once('value');
+                    let found = false;
+
+                    usersSnapshot.forEach((childSnapshot) => {
+                        const userData = childSnapshot.val();
+                        if (userData.username === user &&
+                            userData.password === pass &&
+                            userData.role === 'employee') {
+                            found = true;
+                            localStorage.setItem('currentUser', JSON.stringify({
+                                id: childSnapshot.key,
+                                username: userData.username,
+                                role: userData.role,
+                                fullName: userData.fullName || userData.username
+                            }));
+                            window.location.href = 'user-dashboard.html';
+                        }
+                    });
+
+                    if (!found) {
+                        showLoginError('❌ اسم المستخدم أو كلمة المرور غير صحيحة');
+                        loginBtn.disabled = false;
+                        loginBtn.textContent = '🚪 تسجيل الدخول';
+                        password.value = '';
+                        password.focus();
+                    }
+
+                } catch (error) {
+                    console.error('❌ خطأ في تسجيل الدخول:', error);
+                    showLoginError('⚠️ حدث خطأ في تسجيل الدخول، يرجى المحاولة مرة أخرى');
+                    loginBtn.disabled = false;
+                    loginBtn.textContent = '🚪 تسجيل الدخول';
+                }
+            }
+
+            // ==============================================================
+            // 8. تغيير كود الاشتراك (إعادة تعيين)
+            // ==============================================================
+
+            function resetSubscriptionHandler() {
+                if (confirm('هل أنت متأكد من رغبتك في تغيير كود الاشتراك؟')) {
+                    window.clearSavedCode();
+                    // العودة إلى شاشة الكود
+                    loginSection.classList.remove('active');
+                    loginSection.style.display = 'none';
+                    codeSection.style.display = 'block';
+                    codeSection.classList.add('active');
+                    activationCode.value = '';
+                    hideAllMessages();
+                    verifyBtn.querySelector('.btn-text').textContent = '🔓 تحقق من الكود';
+                    verifyBtn.style.background = '';
+                    setLoading(verifyBtn, false);
+                    focusCodeInput();
+                    // إخفاء حالة الاشتراك
+                    subscriptionStatus.style.display = 'none';
+                }
+            }
+
+            // ==============================================================
+            // 9. التحقق التلقائي عند تحميل الصفحة
+            // ==============================================================
+
+            async function autoCheckSubscription() {
+                console.log('🚀 بدء التحقق التلقائي من الاشتراك...');
+
+                // استخدام الدالة من subscription.js
+                const isValid = await window.checkSubscriptionOnLoad();
+
+                // checkSubscriptionOnLoad تقوم بعرض الـ Popup المناسب
+                // لكننا نريد التحكم في UI الخاص بنا بدلاً من Overlay
+                // لذلك نتحقق من حالة الكود المخزن
+
+                const savedCode = window.getSavedCode();
+
+                if (savedCode) {
+                    // يوجد كود - نحاول التحقق منه
+                    try {
+                        const result = await window.verifyCodeWithServer(savedCode);
+                        if (result.success && result.status === 'Active') {
+                            // الكود صالح - نعرض شاشة تسجيل الدخول
+                            showLoginScreen(result);
+                            return;
+                        } else {
+                            // الكود غير صالح - نعرض شاشة الكود مع رسالة
+                            codeSection.style.display = 'block';
+                            codeSection.classList.add('active');
+                            loginSection.style.display = 'none';
+                            loginSection.classList.remove('active');
+                            showCodeError(result.message || '❌ انتهت صلاحية الاشتراك');
+                            focusCodeInput();
+                            window.clearSavedCode();
+                            return;
+                        }
+                    } catch (error) {
+                        // فشل التحقق - نعرض شاشة الكود
+                        codeSection.style.display = 'block';
+                        codeSection.classList.add('active');
+                        loginSection.style.display = 'none';
+                        loginSection.classList.remove('active');
+                        showCodeWarning('⚠️ تعذر التحقق من الاشتراك، يرجى إدخال الكود يدوياً');
+                        focusCodeInput();
+                        return;
+                    }
+                } else {
+                    // لا يوجد كود - نعرض شاشة الكود
+                    codeSection.style.display = 'block';
+                    codeSection.classList.add('active');
+                    loginSection.style.display = 'none';
+                    loginSection.classList.remove('active');
+                    // لا نعرض أي رسالة خطأ، فقط نطلب الكود
+                    hideAllMessages();
+                    focusCodeInput();
+                }
+            }
+
+            // ==============================================================
+            // 10. ربط الأحداث (Event Listeners)
+            // ==============================================================
+
+            // زر التحقق
+            verifyBtn?.addEventListener('click', verifyCode);
+
+            // مفتاح Enter في حقل الكود
+            activationCode?.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    verifyCode();
+                }
+            });
+
+            // زر تسجيل الدخول
+            loginBtn?.addEventListener('click', login);
+
+            // مفتاح Enter في حقلي تسجيل الدخول
+            username?.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    password?.focus();
+                }
+            });
+
+            password?.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    login();
+                }
+            });
+
+            // رابط تغيير الكود
+            changeCodeLink?.addEventListener('click', (e) => {
+                e.preventDefault();
+                resetSubscriptionHandler();
+            });
+
+            // ==============================================================
+            // 11. تهيئة الصفحة - تعطيل Overlay الخاص بـ subscription.js
+            // ==============================================================
+
+            // تعديل دالة createSubscriptionUI في subscription.js
+            // لتجنب ظهور Overlay، نمررها ونستبدلها بوظيفة فارغة
+            // ولكننا نريد الاحتفاظ ببقية الوظائف
+
+            // نضيف دالة لإلغاء Overlay إذا ظهر
+            function preventOverlay() {
+                const overlay = document.getElementById('subscriptionOverlay');
+                if (overlay) {
+                    overlay.style.display = 'none';
+                    overlay.style.pointerEvents = 'none';
+                }
+            }
+
+            // مراقبة ظهور الـ Overlay وإخفائه
+            const observer = new MutationObserver(() => {
+                const overlay = document.getElementById('subscriptionOverlay');
+                if (overlay && overlay.style.display !== 'none') {
+                    overlay.style.display = 'none';
+                }
+            });
+            observer.observe(document.body, { childList: true, subtree: true });
+
+            // ==============================================================
+            // 12. بدء التشغيل
+            // ==============================================================
+
+            document.addEventListener('DOMContentLoaded', async function() {
+                console.log('📄 تم تحميل الصفحة - بدء التحقق من الاشتراك');
+
+                // إخفاء أي Overlay موجود
+                preventOverlay();
+
+                // التحقق التلقائي
+                await autoCheckSubscription();
+            });
+
+            // ==============================================================
+            // 13. تصدير الدوال للاستخدام في console (للتسهيل)
+            // ==============================================================
+
+            window.__app = {
+                verifyCode,
+                login,
+                resetSubscription: resetSubscriptionHandler,
+                autoCheckSubscription,
+                showLoginScreen,
+                showCodeError,
+                showCodeSuccess,
+                showCodeWarning,
+                showLoginError,
+                showSubscriptionStatus,
+                preventOverlay
+            };
+
+            console.log('✅ تم تهيئة نظام الاشتراك والتسجيل الدخول بنجاح');
+            console.log('📌 استخدم admin / admin123 لتسجيل الدخول كمدير');
+
+        })();
     </script>
+
 </body>
 </html>
