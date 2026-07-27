@@ -85,7 +85,7 @@ function validateSubscription(subscriptionData) {
     console.log('📋 معلومات الاشتراك:');
     console.log(`   🆔 كود الاشتراك: ${code}`);
     console.log(`   📅 تاريخ البدء: ${startDate}`);
-    console.log(`   ⏱ مدة التفعيل: ${activationDuration} شهر`);
+    console.log(`   ⏱ مدة التفعيل: ${activationDuration} يوم`);
     console.log(`   📊 الحالة: ${status}`);
     console.log(`   📆 الأيام المتبقية: ${remainingDays} يوم`);
 
@@ -158,223 +158,228 @@ function clearSavedCode() {
 function createSubscriptionUI() {
     // التحقق من وجود body
     if (!document.body) {
-        console.log('⏳ انتظار تحميل body...');
-        setTimeout(createSubscriptionUI, 100);
-        return;
+        console.log('⏳ body غير موجود، سيتم إعادة المحاولة...');
+        return false;
     }
 
     // التحقق من وجود العناصر بالفعل
     if (document.getElementById('subscriptionOverlay')) {
-        return;
+        return true;
     }
 
-    // إنشاء الـ Overlay
-    const overlay = document.createElement('div');
-    overlay.id = 'subscriptionOverlay';
-    overlay.style.cssText = `
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: rgba(0, 0, 0, 0.7);
-        backdrop-filter: blur(10px);
-        display: none;
-        justify-content: center;
-        align-items: center;
-        z-index: 999999;
-        padding: 20px;
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    `;
-
-    // إنشاء البطاقة
-    const card = document.createElement('div');
-    card.id = 'subscriptionCard';
-    card.style.cssText = `
-        background: white;
-        border-radius: 20px;
-        padding: 40px;
-        max-width: 450px;
-        width: 100%;
-        box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-        animation: subscriptionFadeIn 0.5s ease;
-        text-align: center;
-        position: relative;
-        max-height: 90vh;
-        overflow-y: auto;
-    `;
-
-    // إضافة الأنيميشن
-    let style = document.getElementById('subscriptionStyles');
-    if (!style) {
-        style = document.createElement('style');
-        style.id = 'subscriptionStyles';
-        style.textContent = `
-            @keyframes subscriptionFadeIn {
-                from { opacity: 0; transform: translateY(-30px) scale(0.95); }
-                to { opacity: 1; transform: translateY(0) scale(1); }
-            }
-            @keyframes subscriptionSpin {
-                0% { transform: rotate(0deg); }
-                100% { transform: rotate(360deg); }
-            }
-            .sub-spinner {
-                width: 40px;
-                height: 40px;
-                border: 4px solid #e0e0e0;
-                border-top: 4px solid #667eea;
-                border-radius: 50%;
-                animation: subscriptionSpin 1s linear infinite;
-                margin: 10px auto;
-            }
-            #subActivationCode:focus {
-                outline: none;
-                border-color: #667eea !important;
-                box-shadow: 0 0 0 3px rgba(102,126,234,0.1) !important;
-            }
-            #subVerifyBtn:hover:not(:disabled) {
-                transform: translateY(-2px) !important;
-            }
-            #subVerifyBtn:disabled {
-                opacity: 0.7;
-                cursor: not-allowed;
-                transform: none !important;
-            }
+    try {
+        // إنشاء الـ Overlay
+        const overlay = document.createElement('div');
+        overlay.id = 'subscriptionOverlay';
+        overlay.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(10px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 999999;
+            padding: 20px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         `;
-        document.head.appendChild(style);
-    }
 
-    // محتوى البطاقة - الإصدار 1: إدخال الكود
-    card.innerHTML = `
-        <div id="subCodeContent">
-            <div style="font-size: 60px; margin-bottom: 15px;">🔑</div>
-            <h2 style="color: #333; font-size: 24px; margin-bottom: 10px;">تفعيل الاشتراك</h2>
-            <p style="color: #666; font-size: 14px; margin-bottom: 25px;">أدخل كود التفعيل الخاص بك للوصول إلى النظام</p>
+        // إنشاء البطاقة
+        const card = document.createElement('div');
+        card.id = 'subscriptionCard';
+        card.style.cssText = `
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 450px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            animation: subscriptionFadeIn 0.5s ease;
+            text-align: center;
+            position: relative;
+            max-height: 90vh;
+            overflow-y: auto;
+        `;
+
+        // إضافة الأنيميشن
+        let style = document.getElementById('subscriptionStyles');
+        if (!style) {
+            style = document.createElement('style');
+            style.id = 'subscriptionStyles';
+            style.textContent = `
+                @keyframes subscriptionFadeIn {
+                    from { opacity: 0; transform: translateY(-30px) scale(0.95); }
+                    to { opacity: 1; transform: translateY(0) scale(1); }
+                }
+                @keyframes subscriptionSpin {
+                    0% { transform: rotate(0deg); }
+                    100% { transform: rotate(360deg); }
+                }
+                .sub-spinner {
+                    width: 40px;
+                    height: 40px;
+                    border: 4px solid #e0e0e0;
+                    border-top: 4px solid #667eea;
+                    border-radius: 50%;
+                    animation: subscriptionSpin 1s linear infinite;
+                    margin: 10px auto;
+                }
+                #subActivationCode:focus {
+                    outline: none;
+                    border-color: #667eea !important;
+                    box-shadow: 0 0 0 3px rgba(102,126,234,0.1) !important;
+                }
+                #subVerifyBtn:hover:not(:disabled) {
+                    transform: translateY(-2px) !important;
+                }
+                #subVerifyBtn:disabled {
+                    opacity: 0.7;
+                    cursor: not-allowed;
+                    transform: none !important;
+                }
+            `;
+            document.head.appendChild(style);
+        }
+
+        // محتوى البطاقة
+        card.innerHTML = `
+            <div id="subCodeContent">
+                <div style="font-size: 60px; margin-bottom: 15px;">🔑</div>
+                <h2 style="color: #333; font-size: 24px; margin-bottom: 10px;">تفعيل الاشتراك</h2>
+                <p style="color: #666; font-size: 14px; margin-bottom: 25px;">أدخل كود التفعيل الخاص بك للوصول إلى النظام</p>
+                
+                <div id="subError" style="
+                    background: #fee;
+                    color: #c33;
+                    padding: 12px;
+                    border-radius: 10px;
+                    margin-bottom: 15px;
+                    text-align: center;
+                    display: none;
+                "></div>
+                <div id="subSuccess" style="
+                    background: #e8f5e9;
+                    color: #2e7d32;
+                    padding: 12px;
+                    border-radius: 10px;
+                    margin-bottom: 15px;
+                    text-align: center;
+                    display: none;
+                "></div>
+                
+                <input type="text" id="subActivationCode" placeholder="أدخل كود التفعيل" autocomplete="off" maxlength="20" style="
+                    width: 100%;
+                    padding: 15px;
+                    border: 2px solid #e0e0e0;
+                    border-radius: 12px;
+                    font-size: 18px;
+                    text-align: center;
+                    letter-spacing: 3px;
+                    font-weight: bold;
+                    transition: all 0.3s;
+                    margin-bottom: 15px;
+                    font-family: inherit;
+                    box-sizing: border-box;
+                ">
+                <button id="subVerifyBtn" style="
+                    width: 100%;
+                    padding: 15px;
+                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                    color: white;
+                    border: none;
+                    border-radius: 12px;
+                    font-size: 18px;
+                    font-weight: bold;
+                    cursor: pointer;
+                    transition: all 0.3s;
+                    font-family: inherit;
+                    box-sizing: border-box;
+                ">
+                    🔓 تحقق من الكود
+                </button>
+                <p style="margin-top: 15px; font-size: 12px; color: #999;">
+                    إذا كنت تواجه مشكلة، يرجى <a href="mailto:support@example.com" style="color: #667eea; text-decoration: none;">التواصل مع الدعم</a>
+                </p>
+            </div>
             
-            <div id="subError" style="
-                background: #fee;
-                color: #c33;
-                padding: 12px;
-                border-radius: 10px;
-                margin-bottom: 15px;
-                text-align: center;
-                display: none;
-            "></div>
-            <div id="subSuccess" style="
-                background: #e8f5e9;
-                color: #2e7d32;
-                padding: 12px;
-                border-radius: 10px;
-                margin-bottom: 15px;
-                text-align: center;
-                display: none;
-            "></div>
+            <div id="subLoadingContent" style="display: none;">
+                <div style="font-size: 40px; margin-bottom: 15px;">⏳</div>
+                <h2 style="color: #333; font-size: 20px; margin-bottom: 10px;">جاري التحقق...</h2>
+                <div class="sub-spinner"></div>
+                <p id="subLoadingText" style="color: #666; font-size: 14px; margin-top: 15px;">يرجى الانتظار</p>
+            </div>
             
-            <input type="text" id="subActivationCode" placeholder="أدخل كود التفعيل" autocomplete="off" maxlength="20" style="
-                width: 100%;
-                padding: 15px;
-                border: 2px solid #e0e0e0;
-                border-radius: 12px;
-                font-size: 18px;
-                text-align: center;
-                letter-spacing: 3px;
-                font-weight: bold;
-                transition: all 0.3s;
-                margin-bottom: 15px;
-                font-family: inherit;
-                box-sizing: border-box;
-            ">
-            <button id="subVerifyBtn" style="
-                width: 100%;
-                padding: 15px;
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                color: white;
-                border: none;
-                border-radius: 12px;
-                font-size: 18px;
-                font-weight: bold;
-                cursor: pointer;
-                transition: all 0.3s;
-                font-family: inherit;
-                box-sizing: border-box;
-            ">
-                🔓 تحقق من الكود
-            </button>
-            <p style="margin-top: 15px; font-size: 12px; color: #999;">
-                إذا كنت تواجه مشكلة، يرجى <a href="mailto:support@example.com" style="color: #667eea; text-decoration: none;">التواصل مع الدعم</a>
-            </p>
-        </div>
-        
-        <div id="subLoadingContent" style="display: none;">
-            <div style="font-size: 40px; margin-bottom: 15px;">⏳</div>
-            <h2 style="color: #333; font-size: 20px; margin-bottom: 10px;">جاري التحقق...</h2>
-            <div class="sub-spinner"></div>
-            <p id="subLoadingText" style="color: #666; font-size: 14px; margin-top: 15px;">يرجى الانتظار</p>
-        </div>
-        
-        <div id="subExpiredContent" style="display: none;">
-            <div style="font-size: 60px; margin-bottom: 15px;">⛔</div>
-            <h2 style="color: #d32f2f; font-size: 24px; margin-bottom: 10px;">انتهت صلاحية الاشتراك</h2>
-            <p id="subExpiredMessage" style="color: #666; font-size: 16px; line-height: 1.8; margin-bottom: 15px;"></p>
-            <button id="subRetryBtn" style="
-                width: 100%;
-                padding: 15px;
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                color: white;
-                border: none;
-                border-radius: 12px;
-                font-size: 16px;
-                font-weight: bold;
-                cursor: pointer;
-                transition: all 0.3s;
-                font-family: inherit;
-                box-sizing: border-box;
-            ">
-                🔄 إدخال كود جديد
-            </button>
-        </div>
-    `;
+            <div id="subExpiredContent" style="display: none;">
+                <div style="font-size: 60px; margin-bottom: 15px;">⛔</div>
+                <h2 style="color: #d32f2f; font-size: 24px; margin-bottom: 10px;">انتهت صلاحية الاشتراك</h2>
+                <p id="subExpiredMessage" style="color: #666; font-size: 16px; line-height: 1.8; margin-bottom: 15px;"></p>
+                <button id="subRetryBtn" style="
+                    width: 100%;
+                    padding: 15px;
+                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                    color: white;
+                    border: none;
+                    border-radius: 12px;
+                    font-size: 16px;
+                    font-weight: bold;
+                    cursor: pointer;
+                    transition: all 0.3s;
+                    font-family: inherit;
+                    box-sizing: border-box;
+                ">
+                    🔄 إدخال كود جديد
+                </button>
+            </div>
+        `;
 
-    overlay.appendChild(card);
-    document.body.appendChild(overlay);
+        overlay.appendChild(card);
+        document.body.appendChild(overlay);
 
-    // إضافة event listeners
-    const verifyBtn = document.getElementById('subVerifyBtn');
-    const codeInput = document.getElementById('subActivationCode');
-    const retryBtn = document.getElementById('subRetryBtn');
+        // إضافة event listeners
+        const verifyBtn = document.getElementById('subVerifyBtn');
+        const codeInput = document.getElementById('subActivationCode');
+        const retryBtn = document.getElementById('subRetryBtn');
 
-    if (verifyBtn) {
-        verifyBtn.addEventListener('click', handleCodeVerification);
+        if (verifyBtn) {
+            verifyBtn.addEventListener('click', handleCodeVerification);
+        }
+        if (codeInput) {
+            codeInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    handleCodeVerification();
+                }
+            });
+            setTimeout(() => codeInput.focus(), 300);
+        }
+        if (retryBtn) {
+            retryBtn.addEventListener('click', () => {
+                showCodeInput();
+                const input = document.getElementById('subActivationCode');
+                if (input) {
+                    input.value = '';
+                    input.focus();
+                }
+                document.getElementById('subError').style.display = 'none';
+                document.getElementById('subSuccess').style.display = 'none';
+            });
+        }
+
+        // جعل الدوال متاحة عالمياً
+        window.showSubscriptionOverlay = showSubscriptionOverlay;
+        window.hideSubscriptionOverlay = hideSubscriptionOverlay;
+        window.showCodeInput = showCodeInput;
+        window.showLoading = showLoading;
+        window.showExpired = showExpired;
+
+        console.log('✅ تم إنشاء واجهة الاشتراك');
+        return true;
+    } catch (error) {
+        console.error('❌ خطأ في إنشاء واجهة الاشتراك:', error);
+        return false;
     }
-    if (codeInput) {
-        codeInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                handleCodeVerification();
-            }
-        });
-        setTimeout(() => codeInput.focus(), 300);
-    }
-    if (retryBtn) {
-        retryBtn.addEventListener('click', () => {
-            showCodeInput();
-            const input = document.getElementById('subActivationCode');
-            if (input) {
-                input.value = '';
-                input.focus();
-            }
-            document.getElementById('subError').style.display = 'none';
-            document.getElementById('subSuccess').style.display = 'none';
-        });
-    }
-
-    // جعل الدوال متاحة عالمياً
-    window.showSubscriptionOverlay = showSubscriptionOverlay;
-    window.hideSubscriptionOverlay = hideSubscriptionOverlay;
-    window.showCodeInput = showCodeInput;
-    window.showLoading = showLoading;
-    window.showExpired = showExpired;
-
-    console.log('✅ تم إنشاء واجهة الاشتراك');
 }
 
 // دوال التحكم في الـ UI
@@ -479,7 +484,7 @@ async function handleCodeVerification() {
             
             console.log('🎉 تم تفعيل الاشتراك بنجاح!');
             console.log(`   📅 تاريخ البدء: ${result.startDate}`);
-            console.log(`   ⏱ مدة التفعيل: ${result.activationDuration} شهر`);
+            console.log(`   ⏱ مدة التفعيل: ${result.activationDuration} يوم`);
             console.log(`   📆 الأيام المتبقية: ${result.remainingDays} يوم`);
             
             if (btn) {
@@ -527,6 +532,10 @@ async function checkSubscriptionOnLoad() {
         
         if (!savedCode) {
             console.log('ℹ️ لا يوجد كود اشتراك مخزن');
+            // تأكد من وجود الـ UI قبل عرضه
+            if (!document.getElementById('subscriptionOverlay')) {
+                createSubscriptionUI();
+            }
             showSubscriptionOverlay();
             showCodeInput();
             console.log('🚀 ===== انتهى التحقق (لا يوجد كود) =====');
@@ -534,6 +543,11 @@ async function checkSubscriptionOnLoad() {
         }
 
         console.log(`🔑 الكود المخزن: ${savedCode}`);
+        
+        // تأكد من وجود الـ UI قبل عرضه
+        if (!document.getElementById('subscriptionOverlay')) {
+            createSubscriptionUI();
+        }
         showSubscriptionOverlay();
         showLoading('جاري التحقق من صلاحية الاشتراك...');
 
@@ -576,6 +590,9 @@ async function checkSubscriptionOnLoad() {
                     hideSubscriptionOverlay();
                     return true;
                 } else {
+                    if (!document.getElementById('subscriptionOverlay')) {
+                        createSubscriptionUI();
+                    }
                     showExpired(validationResult.message);
                     clearSavedCode();
                     return false;
@@ -585,6 +602,9 @@ async function checkSubscriptionOnLoad() {
             }
         }
 
+        if (!document.getElementById('subscriptionOverlay')) {
+            createSubscriptionUI();
+        }
         showSubscriptionOverlay();
         showCodeInput();
         showSubError('⚠️ تعذر التحقق من الاشتراك، يرجى إدخال الكود يدوياً');
@@ -612,19 +632,25 @@ function initSubscriptionSystem() {
     console.log(`🌐 الصفحة: ${window.location.pathname}`);
     console.log(`🕐 الوقت: ${new Date().toLocaleString('ar-EG')}`);
     
-    // إنشاء الـ UI أولاً (مع التحقق من وجود body)
-    createSubscriptionUI();
+    // إنشاء الـ UI (مع إعادة المحاولة إذا فشل)
+    let uiCreated = createSubscriptionUI();
+    if (!uiCreated) {
+        console.log('⏳ إعادة محاولة إنشاء الـ UI بعد 500ms...');
+        setTimeout(() => {
+            createSubscriptionUI();
+        }, 500);
+    }
     
     // تنفيذ التحقق بعد تحميل الصفحة
     if (document.readyState === 'complete') {
         setTimeout(() => {
             checkSubscriptionOnLoad();
-        }, 300);
+        }, 500);
     } else {
         window.addEventListener('load', function() {
             setTimeout(() => {
                 checkSubscriptionOnLoad();
-            }, 300);
+            }, 500);
         });
     }
 }
@@ -669,7 +695,7 @@ window.addEventListener('pageshow', function(event) {
         console.log('🔄 إعادة التحقق من الاشتراك (من الكاش)');
         setTimeout(() => {
             checkSubscriptionOnLoad();
-        }, 300);
+        }, 500);
     }
 });
 
