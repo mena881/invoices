@@ -4,9 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>تسجيل الدخول - نظام استلام الفواتير</title>
+    
+    <!-- التحقق من الاشتراك -->
+    <script src="subscription.js"></script>
+    
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+    
     <style>
         * {
             margin: 0;
@@ -24,7 +29,7 @@
             padding: 20px;
         }
 
-        .login-container {
+        .main-container {
             background: white;
             border-radius: 20px;
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
@@ -39,29 +44,54 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        .login-header {
+        .header {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             padding: 40px;
             text-align: center;
         }
 
-        .login-header h1 {
+        .header h1 {
             font-size: 28px;
             margin-bottom: 10px;
         }
 
-        .login-header p {
+        .header p {
             opacity: 0.9;
             font-size: 14px;
         }
 
-        .login-form {
+        .content {
             padding: 40px;
         }
 
-        .input-group {
+        /* ===== قسم إدخال الكود ===== */
+        #codeSection {
+            display: none;
+        }
+
+        .code-icon {
+            text-align: center;
+            font-size: 60px;
+            margin-bottom: 15px;
+        }
+
+        .code-title {
+            text-align: center;
+            color: #333;
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .code-subtitle {
+            text-align: center;
+            color: #666;
+            font-size: 14px;
             margin-bottom: 25px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
         }
 
         .input-group label {
@@ -76,7 +106,10 @@
             padding: 15px;
             border: 2px solid #e0e0e0;
             border-radius: 12px;
-            font-size: 16px;
+            font-size: 20px;
+            text-align: center;
+            letter-spacing: 5px;
+            font-weight: bold;
             transition: all 0.3s;
             font-family: inherit;
         }
@@ -85,6 +118,88 @@
             outline: none;
             border-color: #667eea;
             box-shadow: 0 0 0 3px rgba(102,126,234,0.1);
+        }
+
+        .input-group input::placeholder {
+            letter-spacing: 2px;
+            font-weight: normal;
+            font-size: 16px;
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102,126,234,0.3);
+        }
+
+        .btn-primary:active:not(:disabled) {
+            transform: translateY(0);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        .message-box {
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+            display: none;
+        }
+
+        .message-error {
+            background: #fee;
+            color: #c33;
+        }
+
+        .message-success {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .message-warning {
+            background: #fff3e0;
+            color: #e65100;
+        }
+
+        /* ===== قسم تسجيل الدخول ===== */
+        #loginSection {
+            display: none;
+        }
+
+        .subscription-status {
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 14px;
+            display: none;
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .login-error {
+            background: #fee;
+            color: #c33;
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+            display: none;
         }
 
         .login-btn {
@@ -97,51 +212,93 @@
             font-size: 18px;
             font-weight: bold;
             cursor: pointer;
-            transition: transform 0.2s;
+            transition: all 0.3s;
         }
 
         .login-btn:hover {
             transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102,126,234,0.3);
         }
 
         .login-btn:active {
             transform: translateY(0);
         }
 
-        .error-message {
-            background: #fee;
-            color: #c33;
-            padding: 12px;
-            border-radius: 10px;
-            margin-bottom: 20px;
+        .footer-text {
             text-align: center;
-            display: none;
+            margin-top: 20px;
+            color: #999;
+            font-size: 12px;
+        }
+
+        .footer-text a {
+            color: #667eea;
+            text-decoration: none;
+        }
+
+        .footer-text a:hover {
+            text-decoration: underline;
         }
 
         @media (max-width: 480px) {
-            .login-header { padding: 30px; }
-            .login-form { padding: 25px; }
-            .login-header h1 { font-size: 24px; }
+            .header { padding: 30px; }
+            .content { padding: 25px; }
+            .header h1 { font-size: 24px; }
         }
     </style>
 </head>
 <body>
-    <div class="login-container">
-        <div class="login-header">
+    <div class="main-container">
+        <div class="header">
             <h1>📋 نظام استلام الفواتير</h1>
             <p>تسجيل الدخول إلى النظام</p>
         </div>
-        <div class="login-form">
-            <div class="error-message" id="errorMessage"></div>
-            <div class="input-group">
-                <label>👤 اسم المستخدم</label>
-                <input type="text" id="username" placeholder="أدخل اسم المستخدم" autocomplete="off">
+        
+        <div class="content">
+            <!-- ===== قسم إدخال الكود ===== -->
+            <div id="codeSection">
+                <div class="code-icon">🔑</div>
+                <h2 class="code-title">تفعيل الاشتراك</h2>
+                <p class="code-subtitle">أدخل كود التفعيل الخاص بك للوصول إلى النظام</p>
+                
+                <div id="codeError" class="message-box message-error"></div>
+                <div id="codeSuccess" class="message-box message-success"></div>
+                
+                <div class="input-group">
+                    <label>📝 كود التفعيل</label>
+                    <input type="text" id="activationCode" placeholder="مثال: ABC123" autocomplete="off" maxlength="20">
+                </div>
+                
+                <button id="verifyBtn" class="btn-primary" onclick="verifyCode()">
+                    🔓 تحقق من الكود
+                </button>
+                
+                <p class="footer-text">
+                    إذا كنت تواجه مشكلة، يرجى <a href="mailto:support@example.com">التواصل مع الدعم</a>
+                </p>
             </div>
-            <div class="input-group">
-                <label>🔒 كلمة المرور</label>
-                <input type="password" id="password" placeholder="أدخل كلمة المرور">
+
+            <!-- ===== قسم تسجيل الدخول ===== -->
+            <div id="loginSection">
+                <div id="subscriptionStatus" class="subscription-status"></div>
+                <div id="loginError" class="login-error"></div>
+                
+                <div class="input-group">
+                    <label>👤 اسم المستخدم</label>
+                    <input type="text" id="username" placeholder="أدخل اسم المستخدم" autocomplete="off">
+                </div>
+                
+                <div class="input-group">
+                    <label>🔒 كلمة المرور</label>
+                    <input type="password" id="password" placeholder="أدخل كلمة المرور">
+                </div>
+                
+                <button class="login-btn" onclick="login()">تسجيل الدخول</button>
+                
+                <p class="footer-text">
+                    <a href="#" onclick="resetSubscription()">تغيير كود الاشتراك</a>
+                </p>
             </div>
-            <button class="login-btn" onclick="login()">تسجيل الدخول</button>
         </div>
     </div>
 
@@ -180,13 +337,14 @@
         }
         initAdmin();
 
+        // ===== وظائف تسجيل الدخول =====
         async function login() {
             const username = document.getElementById('username').value.trim();
             const password = document.getElementById('password').value;
-            const errorDiv = document.getElementById('errorMessage');
+            const errorDiv = document.getElementById('loginError');
 
             if (!username || !password) {
-                showError('يرجى إدخال اسم المستخدم وكلمة المرور');
+                showLoginError('يرجى إدخال اسم المستخدم وكلمة المرور');
                 return;
             }
 
@@ -223,16 +381,16 @@
                 });
 
                 if (!found) {
-                    showError('اسم المستخدم أو كلمة المرور غير صحيحة');
+                    showLoginError('اسم المستخدم أو كلمة المرور غير صحيحة');
                 }
             } catch (error) {
                 console.error('Login error:', error);
-                showError('حدث خطأ في تسجيل الدخول');
+                showLoginError('حدث خطأ في تسجيل الدخول');
             }
         }
 
-        function showError(message) {
-            const errorDiv = document.getElementById('errorMessage');
+        function showLoginError(message) {
+            const errorDiv = document.getElementById('loginError');
             errorDiv.textContent = message;
             errorDiv.style.display = 'block';
             setTimeout(() => {
@@ -240,12 +398,44 @@
             }, 3000);
         }
 
-        // Enter key support
+        // ===== إعادة تعيين الاشتراك =====
+        function resetSubscription() {
+            if (confirm('هل أنت متأكد من رغبتك في تغيير كود الاشتراك؟')) {
+                clearSavedCode();
+                document.getElementById('loginSection').style.display = 'none';
+                document.getElementById('codeSection').style.display = 'block';
+                document.getElementById('activationCode').value = '';
+                document.getElementById('activationCode').focus();
+                // إخفاء أي رسائل
+                document.getElementById('codeError').style.display = 'none';
+                document.getElementById('codeSuccess').style.display = 'none';
+                // إعادة تعيين الزر
+                const btn = document.getElementById('verifyBtn');
+                btn.textContent = '🔓 تحقق من الكود';
+                btn.style.background = '';
+                btn.disabled = false;
+            }
+        }
+
+        // ===== دعم مفتاح Enter =====
+        document.getElementById('activationCode').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                verifyCode();
+            }
+        });
+
         document.getElementById('password').addEventListener('keypress', (e) => {
             if (e.key === 'Enter') login();
         });
+
         document.getElementById('username').addEventListener('keypress', (e) => {
             if (e.key === 'Enter') document.getElementById('password').focus();
+        });
+
+        // ===== التحقق من الاشتراك عند تحميل الصفحة =====
+        document.addEventListener('DOMContentLoaded', async function() {
+            // التحقق من الاشتراك
+            await checkSubscriptionOnLoad();
         });
     </script>
 </body>
