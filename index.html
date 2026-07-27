@@ -1,19 +1,13 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>تسجيل الدخول - نظام استلام الفواتير</title>
     <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js">
-    </script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js">
-    </script>
-    <!-- Subscription Check Script -->
-    <script src="subscription.js">
-    </script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
     <style>
-        /* الأنماط الأساسية */
         * {
             margin: 0;
             padding: 0;
@@ -33,7 +27,7 @@
         .login-container {
             background: white;
             border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
             overflow: hidden;
             width: 100%;
             max-width: 450px;
@@ -41,14 +35,8 @@
         }
 
         @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(-20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .login-header {
@@ -96,13 +84,7 @@
         .input-group input:focus {
             outline: none;
             border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-
-        .input-group input:disabled {
-            background: #f5f5f5;
-            cursor: not-allowed;
-            opacity: 0.7;
+            box-shadow: 0 0 0 3px rgba(102,126,234,0.1);
         }
 
         .login-btn {
@@ -118,17 +100,12 @@
             transition: transform 0.2s;
         }
 
-        .login-btn:hover:not(:disabled) {
+        .login-btn:hover {
             transform: translateY(-2px);
         }
 
-        .login-btn:active:not(:disabled) {
+        .login-btn:active {
             transform: translateY(0);
-        }
-
-        .login-btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
         }
 
         .error-message {
@@ -141,183 +118,30 @@
             display: none;
         }
 
-        .success-message {
-            background: #eaf6ed;
-            color: #28a745;
-            padding: 12px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            text-align: center;
-            display: none;
-        }
-
-        /* حالة الاشتراك */
-        .subscription-status {
-            text-align: center;
-            margin-top: 15px;
-            padding: 12px;
-            border-radius: 8px;
-            font-size: 14px;
-            border: 1px solid #e9ecef;
-            background: #f8f9fa;
-            transition: all 0.3s;
-        }
-
-        .subscription-status.active {
-            color: #28a745;
-            border-color: #28a745;
-            background: #eaf6ed;
-        }
-
-        .subscription-status.inactive {
-            color: #dc3545;
-            border-color: #dc3545;
-            background: #fce8e8;
-        }
-
-        .subscription-status .detail {
-            font-size: 12px;
-            color: #666;
-            margin-top: 5px;
-        }
-
-        /* زر التحقق من الكود */
-        .verify-btn {
-            width: 100%;
-            padding: 12px;
-            background: #28a745;
-            color: white;
-            border: none;
-            border-radius: 12px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: transform 0.2s;
-            margin-top: 5px;
-        }
-
-        .verify-btn:hover:not(:disabled) {
-            transform: translateY(-2px);
-            background: #218838;
-        }
-
-        .verify-btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
-
-        .subscription-details {
-            background: #f8f9fa;
-            border-radius: 10px;
-            padding: 15px;
-            margin-top: 15px;
-            border: 1px solid #e9ecef;
-            font-size: 14px;
-            display: none;
-        }
-
-        .subscription-details.show {
-            display: block;
-        }
-
-        .subscription-details .row {
-            display: flex;
-            justify-content: space-between;
-            padding: 6px 0;
-            border-bottom: 1px solid #e9ecef;
-        }
-
-        .subscription-details .row:last-child {
-            border-bottom: none;
-        }
-
-        .subscription-details .label {
-            color: #666;
-            font-weight: 500;
-        }
-
-        .subscription-details .value {
-            color: #333;
-            font-weight: 600;
-        }
-
-        .subscription-details .value.active {
-            color: #28a745;
-        }
-
-        .subscription-details .value.inactive {
-            color: #dc3545;
-        }
-
         @media (max-width: 480px) {
-            .login-header {
-                padding: 30px;
-            }
-            .login-form {
-                padding: 25px;
-            }
-            .login-header h1 {
-                font-size: 24px;
-            }
+            .login-header { padding: 30px; }
+            .login-form { padding: 25px; }
+            .login-header h1 { font-size: 24px; }
         }
     </style>
 </head>
 <body>
-    <div class="login-container" id="app">
+    <div class="login-container">
         <div class="login-header">
             <h1>📋 نظام استلام الفواتير</h1>
             <p>تسجيل الدخول إلى النظام</p>
         </div>
         <div class="login-form">
             <div class="error-message" id="errorMessage"></div>
-            <div class="success-message" id="successMessage"></div>
-
-            <!-- حقل إدخال كود الاشتراك -->
-            <div class="input-group">
-                <label>🔑 كود الاشتراك</label>
-                <input type="text" id="subscriptionCode" placeholder="أدخل كود الاشتراك" autocomplete="off" />
-            </div>
-            <button class="verify-btn" onclick="verifySubscription()">✅ التحقق من الكود</button>
-
-            <!-- عرض تفاصيل الاشتراك -->
-            <div class="subscription-details" id="subscriptionDetails">
-                <div class="row">
-                    <span class="label">📌 الكود</span>
-                    <span class="value" id="detailCode">-</span>
-                </div>
-                <div class="row">
-                    <span class="label">📅 تاريخ البدء</span>
-                    <span class="value" id="detailStartDate">-</span>
-                </div>
-                <div class="row">
-                    <span class="label">⏳ مدة التفعيل (يوم)</span>
-                    <span class="value" id="detailDuration">-</span>
-                </div>
-                <div class="row">
-                    <span class="label">📆 الأيام المتبقية</span>
-                    <span class="value" id="detailRemaining">-</span>
-                </div>
-                <div class="row">
-                    <span class="label">📊 الحالة</span>
-                    <span class="value" id="detailStatus">-</span>
-                </div>
-            </div>
-
-            <!-- فاصل -->
-            <hr style="margin: 20px 0; border: 1px solid #e9ecef;" />
-
             <div class="input-group">
                 <label>👤 اسم المستخدم</label>
-                <input type="text" id="username" placeholder="أدخل اسم المستخدم" autocomplete="off" />
+                <input type="text" id="username" placeholder="أدخل اسم المستخدم" autocomplete="off">
             </div>
             <div class="input-group">
                 <label>🔒 كلمة المرور</label>
-                <input type="password" id="password" placeholder="أدخل كلمة المرور" />
+                <input type="password" id="password" placeholder="أدخل كلمة المرور">
             </div>
             <button class="login-btn" onclick="login()">تسجيل الدخول</button>
-
-            <!-- عرض حالة الاشتراك -->
-            <div class="subscription-status" id="subscriptionStatus">⏳ جاري التحقق من الاشتراك...</div>
         </div>
     </div>
 
@@ -356,138 +180,10 @@
         }
         initAdmin();
 
-        // دالة التحقق من كود الاشتراك
-        async function verifySubscription() {
-            const codeInput = document.getElementById('subscriptionCode');
-            const code = codeInput.value.trim();
-            const errorDiv = document.getElementById('errorMessage');
-            const successDiv = document.getElementById('successMessage');
-            const detailsDiv = document.getElementById('subscriptionDetails');
-
-            // إخفاء الرسائل السابقة
-            errorDiv.style.display = 'none';
-            successDiv.style.display = 'none';
-            detailsDiv.classList.remove('show');
-
-            if (!code) {
-                showError('يرجى إدخال كود الاشتراك');
-                return;
-            }
-
-            try {
-                // تعطيل الزر أثناء التحقق
-                const btn = document.querySelector('.verify-btn');
-                btn.disabled = true;
-                btn.textContent = '⏳ جاري التحقق...';
-
-               const response = await fetch(`${SCRIPT_URL}?code=${encodeURIComponent(code)}`, {
-    cache: "no-store"
-});
-
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-
-                const result = await response.json();
-
-                // عرض النتيجة
-                if (result.success && result.status === 'Active') {
-                    // تخزين بيانات الاشتراك في localStorage
-                    localStorage.setItem(SUBSCRIPTION_KEY, JSON.stringify({
-                        isActive: true,
-                        timestamp: Date.now(),
-                        data: result
-                    }));
-
-                    // عرض رسالة نجاح
-                    successDiv.textContent = '✅ تم التحقق بنجاح! الاشتراك نشط.';
-                    successDiv.style.display = 'block';
-
-                    // عرض تفاصيل الاشتراك
-                    displaySubscriptionDetails(result);
-
-                    // تحديث حالة الاشتراك في الواجهة
-                    updateSubscriptionStatus(true, result);
-
-                    // تمكين حقول تسجيل الدخول
-                    enableLoginFields(true);
-                } else {
-                    // الاشتراك غير نشط أو منتهي
-                    const statusText = result.status || 'غير نشط';
-                    showError(`❌ الاشتراك غير نشط (${statusText}). يرجى التواصل مع الإدارة.`);
-
-                    // عرض التفاصيل حتى لو غير نشط
-                    if (result.success) {
-                        displaySubscriptionDetails(result);
-                    }
-
-                    // تحديث حالة الاشتراك
-                    updateSubscriptionStatus(false, result);
-
-                    // تعطيل حقول تسجيل الدخول
-                    enableLoginFields(false);
-                }
-
-            } catch (error) {
-                console.error('Error verifying subscription:', error);
-                showError('⚠️ حدث خطأ في التحقق من الكود. يرجى المحاولة مرة أخرى.');
-            } finally {
-                // إعادة تفعيل الزر
-                const btn = document.querySelector('.verify-btn');
-                btn.disabled = false;
-                btn.textContent = '✅ التحقق من الكود';
-            }
-        }
-
-        // دالة عرض تفاصيل الاشتراك
-        function displaySubscriptionDetails(data) {
-            const detailsDiv = document.getElementById('subscriptionDetails');
-
-            document.getElementById('detailCode').textContent = data.code || '-';
-            document.getElementById('detailStartDate').textContent = data.startDate || '-';
-            document.getElementById('detailDuration').textContent = data.activationDuration || '-';
-            document.getElementById('detailRemaining').textContent = data.remainingDays || '-';
-
-            const statusEl = document.getElementById('detailStatus');
-            const status = data.status || 'غير معروف';
-            statusEl.textContent = status;
-            statusEl.className = 'value ' + (status === 'Active' ? 'active' : 'inactive');
-
-            detailsDiv.classList.add('show');
-        }
-
-        // دالة تحديث حالة الاشتراك في الواجهة
-        function updateSubscriptionStatus(isActive, data) {
-            const statusEl = document.getElementById('subscriptionStatus');
-            if (isActive) {
-                statusEl.innerHTML = `✅ الاشتراك نشط - متبقي ${data.remainingDays || 0} يوم`;
-                statusEl.className = 'subscription-status active';
-            } else {
-                statusEl.innerHTML = `❌ الاشتراك غير نشط (${data.status || 'منتهي'})`;
-                statusEl.className = 'subscription-status inactive';
-            }
-        }
-
-        // دالة تمكين/تعطيل حقول تسجيل الدخول
-        function enableLoginFields(enabled) {
-            document.getElementById('username').disabled = !enabled;
-            document.getElementById('password').disabled = !enabled;
-            document.querySelector('.login-btn').disabled = !enabled;
-            document.querySelector('.login-btn').style.opacity = enabled ? '1' : '0.6';
-        }
-
-        // دالة تسجيل الدخول
         async function login() {
             const username = document.getElementById('username').value.trim();
             const password = document.getElementById('password').value;
             const errorDiv = document.getElementById('errorMessage');
-
-            // التحقق من الاشتراك أولاً
-            const subscriptionValid = await checkSubscription();
-            if (!subscriptionValid) {
-                showError('❌ الاشتراك غير نشط. يرجى إدخال كود اشتراك صحيح.');
-                return;
-            }
 
             if (!username || !password) {
                 showError('يرجى إدخال اسم المستخدم وكلمة المرور');
@@ -539,10 +235,9 @@
             const errorDiv = document.getElementById('errorMessage');
             errorDiv.textContent = message;
             errorDiv.style.display = 'block';
-            document.getElementById('successMessage').style.display = 'none';
             setTimeout(() => {
                 errorDiv.style.display = 'none';
-            }, 5000);
+            }, 3000);
         }
 
         // Enter key support
@@ -551,69 +246,6 @@
         });
         document.getElementById('username').addEventListener('keypress', (e) => {
             if (e.key === 'Enter') document.getElementById('password').focus();
-        });
-        document.getElementById('subscriptionCode').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') verifySubscription();
-        });
-
-        // عند تحميل الصفحة، التحقق من الاشتراك المخزن
-        window.addEventListener('DOMContentLoaded', async () => {
-            const statusEl = document.getElementById('subscriptionStatus');
-
-            // محاولة استعادة بيانات الاشتراك من localStorage
-            const stored = localStorage.getItem(SUBSCRIPTION_KEY);
-            if (stored) {
-                try {
-                    const data = JSON.parse(stored);
-                    if (data.data && data.data.code) {
-                        // عرض الكود المحفوظ
-                        document.getElementById('subscriptionCode').value = data.data.code;
-                        // عرض التفاصيل
-                        displaySubscriptionDetails(data.data);
-                        // تحديث الحالة
-                        const isActive = data.isActive === true;
-                        updateSubscriptionStatus(isActive, data.data);
-                        enableLoginFields(isActive);
-                        if (isActive) {
-                            document.getElementById('successMessage').textContent = '✅ تم التحقق من الاشتراك تلقائياً';
-                            document.getElementById('successMessage').style.display = 'block';
-                        }
-                        return;
-                    }
-                } catch (e) {
-                    console.error('Error parsing stored subscription:', e);
-                }
-            }
-
-            // إذا لم توجد بيانات مخزنة، التحقق من الـ API
-            try {
-                const isValid = await checkSubscription();
-                const storedData = localStorage.getItem(SUBSCRIPTION_KEY);
-                let data = null;
-                if (storedData) {
-                    try {
-                        data = JSON.parse(storedData).data;
-                    } catch (e) {}
-                }
-
-                if (isValid && data) {
-                    document.getElementById('subscriptionCode').value = data.code || '';
-                    displaySubscriptionDetails(data);
-                    updateSubscriptionStatus(true, data);
-                    enableLoginFields(true);
-                    document.getElementById('successMessage').textContent = '✅ الاشتراك نشط تلقائياً';
-                    document.getElementById('successMessage').style.display = 'block';
-                } else {
-                    updateSubscriptionStatus(false, data || { status: 'غير نشط' });
-                    enableLoginFields(false);
-                    showError('الاشتراك غير نشط. يرجى إدخال كود اشتراك صحيح.');
-                }
-            } catch (error) {
-                console.error('Error checking subscription on load:', error);
-                statusEl.textContent = '⚠️ حدث خطأ في التحقق من الاشتراك';
-                statusEl.className = 'subscription-status inactive';
-                enableLoginFields(false);
-            }
         });
     </script>
 </body>
