@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -15,14 +14,11 @@
     <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js">
     </script>
     <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet" />
 
     <style>
-        /* =========================================================
-           RESET & BASE (موحد مع الصفحة الأولى)
-           ========================================================= */
         * {
             margin: 0;
             padding: 0;
@@ -53,9 +49,6 @@
             border-radius: 12px;
         }
 
-        /* =========================================================
-           HEADER (موحد)
-           ========================================================= */
         .header {
             background: #0b1b2f;
             color: #fff;
@@ -137,17 +130,11 @@
             transform: scale(1.02);
         }
 
-        /* =========================================================
-           CONTAINER
-           ========================================================= */
         .container {
             max-width: 1280px;
             margin: 0 auto;
         }
 
-        /* =========================================================
-           CARDS (موحد)
-           ========================================================= */
         .card {
             background: #ffffff;
             border-radius: 20px;
@@ -162,9 +149,6 @@
             box-shadow: 0 8px 28px rgba(0, 20, 40, 0.08);
         }
 
-        /* =========================================================
-           BUTTONS (موحد)
-           ========================================================= */
         .btn {
             padding: 10px 24px;
             border: none;
@@ -234,9 +218,6 @@
             font-size: 0.75rem;
         }
 
-        /* =========================================================
-           FLOATING LABEL INPUTS
-           ========================================================= */
         .floating-group {
             position: relative;
             margin-bottom: 8px;
@@ -289,9 +270,6 @@
             opacity: 0;
         }
 
-        /* =========================================================
-           PRODUCT INFO GRID
-           ========================================================= */
         .product-info-grid {
             display: grid;
             grid-template-columns: 2fr 1fr 1fr auto auto;
@@ -327,9 +305,6 @@
             }
         }
 
-        /* =========================================================
-           PREVIEW CARD
-           ========================================================= */
         .preview-card {
             display: none;
             animation: fadeSlide 0.3s ease;
@@ -389,9 +364,6 @@
             }
         }
 
-        /* =========================================================
-           INVOICE HEADER
-           ========================================================= */
         .invoice-header-actions {
             display: flex;
             justify-content: space-between;
@@ -407,9 +379,6 @@
             flex-wrap: wrap;
         }
 
-        /* =========================================================
-           PRODUCT CARDS (موحد مع نظام الفواتير)
-           ========================================================= */
         .product-card {
             background: #ffffff;
             border-radius: 20px;
@@ -503,9 +472,6 @@
             display: block;
         }
 
-        /* =========================================================
-           COLOR ACCORDION
-           ========================================================= */
         .color-accordion {
             border-top: 1px solid #e6edf5;
             padding-top: 12px;
@@ -626,9 +592,6 @@
             opacity: 0.6;
         }
 
-        /* =========================================================
-           PRODUCT CARD FOOTER
-           ========================================================= */
         .product-card-footer {
             padding: 12px 20px 16px;
             border-top: 1px solid #e6edf5;
@@ -639,9 +602,6 @@
             background: #fafcff;
         }
 
-        /* =========================================================
-           STATISTICS (موحد)
-           ========================================================= */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -705,9 +665,6 @@
             }
         }
 
-        /* =========================================================
-           STICKY BOTTOM (موحد)
-           ========================================================= */
         .sticky-bottom {
             position: fixed;
             bottom: 0;
@@ -766,9 +723,6 @@
             }
         }
 
-        /* =========================================================
-           DIALOG / MODAL (موحد)
-           ========================================================= */
         .dialog-overlay {
             display: none;
             position: fixed;
@@ -793,7 +747,7 @@
             background: #ffffff;
             border-radius: 24px;
             padding: 32px;
-            max-width: 520px;
+            max-width: 600px;
             width: 100%;
             box-shadow: 0 24px 64px rgba(0, 20, 40, 0.2);
             animation: slideUp 0.3s ease;
@@ -854,9 +808,6 @@
             height: 18px;
         }
 
-        /* =========================================================
-           DUPLICATE PREVIEW
-           ========================================================= */
         .duplicate-product-preview {
             display: flex;
             gap: 16px;
@@ -891,9 +842,6 @@
             color: #6d7b93;
         }
 
-        /* =========================================================
-           OLD ORDERS SECTION
-           ========================================================= */
         .old-orders-list {
             max-height: 400px;
             overflow-y: auto;
@@ -907,6 +855,7 @@
             border-bottom: 1px solid #e6edf5;
             flex-wrap: wrap;
             transition: background 0.2s;
+            cursor: pointer;
         }
 
         .old-order-item:hover {
@@ -961,9 +910,6 @@
             min-width: 100px;
         }
 
-        /* =========================================================
-           TOAST / ALERT (موحد)
-           ========================================================= */
         .toast-alert {
             position: fixed;
             bottom: 90px;
@@ -980,9 +926,6 @@
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
         }
 
-        /* =========================================================
-           IMAGE MODAL
-           ========================================================= */
         .image-modal-overlay {
             display: none;
             position: fixed;
@@ -1033,9 +976,35 @@
             transform: scale(1.05);
         }
 
-        /* =========================================================
-           ANIMATIONS
-           ========================================================= */
+        .invoice-preview-box {
+            max-height: 60vh;
+            overflow-y: auto;
+            background: #f8faff;
+            border-radius: 16px;
+            padding: 16px;
+            margin: 12px 0;
+            border: 1px solid #e6edf5;
+            font-size: 13px;
+        }
+        .invoice-preview-box .preview-item {
+            display: flex;
+            gap: 8px;
+            padding: 4px 0;
+            border-bottom: 1px dashed #e6edf5;
+        }
+        .invoice-preview-box .preview-item .preview-label {
+            min-width: 100px;
+            color: #6d7b93;
+        }
+        .invoice-preview-box .preview-item .preview-value {
+            font-weight: 500;
+            color: #0b1b2f;
+        }
+        .invoice-preview-box .preview-sku {
+            color: #6c8cff;
+            font-weight: 600;
+        }
+
         @keyframes fadeSlide {
             from {
                 opacity: 0;
@@ -1067,9 +1036,6 @@
             }
         }
 
-        /* =========================================================
-           RESPONSIVE
-           ========================================================= */
         @media (max-width: 768px) {
             body {
                 padding: 16px 12px 110px;
@@ -1129,9 +1095,6 @@
             }
         }
 
-        /* =========================================================
-           EMPTY STATE
-           ========================================================= */
         .empty-state {
             text-align: center;
             padding: 48px 20px;
@@ -1149,9 +1112,6 @@
             font-size: 0.95rem;
         }
 
-        /* =========================================================
-           HIDDEN UTILITY
-           ========================================================= */
         .hidden {
             display: none !important;
         }
@@ -1178,11 +1138,9 @@
         }
     </style>
 </head>
+
 <body>
 
-    <!-- =========================================================
-    HEADER (موحد - بدون معلومات مستخدم)
-    ========================================================= -->
     <header class="header">
         <h1><i class="fas fa-clipboard-list"></i> نظام استلام الفواتير · Create Order</h1>
         <div class="header-actions">
@@ -1195,12 +1153,8 @@
         </div>
     </header>
 
-    <!-- =========================================================
-    CONTAINER
-    ========================================================= -->
     <div class="container">
 
-        <!-- PRODUCT INFORMATION -->
         <section class="card">
             <div class="product-info-grid">
                 <div class="floating-group">
@@ -1224,20 +1178,19 @@
             </div>
         </section>
 
-        <!-- PRODUCT PREVIEW -->
         <section class="card preview-card" id="previewSection">
             <div class="preview-content">
                 <img id="previewImg" src="" alt="Product" onclick="window.openModal(this.src)" />
                 <div class="info">
                     <div class="field"><strong>الاسم</strong> <span id="pName">—</span></div>
                     <div class="field"><strong>السعر</strong> <span id="pPrice">—</span></div>
+                    <div class="field"><strong>SKU</strong> <span id="pSku">—</span></div>
                     <div class="field"><strong>الألوان</strong> <span id="pColors">—</span></div>
                     <div class="field"><strong>المقاسات</strong> <span id="pSizes">—</span></div>
                 </div>
             </div>
         </section>
 
-        <!-- CURRENT INVOICE -->
         <section class="card">
             <div class="invoice-header-actions">
                 <div class="left-actions">
@@ -1271,7 +1224,6 @@
             </div>
         </section>
 
-        <!-- STATISTICS (موحد) -->
         <section class="stats-grid" id="statsGrid">
             <div class="stat-card">
                 <div class="stat-label"><i class="fas fa-calendar-day"></i> طلبات اليوم</div>
@@ -1291,7 +1243,6 @@
             </div>
         </section>
 
-        <!-- OLD ORDERS -->
         <section class="card" id="oldOrdersSection" style="display:none;">
             <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:12px;">
                 <h4 style="font-size:18px;font-weight:700;color:#0b1b2f;">
@@ -1312,7 +1263,6 @@
             </div>
         </section>
 
-        <!-- STICKY BOTTOM (موحد) -->
         <div class="sticky-bottom" id="stickyBottom">
             <div class="summary">
                 <span class="item"><i class="fas fa-boxes"></i> القطع: <strong id="bottomPieces">0</strong></span>
@@ -1328,9 +1278,6 @@
 
     </div>
 
-    <!-- =========================================================
-    DIALOG: EXPORT
-    ========================================================= -->
     <div class="dialog-overlay" id="exportDialog">
         <div class="dialog-box">
             <h3><i class="fas fa-file-excel" style="color:#3dbb7a;"></i> تصدير الفاتورة</h3>
@@ -1348,6 +1295,10 @@
                     <input type="radio" name="exportFormat" value="colorSummary" />
                     <i class="fas fa-palette"></i> ملخص بالألوان
                 </label>
+                <label>
+                    <input type="radio" name="exportFormat" value="system" />
+                    <i class="fas fa-cogs"></i> Excel for System (موديل كامل)
+                </label>
             </div>
             <div class="dialog-actions">
                 <button class="btn btn-secondary" id="dialogCancel"><i class="fas fa-times"></i> إلغاء</button>
@@ -1358,9 +1309,6 @@
         </div>
     </div>
 
-    <!-- =========================================================
-    DIALOG: DUPLICATE PRODUCT
-    ========================================================= -->
     <div class="dialog-overlay" id="duplicateDialog">
         <div class="dialog-box">
             <h3><i class="fas fa-exclamation-triangle" style="color:#f5a623;"></i> منتج مكرر</h3>
@@ -1379,17 +1327,22 @@
         </div>
     </div>
 
-    <!-- =========================================================
-    IMAGE MODAL
-    ========================================================= -->
+    <div class="dialog-overlay" id="invoicePreviewDialog">
+        <div class="dialog-box" style="max-width: 700px;">
+            <h3><i class="fas fa-file-invoice" style="color:#6c8cff;"></i> تفاصيل الفاتورة</h3>
+            <div id="invoicePreviewContent"></div>
+            <div class="dialog-actions">
+                <button class="btn btn-secondary" id="closeInvoicePreview"><i class="fas fa-times"></i> إغلاق</button>
+                <button class="btn btn-primary" id="exportInvoicePreviewBtn"><i class="fas fa-file-excel"></i> تصدير هذه الفاتورة</button>
+            </div>
+        </div>
+    </div>
+
     <div class="image-modal-overlay" id="imageModal" onclick="closeModal()">
         <button class="close-btn" onclick="event.stopPropagation();closeModal();"><i class="fas fa-times"></i></button>
         <img id="modalImage" src="" alt="Product" onclick="event.stopPropagation();" />
     </div>
 
-    <!-- =========================================================
-    JAVASCRIPT
-    ========================================================= -->
     <script>
         (function() {
             'use strict';
@@ -1431,7 +1384,8 @@
                 set(key, value) {
                     try {
                         const fullKey = 'shopify_' + key;
-                        localStorage.setItem(fullKey, typeof value === 'object' ? JSON.stringify(value) : String(value));
+                        localStorage.setItem(fullKey, typeof value === 'object' ? JSON.stringify(value) : String(
+                        value));
                     } catch {}
                 },
                 remove(key) {
@@ -1533,7 +1487,7 @@
                     if (!v || !v.length) return 0;
                     for (const vv of v) {
                         if (vv.compare_at_price && vv.compare_at_price > 0) return this.centsToCurrency(vv
-                        .compare_at_price);
+                            .compare_at_price);
                         if (vv.price && vv.price > 0) return this.centsToCurrency(vv.price);
                     }
                     return 0;
@@ -1575,7 +1529,6 @@
                     return t;
                 },
 
-                // ===== FIREBASE OPERATIONS =====
                 loadCurrentTable(callback) {
                     if (!database) {
                         if (callback) callback(null);
@@ -1658,7 +1611,8 @@
                         return;
                     }
                     const oneMonthAgo = Date.now() - (30 * 24 * 60 * 60 * 1000);
-                    database.ref('invoices').orderByChild('createdAt').startAt(oneMonthAgo).once('value', (snapshot) => {
+                    database.ref('invoices').orderByChild('createdAt').startAt(oneMonthAgo).once('value', (
+                    snapshot) => {
                         const data = snapshot.val();
                         if (!data) {
                             if (callback) callback([]);
@@ -2017,6 +1971,55 @@
                                 ]);
                             }
                         }
+                    } else if (mode === 'system') {
+                        const map = new Map();
+                        filteredData.forEach(row => {
+                            const key = row.name + '|' + row.sku;
+                            if (!map.has(key)) {
+                                map.set(key, {
+                                    name: row.name,
+                                    sku: row.sku,
+                                    unitPrice: row.unitPrice,
+                                    colors: {},
+                                    totalQty: 0
+                                });
+                            }
+                            const s = map.get(key);
+                            const color = row.color || 'No Color';
+                            if (!s.colors[color]) s.colors[color] = {};
+                            const size = row.size || 'No Size';
+                            s.colors[color][size] = (s.colors[color][size] || 0) + (row.qty || 0);
+                            s.totalQty += row.qty || 0;
+                        });
+                        data = [
+                            ['المنتج', 'باركود', 'توتال الكمية', 'سعر البيع', 'التصنيف',
+                            'اللون و الكمية الخرجت من كل مقاس'
+                            ]
+                        ];
+                        const orderedKeys = [];
+                        const keySet = new Set();
+                        filteredData.forEach(row => {
+                            const key = row.name + '|' + row.sku;
+                            if (!keySet.has(key)) {
+                                keySet.add(key);
+                                orderedKeys.push(key);
+                            }
+                        });
+                        for (const key of orderedKeys) {
+                            const s = map.get(key);
+                            if (s) {
+                                let colorSizeStr = '';
+                                const colorEntries = Object.entries(s.colors);
+                                colorEntries.forEach(([color, sizes], idx) => {
+                                    const sizeParts = Object.entries(sizes).map(([size, qty]) =>
+                                        `${qty}${size}`
+                                    );
+                                    colorSizeStr += `${color}: ${sizeParts.join(' - ')}`;
+                                    if (idx < colorEntries.length - 1) colorSizeStr += ' | ';
+                                });
+                                data.push([s.name, s.sku, s.totalQty, s.unitPrice, '', colorSizeStr]);
+                            }
+                        }
                     }
 
                     const ws = XLSX.utils.aoa_to_sheet(data);
@@ -2039,6 +2042,7 @@
                     previewImg: document.getElementById('previewImg'),
                     pName: document.getElementById('pName'),
                     pPrice: document.getElementById('pPrice'),
+                    pSku: document.getElementById('pSku'),
                     pColors: document.getElementById('pColors'),
                     pSizes: document.getElementById('pSizes'),
                     storeStatus: document.getElementById('storeStatus'),
@@ -2075,6 +2079,10 @@
                     dupCancel: document.getElementById('dupCancel'),
                     dupAddQty: document.getElementById('dupAddQty'),
                     clearAllBtn: document.getElementById('clearAllBtn'),
+                    invoicePreviewDialog: document.getElementById('invoicePreviewDialog'),
+                    invoicePreviewContent: document.getElementById('invoicePreviewContent'),
+                    closeInvoicePreview: document.getElementById('closeInvoicePreview'),
+                    exportInvoicePreviewBtn: document.getElementById('exportInvoicePreviewBtn'),
                 },
                 _lastProduct: null,
                 _lastProductUrl: '',
@@ -2086,16 +2094,15 @@
                 _isDirty: false,
                 _pendingAddData: null,
                 _isLoadingFromFirebase: false,
+                _previewInvoiceIndex: -1,
 
                 init() {
                     console.log('🚀 Initializing Create Order UI...');
 
-                    // Load saved data from localStorage
                     this.elements.url.value = Storage.get('url', '');
                     this.elements.series.value = Storage.get('series', '1');
                     this.elements.branch.value = Storage.get('branch', '');
 
-                    // ===== LOAD FROM currentTable =====
                     this._isLoadingFromFirebase = true;
                     Utils.loadCurrentTable((data) => {
                         this._isLoadingFromFirebase = false;
@@ -2118,7 +2125,6 @@
                         }
                     });
 
-                    // Load cached product
                     const cached = Storage.get('cachedProduct', null);
                     if (cached && cached.name) {
                         this._lastProduct = {
@@ -2140,7 +2146,6 @@
                     this.loadOldInvoices();
                     Utils.cleanOldInvoices();
 
-                    // ===== EVENT LISTENERS =====
                     this.elements.branch.addEventListener('change', () => {
                         Storage.set('branch', this.elements.branch.value);
                     });
@@ -2199,6 +2204,22 @@
                     this.elements.dupCancel.addEventListener('click', () => this.closeDuplicateDialog());
                     this.elements.dupAddQty.addEventListener('click', () => this.confirmAddDuplicate());
 
+                    this.elements.closeInvoicePreview.addEventListener('click', () => {
+                        this.elements.invoicePreviewDialog.classList.remove('show');
+                    });
+                    this.elements.invoicePreviewDialog.addEventListener('click', (e) => {
+                        if (e.target === this.elements.invoicePreviewDialog) {
+                            this.elements.invoicePreviewDialog.classList.remove('show');
+                        }
+                    });
+                    this.elements.exportInvoicePreviewBtn.addEventListener('click', () => {
+                        if (this._previewInvoiceIndex >= 0 && this._oldInvoices[this._previewInvoiceIndex]) {
+                            const inv = this._oldInvoices[this._previewInvoiceIndex];
+                            // Use the export dialog for old invoice
+                            this.openExportOldInvoice(inv);
+                        }
+                    });
+
                     document.addEventListener('keydown', (e) => {
                         if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
                             e.preventDefault();
@@ -2206,7 +2227,6 @@
                         }
                     });
 
-                    // Silent sync
                     this._syncTimer = setInterval(() => {
                         if (this._isDirty && this._tableData.length > 0 && !this._isLoadingFromFirebase) {
                             Utils.saveCurrentTable(this._tableData);
@@ -2219,7 +2239,6 @@
                     this._isDirty = true;
                 },
 
-                // ===== FETCH =====
                 async handleFetch(silent = false) {
                     const url = this.elements.url.value.trim();
                     if (!url) {
@@ -2244,7 +2263,8 @@
                         this._lastProductUrl = url;
                         this.showPreview(product);
                         if (!silent) {
-                            this.elements.storeStatus.innerHTML = '<i class="fas fa-circle" style="font-size:8px;"></i> جاهز';
+                            this.elements.storeStatus.innerHTML =
+                            '<i class="fas fa-circle" style="font-size:8px;"></i> جاهز';
                             this.elements.storeStatus.style.background = '#E8F5E9';
                             this.elements.storeStatus.style.color = '#16A34A';
                             this.showAlert('✅ تم تحميل المنتج بنجاح', 'success');
@@ -2253,7 +2273,8 @@
                         Storage.set('url', url);
                     } catch (err) {
                         if (!silent) {
-                            this.elements.storeStatus.innerHTML = '<i class="fas fa-circle" style="font-size:8px;"></i> خطأ';
+                            this.elements.storeStatus.innerHTML =
+                            '<i class="fas fa-circle" style="font-size:8px;"></i> خطأ';
                             this.elements.storeStatus.style.background = '#FEE2E2';
                             this.elements.storeStatus.style.color = '#DC2626';
                             this.showAlert('❌ ' + err.message, 'error');
@@ -2268,6 +2289,7 @@
                     this.elements.previewSection.classList.add('show');
                     this.elements.pName.textContent = product.name || '—';
                     this.elements.pPrice.textContent = Utils.formatCurrency(product.price) + ' LE';
+                    this.elements.pSku.textContent = product.sku || '—';
                     this.elements.pColors.textContent = (product.colors && product.colors.length) ? product.colors
                         .join(', ') : '—';
                     this.elements.pSizes.textContent = (product.sizes && product.sizes.length) ? product.sizes.join(
@@ -2282,7 +2304,6 @@
                     }
                 },
 
-                // ===== ADD WITH DUPLICATE CHECK =====
                 handleAddWithDuplicateCheck() {
                     if (!this._lastProduct) {
                         this.showAlert('⚠️ لا توجد بيانات منتج. قم بجلب منتج أولاً.', 'error');
@@ -2297,7 +2318,6 @@
                     const product = this._lastProduct;
                     const sku = product.sku || '';
 
-                    // Check if product already exists
                     const existingProducts = new Set();
                     this._tableData.forEach(row => {
                         existingProducts.add(row.name + '|' + row.sku);
@@ -2339,7 +2359,6 @@
                     this._pendingAddData = null;
                 },
 
-                // ===== ADD PRODUCT TO TABLE =====
                 addProductToTable(product, seriesQty, sku) {
                     const newRows = ExcelGenerator.generateRows(product, seriesQty, sku);
 
@@ -2368,7 +2387,6 @@
                     this.markDirty();
                     this.showAlert(`✅ تم إضافة ${newRows.length} صف`, 'success');
 
-                    // Clear fields
                     this.elements.url.value = '';
                     this.elements.series.value = '1';
                     this._lastProduct = null;
@@ -2379,7 +2397,6 @@
                     Storage.set('series', '1');
                 },
 
-                // ===== CLEAR ALL =====
                 clearAllData() {
                     if (!this._tableData.length) {
                         this.showAlert('⚠️ لا توجد بيانات لمسحها', 'info');
@@ -2395,7 +2412,6 @@
                     }
                 },
 
-                // ===== RENDER INVOICE =====
                 renderInvoice() {
                     const container = this.elements.invoiceContainer;
 
@@ -2410,7 +2426,6 @@
                         return;
                     }
 
-                    // Group by product (name + sku) preserving order
                     const groups = {};
                     const groupOrder = [];
 
@@ -2519,7 +2534,6 @@
                     return html;
                 },
 
-                // ===== ACCORDION CONTROLS =====
                 toggleProduct(productId) {
                     const state = this._productCardStates[productId];
                     this._productCardStates[productId] = state === false ? true : false;
@@ -2546,7 +2560,6 @@
                     this.renderInvoice();
                 },
 
-                // ===== QTY CONTROLS =====
                 changeQty(productId, color, size, delta, sku, name) {
                     let foundIndex = -1;
                     for (let i = 0; i < this._tableData.length; i++) {
@@ -2573,7 +2586,6 @@
                     }
                 },
 
-                // ===== DELETE PRODUCT =====
                 deleteProduct(key) {
                     const [name, sku] = key.split('|');
                     this._tableData = this._tableData.filter(row => !(row.name === name && row.sku === sku));
@@ -2583,7 +2595,6 @@
                     this.showAlert('🗑️ تم حذف المنتج', 'info');
                 },
 
-                // ===== STATS =====
                 updateStats() {
                     const nonZeroRows = Utils.getNonZeroRows(this._tableData);
                     const pieces = Utils.calculateTotalPieces(nonZeroRows);
@@ -2599,7 +2610,6 @@
                     this.elements.bottomValue.textContent = Utils.formatCurrency(value) + ' LE';
                 },
 
-                // ===== CLOSE INVOICE =====
                 closeFullInvoice() {
                     const nonZeroRows = Utils.getNonZeroRows(this._tableData);
                     if (!nonZeroRows.length) {
@@ -2627,7 +2637,6 @@
                     });
                 },
 
-                // ===== EXPORT =====
                 openExportDialog() {
                     const nonZeroRows = Utils.getNonZeroRows(this._tableData);
                     if (!nonZeroRows.length) {
@@ -2650,7 +2659,12 @@
                     const blob = new Blob([wbout], { type: 'application/octet-stream' });
                     const link = document.createElement('a');
                     link.href = URL.createObjectURL(blob);
-                    const names = { detail: 'تفصيل', summary: 'ملخص', colorSummary: 'ملخص_بالألوان' };
+                    const names = {
+                        detail: 'تفصيل',
+                        summary: 'ملخص',
+                        colorSummary: 'ملخص_بالألوان',
+                        system: 'System'
+                    };
                     link.download =
                         `invoice_${names[format] || 'export'}_${new Date().toISOString().slice(0,10)}.xlsx`;
                     link.click();
@@ -2658,12 +2672,57 @@
                     this.showAlert(`✅ تم تصدير XLSX (${names[format]})`, 'success');
                 },
 
-                // ===== OLD ORDERS =====
+                // ---- OLD INVOICE EXPORT WITH FORMATS ----
+                openExportOldInvoice(invoice) {
+                    const dialog = this.elements.exportDialog;
+                    dialog.classList.add('show');
+                    // Override the export handler for old invoice
+                    const originalExport = this.handleExport;
+                    this.elements.dialogExport.onclick = () => {
+                        const format = document.querySelector('input[name="exportFormat"]:checked')?.value || 'detail';
+                        this.closeExportDialog();
+                        const tableData = invoice.items.map(item => ({
+                            name: item.name,
+                            color: item.color || '',
+                            size: item.size || '',
+                            sku: item.sku || '',
+                            qty: item.qty || 0,
+                            unitPrice: item.unitPrice || 0,
+                            total: item.total || 0,
+                            image: item.image || ''
+                        }));
+                        const wb = ExcelGenerator.fromTableData(tableData, format);
+                        const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+                        const blob = new Blob([wbout], { type: 'application/octet-stream' });
+                        const link = document.createElement('a');
+                        link.href = URL.createObjectURL(blob);
+                        const names = {
+                            detail: 'تفصيل',
+                            summary: 'ملخص',
+                            colorSummary: 'ملخص_بالألوان',
+                            system: 'System'
+                        };
+                        link.download =
+                            `invoice_old_${names[format] || 'export'}_${new Date().toISOString().slice(0,10)}.xlsx`;
+                        link.click();
+                        URL.revokeObjectURL(link.href);
+                        this.showAlert(`✅ تم تصدير الفاتورة القديمة (${names[format]})`, 'success');
+                        // Restore original handler
+                        this.elements.dialogExport.onclick = originalExport;
+                    };
+                    // Restore on cancel
+                    this.elements.dialogCancel.onclick = () => {
+                        this.closeExportDialog();
+                        this.elements.dialogExport.onclick = originalExport;
+                    };
+                },
+
                 toggleOldOrders() {
                     const sec = this.elements.oldOrdersSection;
                     if (sec.style.display === 'none') {
                         sec.style.display = 'block';
-                        this.elements.showOldOrdersBtn.innerHTML = '<i class="fas fa-chevron-up"></i> إخفاء الفواتير السابقة';
+                        this.elements.showOldOrdersBtn.innerHTML =
+                            '<i class="fas fa-chevron-up"></i> إخفاء الفواتير السابقة';
                         this.loadOldInvoices();
                     } else {
                         sec.style.display = 'none';
@@ -2701,7 +2760,7 @@
                                 `<span class="order-url" title="${this.escapeHtml(inv.productUrl)}">${this.escapeHtml(inv.productUrl.substring(0, 50))}...</span>` :
                                 '—';
                             html += `
-                                <div class="old-order-item">
+                                <div class="old-order-item" onclick="window.UI.showInvoicePreview(${idx})">
                                     <span class="order-number">#${idx+1}</span>
                                     <span class="order-branch">${this.escapeHtml(inv.branch||'الفرع')}</span>
                                     <span class="order-date"><i class="far fa-calendar-alt"></i> ${dateStr}</span>
@@ -2709,7 +2768,7 @@
                                     <span class="order-value">${Utils.formatCurrency(inv.totalValue||0)} LE</span>
                                     ${urlDisplay}
                                     <span class="order-details">${details||'—'}</span>
-                                    <button class="btn btn-secondary btn-sm" onclick="window.UI.exportSingleOldInvoice(${idx})">
+                                    <button class="btn btn-secondary btn-sm" onclick="event.stopPropagation();window.UI.exportSingleOldInvoice(${idx})">
                                         <i class="fas fa-file-excel"></i>
                                     </button>
                                 </div>
@@ -2721,10 +2780,101 @@
                     });
                 },
 
+                showInvoicePreview(idx) {
+                    const inv = this._oldInvoices[idx];
+                    if (!inv) return;
+                    this._previewInvoiceIndex = idx;
+                    const container = this.elements.invoicePreviewContent;
+
+                    let itemsHtml = '';
+                    if (inv.items && inv.items.length) {
+                        inv.items.forEach(item => {
+                            itemsHtml += `
+                                <div class="preview-item">
+                                    <span class="preview-label">${this.escapeHtml(item.name)}</span>
+                                    <span class="preview-value">${this.escapeHtml(item.color||'')} ${this.escapeHtml(item.size||'')} × ${item.qty}</span>
+                                    <span class="preview-sku">SKU: ${this.escapeHtml(item.sku||'')}</span>
+                                    <span class="preview-value">${Utils.formatCurrency(item.unitPrice)} LE</span>
+                                </div>
+                            `;
+                        });
+                    }
+
+                    // Build product groups with colors and sizes like in invoice
+                    const groups = {};
+                    const groupOrder = [];
+                    if (inv.items) {
+                        inv.items.forEach(row => {
+                            const key = row.name + '|' + (row.sku || '');
+                            if (!groups[key]) {
+                                groups[key] = {
+                                    name: row.name,
+                                    sku: row.sku || '',
+                                    unitPrice: row.unitPrice || 0,
+                                    image: row.image || '',
+                                    colors: {},
+                                    order: groupOrder.length
+                                };
+                                groupOrder.push(key);
+                            }
+                            const color = row.color || 'No Color';
+                            if (!groups[key].colors[color]) groups[key].colors[color] = [];
+                            groups[key].colors[color].push({
+                                size: row.size || 'No Size',
+                                qty: row.qty || 0,
+                                total: row.total || 0
+                            });
+                        });
+                    }
+
+                    let groupsHtml = '';
+                    for (const key of groupOrder) {
+                        const g = groups[key];
+                        groupsHtml += `
+                            <div style="background:#fafcff;border-radius:12px;padding:12px;margin-bottom:8px;border:1px solid #e6edf5;">
+                                <div style="display:flex;align-items:center;gap:12px;">
+                                    <img src="${g.image || ''}" style="width:40px;height:40px;border-radius:8px;object-fit:cover;border:1px solid #e6edf5;" onerror="this.style.display='none'" />
+                                    <div>
+                                        <strong>${this.escapeHtml(g.name)}</strong>
+                                        <span style="font-size:11px;color:#6d7b93;display:block;">SKU: ${this.escapeHtml(g.sku)}</span>
+                                    </div>
+                                    <span style="margin-right:auto;font-weight:600;color:#6c8cff;">${Utils.formatCurrency(g.unitPrice)} LE</span>
+                                </div>
+                                ${Object.entries(g.colors).map(([color, sizes]) => `
+                                    <div style="margin-top:8px;padding-right:16px;border-right:2px solid #6c8cff40;">
+                                        <div style="font-weight:500;font-size:13px;color:#0b1b2f;">
+                                            <i class="fas fa-palette" style="color:#6c8cff;font-size:11px;"></i> ${this.escapeHtml(color)}
+                                            <span style="font-size:11px;color:#6d7b93;margin-right:8px;">${sizes.reduce((s,sz)=>s+sz.qty,0)} قطعة</span>
+                                        </div>
+                                        <div style="display:flex;flex-wrap:wrap;gap:4px 12px;padding:4px 0 0 16px;font-size:13px;">
+                                            ${sizes.map(s => `
+                                                <span>${this.escapeHtml(s.size)}: <strong>${s.qty}</strong></span>
+                                            `).join('')}
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        `;
+                    }
+
+                    container.innerHTML = `
+                        <div style="margin-bottom:8px;"><strong>الفرع:</strong> ${this.escapeHtml(inv.branch||'—')}</div>
+                        <div style="margin-bottom:8px;"><strong>التاريخ:</strong> ${new Date(inv.createdAt).toLocaleString('ar-EG')}</div>
+                        <div style="margin-bottom:8px;"><strong>القطع:</strong> ${inv.totalPieces||0}</div>
+                        <div style="margin-bottom:12px;"><strong>القيمة:</strong> ${Utils.formatCurrency(inv.totalValue||0)} LE</div>
+                        ${inv.productUrl ? `<div style="margin-bottom:12px;"><strong>الرابط:</strong> <span style="direction:ltr;display:inline-block;font-size:12px;color:#6d7b93;word-break:break-all;">${this.escapeHtml(inv.productUrl)}</span></div>` : ''}
+                        <div style="border-top:1px solid #e6edf5;padding-top:12px;">
+                            <strong>المنتجات:</strong>
+                            <div style="margin-top:8px;">${groupsHtml}</div>
+                        </div>
+                    `;
+                    this.elements.invoicePreviewDialog.classList.add('show');
+                },
+
                 exportSingleOldInvoice(idx) {
                     if (this._oldInvoices[idx]) {
-                        Utils.exportSingleInvoice(this._oldInvoices[idx]);
-                        this.showAlert('✅ تم تصدير الفاتورة', 'success');
+                        const inv = this._oldInvoices[idx];
+                        this.openExportOldInvoice(inv);
                     }
                 },
 
@@ -2737,7 +2887,6 @@
                     this.showAlert(`✅ تم تصدير ${this._oldInvoices.length} فاتورة`, 'success');
                 },
 
-                // ===== UTILITY =====
                 escapeHtml(text) {
                     const d = document.createElement('div');
                     d.textContent = text;
@@ -2775,7 +2924,6 @@
                     }
                 },
 
-                // ===== IMAGE MODAL =====
                 openModal(imgSrc) {
                     if (!imgSrc) return;
                     this.elements.modalImage.src = imgSrc;
@@ -2788,14 +2936,10 @@
                 }
             };
 
-            // ===== GLOBAL EXPOSURE =====
             window.UI = UI;
             window.openModal = function(img) { if (window.UI) window.UI.openModal(img); };
             window.closeModal = function() { if (window.UI) window.UI.closeModal(); };
 
-            // ================================================================
-            //  BOOT
-            // ================================================================
             document.addEventListener('DOMContentLoaded', () => {
                 UI.init();
             });
