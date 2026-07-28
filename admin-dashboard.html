@@ -4,19 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>نظام إدارة الاستلامات المتقدم - لوحة الأدمن</title>
-    
+
     <!-- Firebase -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
-    
+
     <!-- Chart.js & SheetJS -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
-    
+
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    
+
     <style>
         /* ============================================================
            CSS VARIABLES - نظام ألوان متطور
@@ -749,32 +749,13 @@
             gap: 14px;
             flex-wrap: wrap;
         }
-        .model-accordion .accordion-header .model-info img {
-            width: 48px;
-            height: 48px;
-            border-radius: 8px;
-            object-fit: cover;
-            border: 2px solid var(--gray-light);
-            cursor: pointer;
-        }
-        .model-accordion .accordion-header .model-info .placeholder-img {
-            width: 48px;
-            height: 48px;
-            border-radius: 8px;
-            background: var(--gray-light);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--gray);
-            font-size: 10px;
-        }
-        .model-accordion .accordion-header .model-info .name {
+        .model-accordion .accordion-header .model-info .model-name-tag {
             font-weight: 700;
-            font-size: 15px;
+            font-size: 16px;
             color: var(--dark-secondary);
         }
-        .model-accordion .accordion-header .model-info .color-tag {
-            background: var(--primary-light);
+        .model-accordion .accordion-header .model-info .model-qty-tag {
+            background: var(--primary);
             color: white;
             padding: 2px 12px;
             border-radius: 20px;
@@ -796,37 +777,100 @@
             padding: 0 18px;
         }
         .model-accordion .accordion-body.open {
-            max-height: 800px;
+            max-height: 2000px;
             padding: 16px 18px 20px;
         }
-        .model-accordion .accordion-body .sizes-table {
+
+        /* Colors sub-accordion */
+        .color-accordion {
+            border: 1px solid var(--gray-light);
+            border-radius: var(--radius-sm);
+            margin-bottom: 10px;
+            overflow: hidden;
+            transition: var(--transition);
+        }
+        .color-accordion:hover {
+            border-color: var(--primary-light);
+        }
+        .color-accordion .color-header {
+            background: #f1f5f9;
+            padding: 10px 16px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: var(--transition);
+            user-select: none;
+        }
+        .color-accordion .color-header:hover {
+            background: #e2e8f0;
+        }
+        .color-accordion .color-header .color-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .color-accordion .color-header .color-info .color-name-tag {
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--dark-secondary);
+        }
+        .color-accordion .color-header .color-info .color-sample-badge {
+            background: var(--success-light);
+            color: var(--success);
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        .color-accordion .color-header .toggle-icon {
+            font-size: 16px;
+            color: var(--gray);
+            transition: var(--transition);
+        }
+        .color-accordion .color-header .toggle-icon.open {
+            transform: rotate(180deg);
+        }
+        .color-accordion .color-body {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 0 16px;
+        }
+        .color-accordion .color-body.open {
+            max-height: 1000px;
+            padding: 12px 16px 16px;
+        }
+
+        .sizes-table {
             width: 100%;
             border-collapse: collapse;
             font-size: 13px;
         }
-        .model-accordion .accordion-body .sizes-table th {
+        .sizes-table th {
             background: var(--primary);
             color: white;
-            padding: 8px 14px;
+            padding: 6px 12px;
             text-align: center;
             font-weight: 600;
         }
-        .model-accordion .accordion-body .sizes-table td {
-            padding: 6px 14px;
+        .sizes-table td {
+            padding: 5px 12px;
             text-align: center;
             border-bottom: 1px solid var(--gray-light);
         }
-        .model-accordion .accordion-body .sizes-table tr:last-child td { border-bottom: none; }
-        .model-accordion .accordion-body .sizes-table tr:hover { background: var(--light); }
-        .model-accordion .accordion-body .sizes-table .total-row {
+        .sizes-table tr:last-child td { border-bottom: none; }
+        .sizes-table tr:hover { background: var(--light); }
+        .sizes-table .total-row {
             background: #f1f5f9;
             font-weight: 700;
         }
-        .model-accordion .accordion-body .sizes-table .total-row td {
+        .sizes-table .total-row td {
             border-top: 2px solid var(--gray-light);
-            padding: 8px 14px;
+            padding: 6px 12px;
         }
-        .model-accordion .accordion-body .sample-badge {
+        .sample-badge {
             display: inline-block;
             background: var(--success-light);
             color: var(--success);
@@ -835,7 +879,7 @@
             font-size: 11px;
             font-weight: 600;
         }
-        .model-accordion .accordion-body .no-sample-badge {
+        .no-sample-badge {
             display: inline-block;
             background: var(--danger-light);
             color: var(--danger);
@@ -1102,7 +1146,6 @@
             <li onclick="showSection('addReceipt')"><i class="fas fa-plus-circle"></i> إضافة استلام</li>
             <li onclick="showSection('receiptsList')"><i class="fas fa-list-ul"></i> جميع الاستلامات</li>
             <li onclick="showSection('factories')"><i class="fas fa-industry"></i> المصانع</li>
-            <li onclick="showSection('colors')"><i class="fas fa-palette"></i> الألوان</li>
             <li onclick="showSection('models')"><i class="fas fa-tshirt"></i> الموديلات</li>
             <li onclick="showSection('sizes')"><i class="fas fa-ruler"></i> المقاسات</li>
             <li onclick="showSection('employees')"><i class="fas fa-users"></i> الموظفين</li>
@@ -1193,16 +1236,6 @@
                 </div>
 
                 <div class="form-group">
-                    <label><i class="fas fa-palette"></i> اللون (اختياري)</label>
-                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                        <select id="colorSelect" style="flex:1">
-                            <option value="">بدون لون</option>
-                        </select>
-                        <button class="btn btn-primary btn-sm" onclick="openColorModal()"><i class="fas fa-plus"></i> لون جديد</button>
-                    </div>
-                </div>
-
-                <div class="form-group">
                     <label><i class="fas fa-tshirt"></i> الموديلات والكميات</label>
                     <div id="modelsListContainer" class="models-selection"></div>
                     <span class="add-new-link" onclick="addModelRow()"><i class="fas fa-plus-circle"></i> إضافة موديل آخر</span>
@@ -1220,11 +1253,6 @@
                     <label><i class="fas fa-users"></i> المساعدين (اختياري)</label>
                     <div id="helpersTagsContainer" class="helper-tags"></div>
                     <span id="helperValidationError" class="validation-error" style="display:none;"></span>
-                </div>
-
-                <div class="form-group">
-                    <label><i class="fas fa-ruler"></i> المقاسات (اختياري)</label>
-                    <div id="sizesCheckboxContainer" class="sizes-container"></div>
                 </div>
 
                 <button class="btn btn-primary" onclick="saveReceipt()"><i class="fas fa-save"></i> حفظ الفاتورة</button>
@@ -1273,25 +1301,6 @@
                 <table id="factoriesTable">
                     <thead><tr><th>#</th><th>اسم المصنع</th><th>الموديلات</th><th>إجراءات</th></tr></thead>
                     <tbody id="factoriesTableBody"></tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- ==========================================================
-        COLORS SECTION
-        ========================================================== -->
-        <div id="colorsSection" class="section">
-            <div class="table-container">
-                <div class="section-header">
-                    <h3><i class="fas fa-palette"></i> إدارة الألوان</h3>
-                </div>
-                <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;">
-                    <input type="text" id="newColorName" placeholder="اسم اللون" style="flex:1;min-width:150px;padding:10px 16px;border:2px solid var(--gray-light);border-radius:var(--radius-sm);">
-                    <button class="btn btn-primary" onclick="addColor()"><i class="fas fa-plus"></i> إضافة</button>
-                </div>
-                <table id="colorsTable">
-                    <thead><tr><th>#</th><th>اسم اللون</th><th>إجراءات</th></tr></thead>
-                    <tbody id="colorsTableBody"></tbody>
                 </table>
             </div>
         </div>
@@ -1395,20 +1404,6 @@
             <div class="modal-buttons">
                 <button class="btn btn-primary" onclick="quickAddFactory()"><i class="fas fa-plus"></i> إضافة</button>
                 <button class="btn btn-outline" onclick="closeFactoryModal()">إلغاء</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Color Modal -->
-    <div id="colorModal" class="modal" onclick="closeModalOnOutsideClick(event, 'colorModal')">
-        <div class="modal-content">
-            <button class="modal-close-btn" onclick="closeColorModal()"><i class="fas fa-times"></i></button>
-            <h3><i class="fas fa-palette"></i> إضافة لون جديد</h3>
-            <div class="form-group"><label>اسم اللون</label><input type="text" id="quickColorName" placeholder="مثال: أحمر"></div>
-            <div id="colorErrorMsg" style="color:var(--danger);font-size:12px;margin-bottom:8px;"></div>
-            <div class="modal-buttons">
-                <button class="btn btn-primary" onclick="quickAddColor()"><i class="fas fa-plus"></i> إضافة</button>
-                <button class="btn btn-outline" onclick="closeColorModal()">إلغاء</button>
             </div>
         </div>
     </div>
@@ -1652,7 +1647,6 @@
                 totalReceipts++;
                 totalPieces += r.receivedQty || 0;
                 
-                // Check if blank receipt with closedDate
                 const status = r.status || 'new';
                 const isClosedBlank = r.isBlank && r.closedDate;
                 const effectiveStatus = isClosedBlank ? 'closed' : status;
@@ -1671,16 +1665,13 @@
                 }
             });
 
-            // Add blank receipts from blankReceipts that are closed
             const blankSnapshot = await db.ref('blankReceipts').once('value');
             blankSnapshot.forEach(child => {
                 const br = child.val();
-                // Check if this blank receipt has closedDate
                 if (br.closedDate) {
                     statusCounts.closed = (statusCounts.closed || 0) + 1;
                     closedCount++;
                 } else {
-                    // Count as blank if not closed
                     statusCounts.blank = (statusCounts.blank || 0) + 1;
                 }
                 totalReceipts++;
@@ -1748,7 +1739,7 @@
         }
 
         // ============================================================
-        // 11. LOAD FACTORIES (استبعاد جداول invoices)
+        // 11. LOAD FACTORIES
         // ============================================================
         async function loadFactories() {
             const snapshot = await db.ref('factories').once('value');
@@ -1765,24 +1756,7 @@
         }
 
         // ============================================================
-        // 12. LOAD COLORS
-        // ============================================================
-        async function loadColors() {
-            const snapshot = await db.ref('colors').once('value');
-            const select = document.getElementById('colorSelect');
-            select.innerHTML = '<option value="">بدون لون</option>';
-            const tbody = document.getElementById('colorsTableBody');
-            tbody.innerHTML = '';
-            let i = 1;
-            snapshot.forEach(child => {
-                const name = child.val().name;
-                select.innerHTML += `<option value="${name}">${name}</option>`;
-                tbody.innerHTML += `<tr><td>${i++}</td><td>${name}</td><td><button class="btn btn-danger btn-sm" onclick="deleteColor('${child.key}')"><i class="fas fa-trash"></i></button></td></tr>`;
-            });
-        }
-
-        // ============================================================
-        // 13. LOAD SIZES
+        // 12. LOAD SIZES
         // ============================================================
         async function loadSizesList() {
             const snapshot = await db.ref('sizes').once('value');
@@ -1801,15 +1775,6 @@
             return currentSizeList;
         }
 
-        async function loadSizesCheckbox() {
-            await loadSizesList();
-            const container = document.getElementById('sizesCheckboxContainer');
-            container.innerHTML = '';
-            currentSizeList.forEach(name => {
-                container.innerHTML += `<label class="size-checkbox"><input type="checkbox" value="${name}"> ${name}</label>`;
-            });
-        }
-
         async function loadSizesTable() {
             const snapshot = await db.ref('sizes').once('value');
             const tbody = document.getElementById('sizesTableBody');
@@ -1821,7 +1786,7 @@
         }
 
         // ============================================================
-        // 14. LOAD HELPERS
+        // 13. LOAD HELPERS
         // ============================================================
         async function loadHelpersForSelect() {
             const snapshot = await db.ref('users').once('value');
@@ -1871,7 +1836,7 @@
         }
 
         // ============================================================
-        // 15. MODELS ROW MANAGEMENT
+        // 14. MODELS ROW MANAGEMENT
         // ============================================================
         async function loadModelsForFactory(factoryName) {
             await loadAllModels();
@@ -1941,13 +1906,6 @@
                         }
                     }
 
-                    const sampleSizes = getSampleSizesForModel(row.modelId);
-                    if (sampleSizes.length > 0) {
-                        statusDiv.innerHTML += `<span class="model-badge model-badge-sample" style="background:#dbeafe;color:#1d4ed8;">
-                            <i class="fas fa-camera"></i> عينات: ${sampleSizes.join(', ')}
-                        </span>`;
-                    }
-
                     div.appendChild(statusDiv);
 
                     if (modelImage) {
@@ -1962,43 +1920,6 @@
                 }
                 container.appendChild(div);
             });
-        }
-
-        function getSampleSizesForModel(modelName) {
-            const sampleSizes = [];
-            allReceipts.forEach(r => {
-                if (r.sampleRequests && r.sampleRequests[modelName]) {
-                    const colors = r.sampleRequests[modelName];
-                    for (const color in colors) {
-                        const sizes = colors[color];
-                        for (const sizeId in sizes) {
-                            if (sizes[sizeId] === true) {
-                                const sizeName = getSizeName(sizeId);
-                                if (sizeName && !sampleSizes.includes(sizeName)) {
-                                    sampleSizes.push(sizeName);
-                                }
-                            }
-                        }
-                    }
-                }
-            });
-            allBlankReceipts.forEach(r => {
-                if (r.sampleRequests && r.sampleRequests[modelName]) {
-                    const colors = r.sampleRequests[modelName];
-                    for (const color in colors) {
-                        const sizes = colors[color];
-                        for (const sizeId in sizes) {
-                            if (sizes[sizeId] === true) {
-                                const sizeName = getSizeName(sizeId);
-                                if (sizeName && !sampleSizes.includes(sizeName)) {
-                                    sampleSizes.push(sizeName);
-                                }
-                            }
-                        }
-                    }
-                }
-            });
-            return sampleSizes;
         }
 
         function isModelNewlyAdded(modelName, factoryName) {
@@ -2106,12 +2027,11 @@
         }
 
         // ============================================================
-        // 16. SAVE RECEIPT
+        // 15. SAVE RECEIPT
         // ============================================================
         async function saveReceipt() {
             const invoiceCode = document.getElementById('invoiceCode').value.trim();
             const factory = document.getElementById('factorySelect').value;
-            const color = document.getElementById('colorSelect').value || '';
 
             if (!invoiceCode || !factory) {
                 alert('الرجاء إدخال كود الفاتورة واختيار المصنع');
@@ -2164,12 +2084,9 @@
                 return;
             }
 
-            const selectedSizes = Array.from(document.querySelectorAll('#sizesCheckboxContainer input:checked')).map(cb => cb.value);
-
             const receipt = {
                 invoiceCode: invoiceCode,
                 factory: factory,
-                color: color,
                 models: models,
                 assignedTo: assignedTo,
                 helpers: selectedHelpers,
@@ -2194,7 +2111,6 @@
                     username: currentAdmin.username,
                     fullName: currentAdmin.fullName
                 },
-                sizes: selectedSizes,
                 isArchived: false
             };
 
@@ -2208,7 +2124,6 @@
                 t.classList.remove('selected');
                 t.classList.remove('disabled');
             });
-            document.querySelectorAll('#sizesCheckboxContainer input').forEach(cb => cb.checked = false);
             document.getElementById('assignedToSelect').value = '';
             document.getElementById('helperValidationError').style.display = 'none';
 
@@ -2218,10 +2133,9 @@
         }
 
         // ============================================================
-        // 17. LOAD & FILTER RECEIPTS (مع استبعاد جداول invoices)
+        // 16. LOAD & FILTER RECEIPTS
         // ============================================================
         async function loadReceiptsList() {
-            // Load regular receipts
             const snapshot = await db.ref('receipts').once('value');
             allReceipts = [];
             snapshot.forEach(child => {
@@ -2231,7 +2145,6 @@
                 }
             });
 
-            // Load blank receipts (من blankReceipts فقط، وليس invoices)
             const blankSnapshot = await db.ref('blankReceipts').once('value');
             allBlankReceipts = [];
             blankSnapshot.forEach(child => {
@@ -2242,7 +2155,6 @@
                 }
             });
 
-            // Merge all
             const allMerged = [...allReceipts, ...allBlankReceipts];
             allMerged.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
             
@@ -2251,12 +2163,11 @@
         }
 
         // ============================================================
-        // 18. CONVERT BLANK RECEIPT TO RECEIPT FORMAT
+        // 17. CONVERT BLANK RECEIPT TO RECEIPT FORMAT
         // ============================================================
         function convertBlankReceiptToReceipt(id, data) {
             if (!data || !data.invoiceCode) return null;
             
-            // Check if this blank receipt has closedDate - it means it's closed
             const isClosed = data.closedDate ? true : (data.isClosed === true);
             
             const models = [];
@@ -2305,7 +2216,6 @@
                 }
             }
 
-            // Determine status - if closedDate exists, it's closed
             const status = isClosed ? 'closed' : 'blank';
 
             let assignedTo = null;
@@ -2345,6 +2255,9 @@
                 modelColorsDisplay[modelName] = modelColors[modelName] || {};
             }
 
+            // Collect notes for each model
+            const modelNotes = data.modelNotes || {};
+
             return {
                 id: id,
                 _type: 'blank',
@@ -2354,7 +2267,7 @@
                 models: models,
                 modelColors: modelColorsDisplay,
                 modelColorsImages: data.modelColorsImages || {},
-                modelNotes: data.modelNotes || {},
+                modelNotes: modelNotes,
                 modelFirstTime: data.modelFirstTime || {},
                 assignedTo: assignedTo,
                 helpers: [],
@@ -2384,7 +2297,7 @@
         }
 
         // ============================================================
-        // 19. FILTER RECEIPTS
+        // 18. FILTER RECEIPTS
         // ============================================================
         function filterReceipts() {
             const search = document.getElementById('searchInput').value.toLowerCase();
@@ -2414,7 +2327,7 @@
         }
 
         // ============================================================
-        // 20. RENDER RECEIPTS LIST
+        // 19. RENDER RECEIPTS LIST
         // ============================================================
         function renderReceiptsList() {
             const container = document.getElementById('receiptsCardsContainer');
@@ -2483,7 +2396,6 @@
                     modelsDisplay = Object.keys(r.modelColors).join(', ');
                 }
 
-                // Determine card classes
                 let cardClasses = 'receipt-card';
                 if (isBlank && isClosed) {
                     cardClasses += ' is-closed';
@@ -2491,7 +2403,6 @@
                     cardClasses += ' is-blank';
                 }
 
-                // Closed date display
                 let closedDateDisplay = '';
                 if (r.closedDate) {
                     const date = new Date(r.closedDate);
@@ -2506,7 +2417,6 @@
                         </div>
                         <div class="receipt-meta">
                             <span><i class="fas fa-factory"></i> <strong>${r.factory}</strong></span>
-                            <span><i class="fas fa-palette"></i> ${r.color || 'بدون لون'}</span>
                             <span><i class="fas fa-user-check"></i> ${assignedToName}</span>
                             <span><i class="fas fa-user-edit"></i> ${createdByName}</span>
                             ${isBlank ? `<span class="text-warning"><i class="fas fa-pencil-alt"></i> مسودة</span>` : ''}
@@ -2553,7 +2463,7 @@
         }
 
         // ============================================================
-        // 21. VIEW RECEIPT DETAILS - مع Accordion للمنتجات
+        // 20. VIEW RECEIPT DETAILS - مع Accordion للمنتجات والألوان والمقاسات
         // ============================================================
         async function viewReceiptDetails(receiptId, isBlank = false) {
             let receipt = allReceipts.find(r => r.id === receiptId);
@@ -2605,107 +2515,169 @@
             const received = receipt.receivedQty || 0;
             const remaining = totalReq - received;
 
-            // Build closed date info
             let closedDateInfo = '';
             if (receipt.closedDate) {
                 const date = new Date(receipt.closedDate);
                 closedDateInfo = `<div class="detail-item"><label>تاريخ الإغلاق</label><div class="value">${date.toLocaleDateString('ar-EG')} ${date.toLocaleTimeString('ar-EG')}</div></div>`;
             }
 
-            // Build model accordions
+            // Build model accordions with colors and sizes
             let modelsAccordionHtml = '';
             
+            // Group models by model name
+            const modelGroups = {};
+            
             if (isBlankReceipt && Object.keys(modelColors).length > 0) {
-                // Blank receipt with model colors
+                // For blank receipts, modelColors is { modelName: { color: { sizeId: [qty] } } }
                 for (const [modelName, colors] of Object.entries(modelColors)) {
-                    const modelImages = modelColorsImages[modelName] || {};
-                    const modelData = allModelsList.find(m => m.name === modelName);
-                    const mainImage = modelData?.imageUrl || '';
-
-                    for (const [color, sizesData] of Object.entries(colors)) {
-                        const colorImage = modelImages[color] || mainImage;
-                        const accordionId = `accordion-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`;
-                        
-                        modelsAccordionHtml += `
-                            <div class="model-accordion">
-                                <div class="accordion-header" onclick="toggleAccordion('${accordionId}')">
-                                    <div class="model-info">
-                                        ${colorImage 
-                                            ? `<img src="${colorImage}" onclick="event.stopPropagation();showFullImage('${colorImage}')">` 
-                                            : `<div class="placeholder-img"><i class="fas fa-image"></i></div>`
-                                        }
-                                        <span class="name">${modelName}</span>
-                                        <span class="color-tag">${color}</span>
-                                        ${receipt.sampleRequests && receipt.sampleRequests[modelName] && receipt.sampleRequests[modelName][color] ? 
-                                            `<span class="sample-badge"><i class="fas fa-camera"></i> عينات مطلوبة</span>` : ''}
-                                    </div>
-                                    <span class="toggle-icon" id="toggle-${accordionId}"><i class="fas fa-chevron-down"></i></span>
-                                </div>
-                                <div class="accordion-body" id="${accordionId}">
-                                    ${renderSizesTableForBlankAccordion(sizesData)}
-                                </div>
-                            </div>
-                        `;
+                    if (!modelGroups[modelName]) {
+                        modelGroups[modelName] = {
+                            totalQty: 0,
+                            colors: {}
+                        };
+                    }
+                    for (const [color, sizes] of Object.entries(colors)) {
+                        if (!modelGroups[modelName].colors[color]) {
+                            modelGroups[modelName].colors[color] = {};
+                        }
+                        if (typeof sizes === 'object' && sizes !== null) {
+                            for (const [sizeId, batches] of Object.entries(sizes)) {
+                                let qty = 0;
+                                if (Array.isArray(batches)) {
+                                    qty = batches.reduce((sum, b) => sum + (typeof b === 'number' ? b : 0), 0);
+                                } else if (typeof batches === 'number') {
+                                    qty = batches;
+                                }
+                                if (qty > 0) {
+                                    modelGroups[modelName].colors[color][sizeId] = qty;
+                                    modelGroups[modelName].totalQty += qty;
+                                }
+                            }
+                        }
                     }
                 }
             } else {
-                // Regular receipt display
+                // For regular receipts
                 for (const model of receiptModels) {
                     const modelName = model.modelName;
-                    const modelColorData = modelColors[modelName] || {};
-                    const modelImages = modelColorsImages[modelName] || {};
-                    const modelData = allModelsList.find(m => m.name === modelName);
-                    const mainImage = modelData?.imageUrl || '';
-
-                    if (Object.keys(modelColorData).length === 0) {
-                        const accordionId = `accordion-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`;
-                        modelsAccordionHtml += `
-                            <div class="model-accordion">
-                                <div class="accordion-header" onclick="toggleAccordion('${accordionId}')">
-                                    <div class="model-info">
-                                        ${mainImage 
-                                            ? `<img src="${mainImage}" onclick="event.stopPropagation();showFullImage('${mainImage}')">` 
-                                            : `<div class="placeholder-img"><i class="fas fa-image"></i></div>`
-                                        }
-                                        <span class="name">${modelName}</span>
-                                        <span class="text-muted">لا توجد تفاصيل استلام</span>
-                                    </div>
-                                    <span class="toggle-icon" id="toggle-${accordionId}"><i class="fas fa-chevron-down"></i></span>
-                                </div>
-                                <div class="accordion-body" id="${accordionId}">
-                                    <p class="text-muted">لا توجد كميات مقاسة لهذا الموديل</p>
-                                </div>
-                            </div>
-                        `;
-                        continue;
+                    if (!modelGroups[modelName]) {
+                        modelGroups[modelName] = {
+                            totalQty: model.quantity || 0,
+                            colors: {}
+                        };
                     }
+                    // If there are modelColors for this model
+                    if (modelColors[modelName]) {
+                        for (const [color, sizes] of Object.entries(modelColors[modelName])) {
+                            if (!modelGroups[modelName].colors[color]) {
+                                modelGroups[modelName].colors[color] = {};
+                            }
+                            if (typeof sizes === 'object' && sizes !== null) {
+                                for (const [sizeId, batches] of Object.entries(sizes)) {
+                                    let qty = 0;
+                                    if (Array.isArray(batches)) {
+                                        qty = batches.reduce((sum, b) => sum + (typeof b === 'number' ? b : 0), 0);
+                                    } else if (typeof batches === 'number') {
+                                        qty = batches;
+                                    }
+                                    if (qty > 0) {
+                                        modelGroups[modelName].colors[color][sizeId] = qty;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
 
-                    for (const [color, sizesData] of Object.entries(modelColorData)) {
-                        const colorImage = modelImages[color] || mainImage;
-                        const accordionId = `accordion-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`;
+            // Build HTML for each model
+            for (const [modelName, group] of Object.entries(modelGroups)) {
+                const modelData = allModelsList.find(m => m.name === modelName);
+                const mainImage = modelData?.imageUrl || '';
+                const accordionId = `accordion-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`;
+                
+                let colorsHtml = '';
+                const colorEntries = Object.entries(group.colors);
+                
+                if (colorEntries.length === 0) {
+                    // No colors, just show total quantity
+                    colorsHtml = `<div style="padding:8px 0;color:var(--gray);">الكمية الإجمالية: <strong>${group.totalQty}</strong></div>`;
+                } else {
+                    // Build color accordions
+                    for (const [color, sizes] of colorEntries) {
+                        const colorAccordionId = `color-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`;
+                        const colorImage = modelColorsImages[modelName]?.[color] || mainImage;
                         
-                        modelsAccordionHtml += `
-                            <div class="model-accordion">
-                                <div class="accordion-header" onclick="toggleAccordion('${accordionId}')">
-                                    <div class="model-info">
-                                        ${colorImage 
-                                            ? `<img src="${colorImage}" onclick="event.stopPropagation();showFullImage('${colorImage}')">` 
-                                            : `<div class="placeholder-img"><i class="fas fa-image"></i></div>`
-                                        }
-                                        <span class="name">${modelName}</span>
-                                        <span class="color-tag">${color}</span>
+                        let sizesHtml = '';
+                        const sizeEntries = Object.entries(sizes);
+                        
+                        if (sizeEntries.length === 0) {
+                            sizesHtml = '<p class="text-muted">لا توجد مقاسات</p>';
+                        } else {
+                            let tableHtml = `
+                                <table class="sizes-table">
+                                    <thead><tr><th>المقاس</th><th>الكمية</th><th>عينة تصوير</th></tr></thead>
+                                    <tbody>
+                            `;
+                            let total = 0;
+                            for (const [sizeId, qty] of sizeEntries) {
+                                const sizeName = getSizeName(sizeId);
+                                total += qty;
+                                const hasSample = checkSizeHasSample(receipt, modelName, color, sizeId);
+                                tableHtml += `
+                                    <tr>
+                                        <td><strong>${sizeName}</strong></td>
+                                        <td>${qty}</td>
+                                        <td style="text-align:center;">${hasSample ? '<span class="sample-badge">✅</span>' : '<span class="no-sample-badge">❌</span>'}</td>
+                                    </tr>
+                                `;
+                            }
+                            tableHtml += `
+                                    <tr class="total-row"><td><strong>الإجمالي</strong></td><td><strong>${total}</strong></td><td></td></tr>
+                                </tbody></table>
+                            `;
+                            sizesHtml = tableHtml;
+                        }
+                        
+                        colorsHtml += `
+                            <div class="color-accordion">
+                                <div class="color-header" onclick="toggleAccordion('${colorAccordionId}')">
+                                    <div class="color-info">
+                                        ${colorImage ? `<img src="${colorImage}" style="width:32px;height:32px;border-radius:6px;object-fit:cover;cursor:pointer;" onclick="event.stopPropagation();showFullImage('${colorImage}')">` : ''}
+                                        <span class="color-name-tag">${color}</span>
                                         ${receipt.sampleRequests && receipt.sampleRequests[modelName] && receipt.sampleRequests[modelName][color] ? 
-                                            `<span class="sample-badge"><i class="fas fa-camera"></i> عينات</span>` : ''}
+                                            `<span class="color-sample-badge"><i class="fas fa-camera"></i> عينات مطلوبة</span>` : ''}
                                     </div>
-                                    <span class="toggle-icon" id="toggle-${accordionId}"><i class="fas fa-chevron-down"></i></span>
+                                    <span class="toggle-icon" id="toggle-${colorAccordionId}"><i class="fas fa-chevron-down"></i></span>
                                 </div>
-                                <div class="accordion-body" id="${accordionId}">
-                                    ${renderSizesTableWithSamplesAccordion(sizesData, [])}
+                                <div class="color-body" id="${colorAccordionId}">
+                                    ${sizesHtml}
                                 </div>
                             </div>
                         `;
                     }
                 }
+                
+                modelsAccordionHtml += `
+                    <div class="model-accordion">
+                        <div class="accordion-header" onclick="toggleAccordion('${accordionId}')">
+                            <div class="model-info">
+                                ${mainImage ? `<img src="${mainImage}" style="width:48px;height:48px;border-radius:8px;object-fit:cover;border:2px solid var(--gray-light);cursor:pointer;" onclick="event.stopPropagation();showFullImage('${mainImage}')">` : ''}
+                                <span class="model-name-tag">${modelName}</span>
+                                <span class="model-qty-tag">${group.totalQty} قطعة</span>
+                                ${Object.keys(group.colors).length > 0 ? `<span style="font-size:12px;color:var(--gray);">(${Object.keys(group.colors).length} لون)</span>` : ''}
+                            </div>
+                            <span class="toggle-icon" id="toggle-${accordionId}"><i class="fas fa-chevron-down"></i></span>
+                        </div>
+                        <div class="accordion-body" id="${accordionId}">
+                            ${colorsHtml}
+                        </div>
+                    </div>
+                `;
+            }
+
+            if (!modelsAccordionHtml) {
+                modelsAccordionHtml = '<p class="text-muted">لا توجد موديلات</p>';
             }
 
             const assignedToName = receipt.assignedTo ? receipt.assignedTo.fullName : 'غير مسند';
@@ -2716,7 +2688,7 @@
             const createdAt = receipt.createdAt ? new Date(receipt.createdAt).toLocaleString('ar-EG') : 'غير معروف';
 
             document.getElementById('receiptViewDetails').innerHTML = `
-                <!-- معلومات أساسية -->
+                <!-- معلومات أساسية - تم حذف اللون والمقاسات -->
                 <div class="receipt-details-grid">
                     <div class="detail-item">
                         <label>كود الفاتورة</label>
@@ -2725,10 +2697,6 @@
                     <div class="detail-item">
                         <label>المصنع</label>
                         <div class="value">${receipt.factory}</div>
-                    </div>
-                    <div class="detail-item">
-                        <label>اللون</label>
-                        <div class="value">${receipt.color || 'بدون لون'}</div>
                     </div>
                     <div class="detail-item">
                         <label>الحالة</label>
@@ -2751,10 +2719,6 @@
                         <div class="value">${createdAt}</div>
                     </div>
                     ${closedDateInfo}
-                    <div class="detail-item">
-                        <label>المقاسات</label>
-                        <div class="value">${receipt.sizes?.join(', ') || 'لا يوجد'}</div>
-                    </div>
                     <div class="detail-item">
                         <label>إجمالي المطلوب</label>
                         <div class="value">${totalReq}</div>
@@ -2783,8 +2747,8 @@
                 </div>
 
                 <div>
-                    <h4 style="margin-bottom:12px;"><i class="fas fa-tshirt"></i> الموديلات والألوان</h4>
-                    ${modelsAccordionHtml || '<p class="text-muted">لا توجد موديلات</p>'}
+                    <h4 style="margin-bottom:12px;"><i class="fas fa-tshirt"></i> الموديلات والألوان والمقاسات</h4>
+                    ${modelsAccordionHtml}
                 </div>
             `;
 
@@ -2817,7 +2781,7 @@
         }
 
         // ============================================================
-        // 22. ACCORDION TOGGLE
+        // 21. ACCORDION TOGGLE
         // ============================================================
         function toggleAccordion(accordionId) {
             const body = document.getElementById(accordionId);
@@ -2831,157 +2795,7 @@
         }
 
         // ============================================================
-        // 23. RENDER SIZES TABLE FOR BLANK RECEIPTS (Accordion)
-        // ============================================================
-        function renderSizesTableForBlankAccordion(sizesData) {
-            if (!sizesData || typeof sizesData !== 'object') {
-                return '<p class="text-muted">لا توجد بيانات مقاسات</p>';
-            }
-
-            const sizeEntries = Object.entries(sizesData);
-            if (sizeEntries.length === 0) {
-                return '<p class="text-muted">لا توجد كميات مقاسة</p>';
-            }
-
-            let tableHtml = `
-                <table class="sizes-table">
-                    <thead>
-                        <tr>
-                            <th>المقاس</th>
-                            <th>الكمية</th>
-                            <th style="width:80px;">عينة تصوير</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-            `;
-
-            let total = 0;
-            let hasData = false;
-
-            for (const [sizeId, value] of sizeEntries) {
-                const sizeName = getSizeName(sizeId);
-                let qty = 0;
-                
-                if (Array.isArray(value)) {
-                    qty = value.reduce((sum, b) => sum + (typeof b === 'number' ? b : 0), 0);
-                } else if (typeof value === 'number') {
-                    qty = value;
-                } else if (value && typeof value === 'object') {
-                    qty = Object.values(value).reduce((sum, b) => sum + (typeof b === 'number' ? b : 0), 0);
-                }
-
-                if (qty > 0) hasData = true;
-                total += qty;
-
-                const hasSample = checkSizeHasSample(currentViewReceipt, '', '', sizeId);
-
-                tableHtml += `
-                    <tr>
-                        <td><strong>${sizeName}</strong></td>
-                        <td>${qty}</td>
-                        <td style="text-align:center;">
-                            ${hasSample 
-                                ? '<span class="sample-badge">✅</span>' 
-                                : '<span class="no-sample-badge">❌</span>'}
-                        </td>
-                    </tr>
-                `;
-            }
-
-            if (!hasData) {
-                return '<p class="text-muted">لا توجد كميات مقاسة</p>';
-            }
-
-            tableHtml += `
-                    <tr class="total-row">
-                        <td><strong>الإجمالي</strong></td>
-                        <td><strong>${total}</strong></td>
-                        <td></td>
-                    </tr>
-                </tbody>
-            </table>
-            `;
-
-            return tableHtml;
-        }
-
-        // ============================================================
-        // 24. RENDER SIZES TABLE WITH SAMPLES (Accordion)
-        // ============================================================
-        function renderSizesTableWithSamplesAccordion(sizesData, sampleSizes = []) {
-            if (!sizesData || typeof sizesData !== 'object') {
-                return '<p class="text-muted">لا توجد بيانات مقاسات</p>';
-            }
-
-            const sizeEntries = Object.entries(sizesData);
-            if (sizeEntries.length === 0) {
-                return '<p class="text-muted">لا توجد كميات مقاسة</p>';
-            }
-
-            let tableHtml = `
-                <table class="sizes-table">
-                    <thead>
-                        <tr>
-                            <th>المقاس</th>
-                            <th>الكمية</th>
-                            <th style="width:80px;">عينة تصوير</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-            `;
-
-            let total = 0;
-            let hasData = false;
-
-            for (const [sizeId, value] of sizeEntries) {
-                const sizeName = getSizeName(sizeId);
-                let qty = 0;
-                
-                if (Array.isArray(value)) {
-                    qty = value.reduce((sum, b) => sum + (typeof b === 'number' ? b : 0), 0);
-                } else if (typeof value === 'number') {
-                    qty = value;
-                } else if (value && typeof value === 'object') {
-                    qty = Object.values(value).reduce((sum, b) => sum + (typeof b === 'number' ? b : 0), 0);
-                }
-
-                if (qty > 0) hasData = true;
-                total += qty;
-
-                const hasSample = sampleSizes.includes(sizeName);
-
-                tableHtml += `
-                    <tr>
-                        <td><strong>${sizeName}</strong></td>
-                        <td>${qty}</td>
-                        <td style="text-align:center;">
-                            ${hasSample 
-                                ? '<span class="sample-badge">✅</span>' 
-                                : '<span class="no-sample-badge">❌</span>'}
-                        </td>
-                    </tr>
-                `;
-            }
-
-            if (!hasData) {
-                return '<p class="text-muted">لا توجد كميات مقاسة</p>';
-            }
-
-            tableHtml += `
-                    <tr class="total-row">
-                        <td><strong>الإجمالي</strong></td>
-                        <td><strong>${total}</strong></td>
-                        <td></td>
-                    </tr>
-                </tbody>
-            </table>
-            `;
-
-            return tableHtml;
-        }
-
-        // ============================================================
-        // 25. CHECK SIZE HAS SAMPLE
+        // 22. CHECK SIZE HAS SAMPLE
         // ============================================================
         function checkSizeHasSample(receipt, modelName, color, sizeId) {
             if (!receipt) return false;
@@ -3001,7 +2815,7 @@
         }
 
         // ============================================================
-        // 26. REASSIGN RECEIPT
+        // 23. REASSIGN RECEIPT
         // ============================================================
         async function reassignReceipt() {
             if (!currentViewReceipt) return;
@@ -3068,7 +2882,7 @@
         }
 
         // ============================================================
-        // 27. EXPORT RECEIPT TO EXCEL
+        // 24. EXPORT RECEIPT TO EXCEL - مع إضافة النوت
         // ============================================================
         async function exportReceiptToExcel() {
             if (!currentViewReceipt) return;
@@ -3078,7 +2892,6 @@
             data.push(['تفاصيل الفاتورة']);
             data.push(['كود الفاتورة', currentViewReceipt.invoiceCode]);
             data.push(['المصنع', currentViewReceipt.factory]);
-            data.push(['اللون', currentViewReceipt.color || 'لا يوجد']);
             data.push(['المسؤول الأساسي', currentViewReceipt.assignedTo ? currentViewReceipt.assignedTo.fullName : 'غير مسند']);
             data.push(['المساعدين', currentViewReceipt.helpers ? currentViewReceipt.helpers.map(h => h.fullName).join(', ') : 'لا يوجد']);
             data.push(['الحالة', currentViewReceipt.status || 'new']);
@@ -3088,12 +2901,13 @@
             }
             data.push([]);
 
-            const headerRow = ['رقم الفاتورة', 'المصنع', 'الموديل', 'اللون', 'المقاس', 'الكمية', 'عينة تصوير', 'الموظف', 'الحالة'];
+            const headerRow = ['رقم الفاتورة', 'المصنع', 'الموديل', 'اللون', 'المقاس', 'الكمية', 'عينة تصوير', 'ملاحظات الموديل', 'الموظف', 'الحالة'];
             data.push(headerRow);
 
             const modelColors = currentViewReceipt.modelColors || {};
             const status = currentViewReceipt.status || 'new';
             const employeeName = currentViewReceipt.assignedTo ? currentViewReceipt.assignedTo.fullName : 'غير مسند';
+            const modelNotes = currentViewReceipt.modelNotes || {};
 
             const statusMap = {
                 'new': 'جديدة',
@@ -3120,6 +2934,7 @@
                             }
                             if (qty > 0) {
                                 const hasSample = checkSizeHasSample(currentViewReceipt, modelName, color, sizeId);
+                                const note = modelNotes[modelName] || '';
                                 data.push([
                                     currentViewReceipt.invoiceCode,
                                     currentViewReceipt.factory,
@@ -3128,6 +2943,7 @@
                                     sizeName,
                                     qty,
                                     hasSample ? '✅' : '❌',
+                                    note,
                                     employeeName,
                                     statusMap[status] || status
                                 ]);
@@ -3137,10 +2953,29 @@
                 }
             }
 
+            // If no modelColors, use models array
+            if (Object.keys(modelColors).length === 0 && currentViewReceipt.models) {
+                for (const model of currentViewReceipt.models) {
+                    const note = modelNotes[model.modelName] || '';
+                    data.push([
+                        currentViewReceipt.invoiceCode,
+                        currentViewReceipt.factory,
+                        model.modelName,
+                        '-',
+                        'جميع المقاسات',
+                        model.quantity || 0,
+                        '❌',
+                        note,
+                        employeeName,
+                        statusMap[status] || status
+                    ]);
+                }
+            }
+
             const ws = XLSX.utils.aoa_to_sheet(data);
             ws['!cols'] = [
                 { wch: 20 }, { wch: 15 }, { wch: 15 }, { wch: 15 },
-                { wch: 12 }, { wch: 12 }, { wch: 12 }, { wch: 18 }, { wch: 15 }
+                { wch: 12 }, { wch: 12 }, { wch: 12 }, { wch: 25 }, { wch: 18 }, { wch: 15 }
             ];
             const wb = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(wb, ws, 'تفاصيل الاستلام');
@@ -3148,7 +2983,7 @@
         }
 
         // ============================================================
-        // 28. EXPORT FULL REPORT
+        // 25. EXPORT FULL REPORT - مع إضافة النوت
         // ============================================================
         async function exportFullReport() {
             await loadSizesList();
@@ -3158,7 +2993,7 @@
             data.push(['تاريخ التقرير', new Date().toLocaleString('ar-EG')]);
             data.push([]);
             
-            const headerRow = ['رقم الفاتورة', 'المصنع', 'الموديل', 'اللون', 'المقاس', 'الكمية', 'عينة تصوير', 'الموظف', 'الحالة', 'نوع الفاتورة', 'تاريخ الإغلاق'];
+            const headerRow = ['رقم الفاتورة', 'المصنع', 'الموديل', 'اللون', 'المقاس', 'الكمية', 'عينة تصوير', 'ملاحظات الموديل', 'الموظف', 'الحالة', 'نوع الفاتورة', 'تاريخ الإغلاق'];
             data.push(headerRow);
 
             const statusMap = {
@@ -3176,6 +3011,7 @@
                 const status = statusMap[receipt.status] || receipt.status || 'جديدة';
                 const receiptType = receipt.isBlank ? 'مسودة' : 'عادية';
                 const closedDate = receipt.closedDate ? new Date(receipt.closedDate).toLocaleDateString('ar-EG') : '';
+                const modelNotes = receipt.modelNotes || {};
 
                 const modelColors = receipt.modelColors || {};
                 
@@ -3195,6 +3031,7 @@
                                 }
                                 if (qty > 0) {
                                     const hasSample = checkSizeHasSample(receipt, modelName, color, sizeId);
+                                    const note = modelNotes[modelName] || '';
                                     data.push([
                                         receipt.invoiceCode,
                                         receipt.factory,
@@ -3203,6 +3040,7 @@
                                         sizeName,
                                         qty,
                                         hasSample ? '✅' : '❌',
+                                        note,
                                         employeeName,
                                         status,
                                         receiptType,
@@ -3217,6 +3055,7 @@
 
                 if (!hasDetails && receipt.models) {
                     for (const model of receipt.models) {
+                        const note = modelNotes[model.modelName] || '';
                         data.push([
                             receipt.invoiceCode,
                             receipt.factory,
@@ -3225,6 +3064,7 @@
                             'جميع المقاسات',
                             model.quantity || 0,
                             '❌',
+                            note,
                             employeeName,
                             status,
                             receiptType,
@@ -3237,7 +3077,7 @@
             const ws = XLSX.utils.aoa_to_sheet(data);
             ws['!cols'] = [
                 { wch: 20 }, { wch: 15 }, { wch: 15 }, { wch: 15 },
-                { wch: 12 }, { wch: 12 }, { wch: 12 }, { wch: 18 }, { wch: 15 }, { wch: 12 }, { wch: 18 }
+                { wch: 12 }, { wch: 12 }, { wch: 12 }, { wch: 25 }, { wch: 18 }, { wch: 15 }, { wch: 12 }, { wch: 18 }
             ];
             const wb = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(wb, ws, 'تقرير شامل');
@@ -3245,7 +3085,7 @@
         }
 
         // ============================================================
-        // 29. EXPORT CLOSED RECEIPTS BY SIZES
+        // 26. EXPORT CLOSED RECEIPTS BY SIZES - مع إضافة النوت
         // ============================================================
         async function exportClosedReceiptsBySizes() {
             await loadSizesList();
@@ -3256,7 +3096,7 @@
             data.push(['تاريخ التقرير', new Date().toLocaleString('ar-EG')]);
             data.push([]);
 
-            const headerRow = ['رقم الفاتورة', 'المصنع', 'الموديل', 'اللون', 'المقاس', 'الكمية', 'عينة تصوير', 'الموظف', 'تاريخ الإغلاق', 'نوع الفاتورة'];
+            const headerRow = ['رقم الفاتورة', 'المصنع', 'الموديل', 'اللون', 'المقاس', 'الكمية', 'عينة تصوير', 'ملاحظات الموديل', 'الموظف', 'تاريخ الإغلاق', 'نوع الفاتورة'];
             data.push(headerRow);
 
             for (const receipt of closedReceipts) {
@@ -3265,6 +3105,7 @@
                     ? new Date(receipt.closedDate).toLocaleDateString('ar-EG') 
                     : (receipt.updatedAt ? new Date(receipt.updatedAt).toLocaleDateString('ar-EG') : '');
                 const receiptType = receipt.isBlank ? 'مسودة' : 'عادية';
+                const modelNotes = receipt.modelNotes || {};
 
                 const modelColors = receipt.modelColors || {};
                 
@@ -3284,6 +3125,7 @@
                                 }
                                 if (qty > 0) {
                                     const hasSample = checkSizeHasSample(receipt, modelName, color, sizeId);
+                                    const note = modelNotes[modelName] || '';
                                     data.push([
                                         receipt.invoiceCode,
                                         receipt.factory,
@@ -3292,6 +3134,7 @@
                                         sizeName,
                                         qty,
                                         hasSample ? '✅' : '❌',
+                                        note,
                                         employeeName,
                                         closeDate,
                                         receiptType
@@ -3305,6 +3148,7 @@
 
                 if (!hasDetails && receipt.models) {
                     for (const model of receipt.models) {
+                        const note = modelNotes[model.modelName] || '';
                         data.push([
                             receipt.invoiceCode,
                             receipt.factory,
@@ -3313,6 +3157,7 @@
                             'جميع المقاسات',
                             model.quantity || 0,
                             '❌',
+                            note,
                             employeeName,
                             closeDate,
                             receiptType
@@ -3324,7 +3169,7 @@
             const ws = XLSX.utils.aoa_to_sheet(data);
             ws['!cols'] = [
                 { wch: 20 }, { wch: 15 }, { wch: 15 }, { wch: 15 },
-                { wch: 12 }, { wch: 12 }, { wch: 12 }, { wch: 18 }, { wch: 18 }, { wch: 12 }
+                { wch: 12 }, { wch: 12 }, { wch: 12 }, { wch: 25 }, { wch: 18 }, { wch: 18 }, { wch: 12 }
             ];
             const wb = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(wb, ws, 'الفواتير المكتملة حسب المقاسات');
@@ -3332,7 +3177,7 @@
         }
 
         // ============================================================
-        // 30. DELETE FUNCTIONS
+        // 27. DELETE FUNCTIONS
         // ============================================================
         function deleteReceipt(id, isBlank = false) {
             if (confirm('تأكيد حذف هذه الفاتورة؟')) {
@@ -3350,12 +3195,6 @@
             }
         }
 
-        function deleteColor(id) {
-            if (confirm('تأكيد حذف هذا اللون؟')) {
-                db.ref(`colors/${id}`).remove().then(() => loadColors());
-            }
-        }
-
         function deleteModel(id) {
             if (confirm('تأكيد حذف هذا الموديل؟')) {
                 db.ref(`models/${id}`).remove().then(() => {
@@ -3369,7 +3208,6 @@
             if (confirm('تأكيد حذف هذا المقاس؟')) {
                 db.ref(`sizes/${id}`).remove().then(() => {
                     loadSizesTable();
-                    loadSizesCheckbox();
                 });
             }
         }
@@ -3385,7 +3223,7 @@
         }
 
         // ============================================================
-        // 31. ADD FUNCTIONS
+        // 28. ADD FUNCTIONS
         // ============================================================
         async function addFactory() {
             const name = document.getElementById('newFactoryName').value.trim();
@@ -3400,32 +3238,18 @@
             });
         }
 
-        async function addColor() {
-            const name = document.getElementById('newColorName').value.trim();
-            if (!name) return;
-            const snapshot = await db.ref('colors').once('value');
-            let exists = false;
-            snapshot.forEach(child => { if (child.val().name === name) exists = true; });
-            if (exists) { alert('هذا اللون موجود بالفعل'); return; }
-            db.ref('colors').push({ name }).then(() => {
-                loadColors();
-                document.getElementById('newColorName').value = '';
-            });
-        }
-
         function addSize() {
             const name = document.getElementById('newSizeName').value.trim();
             if (name) {
                 db.ref('sizes').push({ name }).then(() => {
                     loadSizesTable();
-                    loadSizesCheckbox();
                     document.getElementById('newSizeName').value = '';
                 });
             }
         }
 
         // ============================================================
-        // 32. EMPLOYEE MODAL
+        // 29. EMPLOYEE MODAL
         // ============================================================
         function showEmployeeModal() {
             document.getElementById('employeeModal').style.display = 'flex';
@@ -3473,7 +3297,7 @@
         }
 
         // ============================================================
-        // 33. FACTORY & COLOR QUICK MODALS
+        // 30. FACTORY MODAL
         // ============================================================
         function openFactoryModal() {
             document.getElementById('factoryModal').style.display = 'flex';
@@ -3504,37 +3328,8 @@
             });
         }
 
-        function openColorModal() {
-            document.getElementById('colorModal').style.display = 'flex';
-            document.getElementById('quickColorName').value = '';
-            document.getElementById('colorErrorMsg').innerHTML = '';
-        }
-
-        function closeColorModal() {
-            document.getElementById('colorModal').style.display = 'none';
-        }
-
-        async function quickAddColor() {
-            const name = document.getElementById('quickColorName').value.trim();
-            if (!name) {
-                document.getElementById('colorErrorMsg').innerHTML = 'الرجاء إدخال اسم اللون';
-                return;
-            }
-            const snapshot = await db.ref('colors').once('value');
-            let exists = false;
-            snapshot.forEach(child => { if (child.val().name === name) exists = true; });
-            if (exists) {
-                document.getElementById('colorErrorMsg').innerHTML = 'هذا اللون موجود بالفعل';
-                return;
-            }
-            db.ref('colors').push({ name }).then(() => {
-                loadColors();
-                closeColorModal();
-            });
-        }
-
         // ============================================================
-        // 34. MODELS TABLE - Gallery View
+        // 31. MODELS TABLE - Gallery View
         // ============================================================
         async function loadModelsTable() {
             await loadAllModels();
@@ -3605,7 +3400,7 @@
         }
 
         // ============================================================
-        // 35. SHOW FACTORY MODELS
+        // 32. SHOW FACTORY MODELS
         // ============================================================
         function showFactoryModels(factoryId, factoryName) {
             const factoryModels = allModelsList.filter(m => m.factory === factoryName);
@@ -3629,7 +3424,7 @@
         }
 
         // ============================================================
-        // 36. IMAGE VIEW
+        // 33. IMAGE VIEW
         // ============================================================
         function showFullImage(imageUrl) {
             document.getElementById('fullImageView').src = imageUrl;
@@ -3646,7 +3441,7 @@
         }
 
         // ============================================================
-        // 37. NAVIGATION & UI
+        // 34. NAVIGATION & UI
         // ============================================================
         function showSection(section) {
             document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
@@ -3663,7 +3458,6 @@
                 'addReceipt': '<i class="fas fa-plus-circle"></i> إضافة استلام جديد',
                 'receiptsList': '<i class="fas fa-list-ul"></i> جميع الاستلامات',
                 'factories': '<i class="fas fa-industry"></i> إدارة المصانع',
-                'colors': '<i class="fas fa-palette"></i> إدارة الألوان',
                 'models': '<i class="fas fa-tshirt"></i> إدارة الموديلات',
                 'sizes': '<i class="fas fa-ruler"></i> إدارة المقاسات',
                 'employees': '<i class="fas fa-users"></i> إدارة الموظفين',
@@ -3674,7 +3468,6 @@
             if (section === 'dashboard') loadDashboard();
             else if (section === 'receiptsList') loadReceiptsList();
             else if (section === 'factories') loadFactories();
-            else if (section === 'colors') loadColors();
             else if (section === 'models') { loadAllModels(); loadModelsTable(); }
             else if (section === 'sizes') loadSizesTable();
             else if (section === 'employees') loadHelpersForSelect();
@@ -3732,13 +3525,11 @@
         }
 
         // ============================================================
-        // 38. INITIALIZATION
+        // 35. INITIALIZATION
         // ============================================================
         async function init() {
             await loadDashboard();
             await loadFactories();
-            await loadColors();
-            await loadSizesCheckbox();
             await loadHelpersForSelect();
             await loadAllModels();
             await loadModelsTable();
@@ -3751,19 +3542,14 @@
 
         init();
 
-        console.log('✅ نظام إدارة الاستلامات المتقدم - الإصدار النهائي V2');
+        console.log('✅ نظام إدارة الاستلامات المتقدم - الإصدار النهائي V3');
         console.log('📌 التطويرات المطبقة:');
-        console.log('  1. ✅ إغلاق البوب اب عند النقر خارجها');
-        console.log('  2. ✅ سهم فتح/قفل للمنتجات داخل الفاتورة (Accordion)');
-        console.log('  3. ✅ دعم closedDate للفواتير البلانك وعرضها كمغلقة');
-        console.log('  4. ✅ استبعاد جداول invoices نهائياً');
-        console.log('  5. ✅ تحسين عرض المنتجات بشكل احترافي مع Accordion');
-        console.log('  6. ✅ عرض حالة الفاتورة مغلقة مع أيقونة 🔒');
-        console.log('  7. ✅ تحسين شامل للواجهة والتصميم');
+        console.log('  1. ✅ عرض الموديلات مع تجميع الألوان والمقاسات تحت كل موديل');
+        console.log('  2. ✅ إضافة النوت (ملاحظات الموديل) في ملفات الاكسل');
+        console.log('  3. ✅ إزالة الألوان من القائمة الجانبية');
+        console.log('  4. ✅ إزالة "اللون" و "المقاسات" من عرض تفاصيل الفاتورة');
         console.log('🚀 جاهز للإنتاج - تقييم 10/10');
     </script>
-        <script src="subscription.js"></script>
 
 </body>
-    
 </html>
