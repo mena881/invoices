@@ -166,6 +166,88 @@
         }
 
         /* =========================================================
+                   TABS
+                   ========================================================= */
+        .tab-container {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 28px;
+            border-bottom: 2px solid #e6edf5;
+            overflow-x: auto;
+            white-space: nowrap;
+            -webkit-overflow-scrolling: touch;
+            padding-bottom: 2px;
+            scrollbar-width: thin;
+        }
+        .tab-container::-webkit-scrollbar {
+            height: 4px;
+        }
+        .tab-container::-webkit-scrollbar-track {
+            background: #e6edf5;
+            border-radius: 12px;
+        }
+        .tab-container::-webkit-scrollbar-thumb {
+            background: #6c8cff;
+            border-radius: 12px;
+        }
+        .tab-btn {
+            background: none;
+            border: none;
+            padding: 12px 24px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            font-family: 'Inter', sans-serif;
+            cursor: pointer;
+            color: #6d7b93;
+            transition: all 0.2s;
+            border-radius: 12px 12px 0 0;
+            position: relative;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .tab-btn i {
+            font-size: 1rem;
+            opacity: 0.7;
+        }
+        .tab-btn:hover {
+            color: #0b1b2f;
+            background: #f0f4fe;
+        }
+        .tab-btn.active {
+            color: #1f3a8a;
+            background: #f0f4fe;
+        }
+        .tab-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: #6c8cff;
+            border-radius: 4px;
+        }
+        .tab-content {
+            display: none;
+            animation: fadeSlide 0.25s ease;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        @keyframes fadeSlide {
+            0% {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* =========================================================
                    SEARCH & FILTER
                    ========================================================= */
         .search-box {
@@ -217,7 +299,7 @@
         }
 
         /* =========================================================
-                   INVENTORY LIST (Blank Receipts style)
+                   INVENTORY LIST
                    ========================================================= */
         .inventory-list {
             display: flex;
@@ -282,6 +364,10 @@
             background: #ddf4e8;
             color: #0e7b4a;
         }
+        .badge-type {
+            background: #e5eeff;
+            color: #1f3a8a;
+        }
         .inventory-details {
             display: flex;
             flex-wrap: wrap;
@@ -318,7 +404,7 @@
         }
 
         /* =========================================================
-                   INVENTORY DETAIL (Blank Receipt Detail style)
+                   DETAIL
                    ========================================================= */
         .inventory-detail {
             background: #ffffff;
@@ -329,16 +415,6 @@
             display: none;
             animation: fadeSlide 0.25s ease;
             border: 1px solid rgba(0, 0, 0, 0.02);
-        }
-        @keyframes fadeSlide {
-            0% {
-                opacity: 0;
-                transform: translateY(8px);
-            }
-            100% {
-                opacity: 1;
-                transform: translateY(0);
-            }
         }
         .detail-header {
             display: flex;
@@ -427,7 +503,7 @@
         }
 
         /* =========================================================
-                   MODELS GRID (inside detail)
+                   MODELS GRID (for detailed view)
                    ========================================================= */
         .models-grid {
             display: grid;
@@ -503,17 +579,6 @@
             align-items: center;
             gap: 6px;
         }
-        .model-location-badge {
-            background: #f5a623;
-            color: #fff;
-            padding: 4px 14px;
-            border-radius: 30px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-        }
         .model-status {
             background: #e5eeff;
             padding: 4px 14px;
@@ -542,9 +607,52 @@
             background: #e5eeff;
             color: #1f3a8a;
         }
+        .model-code-badge {
+            font-size: 0.7rem;
+            background: #e6edf5;
+            padding: 2px 12px;
+            border-radius: 30px;
+            color: #4e5e77;
+        }
 
         /* =========================================================
-                   COLORS CONTAINER
+                   LOCATION INPUT
+                   ========================================================= */
+        .location-input-area {
+            margin-top: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .location-input-area label {
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: #0b1b2f;
+        }
+        .location-input-area input {
+            flex: 1;
+            min-width: 120px;
+            padding: 8px 14px;
+            border: 1px solid #e6edf5;
+            border-radius: 30px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.85rem;
+            background: #fafcff;
+            transition: border-color 0.2s;
+        }
+        .location-input-area input:focus {
+            outline: none;
+            border-color: #6c8cff;
+            box-shadow: 0 0 0 3px rgba(108, 140, 255, 0.12);
+        }
+        .location-input-area input:disabled {
+            background: #e6edf5;
+            color: #6d7b93;
+        }
+
+        /* =========================================================
+                   COLORS CONTAINER (for detailed view with colors & sizes)
                    ========================================================= */
         .colors-container {
             margin-bottom: 16px;
@@ -641,7 +749,7 @@
         }
 
         /* =========================================================
-                   SIZES & QTY
+                   SIZES & QTY (for detailed view with colors & sizes)
                    ========================================================= */
         .sizes-container {
             display: flex;
@@ -779,39 +887,69 @@
         }
 
         /* =========================================================
-                   LOCATION INPUT
+                   FULL QUANTITY INVENTORY (Tab 2)
                    ========================================================= */
-        .location-input-area {
-            margin-top: 12px;
+        .full-qty-model-row {
             display: flex;
+            gap: 14px;
             align-items: center;
-            gap: 10px;
+            margin-bottom: 14px;
             flex-wrap: wrap;
-        }
-        .location-input-area label {
-            font-weight: 600;
-            font-size: 0.85rem;
-            color: #0b1b2f;
-        }
-        .location-input-area input {
-            flex: 1;
-            min-width: 120px;
-            padding: 8px 14px;
-            border: 1px solid #e6edf5;
-            border-radius: 30px;
-            font-family: 'Inter', sans-serif;
-            font-size: 0.85rem;
             background: #fafcff;
-            transition: border-color 0.2s;
+            padding: 12px 16px;
+            border-radius: 16px;
+            border: 1px solid #e6edf5;
         }
-        .location-input-area input:focus {
+        .full-qty-model-row .model-search-container {
+            flex: 2;
+            position: relative;
+        }
+        .full-qty-model-row input[type="number"] {
+            width: 120px;
+            padding: 10px 14px;
+            border: 1px solid #e6edf5;
+            border-radius: 16px;
+            font-size: 0.9rem;
+            font-family: 'Inter', sans-serif;
+            background: #ffffff;
+            text-align: center;
+        }
+        .full-qty-model-row input[type="number"]:focus {
             outline: none;
             border-color: #6c8cff;
             box-shadow: 0 0 0 3px rgba(108, 140, 255, 0.12);
         }
-        .location-input-area input:disabled {
+        .full-qty-model-row input[type="number"]:disabled {
             background: #e6edf5;
             color: #6d7b93;
+        }
+        .full-qty-total {
+            background: #e5eeff;
+            padding: 4px 16px;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #1f3a8a;
+        }
+        .add-full-qty-btn {
+            background: #6c8cff;
+            color: #fff;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 40px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-top: 16px;
+            width: 100%;
+            transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .add-full-qty-btn:hover {
+            background: #5a77e0;
         }
 
         /* =========================================================
@@ -867,7 +1005,7 @@
         }
 
         /* =========================================================
-                   CREATE INVENTORY POPUP
+                   MODALS
                    ========================================================= */
         .modal {
             display: none;
@@ -940,117 +1078,7 @@
             box-shadow: 0 0 0 3px rgba(108, 140, 255, 0.12);
         }
 
-        /* =========================================================
-                   ADD MODEL ROW (inside detail)
-                   ========================================================= */
-        .add-model-btn {
-            background: #6c8cff;
-            color: #fff;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 40px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            font-weight: 600;
-            margin-top: 16px;
-            width: 100%;
-            transition: background 0.2s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-        .add-model-btn:hover {
-            background: #5a77e0;
-        }
-
-        .model-search-container {
-            position: relative;
-            flex: 2;
-        }
-        .model-search-input {
-            width: 100%;
-            padding: 10px 16px;
-            border: 1px solid #e6edf5;
-            border-radius: 16px;
-            font-family: 'Inter', sans-serif;
-            font-size: 0.9rem;
-            transition: border-color 0.2s;
-            background: #fafcff;
-        }
-        .model-search-input:focus {
-            outline: none;
-            border-color: #6c8cff;
-            box-shadow: 0 0 0 3px rgba(108, 140, 255, 0.12);
-        }
-        .model-search-results {
-            position: absolute;
-            top: 100%;
-            left: 0;
-            right: 0;
-            background: #ffffff;
-            border: 1px solid #e6edf5;
-            border-top: none;
-            border-radius: 0 0 16px 16px;
-            max-height: 200px;
-            overflow-y: auto;
-            z-index: 10;
-            display: none;
-            box-shadow: 0 8px 28px rgba(0, 20, 40, 0.08);
-        }
-        .model-search-result {
-            padding: 10px 16px;
-            cursor: pointer;
-            transition: background 0.15s;
-            border-bottom: 1px solid #f0f4fe;
-            font-size: 0.85rem;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .model-search-result:hover {
-            background: #f0f4fe;
-        }
-        .model-code-badge {
-            font-size: 0.7rem;
-            background: #e6edf5;
-            padding: 2px 12px;
-            border-radius: 30px;
-            color: #4e5e77;
-        }
-        .model-smart-badge {
-            font-size: 0.7rem;
-            padding: 3px 14px;
-            border-radius: 30px;
-            font-weight: 600;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .badge-new {
-            background: #fef5e7;
-            color: #b45b0a;
-        }
-        .badge-repeat {
-            background: #e5eeff;
-            color: #1f3a8a;
-        }
-        .badge-sample {
-            background: #ddf4e8;
-            color: #0e7b4a;
-        }
-
-        .model-row {
-            display: flex;
-            gap: 14px;
-            align-items: center;
-            margin-bottom: 14px;
-            flex-wrap: wrap;
-        }
-
-        /* =========================================================
-                   CLOSE INVENTORY MODAL
-                   ========================================================= */
+        /* Confirm Close Modal */
         .confirm-close-modal .modal-content {
             max-width: 560px;
         }
@@ -1306,12 +1334,11 @@
                 width: 56px;
                 font-size: 0.9rem;
             }
-            .model-row {
+            .full-qty-model-row {
                 flex-direction: column;
                 gap: 10px;
             }
-            .model-row select,
-            .model-row input {
+            .full-qty-model-row input[type="number"] {
                 width: 100%;
             }
             .confirm-close-modal .modal-content {
@@ -1353,6 +1380,140 @@
                 width: 100%;
                 justify-content: center;
             }
+        }
+
+        /* =========================================================
+                   FULL QTY - ENTRY ROW STYLING
+                   ========================================================= */
+        .full-qty-entries {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 8px;
+        }
+        .full-qty-entry {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: #f8faff;
+            padding: 8px 14px;
+            border-radius: 14px;
+            border: 1px solid #e6edf5;
+            flex-wrap: wrap;
+        }
+        .full-qty-entry .entry-factory {
+            font-weight: 600;
+            color: #1f3a8a;
+            min-width: 60px;
+        }
+        .full-qty-entry .entry-model {
+            flex: 1;
+            font-weight: 500;
+        }
+        .full-qty-entry .entry-qty {
+            font-weight: 700;
+            color: #0b1b2f;
+            min-width: 50px;
+            text-align: center;
+        }
+        .full-qty-entry .entry-remove {
+            background: #e14c4c;
+            color: #fff;
+            border: none;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .full-qty-entry .entry-remove:hover {
+            background: #c03939;
+            transform: scale(1.05);
+        }
+        .full-qty-summary {
+            background: #e5eeff;
+            padding: 8px 16px;
+            border-radius: 14px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #1f3a8a;
+            margin-top: 8px;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .model-smart-badge {
+            font-size: 0.7rem;
+            padding: 3px 14px;
+            border-radius: 30px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .badge-new {
+            background: #fef5e7;
+            color: #b45b0a;
+        }
+        .badge-repeat {
+            background: #e5eeff;
+            color: #1f3a8a;
+        }
+        .badge-sample {
+            background: #ddf4e8;
+            color: #0e7b4a;
+        }
+        .model-search-container {
+            position: relative;
+            flex: 2;
+        }
+        .model-search-input {
+            width: 100%;
+            padding: 10px 16px;
+            border: 1px solid #e6edf5;
+            border-radius: 16px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            transition: border-color 0.2s;
+            background: #fafcff;
+        }
+        .model-search-input:focus {
+            outline: none;
+            border-color: #6c8cff;
+            box-shadow: 0 0 0 3px rgba(108, 140, 255, 0.12);
+        }
+        .model-search-results {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: #ffffff;
+            border: 1px solid #e6edf5;
+            border-top: none;
+            border-radius: 0 0 16px 16px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 10;
+            display: none;
+            box-shadow: 0 8px 28px rgba(0, 20, 40, 0.08);
+        }
+        .model-search-result {
+            padding: 10px 16px;
+            cursor: pointer;
+            transition: background 0.15s;
+            border-bottom: 1px solid #f0f4fe;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .model-search-result:hover {
+            background: #f0f4fe;
         }
     </style>
 </head>
@@ -1398,27 +1559,72 @@
             </div>
         </div>
 
-        <!-- SEARCH -->
-        <div class="search-box">
-            <input type="text" id="inventorySearch" placeholder="بحث برقم الفاتورة أو كود الموديل..." onkeyup="filterInventory()">
-            <button onclick="filterInventory()"><i class="fas fa-search"></i> بحث</button>
+        <!-- TABS -->
+        <div class="tab-container">
+            <button class="tab-btn active" onclick="switchTab('colorsSizes')">
+                <i class="fas fa-palette"></i> جرد بالألوان والمقاسات
+            </button>
+            <button class="tab-btn" onclick="switchTab('fullQty')">
+                <i class="fas fa-box"></i> جرد كمية كاملة
+            </button>
         </div>
 
-        <!-- CREATE INVENTORY BUTTON -->
-        <button class="btn btn-primary" style="width:100%;margin-bottom:24px;justify-content:center;" onclick="openCreateInventoryPopup()">
-            <i class="fas fa-plus-circle"></i> + إنشاء فاتورة جرد جديدة
-        </button>
+        <!-- =========================================================
+        TAB 1: جرد بالألوان والمقاسات
+        ========================================================= -->
+        <div id="colorsSizesTab" class="tab-content active">
 
-        <!-- INVENTORY LIST -->
-        <div id="inventoryList" class="inventory-list"></div>
+            <!-- SEARCH -->
+            <div class="search-box">
+                <input type="text" id="inventorySearch" placeholder="بحث برقم الفاتورة أو كود الموديل..." onkeyup="filterInventory()">
+                <button onclick="filterInventory()"><i class="fas fa-search"></i> بحث</button>
+            </div>
 
-        <!-- LOAD MORE -->
-        <button class="load-more-btn" id="loadMoreInventoryBtn" onclick="loadMoreInventory()">
-            <i class="fas fa-chevron-down"></i> عرض المزيد
-        </button>
+            <!-- CREATE INVENTORY BUTTON -->
+            <button class="btn btn-primary" style="width:100%;margin-bottom:24px;justify-content:center;" onclick="openCreateInventoryPopup('colorsSizes')">
+                <i class="fas fa-plus-circle"></i> + إنشاء فاتورة جرد (ألوان ومقاسات)
+            </button>
 
-        <!-- INVENTORY DETAIL -->
-        <div id="inventoryDetail" class="inventory-detail" style="display:none;"></div>
+            <!-- INVENTORY LIST -->
+            <div id="colorsSizesList" class="inventory-list"></div>
+
+            <!-- LOAD MORE -->
+            <button class="load-more-btn" id="loadMoreColorsSizesBtn" onclick="loadMoreColorsSizes()">
+                <i class="fas fa-chevron-down"></i> عرض المزيد
+            </button>
+
+            <!-- DETAIL -->
+            <div id="colorsSizesDetail" class="inventory-detail" style="display:none;"></div>
+        </div>
+
+        <!-- =========================================================
+        TAB 2: جرد كمية كاملة
+        ========================================================= -->
+        <div id="fullQtyTab" class="tab-content">
+
+            <!-- SEARCH -->
+            <div class="search-box">
+                <input type="text" id="fullQtySearch" placeholder="بحث برقم الفاتورة أو كود الموديل..." onkeyup="filterFullQtyInventory()">
+                <button onclick="filterFullQtyInventory()"><i class="fas fa-search"></i> بحث</button>
+            </div>
+
+            <!-- CREATE INVENTORY BUTTON -->
+            <button class="btn btn-primary" style="width:100%;margin-bottom:24px;justify-content:center;" onclick="openCreateInventoryPopup('fullQty')">
+                <i class="fas fa-plus-circle"></i> + إنشاء فاتورة جرد (كمية كاملة)
+            </button>
+
+            <!-- INVENTORY LIST -->
+            <div id="fullQtyList" class="inventory-list"></div>
+
+            <!-- LOAD MORE -->
+            <button class="load-more-btn" id="loadMoreFullQtyBtn" onclick="loadMoreFullQty()">
+                <i class="fas fa-chevron-down"></i> عرض المزيد
+            </button>
+
+            <!-- DETAIL -->
+            <div id="fullQtyDetail" class="inventory-detail" style="display:none;"></div>
+        </div>
+
     </div>
 
     <!-- =========================================================
@@ -1450,6 +1656,7 @@
                     <button class="btn btn-primary btn-sm" onclick="openFactoryModal()"><i class="fas fa-plus"></i> مصنع جديد</button>
                 </div>
             </div>
+            <input type="hidden" id="inventoryType" value="colorsSizes">
             <div id="inventoryCreateErrorMsg" style="color:#e14c4c; font-size:0.8rem; margin-bottom:10px;"></div>
             <div style="display:flex; gap:12px; justify-content:flex-end; margin-top:18px;">
                 <button class="btn btn-primary" onclick="createInventory()">إنشاء</button>
@@ -1458,7 +1665,7 @@
         </div>
     </div>
 
-    <!-- Add Model Modal -->
+    <!-- Add Model Modal (for colors & sizes tab) -->
     <div id="addModelModal" class="modal">
         <div class="modal-content">
             <h3><i class="fas fa-tshirt"></i> إضافة موديل جديد</h3>
@@ -1470,6 +1677,22 @@
             <div style="display:flex; gap:12px; justify-content:flex-end; margin-top:18px;">
                 <button class="btn btn-primary" onclick="quickAddModel()">إضافة</button>
                 <button class="btn btn-danger" onclick="closeModelModal()">إلغاء</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Model Modal (for full qty tab) -->
+    <div id="addModelModalFullQty" class="modal">
+        <div class="modal-content">
+            <h3><i class="fas fa-tshirt"></i> إضافة موديل جديد</h3>
+            <div class="form-group" style="margin-top:18px;">
+                <label>كود الموديل</label>
+                <input type="text" id="newModelCodeFullQty" placeholder="مثال: 3012">
+            </div>
+            <div id="modelErrorMsgFullQty" style="color:#e14c4c; font-size:0.8rem; margin-bottom:10px;"></div>
+            <div style="display:flex; gap:12px; justify-content:flex-end; margin-top:18px;">
+                <button class="btn btn-primary" onclick="quickAddModelFullQty()">إضافة</button>
+                <button class="btn btn-danger" onclick="closeModelModalFullQty()">إلغاء</button>
             </div>
         </div>
     </div>
@@ -1490,7 +1713,7 @@
         </div>
     </div>
 
-    <!-- Confirm Close Inventory Modal -->
+    <!-- Confirm Close Modal -->
     <div id="confirmCloseModal" class="modal confirm-close-modal">
         <div class="modal-content">
             <h3><i class="fas fa-check-double"></i> تأكيد إقفال الجرد</h3>
@@ -1547,29 +1770,34 @@
         //  GLOBAL STATE
         // ================================================================
         let currentUser = null;
-        let currentInventoryId = null;
-        let currentInventoryData = null;
-        let allInventoryList = [];
+
+        // Colors & Sizes Tab
+        let csInventoryList = [];
+        let csCurrentId = null;
+        let csCurrentData = null;
+        let csPage = 0;
+        let csModelOpenState = {};
+        let csColorOpenState = {};
+
+        // Full Qty Tab
+        let fqInventoryList = [];
+        let fqCurrentId = null;
+        let fqCurrentData = null;
+        let fqPage = 0;
+
+        // Shared
         let allSizesList = [];
         let allModelsList = [];
         let allFactoriesList = [];
         let receivedModelsHistory = new Set();
-
-        // UI state
-        let modelOpenState = {};
-        let colorOpenState = {};
-        let inventoryPage = 0;
-        const ITEMS_PER_PAGE = 100;
-
-        // Auto-save
         let saveTimer = null;
 
-        // Exclude tables
         const EXCLUDED_TABLES = ['currentTable', 'invoices'];
+        const ITEMS_PER_PAGE = 100;
 
         // Pending model search
-        let pendingModelSearchRowId = null;
-        let inventoryPendingModelSearch = {};
+        let csPendingModelSearch = {};
+        let fqPendingModelSearch = {};
 
         // ================================================================
         //  HELPERS
@@ -1580,12 +1808,12 @@
             return date.toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' });
         }
 
-        function getColorStateKey(inventoryId, modelName, colorName) {
-            return `${inventoryId}_${modelName}_${colorName}`;
+        function getColorStateKey(id, modelName, colorName) {
+            return `${id}_${modelName}_${colorName}`;
         }
 
-        function getModelStateKey(inventoryId, modelName) {
-            return `${inventoryId}_${modelName}`;
+        function getModelStateKey(id, modelName) {
+            return `${id}_${modelName}`;
         }
 
         function showWarning(message, isError = false) {
@@ -1626,6 +1854,16 @@
             }, 1000);
         }
 
+        function getCurrentTab() {
+            const activeBtn = document.querySelector('.tab-btn.active');
+            if (activeBtn) {
+                const onclick = activeBtn.getAttribute('onclick');
+                if (onclick && onclick.includes('colorsSizes')) return 'colorsSizes';
+                if (onclick && onclick.includes('fullQty')) return 'fullQty';
+            }
+            return 'colorsSizes';
+        }
+
         // ================================================================
         //  AUTHENTICATION
         // ================================================================
@@ -1650,7 +1888,8 @@
                 document.getElementById('userName').innerText = currentUser.fullName || currentUser.username;
                 Promise.all([loadSizes(), loadAllModels(), loadAllFactories(), loadReceivedModelsHistory()])
                     .then(() => {
-                        loadInventory();
+                        loadColorsSizesInventory();
+                        loadFullQtyInventory();
                         loadDashboardStats();
                         loadInventoryFormData();
                         setupModalListeners();
@@ -1702,16 +1941,22 @@
 
         async function loadReceivedModelsHistory() {
             receivedModelsHistory.clear();
-            const snapshot = await db.ref('inventory').once('value');
-            snapshot.forEach((child) => {
+            // From inventory
+            const invSnapshot = await db.ref('inventory').once('value');
+            invSnapshot.forEach((child) => {
                 const inv = child.val();
                 if (inv.modelColors) {
                     Object.keys(inv.modelColors).forEach(modelName => {
                         receivedModelsHistory.add(modelName);
                     });
                 }
+                if (inv.fullQtyEntries) {
+                    inv.fullQtyEntries.forEach(entry => {
+                        if (entry.modelName) receivedModelsHistory.add(entry.modelName);
+                    });
+                }
             });
-            // Also check normal receipts for history
+            // From receipts
             const receiptSnapshot = await db.ref('receipts').once('value');
             receiptSnapshot.forEach((child) => {
                 const receipt = child.val();
@@ -1725,117 +1970,25 @@
         }
 
         // ================================================================
-        //  INVENTORY LOADING & RENDERING
+        //  TABS
         // ================================================================
-        async function loadInventory() {
-            const snapshot = await db.ref('inventory').once('value');
-            const inventory = [];
-            const userId = currentUser.userId || currentUser.uid || currentUser.username || '';
+        function switchTab(tab) {
+            // Close any open detail
+            if (csCurrentId && csCurrentData) { closeColorsSizesDetail(true); }
+            if (fqCurrentId && fqCurrentData) { closeFullQtyDetail(true); }
 
-            snapshot.forEach((child) => {
-                const inv = child.val();
-                if (inv.assignedEmployeesUsernames && inv.assignedEmployeesUsernames.includes(currentUser.username)) {
-                    inventory.push({ id: child.key, ...inv });
-                }
-            });
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
 
-            // Sort by createdAt descending
-            inventory.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
-
-            allInventoryList = inventory;
-            inventoryPage = 0;
-            renderInventoryList(inventory.slice(0, ITEMS_PER_PAGE));
-            updateLoadMoreBtn(inventory.length);
-            loadDashboardStats();
-        }
-
-        function renderInventoryList(items) {
-            const container = document.getElementById('inventoryList');
-            if (items.length === 0 && inventoryPage === 0) {
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-clipboard-list"></i>
-                        <p>لا توجد فواتير جرد - أنشئ فاتورة جديدة</p>
-                    </div>
-                `;
-                return;
-            }
-            if (items.length === 0 && inventoryPage > 0) {
-                return;
-            }
-            if (inventoryPage === 0) {
-                container.innerHTML = '';
-            }
-
-            items.forEach(inv => {
-                let totalItems = 0;
-                let totalQty = 0;
-                if (inv.modelColors) {
-                    for (const modelName in inv.modelColors) {
-                        totalItems++;
-                        for (const colorName in inv.modelColors[modelName]) {
-                            for (const sizeId in inv.modelColors[modelName][colorName]) {
-                                const sizeArray = inv.modelColors[modelName][colorName][sizeId] || [0];
-                                totalQty += sizeArray.reduce((a, b) => a + b, 0);
-                            }
-                        }
-                    }
-                }
-
-                const isClosed = inv.isClosed === true;
-
-                container.innerHTML += `
-                    <div class="inventory-card ${isClosed ? 'closed' : ''}" onclick="openInventory('${inv.id}')">
-                        <div class="inventory-header">
-                            <span class="inventory-code"><i class="fas fa-barcode"></i> ${inv.invoiceCode}</span>
-                            <span class="inventory-badge ${isClosed ? 'badge-closed' : 'badge-open'}">${isClosed ? 'مقفلة' : 'مفتوحة'}</span>
-                        </div>
-                        <div class="inventory-details">
-                            <span><i class="fas fa-factory"></i> ${inv.factory || '-'}</span>
-                            <span><i class="fas fa-tags"></i> ${totalItems} موديل</span>
-                            <span><i class="fas fa-boxes"></i> ${totalQty} قطعة</span>
-                        </div>
-                        <div class="inventory-progress">
-                            <div class="progress-bar">
-                                <div class="progress-fill" style="width: ${isClosed ? 100 : Math.min(totalItems > 0 ? 50 : 0, 100)}%"></div>
-                            </div>
-                            <div class="progress-text">${isClosed ? '✅ مقفلة' : 'جاري الجرد...'}</div>
-                        </div>
-                    </div>
-                `;
-            });
-        }
-
-        function updateLoadMoreBtn(totalItems) {
-            const btn = document.getElementById('loadMoreInventoryBtn');
-            if (totalItems <= (inventoryPage + 1) * ITEMS_PER_PAGE) {
-                btn.style.display = 'none';
+            if (tab === 'colorsSizes') {
+                document.querySelector('.tab-btn[onclick*="colorsSizes"]').classList.add('active');
+                document.getElementById('colorsSizesTab').classList.add('active');
+                loadColorsSizesInventory();
             } else {
-                btn.style.display = 'flex';
+                document.querySelector('.tab-btn[onclick*="fullQty"]').classList.add('active');
+                document.getElementById('fullQtyTab').classList.add('active');
+                loadFullQtyInventory();
             }
-        }
-
-        function loadMoreInventory() {
-            inventoryPage++;
-            const start = inventoryPage * ITEMS_PER_PAGE;
-            const end = start + ITEMS_PER_PAGE;
-            const chunk = allInventoryList.slice(start, end);
-            if (chunk.length > 0) {
-                renderInventoryList(chunk);
-                updateLoadMoreBtn(allInventoryList.length);
-            }
-        }
-
-        function filterInventory() {
-            const searchTerm = document.getElementById('inventorySearch').value.toLowerCase();
-            const filtered = allInventoryList.filter(item =>
-                item.invoiceCode.toLowerCase().includes(searchTerm) ||
-                (item.modelColors && Object.keys(item.modelColors).some(m => m.toLowerCase().includes(searchTerm)))
-            );
-            inventoryPage = 0;
-            renderInventoryList(filtered.slice(0, ITEMS_PER_PAGE));
-            updateLoadMoreBtn(filtered.length);
-            window._filteredInventory = filtered;
         }
 
         // ================================================================
@@ -1854,7 +2007,19 @@
                     totalInventory++;
                     if (!inv.isClosed) pending++;
 
-                    if (inv.modelColors) {
+                    // Count items and quantities
+                    if (inv.type === 'fullQty' && inv.fullQtyEntries) {
+                        // Full Qty type
+                        const modelSet = new Set();
+                        inv.fullQtyEntries.forEach(entry => {
+                            if (entry.modelName) {
+                                modelSet.add(entry.modelName);
+                                totalQuantity += parseInt(entry.qty) || 0;
+                            }
+                        });
+                        totalItems += modelSet.size;
+                    } else if (inv.modelColors) {
+                        // Colors & Sizes type
                         for (const modelName in inv.modelColors) {
                             totalItems++;
                             for (const colorName in inv.modelColors[modelName]) {
@@ -1875,43 +2040,230 @@
         }
 
         // ================================================================
-        //  INVENTORY - OPEN / CLOSE / RENDER
+        //  INVENTORY FORM DATA
         // ================================================================
-        function closeInventoryDetail(silent = false) {
-            document.getElementById('inventoryDetail').style.display = 'none';
-            if (currentInventoryId) {
-                delete modelOpenState[currentInventoryId];
-                delete colorOpenState[currentInventoryId];
-            }
-            currentInventoryId = null;
-            currentInventoryData = null;
+        async function loadInventoryFormData() {
+            await loadAllFactories();
+            const factorySelect = document.getElementById('inventoryFactorySelect');
+            factorySelect.innerHTML = '<option value="">اختر مصنع</option>';
+            allFactoriesList.forEach(f => {
+                factorySelect.innerHTML += `<option value="${f.name}">${f.name}</option>`;
+            });
         }
 
-        async function openInventory(inventoryId) {
-            if (currentInventoryId && currentInventoryData) { closeInventoryDetail(true); }
+        // ================================================================
+        //  CREATE INVENTORY
+        // ================================================================
+        function openCreateInventoryPopup(type) {
+            document.getElementById('inventoryCode').value = '';
+            document.getElementById('inventoryFactorySelect').value = '';
+            document.getElementById('inventoryType').value = type || 'colorsSizes';
+            document.getElementById('inventoryCreateErrorMsg').innerHTML = '';
+            document.getElementById('createInventoryPopup').style.display = 'flex';
+            loadInventoryFormData();
+        }
 
-            currentInventoryId = inventoryId;
+        function closeCreateInventoryPopup() {
+            document.getElementById('createInventoryPopup').style.display = 'none';
+        }
+
+        async function createInventory() {
+            const invoiceCode = document.getElementById('inventoryCode').value.trim();
+            const factory = document.getElementById('inventoryFactorySelect').value;
+            const type = document.getElementById('inventoryType').value;
+
+            if (!invoiceCode || !factory) {
+                document.getElementById('inventoryCreateErrorMsg').innerHTML = 'الرجاء إدخال كود الفاتورة واختيار المصنع';
+                return;
+            }
+
+            const inventoryData = {
+                invoiceCode,
+                factory,
+                type: type,
+                assignedEmployeesUsernames: [currentUser.username],
+                assignedEmployees: [currentUser.fullName],
+                isClosed: false,
+                closedDate: null,
+                createdAt: new Date().toISOString(),
+                createdBy: currentUser.fullName,
+                createdByUsername: currentUser.username,
+                updatedAt: Date.now()
+            };
+
+            // Add type-specific fields
+            if (type === 'fullQty') {
+                inventoryData.fullQtyEntries = [];
+                inventoryData.fullQtyTotals = {};
+            } else {
+                inventoryData.modelColors = {};
+                inventoryData.modelNotes = {};
+                inventoryData.modelLocations = {};
+            }
+
+            const ref = await db.ref('inventory').push(inventoryData);
+            if (ref.key) {
+                showWarning('تم إنشاء فاتورة الجرد بنجاح', false);
+                closeCreateInventoryPopup();
+                if (type === 'fullQty') {
+                    loadFullQtyInventory();
+                } else {
+                    loadColorsSizesInventory();
+                }
+                loadDashboardStats();
+            } else {
+                showWarning('حدث خطأ في إنشاء الفاتورة', true);
+            }
+        }
+
+        // ================================================================
+        //  TAB 1: COLORS & SIZES INVENTORY
+        // ================================================================
+        async function loadColorsSizesInventory() {
+            const snapshot = await db.ref('inventory').once('value');
+            const inventory = [];
+
+            snapshot.forEach((child) => {
+                const inv = child.val();
+                if (inv.type !== 'fullQty' &&
+                    inv.assignedEmployeesUsernames &&
+                    inv.assignedEmployeesUsernames.includes(currentUser.username)) {
+                    inventory.push({ id: child.key, ...inv });
+                }
+            });
+
+            inventory.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+            csInventoryList = inventory;
+            csPage = 0;
+            renderColorsSizesList(inventory.slice(0, ITEMS_PER_PAGE));
+            updateColorsSizesLoadMore(inventory.length);
+        }
+
+        function renderColorsSizesList(items) {
+            const container = document.getElementById('colorsSizesList');
+            if (items.length === 0 && csPage === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-palette"></i>
+                        <p>لا توجد فواتير جرد بالألوان والمقاسات - أنشئ فاتورة جديدة</p>
+                    </div>
+                `;
+                return;
+            }
+            if (items.length === 0 && csPage > 0) return;
+            if (csPage === 0) container.innerHTML = '';
+
+            items.forEach(inv => {
+                let totalItems = 0;
+                let totalQty = 0;
+                if (inv.modelColors) {
+                    for (const modelName in inv.modelColors) {
+                        totalItems++;
+                        for (const colorName in inv.modelColors[modelName]) {
+                            for (const sizeId in inv.modelColors[modelName][colorName]) {
+                                const sizeArray = inv.modelColors[modelName][colorName][sizeId] || [0];
+                                totalQty += sizeArray.reduce((a, b) => a + b, 0);
+                            }
+                        }
+                    }
+                }
+
+                const isClosed = inv.isClosed === true;
+
+                container.innerHTML += `
+                    <div class="inventory-card ${isClosed ? 'closed' : ''}" onclick="openColorsSizesDetail('${inv.id}')">
+                        <div class="inventory-header">
+                            <span class="inventory-code"><i class="fas fa-barcode"></i> ${inv.invoiceCode}</span>
+                            <span class="inventory-badge ${isClosed ? 'badge-closed' : 'badge-open'}">${isClosed ? 'مقفلة' : 'مفتوحة'}</span>
+                        </div>
+                        <div class="inventory-details">
+                            <span><i class="fas fa-factory"></i> ${inv.factory || '-'}</span>
+                            <span><i class="fas fa-tags"></i> ${totalItems} موديل</span>
+                            <span><i class="fas fa-boxes"></i> ${totalQty} قطعة</span>
+                            <span class="inventory-badge badge-type"><i class="fas fa-palette"></i> ألوان ومقاسات</span>
+                        </div>
+                        <div class="inventory-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: ${isClosed ? 100 : Math.min(totalItems > 0 ? 50 : 0, 100)}%"></div>
+                            </div>
+                            <div class="progress-text">${isClosed ? '✅ مقفلة' : 'جاري الجرد...'}</div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function updateColorsSizesLoadMore(totalItems) {
+            const btn = document.getElementById('loadMoreColorsSizesBtn');
+            if (totalItems <= (csPage + 1) * ITEMS_PER_PAGE) {
+                btn.style.display = 'none';
+            } else {
+                btn.style.display = 'flex';
+            }
+        }
+
+        function loadMoreColorsSizes() {
+            csPage++;
+            const start = csPage * ITEMS_PER_PAGE;
+            const end = start + ITEMS_PER_PAGE;
+            const chunk = csInventoryList.slice(start, end);
+            if (chunk.length > 0) {
+                renderColorsSizesList(chunk);
+                updateColorsSizesLoadMore(csInventoryList.length);
+            }
+        }
+
+        function filterInventory() {
+            const searchTerm = document.getElementById('inventorySearch').value.toLowerCase();
+            const filtered = csInventoryList.filter(item =>
+                item.invoiceCode.toLowerCase().includes(searchTerm) ||
+                (item.modelColors && Object.keys(item.modelColors).some(m => m.toLowerCase().includes(searchTerm)))
+            );
+            csPage = 0;
+            renderColorsSizesList(filtered.slice(0, ITEMS_PER_PAGE));
+            updateColorsSizesLoadMore(filtered.length);
+            window._csFiltered = filtered;
+        }
+
+        // ================================================================
+        //  TAB 1: COLORS & SIZES - OPEN / CLOSE / RENDER DETAIL
+        // ================================================================
+        function closeColorsSizesDetail(silent = false) {
+            document.getElementById('colorsSizesDetail').style.display = 'none';
+            if (csCurrentId) {
+                delete csModelOpenState[csCurrentId];
+                delete csColorOpenState[csCurrentId];
+            }
+            csCurrentId = null;
+            csCurrentData = null;
+        }
+
+        async function openColorsSizesDetail(inventoryId) {
+            if (csCurrentId && csCurrentData) { closeColorsSizesDetail(true); }
+            if (fqCurrentId && fqCurrentData) { closeFullQtyDetail(true); }
+
+            csCurrentId = inventoryId;
             const snapshot = await db.ref(`inventory/${inventoryId}`).once('value');
-            currentInventoryData = snapshot.val();
-            if (!currentInventoryData) { showWarning('حدث خطأ في تحميل الفاتورة', true); return; }
+            csCurrentData = snapshot.val();
+            if (!csCurrentData) { showWarning('حدث خطأ في تحميل الفاتورة', true); return; }
 
-            if (!currentInventoryData.modelColors) currentInventoryData.modelColors = {};
-            if (!currentInventoryData.modelNotes) currentInventoryData.modelNotes = {};
-            if (!currentInventoryData.modelLocations) currentInventoryData.modelLocations = {};
+            if (!csCurrentData.modelColors) csCurrentData.modelColors = {};
+            if (!csCurrentData.modelNotes) csCurrentData.modelNotes = {};
+            if (!csCurrentData.modelLocations) csCurrentData.modelLocations = {};
 
-            if (!modelOpenState[inventoryId]) modelOpenState[inventoryId] = {};
-            if (!colorOpenState[inventoryId]) colorOpenState[inventoryId] = {};
+            if (!csModelOpenState[inventoryId]) csModelOpenState[inventoryId] = {};
+            if (!csColorOpenState[inventoryId]) csColorOpenState[inventoryId] = {};
 
-            renderInventoryDetail();
+            renderColorsSizesDetail();
             setTimeout(() => {
-                document.getElementById('inventoryDetail').scrollIntoView({ behavior: 'smooth' });
+                document.getElementById('colorsSizesDetail').scrollIntoView({ behavior: 'smooth' });
             }, 100);
         }
 
-        function renderInventoryDetail() {
-            if (!currentInventoryData || !currentInventoryId) return;
-            const inv = currentInventoryData;
-            const inventoryId = currentInventoryId;
+        function renderColorsSizesDetail() {
+            if (!csCurrentData || !csCurrentId) return;
+            const inv = csCurrentData;
+            const id = csCurrentId;
 
             let totalItems = 0;
             let totalQty = 0;
@@ -1940,8 +2292,8 @@
                 `;
             } else {
                 modelNames.forEach(modelName => {
-                    const modelKey = getModelStateKey(inventoryId, modelName);
-                    const isOpen = modelOpenState[inventoryId]?.[modelKey] !== false;
+                    const modelKey = getModelStateKey(id, modelName);
+                    const isOpen = csModelOpenState[id]?.[modelKey] !== false;
                     const safeModelKey = modelName.replace(/[^a-zA-Z0-9]/g, '_');
                     const isModelFirstTime = !receivedModelsHistory.has(modelName);
                     const modelLocation = inv.modelLocations?.[modelName] || '';
@@ -1958,8 +2310,8 @@
                     let colorsHtml = '';
                     const colorNames = Object.keys(inv.modelColors[modelName]);
                     colorNames.forEach(colorName => {
-                        const colorKey = getColorStateKey(inventoryId, modelName, colorName);
-                        const isColorOpen = colorOpenState[inventoryId]?.[colorKey] !== false;
+                        const colorKey = getColorStateKey(id, modelName, colorName);
+                        const isColorOpen = csColorOpenState[id]?.[colorKey] !== false;
                         const colorData = inv.modelColors[modelName][colorName];
                         const colorTotal = calculateTotalForColor(inv, modelName, colorName);
                         const safeColorKey = colorName.replace(/[^a-zA-Z0-9]/g, '_');
@@ -1973,14 +2325,14 @@
                             sizeArray.forEach((val, idx) => {
                                 qtyRowsHtml += `
                                     <div class="qty-box">
-                                        ${!isClosed ? `<button class="danger" onclick="removeColorSizeRow('${modelName}', '${colorName}', '${sizeId}', ${idx})"><i class="fas fa-minus"></i></button>` : ''}
+                                        ${!isClosed ? `<button class="danger" onclick="csRemoveQtyRow('${modelName}', '${colorName}', '${sizeId}', ${idx})"><i class="fas fa-minus"></i></button>` : ''}
                                         <input type="number" value="${val || ''}" min="0" 
-                                            onchange="handleQtyChange('${modelName}', '${colorName}', '${sizeId}', ${idx}, this.value)" 
+                                            onchange="csHandleQtyChange('${modelName}', '${colorName}', '${sizeId}', ${idx}, this.value)" 
                                             ${isClosed ? 'disabled' : ''} 
                                             ${val === 0 ? 'style="color:transparent;"' : ''} 
                                             onfocus="this.style.color='#0b1b2f'" 
                                             onblur="if(this.value==='0' || this.value===''){this.value='';this.style.color='transparent'}">
-                                        ${!isClosed && idx === sizeArray.length - 1 ? `<button onclick="addNewQtyRow('${modelName}', '${colorName}', '${sizeId}')"><i class="fas fa-plus"></i></button>` : ''}
+                                        ${!isClosed && idx === sizeArray.length - 1 ? `<button onclick="csAddQtyRow('${modelName}', '${colorName}', '${sizeId}')"><i class="fas fa-plus"></i></button>` : ''}
                                     </div>
                                 `;
                             });
@@ -2002,17 +2354,17 @@
 
                         colorsHtml += `
                             <div class="colors-container">
-                                <div class="color-header" onclick="toggleColorContent('${modelName}', '${colorName}')">
+                                <div class="color-header" onclick="csToggleColor('${modelName}', '${colorName}')">
                                     <div class="color-name-input">
                                         <button class="color-toggle-btn"><i class="fas ${isColorOpen ? 'fa-chevron-up' : 'fa-chevron-down'}"></i></button>
-                                        <strong><i class="fas fa-palette"></i> <span class="edit-inline" onclick="event.stopPropagation();editColorName('${modelName}', '${colorName}')">${colorName}</span></strong>
+                                        <strong><i class="fas fa-palette"></i> <span class="edit-inline" onclick="event.stopPropagation();csEditColorName('${modelName}', '${colorName}')">${colorName}</span></strong>
                                         <span class="total-received">إجمالي اللون: ${colorTotal} قطعة</span>
                                     </div>
                                     <div style="display:flex;gap:10px;align-items:center;" onclick="event.stopPropagation()">
-                                        ${!isClosed ? `<button class="delete-color-btn" onclick="deleteColor('${modelName}', '${colorName}')"><i class="fas fa-trash"></i></button>` : ''}
+                                        ${!isClosed ? `<button class="delete-color-btn" onclick="csDeleteColor('${modelName}', '${colorName}')"><i class="fas fa-trash"></i></button>` : ''}
                                     </div>
                                 </div>
-                                <div id="color-content-${safeModelKey}_${safeColorKey}" class="color-sizes-wrapper ${isColorOpen ? 'open' : ''}" onclick="event.stopPropagation()">
+                                <div id="cs-color-content-${safeModelKey}_${safeColorKey}" class="color-sizes-wrapper ${isColorOpen ? 'open' : ''}" onclick="event.stopPropagation()">
                                     <div class="sizes-container">
                                         ${sizesHtml}
                                     </div>
@@ -2023,7 +2375,7 @@
 
                     if (!isClosed) {
                         colorsHtml += `
-                            <button class="add-color-btn" onclick="addNewColor('${modelName}')">
+                            <button class="add-color-btn" onclick="csAddColor('${modelName}')">
                                 <i class="fas fa-plus"></i> إضافة لون آخر
                             </button>
                         `;
@@ -2031,10 +2383,10 @@
 
                     modelsHtml += `
                         <div class="model-card ${isClosed ? 'closed-model' : ''}">
-                            <div class="model-title" onclick="toggleModelContent('${modelName}')">
+                            <div class="model-title" onclick="csToggleModel('${modelName}')">
                                 <div class="model-title-left">
                                     <span class="toggle-icon ${isOpen ? 'open' : ''}"><i class="fas ${isOpen ? 'fa-chevron-up' : 'fa-chevron-down'}"></i></span>
-                                    <span><i class="fas fa-tshirt"></i> <span class="edit-inline" onclick="event.stopPropagation();editModelName('${modelName}')">${modelName}</span></span>
+                                    <span><i class="fas fa-tshirt"></i> <span class="edit-inline" onclick="event.stopPropagation();csEditModelName('${modelName}')">${modelName}</span></span>
                                     ${modelTypeBadge}
                                     <span class="model-total-badge"><i class="fas fa-boxes"></i> الإجمالي: ${modelTotal} قطعة</span>
                                 </div>
@@ -2042,19 +2394,19 @@
                                     ${isClosed ? '<span class="model-status"><i class="fas fa-lock"></i> مقفل</span>' : ''}
                                 </div>
                             </div>
-                            <div id="model-content-${safeModelKey}" class="model-content-wrapper ${isOpen ? 'open' : ''}">
+                            <div id="cs-model-content-${safeModelKey}" class="model-content-wrapper ${isOpen ? 'open' : ''}">
                                 ${colorsHtml}
                                 <div class="location-input-area">
                                     <label><i class="fas fa-map-marker-alt"></i> موقع الموديل:</label>
                                     <input type="text" placeholder="مثال: B1" value="${modelLocation}" 
-                                        onchange="handleLocationChange('${modelName}', this.value)" 
+                                        onchange="csHandleLocationChange('${modelName}', this.value)" 
                                         ${isClosed ? 'disabled' : ''}>
                                 </div>
                                 <div class="model-note-area">
-                                    <textarea rows="2" placeholder="ملاحظات خاصة بهذا الموديل..." onchange="handleNoteChange('${modelName}', this.value)" ${isClosed ? 'disabled' : ''}>${inv.modelNotes?.[modelName] || ''}</textarea>
+                                    <textarea rows="2" placeholder="ملاحظات خاصة بهذا الموديل..." onchange="csHandleNoteChange('${modelName}', this.value)" ${isClosed ? 'disabled' : ''}>${inv.modelNotes?.[modelName] || ''}</textarea>
                                 </div>
                                 ${!isClosed ? `
-                                    <button class="close-inventory-btn" onclick="closeModel('${modelName}')">
+                                    <button class="close-inventory-btn" onclick="csCloseModel('${modelName}')">
                                         <i class="fas fa-check-circle"></i> إقفال الموديل
                                     </button>
                                 ` : ''}
@@ -2064,19 +2416,19 @@
                 });
             }
 
-            document.getElementById('inventoryDetail').innerHTML = `
+            document.getElementById('colorsSizesDetail').innerHTML = `
                 <div class="detail-header">
-                    <h3><i class="fas fa-clipboard-list"></i> فاتورة جرد: ${inv.invoiceCode}</h3>
+                    <h3><i class="fas fa-palette"></i> جرد بالألوان والمقاسات: ${inv.invoiceCode}</h3>
                     <div>
                         <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;">
-                            ${!isClosed ? `<button class="btn btn-sm btn-primary" onclick="openAllModels()"><i class="fas fa-expand"></i> فتح المنتجات</button>` : ''}
-                            ${!isClosed ? `<button class="btn btn-sm btn-warning" onclick="closeAllModels()"><i class="fas fa-compress"></i> غلق المنتجات</button>` : ''}
-                            ${!isClosed ? `<button class="btn btn-sm btn-primary" onclick="openAllColors()"><i class="fas fa-palette"></i> فتح الألوان</button>` : ''}
-                            ${!isClosed ? `<button class="btn btn-sm btn-warning" onclick="closeAllColors()"><i class="fas fa-palette"></i> غلق الألوان</button>` : ''}
-                            ${!isClosed ? `<button class="btn btn-warning close-inventory-btn" style="width:auto;margin:0;" onclick="openConfirmCloseModal()"><i class="fas fa-check-double"></i> إقفال الجرد</button>` : ''}
+                            ${!isClosed ? `<button class="btn btn-sm btn-primary" onclick="csOpenAllModels()"><i class="fas fa-expand"></i> فتح المنتجات</button>` : ''}
+                            ${!isClosed ? `<button class="btn btn-sm btn-warning" onclick="csCloseAllModels()"><i class="fas fa-compress"></i> غلق المنتجات</button>` : ''}
+                            ${!isClosed ? `<button class="btn btn-sm btn-primary" onclick="csOpenAllColors()"><i class="fas fa-palette"></i> فتح الألوان</button>` : ''}
+                            ${!isClosed ? `<button class="btn btn-sm btn-warning" onclick="csCloseAllColors()"><i class="fas fa-palette"></i> غلق الألوان</button>` : ''}
+                            ${!isClosed ? `<button class="btn btn-warning close-inventory-btn" style="width:auto;margin:0;" onclick="openConfirmCloseModal('colorsSizes')"><i class="fas fa-check-double"></i> إقفال الجرد</button>` : ''}
                             ${isClosed ? `<span class="model-smart-badge badge-repeat" style="font-size:16px;padding:8px 16px;"><i class="fas fa-check-circle"></i> الجرد مقفل</span>` : ''}
                         </div>
-                        <button class="close-detail" onclick="closeInventoryDetail()"><i class="fas fa-times"></i></button>
+                        <button class="close-detail" onclick="closeColorsSizesDetail()"><i class="fas fa-times"></i></button>
                     </div>
                 </div>
                 <div class="summary-bar">
@@ -2095,19 +2447,19 @@
                     ${inv.closedDate ? `<span><i class="fas fa-calendar-check"></i> <strong>تاريخ الإقفال:</strong> ${formatDate(inv.closedDate)}</span>` : ''}
                     <span><i class="fas fa-user"></i> <strong>الموظف:</strong> ${inv.createdBy || '-'}</span>
                 </div>
-                ${!isClosed ? `<button class="add-model-btn" onclick="addNewModel()">
+                ${!isClosed ? `<button class="add-model-btn" onclick="csAddNewModel()">
                     <i class="fas fa-plus-circle"></i> + إضافة موديل جديد
                 </button>` : ''}
                 <div class="models-grid" style="margin-top:18px;">${modelsHtml}</div>
-                ${!isClosed ? `<button class="close-inventory-full-btn" onclick="openConfirmCloseModal()">
+                ${!isClosed ? `<button class="close-inventory-full-btn" onclick="openConfirmCloseModal('colorsSizes')">
                     <i class="fas fa-check-double"></i> إقفال الجرد بالكامل
                 </button>` : ''}
             `;
-            document.getElementById('inventoryDetail').style.display = 'block';
+            document.getElementById('colorsSizesDetail').style.display = 'block';
         }
 
         // ================================================================
-        //  CALCULATIONS
+        //  TAB 1: COLORS & SIZES - UI ACTIONS
         // ================================================================
         function calculateTotalForColor(invData, modelName, colorName) {
             let total = 0;
@@ -2128,47 +2480,37 @@
             return total;
         }
 
-        // ================================================================
-        //  UI ACTIONS WITH AUTO-SAVE
-        // ================================================================
-        function handleQtyChange(modelName, colorName, sizeId, index, value) {
-            if (!currentInventoryId || !currentInventoryData) return;
-            if (currentInventoryData.isClosed) return;
-
+        // Qty changes
+        function csHandleQtyChange(modelName, colorName, sizeId, index, value) {
+            if (!csCurrentId || !csCurrentData || csCurrentData.isClosed) return;
             const numValue = parseInt(value) || 0;
             if (numValue < 0) return;
 
-            // Update UI immediately
-            const colorData = currentInventoryData.modelColors?.[modelName]?.[colorName];
+            const colorData = csCurrentData.modelColors?.[modelName]?.[colorName];
             if (colorData && colorData[sizeId]) {
                 colorData[sizeId][index] = numValue;
             }
 
-            // Save with delay
-            updateQty(currentInventoryId, modelName, colorName, sizeId, index, numValue)
+            csUpdateQty(csCurrentId, modelName, colorName, sizeId, index, numValue)
                 .then(() => scheduleSave())
                 .catch(err => {
                     console.error('Error updating qty:', err);
                     showWarning('حدث خطأ في حفظ الكمية', true);
                 });
-
-            // Re-render to update totals
-            renderInventoryDetail();
+            renderColorsSizesDetail();
         }
 
-        async function updateQty(inventoryId, modelName, colorName, sizeId, index, value) {
-            const path = `inventory/${inventoryId}/modelColors/${modelName}/${colorName}/${sizeId}/${index}`;
+        async function csUpdateQty(id, modelName, colorName, sizeId, index, value) {
+            const path = `inventory/${id}/modelColors/${modelName}/${colorName}/${sizeId}/${index}`;
             await db.ref(path).set(value);
-            await db.ref(`inventory/${inventoryId}/updatedAt`).set(Date.now());
+            await db.ref(`inventory/${id}/updatedAt`).set(Date.now());
         }
 
-        function addNewQtyRow(modelName, colorName, sizeId) {
-            if (!currentInventoryId || !currentInventoryData) return;
-            if (currentInventoryData.isClosed) return;
-
-            addQtyRow(currentInventoryId, modelName, colorName, sizeId)
+        function csAddQtyRow(modelName, colorName, sizeId) {
+            if (!csCurrentId || !csCurrentData || csCurrentData.isClosed) return;
+            csAddQtyRowDB(csCurrentId, modelName, colorName, sizeId)
                 .then(() => {
-                    renderInventoryDetail();
+                    renderColorsSizesDetail();
                     scheduleSave();
                 })
                 .catch(err => {
@@ -2177,28 +2519,26 @@
                 });
         }
 
-        async function addQtyRow(inventoryId, modelName, colorName, sizeId) {
-            const path = `inventory/${inventoryId}/modelColors/${modelName}/${colorName}/${sizeId}`;
+        async function csAddQtyRowDB(id, modelName, colorName, sizeId) {
+            const path = `inventory/${id}/modelColors/${modelName}/${colorName}/${sizeId}`;
             const snapshot = await db.ref(path).once('value');
             let currentArray = snapshot.val() || [0];
             currentArray.push(0);
             await db.ref(path).set(currentArray);
-            await db.ref(`inventory/${inventoryId}/updatedAt`).set(Date.now());
+            await db.ref(`inventory/${id}/updatedAt`).set(Date.now());
         }
 
-        function removeColorSizeRow(modelName, colorName, sizeId, index) {
-            if (!currentInventoryId || !currentInventoryData) return;
-            if (currentInventoryData.isClosed) return;
-
-            const colorData = currentInventoryData.modelColors?.[modelName]?.[colorName];
+        function csRemoveQtyRow(modelName, colorName, sizeId, index) {
+            if (!csCurrentId || !csCurrentData || csCurrentData.isClosed) return;
+            const colorData = csCurrentData.modelColors?.[modelName]?.[colorName];
             if (!colorData) return;
 
             const currentValue = colorData[sizeId]?.[index] || 0;
 
             if (currentValue === 0 || colorData[sizeId]?.length === 1) {
-                removeQtyRow(currentInventoryId, modelName, colorName, sizeId, index)
+                csRemoveQtyRowDB(csCurrentId, modelName, colorName, sizeId, index)
                     .then(() => {
-                        renderInventoryDetail();
+                        renderColorsSizesDetail();
                         scheduleSave();
                     })
                     .catch(err => {
@@ -2208,264 +2548,204 @@
             } else {
                 customConfirm(`هل أنت متأكد من حذف الكمية (${currentValue})؟`, async (confirmed) => {
                     if (confirmed) {
-                        await removeQtyRow(currentInventoryId, modelName, colorName, sizeId, index);
-                        renderInventoryDetail();
+                        await csRemoveQtyRowDB(csCurrentId, modelName, colorName, sizeId, index);
+                        renderColorsSizesDetail();
                         scheduleSave();
                     }
                 });
             }
         }
 
-        async function removeQtyRow(inventoryId, modelName, colorName, sizeId, index) {
-            const path = `inventory/${inventoryId}/modelColors/${modelName}/${colorName}/${sizeId}`;
+        async function csRemoveQtyRowDB(id, modelName, colorName, sizeId, index) {
+            const path = `inventory/${id}/modelColors/${modelName}/${colorName}/${sizeId}`;
             const snapshot = await db.ref(path).once('value');
             let currentArray = snapshot.val() || [0];
             currentArray.splice(index, 1);
             if (currentArray.length === 0) currentArray = [0];
             await db.ref(path).set(currentArray);
-            await db.ref(`inventory/${inventoryId}/updatedAt`).set(Date.now());
+            await db.ref(`inventory/${id}/updatedAt`).set(Date.now());
         }
 
-        function addNewColor(modelName) {
-            if (!currentInventoryId || !currentInventoryData) return;
-            if (currentInventoryData.isClosed) return;
-
+        // Colors
+        function csAddColor(modelName) {
+            if (!csCurrentId || !csCurrentData || csCurrentData.isClosed) return;
             customPrompt('أدخل اسم اللون الجديد:', 'مثال: أحمر', async (newColorName) => {
                 if (!newColorName) return;
-
-                if (currentInventoryData.modelColors?.[modelName]?.[newColorName]) {
+                if (csCurrentData.modelColors?.[modelName]?.[newColorName]) {
                     showWarning('هذا اللون موجود بالفعل', true);
                     return;
                 }
-
-                await addColor(currentInventoryId, modelName, newColorName);
-                renderInventoryDetail();
+                await csAddColorDB(csCurrentId, modelName, newColorName);
+                renderColorsSizesDetail();
                 scheduleSave();
                 showWarning(`تم إضافة اللون ${newColorName}`, false);
             });
         }
 
-        async function addColor(inventoryId, modelName, colorName) {
-            const path = `inventory/${inventoryId}/modelColors/${modelName}/${colorName}`;
+        async function csAddColorDB(id, modelName, colorName) {
+            const path = `inventory/${id}/modelColors/${modelName}/${colorName}`;
             const colorData = {};
             allSizesList.forEach(({ id: sizeId }) => {
                 colorData[sizeId] = [0];
             });
             await db.ref(path).set(colorData);
-            await db.ref(`inventory/${inventoryId}/updatedAt`).set(Date.now());
-            if (currentInventoryData) {
-                if (!currentInventoryData.modelColors[modelName]) currentInventoryData.modelColors[modelName] = {};
-                currentInventoryData.modelColors[modelName][colorName] = colorData;
+            await db.ref(`inventory/${id}/updatedAt`).set(Date.now());
+            if (csCurrentData) {
+                if (!csCurrentData.modelColors[modelName]) csCurrentData.modelColors[modelName] = {};
+                csCurrentData.modelColors[modelName][colorName] = colorData;
             }
         }
 
-        function deleteColor(modelName, colorName) {
-            if (!currentInventoryId || !currentInventoryData) return;
-            if (currentInventoryData.isClosed) return;
-
+        function csDeleteColor(modelName, colorName) {
+            if (!csCurrentId || !csCurrentData || csCurrentData.isClosed) return;
             customConfirm(`هل أنت متأكد من حذف اللون "${colorName}"؟`, async (confirmed) => {
                 if (confirmed) {
-                    await removeColor(currentInventoryId, modelName, colorName);
-                    renderInventoryDetail();
+                    await csDeleteColorDB(csCurrentId, modelName, colorName);
+                    renderColorsSizesDetail();
                     scheduleSave();
                 }
             });
         }
 
-        async function removeColor(inventoryId, modelName, colorName) {
-            await db.ref(`inventory/${inventoryId}/modelColors/${modelName}/${colorName}`).remove();
-            await db.ref(`inventory/${inventoryId}/updatedAt`).set(Date.now());
-            if (currentInventoryData) {
-                delete currentInventoryData.modelColors[modelName][colorName];
-                if (Object.keys(currentInventoryData.modelColors[modelName]).length === 0) {
-                    delete currentInventoryData.modelColors[modelName];
+        async function csDeleteColorDB(id, modelName, colorName) {
+            await db.ref(`inventory/${id}/modelColors/${modelName}/${colorName}`).remove();
+            await db.ref(`inventory/${id}/updatedAt`).set(Date.now());
+            if (csCurrentData) {
+                delete csCurrentData.modelColors[modelName][colorName];
+                if (Object.keys(csCurrentData.modelColors[modelName]).length === 0) {
+                    delete csCurrentData.modelColors[modelName];
                 }
             }
         }
 
-        function handleNoteChange(modelName, value) {
-            if (!currentInventoryId || !currentInventoryData) return;
-            if (currentInventoryData.isClosed) return;
-
-            if (!currentInventoryData.modelNotes) currentInventoryData.modelNotes = {};
-            currentInventoryData.modelNotes[modelName] = value;
-
-            updateNote(currentInventoryId, modelName, value)
+        // Notes & Location
+        function csHandleNoteChange(modelName, value) {
+            if (!csCurrentId || !csCurrentData || csCurrentData.isClosed) return;
+            if (!csCurrentData.modelNotes) csCurrentData.modelNotes = {};
+            csCurrentData.modelNotes[modelName] = value;
+            csUpdateNote(csCurrentId, modelName, value)
                 .then(() => scheduleSave())
                 .catch(err => console.error('Error updating note:', err));
         }
 
-        async function updateNote(inventoryId, modelName, value) {
-            await db.ref(`inventory/${inventoryId}/modelNotes/${modelName}`).set(value);
-            await db.ref(`inventory/${inventoryId}/updatedAt`).set(Date.now());
+        async function csUpdateNote(id, modelName, value) {
+            await db.ref(`inventory/${id}/modelNotes/${modelName}`).set(value);
+            await db.ref(`inventory/${id}/updatedAt`).set(Date.now());
         }
 
-        function handleLocationChange(modelName, value) {
-            if (!currentInventoryId || !currentInventoryData) return;
-            if (currentInventoryData.isClosed) return;
-
-            if (!currentInventoryData.modelLocations) currentInventoryData.modelLocations = {};
-            currentInventoryData.modelLocations[modelName] = value;
-
-            updateLocation(currentInventoryId, modelName, value)
+        function csHandleLocationChange(modelName, value) {
+            if (!csCurrentId || !csCurrentData || csCurrentData.isClosed) return;
+            if (!csCurrentData.modelLocations) csCurrentData.modelLocations = {};
+            csCurrentData.modelLocations[modelName] = value;
+            csUpdateLocation(csCurrentId, modelName, value)
                 .then(() => scheduleSave())
                 .catch(err => console.error('Error updating location:', err));
         }
 
-        async function updateLocation(inventoryId, modelName, value) {
-            await db.ref(`inventory/${inventoryId}/modelLocations/${modelName}`).set(value);
-            await db.ref(`inventory/${inventoryId}/updatedAt`).set(Date.now());
+        async function csUpdateLocation(id, modelName, value) {
+            await db.ref(`inventory/${id}/modelLocations/${modelName}`).set(value);
+            await db.ref(`inventory/${id}/updatedAt`).set(Date.now());
         }
 
-        function closeModel(modelName) {
-            if (!currentInventoryId || !currentInventoryData) return;
-            if (currentInventoryData.isClosed) return;
-
+        // Close model
+        function csCloseModel(modelName) {
+            if (!csCurrentId || !csCurrentData || csCurrentData.isClosed) return;
             customConfirm(`هل أنت متأكد من إقفال الموديل "${modelName}"؟`, async (confirmed) => {
                 if (confirmed) {
-                    await performCloseModel(currentInventoryId, modelName);
-                    renderInventoryDetail();
+                    await csCloseModelDB(csCurrentId, modelName);
+                    renderColorsSizesDetail();
                     scheduleSave();
-                    loadInventory();
+                    loadColorsSizesInventory();
                     loadDashboardStats();
                 }
             });
         }
 
-        async function performCloseModel(inventoryId, modelName) {
-            await db.ref(`inventory/${inventoryId}/closedModels/${modelName}`).set(true);
-            await db.ref(`inventory/${inventoryId}/closedModelsDate/${modelName}`).set(new Date().toISOString());
-            await db.ref(`inventory/${inventoryId}/updatedAt`).set(Date.now());
-            if (currentInventoryData) {
-                if (!currentInventoryData.closedModels) currentInventoryData.closedModels = {};
-                currentInventoryData.closedModels[modelName] = true;
-                if (!currentInventoryData.closedModelsDate) currentInventoryData.closedModelsDate = {};
-                currentInventoryData.closedModelsDate[modelName] = new Date().toISOString();
+        async function csCloseModelDB(id, modelName) {
+            await db.ref(`inventory/${id}/closedModels/${modelName}`).set(true);
+            await db.ref(`inventory/${id}/closedModelsDate/${modelName}`).set(new Date().toISOString());
+            await db.ref(`inventory/${id}/updatedAt`).set(Date.now());
+            if (csCurrentData) {
+                if (!csCurrentData.closedModels) csCurrentData.closedModels = {};
+                csCurrentData.closedModels[modelName] = true;
+                if (!csCurrentData.closedModelsDate) csCurrentData.closedModelsDate = {};
+                csCurrentData.closedModelsDate[modelName] = new Date().toISOString();
             }
         }
 
-        // ================================================================
-        //  EXPAND / COLLAPSE
-        // ================================================================
-        function toggleModelContent(modelName) {
-            if (!currentInventoryId) return;
-            const key = getModelStateKey(currentInventoryId, modelName);
-            if (modelOpenState[currentInventoryId] === undefined) modelOpenState[currentInventoryId] = {};
-            if (modelOpenState[currentInventoryId][key] === undefined) {
-                modelOpenState[currentInventoryId][key] = true;
-            }
-            modelOpenState[currentInventoryId][key] = !modelOpenState[currentInventoryId][key];
-
-            const safeModelKey = modelName.replace(/[^a-zA-Z0-9]/g, '_');
-            const contentDiv = document.getElementById(`model-content-${safeModelKey}`);
-            if (contentDiv) {
-                contentDiv.classList.toggle('open', modelOpenState[currentInventoryId][key]);
-            }
-            const toggleIcon = document.querySelector(`#model-content-${safeModelKey}`)?.parentElement?.querySelector(
-                '.model-title-left .toggle-icon');
-            if (toggleIcon) {
-                toggleIcon.classList.toggle('open', modelOpenState[currentInventoryId][key]);
-                toggleIcon.className = `toggle-icon ${modelOpenState[currentInventoryId][key] ? 'open' : ''}`;
-                toggleIcon.innerHTML =
-                    `<i class="fas ${modelOpenState[currentInventoryId][key] ? 'fa-chevron-up' : 'fa-chevron-down'}"></i>`;
-            }
+        // Toggle
+        function csToggleModel(modelName) {
+            if (!csCurrentId) return;
+            const key = getModelStateKey(csCurrentId, modelName);
+            if (csModelOpenState[csCurrentId] === undefined) csModelOpenState[csCurrentId] = {};
+            if (csModelOpenState[csCurrentId][key] === undefined) csModelOpenState[csCurrentId][key] = true;
+            csModelOpenState[csCurrentId][key] = !csModelOpenState[csCurrentId][key];
+            renderColorsSizesDetail();
         }
 
-        function toggleColorContent(modelName, colorName) {
-            if (!currentInventoryId) return;
-            const key = getColorStateKey(currentInventoryId, modelName, colorName);
-            if (colorOpenState[currentInventoryId] === undefined) colorOpenState[currentInventoryId] = {};
-            if (colorOpenState[currentInventoryId][key] === undefined) {
-                colorOpenState[currentInventoryId][key] = true;
-            }
-            colorOpenState[currentInventoryId][key] = !colorOpenState[currentInventoryId][key];
-
-            const safeModelKey = modelName.replace(/[^a-zA-Z0-9]/g, '_');
-            const safeColorKey = colorName.replace(/[^a-zA-Z0-9]/g, '_');
-            const contentDiv = document.getElementById(`color-content-${safeModelKey}_${safeColorKey}`);
-            if (contentDiv) {
-                contentDiv.classList.toggle('open', colorOpenState[currentInventoryId][key]);
-            }
-            const toggleBtn = document.querySelector(`#color-content-${safeModelKey}_${safeColorKey}`)?.parentElement
-                ?.querySelector('.color-toggle-btn i');
-            if (toggleBtn) {
-                toggleBtn.className = colorOpenState[currentInventoryId][key] ? 'fas fa-chevron-up' :
-                'fas fa-chevron-down';
-            }
+        function csToggleColor(modelName, colorName) {
+            if (!csCurrentId) return;
+            const key = getColorStateKey(csCurrentId, modelName, colorName);
+            if (csColorOpenState[csCurrentId] === undefined) csColorOpenState[csCurrentId] = {};
+            if (csColorOpenState[csCurrentId][key] === undefined) csColorOpenState[csCurrentId][key] = true;
+            csColorOpenState[csCurrentId][key] = !csColorOpenState[csCurrentId][key];
+            renderColorsSizesDetail();
         }
 
-        function openAllModels() {
-            if (!currentInventoryId || !currentInventoryData) return;
-            const inventoryId = currentInventoryId;
-            if (!modelOpenState[inventoryId]) modelOpenState[inventoryId] = {};
-
-            Object.keys(currentInventoryData.modelColors || {}).forEach(modelName => {
-                const key = getModelStateKey(inventoryId, modelName);
-                modelOpenState[inventoryId][key] = true;
+        function csOpenAllModels() {
+            if (!csCurrentId || !csCurrentData) return;
+            Object.keys(csCurrentData.modelColors || {}).forEach(modelName => {
+                const key = getModelStateKey(csCurrentId, modelName);
+                csModelOpenState[csCurrentId][key] = true;
             });
-
-            renderInventoryDetail();
+            renderColorsSizesDetail();
         }
 
-        function closeAllModels() {
-            if (!currentInventoryId || !currentInventoryData) return;
-            const inventoryId = currentInventoryId;
-            if (!modelOpenState[inventoryId]) modelOpenState[inventoryId] = {};
-
-            Object.keys(currentInventoryData.modelColors || {}).forEach(modelName => {
-                const key = getModelStateKey(inventoryId, modelName);
-                modelOpenState[inventoryId][key] = false;
+        function csCloseAllModels() {
+            if (!csCurrentId || !csCurrentData) return;
+            Object.keys(csCurrentData.modelColors || {}).forEach(modelName => {
+                const key = getModelStateKey(csCurrentId, modelName);
+                csModelOpenState[csCurrentId][key] = false;
             });
-
-            renderInventoryDetail();
+            renderColorsSizesDetail();
         }
 
-        function openAllColors() {
-            if (!currentInventoryId || !currentInventoryData) return;
-            const inventoryId = currentInventoryId;
-            if (!colorOpenState[inventoryId]) colorOpenState[inventoryId] = {};
-
-            Object.keys(currentInventoryData.modelColors || {}).forEach(modelName => {
-                const modelColors = currentInventoryData.modelColors?.[modelName] || {};
+        function csOpenAllColors() {
+            if (!csCurrentId || !csCurrentData) return;
+            Object.keys(csCurrentData.modelColors || {}).forEach(modelName => {
+                const modelColors = csCurrentData.modelColors?.[modelName] || {};
                 Object.keys(modelColors).forEach(colorName => {
-                    const key = getColorStateKey(inventoryId, modelName, colorName);
-                    colorOpenState[inventoryId][key] = true;
+                    const key = getColorStateKey(csCurrentId, modelName, colorName);
+                    csColorOpenState[csCurrentId][key] = true;
                 });
             });
-
-            renderInventoryDetail();
+            renderColorsSizesDetail();
         }
 
-        function closeAllColors() {
-            if (!currentInventoryId || !currentInventoryData) return;
-            const inventoryId = currentInventoryId;
-            if (!colorOpenState[inventoryId]) colorOpenState[inventoryId] = {};
-
-            Object.keys(currentInventoryData.modelColors || {}).forEach(modelName => {
-                const modelColors = currentInventoryData.modelColors?.[modelName] || {};
+        function csCloseAllColors() {
+            if (!csCurrentId || !csCurrentData) return;
+            Object.keys(csCurrentData.modelColors || {}).forEach(modelName => {
+                const modelColors = csCurrentData.modelColors?.[modelName] || {};
                 Object.keys(modelColors).forEach(colorName => {
-                    const key = getColorStateKey(inventoryId, modelName, colorName);
-                    colorOpenState[inventoryId][key] = false;
+                    const key = getColorStateKey(csCurrentId, modelName, colorName);
+                    csColorOpenState[csCurrentId][key] = false;
                 });
             });
-
-            renderInventoryDetail();
+            renderColorsSizesDetail();
         }
 
-        // ================================================================
-        //  EDIT INLINE FUNCTIONS
-        // ================================================================
-        function editModelName(oldName) {
-            if (!currentInventoryId || !currentInventoryData) return;
-            if (currentInventoryData.isClosed) { showWarning('لا يمكن تعديل الموديل في فاتورة مقفلة', true); return; }
-
+        // Edit inline
+        function csEditModelName(oldName) {
+            if (!csCurrentId || !csCurrentData || csCurrentData.isClosed) {
+                showWarning('لا يمكن تعديل الموديل في فاتورة مقفلة', true);
+                return;
+            }
             customPrompt('أدخل الاسم الجديد للموديل:', oldName, async (newName) => {
                 if (!newName || newName.trim() === '' || newName === oldName) return;
-
-                const result = await updateModelName(currentInventoryId, oldName, newName);
+                const result = await csUpdateModelName(csCurrentId, oldName, newName);
                 if (result.success) {
                     showWarning('تم تحديث اسم الموديل بنجاح', false);
-                    renderInventoryDetail();
+                    renderColorsSizesDetail();
                     scheduleSave();
                 } else {
                     showWarning(result.error || 'حدث خطأ', true);
@@ -2473,8 +2753,8 @@
             });
         }
 
-        async function updateModelName(inventoryId, oldName, newName) {
-            const path = `inventory/${inventoryId}`;
+        async function csUpdateModelName(id, oldName, newName) {
+            const path = `inventory/${id}`;
             const snapshot = await db.ref(path).once('value');
             const data = snapshot.val();
             if (!data) return { success: false };
@@ -2501,45 +2781,45 @@
             }
 
             await db.ref(path).set(data);
-            await db.ref(`inventory/${inventoryId}/updatedAt`).set(Date.now());
+            await db.ref(`inventory/${id}/updatedAt`).set(Date.now());
 
-            if (currentInventoryData) {
-                if (currentInventoryData.modelColors && currentInventoryData.modelColors[oldName]) {
-                    currentInventoryData.modelColors[newName] = currentInventoryData.modelColors[oldName];
-                    delete currentInventoryData.modelColors[oldName];
+            if (csCurrentData) {
+                if (csCurrentData.modelColors && csCurrentData.modelColors[oldName]) {
+                    csCurrentData.modelColors[newName] = csCurrentData.modelColors[oldName];
+                    delete csCurrentData.modelColors[oldName];
                 }
-                if (currentInventoryData.modelNotes && currentInventoryData.modelNotes[oldName]) {
-                    currentInventoryData.modelNotes[newName] = currentInventoryData.modelNotes[oldName];
-                    delete currentInventoryData.modelNotes[oldName];
+                if (csCurrentData.modelNotes && csCurrentData.modelNotes[oldName]) {
+                    csCurrentData.modelNotes[newName] = csCurrentData.modelNotes[oldName];
+                    delete csCurrentData.modelNotes[oldName];
                 }
-                if (currentInventoryData.modelLocations && currentInventoryData.modelLocations[oldName]) {
-                    currentInventoryData.modelLocations[newName] = currentInventoryData.modelLocations[oldName];
-                    delete currentInventoryData.modelLocations[oldName];
+                if (csCurrentData.modelLocations && csCurrentData.modelLocations[oldName]) {
+                    csCurrentData.modelLocations[newName] = csCurrentData.modelLocations[oldName];
+                    delete csCurrentData.modelLocations[oldName];
                 }
-                if (currentInventoryData.closedModels && currentInventoryData.closedModels[oldName]) {
-                    currentInventoryData.closedModels[newName] = currentInventoryData.closedModels[oldName];
-                    delete currentInventoryData.closedModels[oldName];
+                if (csCurrentData.closedModels && csCurrentData.closedModels[oldName]) {
+                    csCurrentData.closedModels[newName] = csCurrentData.closedModels[oldName];
+                    delete csCurrentData.closedModels[oldName];
                 }
-                if (currentInventoryData.closedModelsDate && currentInventoryData.closedModelsDate[oldName]) {
-                    currentInventoryData.closedModelsDate[newName] = currentInventoryData.closedModelsDate[oldName];
-                    delete currentInventoryData.closedModelsDate[oldName];
+                if (csCurrentData.closedModelsDate && csCurrentData.closedModelsDate[oldName]) {
+                    csCurrentData.closedModelsDate[newName] = csCurrentData.closedModelsDate[oldName];
+                    delete csCurrentData.closedModelsDate[oldName];
                 }
             }
 
             return { success: true };
         }
 
-        function editColorName(modelName, oldColor) {
-            if (!currentInventoryId || !currentInventoryData) return;
-            if (currentInventoryData.isClosed) { showWarning('لا يمكن تعديل اللون في فاتورة مقفلة', true); return; }
-
+        function csEditColorName(modelName, oldColor) {
+            if (!csCurrentId || !csCurrentData || csCurrentData.isClosed) {
+                showWarning('لا يمكن تعديل اللون في فاتورة مقفلة', true);
+                return;
+            }
             customPrompt('أدخل الاسم الجديد للون:', oldColor, async (newColor) => {
                 if (!newColor || newColor.trim() === '' || newColor === oldColor) return;
-
-                const result = await updateColorName(currentInventoryId, modelName, oldColor, newColor);
+                const result = await csUpdateColorName(csCurrentId, modelName, oldColor, newColor);
                 if (result.success) {
                     showWarning('تم تحديث اسم اللون بنجاح', false);
-                    renderInventoryDetail();
+                    renderColorsSizesDetail();
                     scheduleSave();
                 } else {
                     showWarning(result.error || 'حدث خطأ', true);
@@ -2547,8 +2827,8 @@
             });
         }
 
-        async function updateColorName(inventoryId, modelName, oldColor, newColor) {
-            const path = `inventory/${inventoryId}`;
+        async function csUpdateColorName(id, modelName, oldColor, newColor) {
+            const path = `inventory/${id}`;
             const snapshot = await db.ref(path).once('value');
             const data = snapshot.val();
             if (!data) return { success: false };
@@ -2559,59 +2839,58 @@
             }
 
             await db.ref(path).set(data);
-            await db.ref(`inventory/${inventoryId}/updatedAt`).set(Date.now());
+            await db.ref(`inventory/${id}/updatedAt`).set(Date.now());
 
-            if (currentInventoryData) {
-                if (currentInventoryData.modelColors && currentInventoryData.modelColors[modelName] && currentInventoryData
-                    .modelColors[modelName][oldColor]) {
-                    currentInventoryData.modelColors[modelName][newColor] = currentInventoryData.modelColors[modelName][
+            if (csCurrentData) {
+                if (csCurrentData.modelColors && csCurrentData.modelColors[modelName] && csCurrentData.modelColors[modelName][
                         oldColor
-                    ];
-                    delete currentInventoryData.modelColors[modelName][oldColor];
+                    ]) {
+                    csCurrentData.modelColors[modelName][newColor] = csCurrentData.modelColors[modelName][oldColor];
+                    delete csCurrentData.modelColors[modelName][oldColor];
                 }
             }
 
             return { success: true };
         }
 
-        // ================================================================
-        //  ADD MODEL
-        // ================================================================
-        function addNewModel() {
-            if (!currentInventoryData) return;
-            if (currentInventoryData.isClosed) { showWarning('لا يمكن إضافة موديل في فاتورة مقفلة', true); return; }
+        // Add model to colors & sizes
+        function csAddNewModel() {
+            if (!csCurrentData || csCurrentData.isClosed) {
+                showWarning('لا يمكن إضافة موديل في فاتورة مقفلة', true);
+                return;
+            }
 
-            const container = document.getElementById('inventoryDetail');
+            const container = document.getElementById('colorsSizesDetail');
             const tempRowId = Date.now();
             const rowHtml = `
-                <div class="model-row" id="inventory-model-row-${tempRowId}">
+                <div class="model-row" id="cs-model-row-${tempRowId}">
                     <div class="model-search-container" style="flex:2;">
-                        <input type="text" class="model-search-input" placeholder="بحث عن موديل (كود أو اسم)..." autocomplete="off" oninput="filterInventoryModelSearch(${tempRowId}, this.value)" onfocus="filterInventoryModelSearch(${tempRowId}, this.value)">
-                        <div class="model-search-results" id="inventoryModelSearchResults_${tempRowId}"></div>
-                        <input type="hidden" id="inventorySelectedModel_${tempRowId}" value="">
+                        <input type="text" class="model-search-input" placeholder="بحث عن موديل (كود أو اسم)..." autocomplete="off" oninput="csFilterModelSearch(${tempRowId}, this.value)" onfocus="csFilterModelSearch(${tempRowId}, this.value)">
+                        <div class="model-search-results" id="csModelSearchResults_${tempRowId}"></div>
+                        <input type="hidden" id="csSelectedModel_${tempRowId}" value="">
                     </div>
-                    <button class="btn btn-success btn-sm" onclick="confirmAddInventoryModel(${tempRowId})">إضافة</button>
-                    <button class="btn btn-danger btn-sm" onclick="cancelAddInventoryModel(${tempRowId})">إلغاء</button>
+                    <button class="btn btn-success btn-sm" onclick="csConfirmAddModel(${tempRowId})">إضافة</button>
+                    <button class="btn btn-danger btn-sm" onclick="csCancelAddModel(${tempRowId})">إلغاء</button>
                 </div>
             `;
-            const addBtn = document.querySelector('.add-model-btn');
+            const addBtn = document.querySelector('#colorsSizesDetail .add-model-btn');
             if (addBtn) {
                 addBtn.insertAdjacentHTML('beforebegin', rowHtml);
             } else {
-                const modelsGrid = document.querySelector('#inventoryDetail .models-grid');
+                const modelsGrid = document.querySelector('#colorsSizesDetail .models-grid');
                 if (modelsGrid) {
                     modelsGrid.insertAdjacentHTML('beforebegin', rowHtml);
                 }
             }
             setTimeout(() => {
-                const input = document.querySelector(`#inventory-model-row-${tempRowId} .model-search-input`);
+                const input = document.querySelector(`#cs-model-row-${tempRowId} .model-search-input`);
                 if (input) input.focus();
             }, 100);
         }
 
-        function filterInventoryModelSearch(rowId, searchTerm) {
-            const resultsDiv = document.getElementById(`inventoryModelSearchResults_${rowId}`);
-            const currentFactory = currentInventoryData?.factory || '';
+        function csFilterModelSearch(rowId, searchTerm) {
+            const resultsDiv = document.getElementById(`csModelSearchResults_${rowId}`);
+            const currentFactory = csCurrentData?.factory || '';
 
             if (!searchTerm.trim()) { resultsDiv.style.display = 'none'; return; }
 
@@ -2623,19 +2902,18 @@
 
             if (filteredModels.length === 0) {
                 resultsDiv.innerHTML = `
-                    <div class="model-search-result" onclick="openAddModelFromInventorySearch('${searchTerm.replace(/'/g, "\\'")}', ${rowId})">
+                    <div class="model-search-result" onclick="csOpenAddModelFromSearch('${searchTerm.replace(/'/g, "\\'")}', ${rowId})">
                         <i class="fas fa-plus-circle"></i> إضافة موديل جديد: "${searchTerm}"
                     </div>`;
                 resultsDiv.style.display = 'block';
             } else {
                 resultsDiv.innerHTML = filteredModels.map(m => {
-                    const isNewModel = !receivedModelsHistory.has(m.name) && !receivedModelsHistory.has(m
-                    .code);
+                    const isNewModel = !receivedModelsHistory.has(m.name) && !receivedModelsHistory.has(m.code);
                     const badge = isNewModel ?
                         '<span class="model-smart-badge badge-new" style="margin-right:8px;"><i class="fas fa-camera"></i> جديد</span>' :
                         '<span class="model-smart-badge badge-repeat" style="margin-right:8px;">مكرر</span>';
                     return `
-                        <div class="model-search-result" onclick="selectInventoryModelFromSearch(${rowId}, '${m.name.replace(/'/g, "\\'")}', '${(m.code || '').replace(/'/g, "\\'")}')">
+                        <div class="model-search-result" onclick="csSelectModelFromSearch(${rowId}, '${m.name.replace(/'/g, "\\'")}', '${(m.code || '').replace(/'/g, "\\'")}')">
                             <strong>${m.name}</strong> ${m.code ? `<span class="model-code-badge">${m.code}</span>` : ''}
                             ${badge}
                             ${m.imageUrl ? `<img src="${m.imageUrl}" style="width:30px;height:30px;border-radius:6px;object-fit:cover;margin-right:auto;">` : ''}
@@ -2646,17 +2924,17 @@
             }
         }
 
-        function selectInventoryModelFromSearch(rowId, modelName, modelCode) {
-            document.getElementById(`inventorySelectedModel_${rowId}`).value = modelName;
-            const input = document.querySelector(`#inventory-model-row-${rowId} .model-search-input`);
+        function csSelectModelFromSearch(rowId, modelName, modelCode) {
+            document.getElementById(`csSelectedModel_${rowId}`).value = modelName;
+            const input = document.querySelector(`#cs-model-row-${rowId} .model-search-input`);
             if (input) input.value = modelName;
-            document.getElementById(`inventoryModelSearchResults_${rowId}`).style.display = 'none';
+            document.getElementById(`csModelSearchResults_${rowId}`).style.display = 'none';
         }
 
-        function openAddModelFromInventorySearch(modelCode, rowId) {
-            const currentFactory = currentInventoryData?.factory || '';
+        function csOpenAddModelFromSearch(modelCode, rowId) {
+            const currentFactory = csCurrentData?.factory || '';
             if (!currentFactory) { showWarning('الرجاء اختيار المصنع أولاً', true); return; }
-            inventoryPendingModelSearch[rowId] = true;
+            csPendingModelSearch[rowId] = true;
             document.getElementById('newModelCode').value = modelCode;
             document.getElementById('modelErrorMsg').innerHTML = '';
             document.getElementById('addModelModal').style.display = 'flex';
@@ -2667,7 +2945,7 @@
         }
 
         async function quickAddModel() {
-            const currentFactory = currentInventoryData?.factory || '';
+            const currentFactory = csCurrentData?.factory || '';
             if (!currentFactory) {
                 document.getElementById('modelErrorMsg').innerHTML = 'الرجاء اختيار المصنع أولاً';
                 return;
@@ -2678,7 +2956,6 @@
                 return;
             }
 
-            // Check if model code already exists in same factory
             const exists = allModelsList.some(m => (m.code === modelCode || m.name === modelCode) && m.factory ===
                 currentFactory);
             if (exists) {
@@ -2686,7 +2963,6 @@
                 return;
             }
 
-            // Generate unique code if needed
             let finalCode = modelCode;
             const codeExists = allModelsList.some(m => m.code === modelCode || m.name === modelCode);
             if (codeExists) {
@@ -2703,28 +2979,27 @@
             const newRef = await db.ref('models').push(newModelData);
             await loadAllModels();
             await loadReceivedModelsHistory();
-            const newModel = { id: newRef.key, name: finalCode, code: finalCode, factory: currentFactory, imageUrl: '' };
-            allModelsList.push(newModel);
+            allModelsList.push({ id: newRef.key, name: finalCode, code: finalCode, factory: currentFactory,
+            imageUrl: '' });
 
-            // Find the pending row
             let rowId = null;
-            for (const key in inventoryPendingModelSearch) {
-                if (inventoryPendingModelSearch[key] === true) {
+            for (const key in csPendingModelSearch) {
+                if (csPendingModelSearch[key] === true) {
                     rowId = parseInt(key);
                     break;
                 }
             }
 
             if (rowId) {
-                document.getElementById(`inventorySelectedModel_${rowId}`).value = finalCode;
-                const input = document.querySelector(`#inventory-model-row-${rowId} .model-search-input`);
+                document.getElementById(`csSelectedModel_${rowId}`).value = finalCode;
+                const input = document.querySelector(`#cs-model-row-${rowId} .model-search-input`);
                 if (input) input.value = finalCode;
-                document.getElementById(`inventoryModelSearchResults_${rowId}`).style.display = 'none';
-                confirmAddInventoryModel(rowId);
+                document.getElementById(`csModelSearchResults_${rowId}`).style.display = 'none';
+                csConfirmAddModel(rowId);
             } else {
-                if (currentInventoryData && !currentInventoryData.modelColors[finalCode]) {
-                    await addModelToInventory(currentInventoryId, finalCode);
-                    renderInventoryDetail();
+                if (csCurrentData && !csCurrentData.modelColors[finalCode]) {
+                    await csAddModelToInventory(csCurrentId, finalCode);
+                    renderColorsSizesDetail();
                     scheduleSave();
                 }
             }
@@ -2734,133 +3009,566 @@
             showWarning('تم إضافة الموديل بنجاح', false);
         }
 
-        function cancelAddInventoryModel(rowId) {
-            const row = document.getElementById(`inventory-model-row-${rowId}`);
+        function csCancelAddModel(rowId) {
+            const row = document.getElementById(`cs-model-row-${rowId}`);
             if (row) row.remove();
-            delete inventoryPendingModelSearch[rowId];
+            delete csPendingModelSearch[rowId];
         }
 
-        async function confirmAddInventoryModel(rowId) {
-            const modelName = document.getElementById(`inventorySelectedModel_${rowId}`).value;
+        async function csConfirmAddModel(rowId) {
+            const modelName = document.getElementById(`csSelectedModel_${rowId}`).value;
             if (!modelName) {
                 showWarning('الرجاء اختيار موديل', true);
                 return;
             }
 
-            const row = document.getElementById(`inventory-model-row-${rowId}`);
+            const row = document.getElementById(`cs-model-row-${rowId}`);
             if (row) row.remove();
-            delete inventoryPendingModelSearch[rowId];
+            delete csPendingModelSearch[rowId];
 
-            if (!currentInventoryData) return;
-
-            if (currentInventoryData.modelColors[modelName]) {
+            if (!csCurrentData) return;
+            if (csCurrentData.modelColors[modelName]) {
                 showWarning('هذا الموديل موجود بالفعل في هذه الفاتورة', true);
                 return;
             }
 
-            await addModelToInventory(currentInventoryId, modelName);
-            renderInventoryDetail();
+            await csAddModelToInventory(csCurrentId, modelName);
+            renderColorsSizesDetail();
             scheduleSave();
             showWarning(`تم إضافة الموديل ${modelName}`, false);
         }
 
-        async function addModelToInventory(inventoryId, modelName) {
-            const path = `inventory/${inventoryId}/modelColors/${modelName}`;
+        async function csAddModelToInventory(id, modelName) {
+            const path = `inventory/${id}/modelColors/${modelName}`;
             await db.ref(path).set({});
-            await db.ref(`inventory/${inventoryId}/modelNotes/${modelName}`).set('');
-            await db.ref(`inventory/${inventoryId}/modelLocations/${modelName}`).set('');
-            await db.ref(`inventory/${inventoryId}/updatedAt`).set(Date.now());
+            await db.ref(`inventory/${id}/modelNotes/${modelName}`).set('');
+            await db.ref(`inventory/${id}/modelLocations/${modelName}`).set('');
+            await db.ref(`inventory/${id}/updatedAt`).set(Date.now());
 
-            if (currentInventoryData) {
-                currentInventoryData.modelColors[modelName] = {};
-                if (!currentInventoryData.modelNotes) currentInventoryData.modelNotes = {};
-                currentInventoryData.modelNotes[modelName] = '';
-                if (!currentInventoryData.modelLocations) currentInventoryData.modelLocations = {};
-                currentInventoryData.modelLocations[modelName] = '';
+            if (csCurrentData) {
+                csCurrentData.modelColors[modelName] = {};
+                if (!csCurrentData.modelNotes) csCurrentData.modelNotes = {};
+                csCurrentData.modelNotes[modelName] = '';
+                if (!csCurrentData.modelLocations) csCurrentData.modelLocations = {};
+                csCurrentData.modelLocations[modelName] = '';
             }
         }
 
         // ================================================================
-        //  CREATE INVENTORY
+        //  TAB 2: FULL QTY INVENTORY
         // ================================================================
-        function openCreateInventoryPopup() {
-            document.getElementById('inventoryCode').value = '';
-            document.getElementById('inventoryFactorySelect').value = '';
-            document.getElementById('inventoryCreateErrorMsg').innerHTML = '';
-            document.getElementById('createInventoryPopup').style.display = 'flex';
-            loadInventoryFormData();
+        async function loadFullQtyInventory() {
+            const snapshot = await db.ref('inventory').once('value');
+            const inventory = [];
+
+            snapshot.forEach((child) => {
+                const inv = child.val();
+                if (inv.type === 'fullQty' &&
+                    inv.assignedEmployeesUsernames &&
+                    inv.assignedEmployeesUsernames.includes(currentUser.username)) {
+                    inventory.push({ id: child.key, ...inv });
+                }
+            });
+
+            inventory.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+            fqInventoryList = inventory;
+            fqPage = 0;
+            renderFullQtyList(inventory.slice(0, ITEMS_PER_PAGE));
+            updateFullQtyLoadMore(inventory.length);
         }
 
-        function closeCreateInventoryPopup() {
-            document.getElementById('createInventoryPopup').style.display = 'none';
-        }
+        function renderFullQtyList(items) {
+            const container = document.getElementById('fullQtyList');
+            if (items.length === 0 && fqPage === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-box"></i>
+                        <p>لا توجد فواتير جرد كمية كاملة - أنشئ فاتورة جديدة</p>
+                    </div>
+                `;
+                return;
+            }
+            if (items.length === 0 && fqPage > 0) return;
+            if (fqPage === 0) container.innerHTML = '';
 
-        async function loadInventoryFormData() {
-            await loadAllFactories();
-            const factorySelect = document.getElementById('inventoryFactorySelect');
-            factorySelect.innerHTML = '<option value="">اختر مصنع</option>';
-            allFactoriesList.forEach(f => {
-                factorySelect.innerHTML += `<option value="${f.name}">${f.name}</option>`;
+            items.forEach(inv => {
+                let totalEntries = 0;
+                let totalQty = 0;
+                const modelSet = new Set();
+                if (inv.fullQtyEntries) {
+                    inv.fullQtyEntries.forEach(entry => {
+                        if (entry.modelName) {
+                            modelSet.add(entry.modelName);
+                            totalEntries++;
+                            totalQty += parseInt(entry.qty) || 0;
+                        }
+                    });
+                }
+
+                const isClosed = inv.isClosed === true;
+
+                container.innerHTML += `
+                    <div class="inventory-card ${isClosed ? 'closed' : ''}" onclick="openFullQtyDetail('${inv.id}')">
+                        <div class="inventory-header">
+                            <span class="inventory-code"><i class="fas fa-barcode"></i> ${inv.invoiceCode}</span>
+                            <span class="inventory-badge ${isClosed ? 'badge-closed' : 'badge-open'}">${isClosed ? 'مقفلة' : 'مفتوحة'}</span>
+                        </div>
+                        <div class="inventory-details">
+                            <span><i class="fas fa-factory"></i> ${inv.factory || '-'}</span>
+                            <span><i class="fas fa-tags"></i> ${modelSet.size} موديل</span>
+                            <span><i class="fas fa-boxes"></i> ${totalQty} قطعة</span>
+                            <span class="inventory-badge badge-type"><i class="fas fa-box"></i> كمية كاملة</span>
+                        </div>
+                        <div class="inventory-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: ${isClosed ? 100 : Math.min(totalEntries > 0 ? 50 : 0, 100)}%"></div>
+                            </div>
+                            <div class="progress-text">${isClosed ? '✅ مقفلة' : 'جاري الجرد...'}</div>
+                        </div>
+                    </div>
+                `;
             });
         }
 
-        async function createInventory() {
-            const invoiceCode = document.getElementById('inventoryCode').value.trim();
-            const factory = document.getElementById('inventoryFactorySelect').value;
-
-            if (!invoiceCode || !factory) {
-                document.getElementById('inventoryCreateErrorMsg').innerHTML = 'الرجاء إدخال كود الفاتورة واختيار المصنع';
-                return;
-            }
-
-            const inventoryData = {
-                invoiceCode,
-                factory,
-                type: 'inventory',
-                assignedEmployeesUsernames: [currentUser.username],
-                assignedEmployees: [currentUser.fullName],
-                modelColors: {},
-                modelNotes: {},
-                modelLocations: {},
-                isClosed: false,
-                closedDate: null,
-                createdAt: new Date().toISOString(),
-                createdBy: currentUser.fullName,
-                createdByUsername: currentUser.username,
-                updatedAt: Date.now()
-            };
-
-            const ref = await db.ref('inventory').push(inventoryData);
-            if (ref.key) {
-                showWarning('تم إنشاء فاتورة الجرد بنجاح', false);
-                closeCreateInventoryPopup();
-                loadInventory();
-                loadDashboardStats();
+        function updateFullQtyLoadMore(totalItems) {
+            const btn = document.getElementById('loadMoreFullQtyBtn');
+            if (totalItems <= (fqPage + 1) * ITEMS_PER_PAGE) {
+                btn.style.display = 'none';
             } else {
-                showWarning('حدث خطأ في إنشاء الفاتورة', true);
+                btn.style.display = 'flex';
             }
         }
 
+        function loadMoreFullQty() {
+            fqPage++;
+            const start = fqPage * ITEMS_PER_PAGE;
+            const end = start + ITEMS_PER_PAGE;
+            const chunk = fqInventoryList.slice(start, end);
+            if (chunk.length > 0) {
+                renderFullQtyList(chunk);
+                updateFullQtyLoadMore(fqInventoryList.length);
+            }
+        }
+
+        function filterFullQtyInventory() {
+            const searchTerm = document.getElementById('fullQtySearch').value.toLowerCase();
+            const filtered = fqInventoryList.filter(item =>
+                item.invoiceCode.toLowerCase().includes(searchTerm) ||
+                (item.fullQtyEntries && item.fullQtyEntries.some(e =>
+                    e.modelName && e.modelName.toLowerCase().includes(searchTerm)))
+            );
+            fqPage = 0;
+            renderFullQtyList(filtered.slice(0, ITEMS_PER_PAGE));
+            updateFullQtyLoadMore(filtered.length);
+            window._fqFiltered = filtered;
+        }
+
         // ================================================================
-        //  CLOSE INVENTORY
+        //  TAB 2: FULL QTY - OPEN / CLOSE / RENDER DETAIL
         // ================================================================
-        function openConfirmCloseModal() {
-            if (!currentInventoryId || !currentInventoryData) return;
+        function closeFullQtyDetail(silent = false) {
+            document.getElementById('fullQtyDetail').style.display = 'none';
+            fqCurrentId = null;
+            fqCurrentData = null;
+        }
+
+        async function openFullQtyDetail(inventoryId) {
+            if (fqCurrentId && fqCurrentData) { closeFullQtyDetail(true); }
+            if (csCurrentId && csCurrentData) { closeColorsSizesDetail(true); }
+
+            fqCurrentId = inventoryId;
+            const snapshot = await db.ref(`inventory/${inventoryId}`).once('value');
+            fqCurrentData = snapshot.val();
+            if (!fqCurrentData) { showWarning('حدث خطأ في تحميل الفاتورة', true); return; }
+
+            if (!fqCurrentData.fullQtyEntries) fqCurrentData.fullQtyEntries = [];
+            if (!fqCurrentData.fullQtyTotals) fqCurrentData.fullQtyTotals = {};
+
+            renderFullQtyDetail();
+            setTimeout(() => {
+                document.getElementById('fullQtyDetail').scrollIntoView({ behavior: 'smooth' });
+            }, 100);
+        }
+
+        function renderFullQtyDetail() {
+            if (!fqCurrentData || !fqCurrentId) return;
+            const inv = fqCurrentData;
+            const id = fqCurrentId;
+
+            const isClosed = inv.isClosed === true;
+            const entries = inv.fullQtyEntries || [];
+
+            // Calculate totals per model
+            const modelTotals = {};
+            entries.forEach(entry => {
+                if (entry.modelName) {
+                    modelTotals[entry.modelName] = (modelTotals[entry.modelName] || 0) + (parseInt(entry.qty) || 0);
+                }
+            });
+            const totalQty = Object.values(modelTotals).reduce((a, b) => a + b, 0);
+            const totalModels = Object.keys(modelTotals).length;
+
+            // Build entries display
+            let entriesHtml = '';
+            if (entries.length === 0) {
+                entriesHtml = `
+                    <div class="empty-state">
+                        <i class="fas fa-box-open"></i>
+                        <p>لا توجد إدخالات - أضف موديل واستلم كمية</p>
+                    </div>
+                `;
+            } else {
+                // Group by model and show all entries
+                const groupedEntries = {};
+                entries.forEach((entry, idx) => {
+                    if (!entry.modelName) return;
+                    if (!groupedEntries[entry.modelName]) groupedEntries[entry.modelName] = [];
+                    groupedEntries[entry.modelName].push({ ...entry, index: idx });
+                });
+
+                // Show each model with its entries
+                for (const modelName in groupedEntries) {
+                    const modelEntries = groupedEntries[modelName];
+                    const modelTotal = modelTotals[modelName] || 0;
+                    const isModelFirstTime = !receivedModelsHistory.has(modelName);
+                    const modelTypeBadge = isModelFirstTime ?
+                        '<span class="model-type-badge model-type-new"><i class="fas fa-camera"></i> موديل جديد</span>' :
+                        '<span class="model-type-badge model-type-repeat"><i class="fas fa-sync-alt"></i> موديل مكرر</span>';
+
+                    let entryItemsHtml = '';
+                    modelEntries.forEach((entry, idx) => {
+                        entryItemsHtml += `
+                            <div class="full-qty-entry">
+                                <span class="entry-model"><i class="fas fa-box"></i> ${entry.modelName}</span>
+                                <span class="entry-qty">${entry.qty} قطعة</span>
+                                ${!isClosed ? `<button class="entry-remove" onclick="fqRemoveEntry(${entry.index})"><i class="fas fa-times"></i></button>` : ''}
+                            </div>
+                        `;
+                    });
+
+                    entriesHtml += `
+                        <div class="model-card ${isClosed ? 'closed-model' : ''}">
+                            <div class="model-title">
+                                <div class="model-title-left">
+                                    <span><i class="fas fa-tshirt"></i> ${modelName}</span>
+                                    ${modelTypeBadge}
+                                    <span class="model-total-badge"><i class="fas fa-boxes"></i> الإجمالي: ${modelTotal} قطعة</span>
+                                </div>
+                                <div style="display:flex;gap:10px;flex-wrap:wrap;">
+                                    ${isClosed ? '<span class="model-status"><i class="fas fa-lock"></i> مقفل</span>' : ''}
+                                </div>
+                            </div>
+                            <div class="full-qty-entries">
+                                ${entryItemsHtml}
+                            </div>
+                            <div class="full-qty-summary">
+                                <span>إجمالي الموديل: ${modelTotal} قطعة</span>
+                                <span>عدد الإدخالات: ${modelEntries.length}</span>
+                            </div>
+                        </div>
+                    `;
+                }
+            }
+
+            document.getElementById('fullQtyDetail').innerHTML = `
+                <div class="detail-header">
+                    <h3><i class="fas fa-box"></i> جرد كمية كاملة: ${inv.invoiceCode}</h3>
+                    <div>
+                        <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;">
+                            ${!isClosed ? `<button class="btn btn-warning close-inventory-btn" style="width:auto;margin:0;" onclick="openConfirmCloseModal('fullQty')"><i class="fas fa-check-double"></i> إقفال الجرد</button>` : ''}
+                            ${isClosed ? `<span class="model-smart-badge badge-repeat" style="font-size:16px;padding:8px 16px;"><i class="fas fa-check-circle"></i> الجرد مقفل</span>` : ''}
+                        </div>
+                        <button class="close-detail" onclick="closeFullQtyDetail()"><i class="fas fa-times"></i></button>
+                    </div>
+                </div>
+                <div class="summary-bar">
+                    <div class="summary-item">
+                        <div class="summary-value">${totalModels}</div>
+                        <div class="summary-label">عدد الموديلات</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-value">${totalQty}</div>
+                        <div class="summary-label">إجمالي الكميات</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-value">${entries.length}</div>
+                        <div class="summary-label">عدد الإدخالات</div>
+                    </div>
+                </div>
+                <div class="info-row">
+                    <span><i class="fas fa-factory"></i> <strong>المصنع:</strong> ${inv.factory || '-'}</span>
+                    <span><i class="fas fa-calendar-plus"></i> <strong>تاريخ الإنشاء:</strong> ${formatDate(inv.createdAt)}</span>
+                    ${inv.closedDate ? `<span><i class="fas fa-calendar-check"></i> <strong>تاريخ الإقفال:</strong> ${formatDate(inv.closedDate)}</span>` : ''}
+                    <span><i class="fas fa-user"></i> <strong>الموظف:</strong> ${inv.createdBy || '-'}</span>
+                </div>
+
+                ${!isClosed ? `
+                    <div style="margin-bottom:16px;">
+                        <div class="full-qty-model-row" id="fq-new-entry-row">
+                            <div class="model-search-container" style="flex:2;">
+                                <input type="text" class="model-search-input" placeholder="بحث عن موديل (كود أو اسم)..." autocomplete="off" oninput="fqFilterModelSearch(this.value)" onfocus="fqFilterModelSearch(this.value)">
+                                <div class="model-search-results" id="fqModelSearchResults"></div>
+                                <input type="hidden" id="fqSelectedModel" value="">
+                            </div>
+                            <input type="number" id="fqQtyInput" placeholder="الكمية" min="1" value="1">
+                            <button class="btn btn-success" onclick="fqAddEntry()"><i class="fas fa-plus"></i> إضافة</button>
+                        </div>
+                        <span class="add-new-link" onclick="fqOpenAddModelFromSearch()" style="color:#6c8cff;cursor:pointer;font-weight:600;font-size:0.85rem;display:inline-block;margin-top:4px;">
+                            <i class="fas fa-plus-circle"></i> إضافة موديل جديد
+                        </span>
+                    </div>
+                ` : ''}
+
+                <div class="models-grid" style="margin-top:8px;">${entriesHtml}</div>
+
+                ${!isClosed ? `<button class="close-inventory-full-btn" onclick="openConfirmCloseModal('fullQty')">
+                    <i class="fas fa-check-double"></i> إقفال الجرد بالكامل
+                </button>` : ''}
+            `;
+            document.getElementById('fullQtyDetail').style.display = 'block';
+        }
+
+        // ================================================================
+        //  TAB 2: FULL QTY - UI ACTIONS
+        // ================================================================
+        function fqFilterModelSearch(searchTerm) {
+            const resultsDiv = document.getElementById('fqModelSearchResults');
+            const currentFactory = fqCurrentData?.factory || '';
+
+            if (!searchTerm.trim()) { resultsDiv.style.display = 'none'; return; }
+
+            const filteredModels = allModelsList.filter(m =>
+                (currentFactory ? m.factory === currentFactory : true) &&
+                (m.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                    (m.code && m.code.toLowerCase().includes(searchTerm.toLowerCase())))
+            );
+
+            if (filteredModels.length === 0) {
+                resultsDiv.innerHTML = `
+                    <div class="model-search-result" onclick="fqOpenAddModelFromSearch()">
+                        <i class="fas fa-plus-circle"></i> إضافة موديل جديد: "${searchTerm}"
+                    </div>`;
+                resultsDiv.style.display = 'block';
+            } else {
+                resultsDiv.innerHTML = filteredModels.map(m => {
+                    const isNewModel = !receivedModelsHistory.has(m.name) && !receivedModelsHistory.has(m.code);
+                    const badge = isNewModel ?
+                        '<span class="model-smart-badge badge-new" style="margin-right:8px;"><i class="fas fa-camera"></i> جديد</span>' :
+                        '<span class="model-smart-badge badge-repeat" style="margin-right:8px;">مكرر</span>';
+                    return `
+                        <div class="model-search-result" onclick="fqSelectModel('${m.name.replace(/'/g, "\\'")}', '${(m.code || '').replace(/'/g, "\\'")}')">
+                            <strong>${m.name}</strong> ${m.code ? `<span class="model-code-badge">${m.code}</span>` : ''}
+                            ${badge}
+                            ${m.imageUrl ? `<img src="${m.imageUrl}" style="width:30px;height:30px;border-radius:6px;object-fit:cover;margin-right:auto;">` : ''}
+                        </div>
+                    `;
+                }).join('');
+                resultsDiv.style.display = 'block';
+            }
+        }
+
+        function fqSelectModel(modelName, modelCode) {
+            document.getElementById('fqSelectedModel').value = modelName;
+            const input = document.querySelector('#fq-new-entry-row .model-search-input');
+            if (input) input.value = modelName;
+            document.getElementById('fqModelSearchResults').style.display = 'none';
+        }
+
+        function fqOpenAddModelFromSearch() {
+            const currentFactory = fqCurrentData?.factory || '';
+            if (!currentFactory) { showWarning('الرجاء اختيار المصنع أولاً', true); return; }
+            document.getElementById('newModelCodeFullQty').value = '';
+            document.getElementById('modelErrorMsgFullQty').innerHTML = '';
+            document.getElementById('addModelModalFullQty').style.display = 'flex';
+        }
+
+        function closeModelModalFullQty() {
+            document.getElementById('addModelModalFullQty').style.display = 'none';
+        }
+
+        async function quickAddModelFullQty() {
+            const currentFactory = fqCurrentData?.factory || '';
+            if (!currentFactory) {
+                document.getElementById('modelErrorMsgFullQty').innerHTML = 'الرجاء اختيار المصنع أولاً';
+                return;
+            }
+            const modelCode = document.getElementById('newModelCodeFullQty').value.trim();
+            if (!modelCode) {
+                document.getElementById('modelErrorMsgFullQty').innerHTML = 'الرجاء إدخال كود الموديل';
+                return;
+            }
+
+            const exists = allModelsList.some(m => (m.code === modelCode || m.name === modelCode) && m.factory ===
+                currentFactory);
+            if (exists) {
+                document.getElementById('modelErrorMsgFullQty').innerHTML = 'هذا الموديل موجود بالفعل في هذا المصنع';
+                return;
+            }
+
+            let finalCode = modelCode;
+            const codeExists = allModelsList.some(m => m.code === modelCode || m.name === modelCode);
+            if (codeExists) {
+                let counter = 1;
+                let newCode = `${modelCode}-${counter}`;
+                while (allModelsList.some(m => m.code === newCode || m.name === newCode)) {
+                    counter++;
+                    newCode = `${modelCode}-${counter}`;
+                }
+                finalCode = newCode;
+            }
+
+            const newModelData = { name: finalCode, code: finalCode, factory: currentFactory };
+            const newRef = await db.ref('models').push(newModelData);
+            await loadAllModels();
+            await loadReceivedModelsHistory();
+            allModelsList.push({ id: newRef.key, name: finalCode, code: finalCode, factory: currentFactory,
+            imageUrl: '' });
+
+            document.getElementById('newModelCodeFullQty').value = '';
+            closeModelModalFullQty();
+
+            // Auto-select the new model
+            document.getElementById('fqSelectedModel').value = finalCode;
+            const input = document.querySelector('#fq-new-entry-row .model-search-input');
+            if (input) input.value = finalCode;
+
+            showWarning('تم إضافة الموديل بنجاح', false);
+            // Focus on qty input
+            document.getElementById('fqQtyInput').focus();
+        }
+
+        function fqAddEntry() {
+            if (!fqCurrentId || !fqCurrentData || fqCurrentData.isClosed) {
+                showWarning('لا يمكن إضافة إدخال في فاتورة مقفلة', true);
+                return;
+            }
+
+            const modelName = document.getElementById('fqSelectedModel').value;
+            const qty = parseInt(document.getElementById('fqQtyInput').value) || 0;
+
+            if (!modelName) {
+                showWarning('الرجاء اختيار موديل', true);
+                return;
+            }
+            if (qty <= 0) {
+                showWarning('الرجاء إدخال كمية صحيحة', true);
+                return;
+            }
+
+            // Add entry
+            const entries = fqCurrentData.fullQtyEntries || [];
+            entries.push({ modelName: modelName, qty: qty });
+
+            fqUpdateEntries(fqCurrentId, entries)
+                .then(() => {
+                    fqCurrentData.fullQtyEntries = entries;
+                    renderFullQtyDetail();
+                    scheduleSave();
+                    // Clear selection
+                    document.getElementById('fqSelectedModel').value = '';
+                    document.getElementById('fqQtyInput').value = '1';
+                    const input = document.querySelector('#fq-new-entry-row .model-search-input');
+                    if (input) input.value = '';
+                    document.getElementById('fqModelSearchResults').style.display = 'none';
+                    showWarning(`تم إضافة ${qty} قطعة للموديل ${modelName}`, false);
+                })
+                .catch(err => {
+                    console.error('Error adding entry:', err);
+                    showWarning('حدث خطأ في إضافة الإدخال', true);
+                });
+        }
+
+        async function fqUpdateEntries(id, entries) {
+            await db.ref(`inventory/${id}/fullQtyEntries`).set(entries);
+
+            // Calculate totals per model
+            const totals = {};
+            entries.forEach(entry => {
+                if (entry.modelName) {
+                    totals[entry.modelName] = (totals[entry.modelName] || 0) + (parseInt(entry.qty) || 0);
+                }
+            });
+            await db.ref(`inventory/${id}/fullQtyTotals`).set(totals);
+            await db.ref(`inventory/${id}/updatedAt`).set(Date.now());
+        }
+
+        function fqRemoveEntry(index) {
+            if (!fqCurrentId || !fqCurrentData || fqCurrentData.isClosed) {
+                showWarning('لا يمكن حذف إدخال في فاتورة مقفلة', true);
+                return;
+            }
+
+            const entries = fqCurrentData.fullQtyEntries || [];
+            if (index < 0 || index >= entries.length) return;
+
+            const entry = entries[index];
+            customConfirm(`هل أنت متأكد من حذف الإدخال (${entry.modelName} - ${entry.qty} قطعة)؟`, async (confirmed) => {
+                if (confirmed) {
+                    entries.splice(index, 1);
+                    await fqUpdateEntries(fqCurrentId, entries);
+                    fqCurrentData.fullQtyEntries = entries;
+                    renderFullQtyDetail();
+                    scheduleSave();
+                }
+            });
+        }
+
+        // ================================================================
+        //  CLOSE INVENTORY (Shared)
+        // ================================================================
+        let closeTargetType = 'colorsSizes';
+
+        function openConfirmCloseModal(type) {
+            closeTargetType = type || 'colorsSizes';
+
+            let data, id;
+            if (type === 'fullQty') {
+                if (!fqCurrentId || !fqCurrentData) return;
+                data = fqCurrentData;
+                id = fqCurrentId;
+            } else {
+                if (!csCurrentId || !csCurrentData) return;
+                data = csCurrentData;
+                id = csCurrentId;
+            }
 
             let summaryHtml = '';
             let totalItems = 0;
             let totalQty = 0;
-            for (const modelName in currentInventoryData.modelColors || {}) {
-                const modelTotal = calculateTotalForModel(currentInventoryData, modelName);
-                if (modelTotal > 0) totalItems++;
-                totalQty += modelTotal;
-                const isClosed = currentInventoryData.closedModels?.[modelName] === true;
-                summaryHtml += `
-                    <div class="close-summary-item">
-                        <span><strong>${modelName}</strong> ${isClosed ? '✅ مقفل' : ''}</span>
-                        <span>${modelTotal} قطعة</span>
-                    </div>
-                `;
+
+            if (type === 'fullQty') {
+                const entries = data.fullQtyEntries || [];
+                const modelTotals = {};
+                entries.forEach(entry => {
+                    if (entry.modelName) {
+                        modelTotals[entry.modelName] = (modelTotals[entry.modelName] || 0) + (parseInt(entry
+                        .qty) || 0);
+                    }
+                });
+                totalItems = Object.keys(modelTotals).length;
+                totalQty = Object.values(modelTotals).reduce((a, b) => a + b, 0);
+
+                for (const modelName in modelTotals) {
+                    summaryHtml += `
+                        <div class="close-summary-item">
+                            <span><strong>${modelName}</strong></span>
+                            <span>${modelTotals[modelName]} قطعة</span>
+                        </div>
+                    `;
+                }
+            } else {
+                for (const modelName in data.modelColors || {}) {
+                    const modelTotal = calculateTotalForModel(data, modelName);
+                    if (modelTotal > 0) totalItems++;
+                    totalQty += modelTotal;
+                    const isClosed = data.closedModels?.[modelName] === true;
+                    summaryHtml += `
+                        <div class="close-summary-item">
+                            <span><strong>${modelName}</strong> ${isClosed ? '✅ مقفل' : ''}</span>
+                            <span>${modelTotal} قطعة</span>
+                        </div>
+                    `;
+                }
             }
 
             if (totalItems === 0) {
@@ -2885,21 +3593,39 @@
             }
 
             document.getElementById('confirmCloseModal').style.display = 'flex';
+            document.getElementById('confirmCloseBtn').onclick = function() {
+                confirmCloseInventory(type);
+            };
         }
 
         function closeConfirmCloseModal() {
             document.getElementById('confirmCloseModal').style.display = 'none';
         }
 
-        function confirmCloseInventory() {
+        function confirmCloseInventory(type) {
             closeConfirmCloseModal();
-            if (!currentInventoryId || !currentInventoryData) return;
 
-            performCloseInventory(currentInventoryId)
+            let data, id;
+            if (type === 'fullQty') {
+                if (!fqCurrentId || !fqCurrentData) return;
+                data = fqCurrentData;
+                id = fqCurrentId;
+            } else {
+                if (!csCurrentId || !csCurrentData) return;
+                data = csCurrentData;
+                id = csCurrentId;
+            }
+
+            performCloseInventory(id, type, data)
                 .then(() => {
                     showWarning('✅ تم إقفال الجرد بنجاح', false);
-                    closeInventoryDetail(true);
-                    loadInventory();
+                    if (type === 'fullQty') {
+                        closeFullQtyDetail(true);
+                        loadFullQtyInventory();
+                    } else {
+                        closeColorsSizesDetail(true);
+                        loadColorsSizesInventory();
+                    }
                     loadDashboardStats();
                 })
                 .catch(err => {
@@ -2908,20 +3634,26 @@
                 });
         }
 
-        async function performCloseInventory(inventoryId) {
+        async function performCloseInventory(id, type, data) {
             // Close all open models
-            for (const modelName in currentInventoryData.modelColors || {}) {
-                if (currentInventoryData.closedModels?.[modelName] !== true) {
-                    await db.ref(`inventory/${inventoryId}/closedModels/${modelName}`).set(true);
-                    await db.ref(`inventory/${inventoryId}/closedModelsDate/${modelName}`).set(new Date().toISOString());
+            if (type === 'fullQty') {
+                // For full qty, we close all entries
+                await db.ref(`inventory/${id}/isClosed`).set(true);
+                await db.ref(`inventory/${id}/closedDate`).set(new Date().toISOString());
+                await db.ref(`inventory/${id}/updatedAt`).set(Date.now());
+            } else {
+                // Close all models in colors & sizes
+                for (const modelName in data.modelColors || {}) {
+                    if (data.closedModels?.[modelName] !== true) {
+                        await db.ref(`inventory/${id}/closedModels/${modelName}`).set(true);
+                        await db.ref(`inventory/${id}/closedModelsDate/${modelName}`).set(new Date().toISOString());
+                    }
                 }
+                await db.ref(`inventory/${id}/isClosed`).set(true);
+                await db.ref(`inventory/${id}/closedDate`).set(new Date().toISOString());
+                await db.ref(`inventory/${id}/updatedAt`).set(Date.now());
             }
 
-            await db.ref(`inventory/${inventoryId}/isClosed`).set(true);
-            await db.ref(`inventory/${inventoryId}/closedDate`).set(new Date().toISOString());
-            await db.ref(`inventory/${inventoryId}/updatedAt`).set(Date.now());
-
-            // Update received models history
             await loadReceivedModelsHistory();
         }
 
@@ -3050,17 +3782,16 @@
         // ================================================================
         checkAuth();
 
-        console.log('✅ نظام الجرد - Inventory System');
-        console.log('📌 فاتورة جرد بلانك (بدون كميات محددة مسبقاً)');
+        console.log('✅ نظام الجرد - Inventory System v2');
+        console.log('📌 تبويب 1: جرد بالألوان والمقاسات (نظام تفصيلي)');
+        console.log('📌 تبويب 2: جرد كمية كاملة (موديل + كمية إجمالية)');
         console.log('📌 إضافة موديلات جديدة أو اختيار موديلات قديمة');
-        console.log('📌 خانة موقع الموديل (Location)');
+        console.log('📌 خانة موقع الموديل (في التبويب الأول)');
         console.log('📌 عدادات: عدد الفواتير، عدد الموديلات، إجمالي الكميات، الجاري');
         console.log('📌 حفظ تلقائي بعد التعديل');
         console.log('📌 إقفال الموديلات والفاتورة بالكامل');
-        console.log('📌 فتح وقفل أنيق للمنتجات والألوان');
-        console.log('📌 أزرار فتح/غلق الكل للمنتجات والألوان');
-        console.log('📌 استثناء جداول currentTable و invoices');
-        console.log('📌 تعديل اسم الموديل واللون أثناء الفتح');
+        console.log('📌 فتح وقفل أنيق للمنتجات والألوان (في التبويب الأول)');
+        console.log('📌 أزرار فتح/غلق الكل للمنتجات والألوان (في التبويب الأول)');
     </script>
 </body>
 </html>
