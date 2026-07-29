@@ -1,0 +1,1071 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إضافة استلام - نظام إدارة الاستلامات</title>
+
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-light: #818cf8;
+            --primary-dark: #3730a3;
+            --secondary: #7c3aed;
+            --success: #10b981;
+            --success-light: #d1fae5;
+            --warning: #f59e0b;
+            --warning-light: #fef3c7;
+            --danger: #ef4444;
+            --danger-light: #fee2e2;
+            --info: #3b82f6;
+            --info-light: #dbeafe;
+            --dark: #0f172a;
+            --dark-secondary: #1e293b;
+            --light: #f8fafc;
+            --gray: #64748b;
+            --gray-light: #e2e8f0;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+            --shadow: 0 4px 20px rgba(0,0,0,0.08);
+            --shadow-lg: 0 10px 40px rgba(0,0,0,0.12);
+            --radius: 16px;
+            --radius-sm: 10px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Cairo', 'Segoe UI', sans-serif;
+            background: #f1f5f9;
+            overflow-x: hidden;
+        }
+
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #e2e8f0; }
+        ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 10px; }
+
+        .sidebar {
+            position: fixed;
+            right: 0;
+            top: 0;
+            width: 280px;
+            height: 100%;
+            background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
+            color: white;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1000;
+            overflow-y: auto;
+            box-shadow: -5px 0 30px rgba(0,0,0,0.15);
+            transform: translateX(0);
+        }
+
+        .sidebar.hidden { transform: translateX(100%); }
+
+        .sidebar-header {
+            padding: 30px 20px 20px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            margin-bottom: 15px;
+        }
+
+        .sidebar-header .logo-icon {
+            font-size: 40px;
+            background: linear-gradient(135deg, var(--primary-light), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .sidebar-header h2 {
+            font-size: 22px;
+            font-weight: 700;
+            margin-top: 8px;
+            background: linear-gradient(135deg, var(--primary-light), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .sidebar-header p {
+            font-size: 12px;
+            opacity: 0.5;
+            margin-top: 4px;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 0 12px;
+        }
+
+        .sidebar-menu li {
+            padding: 12px 16px;
+            margin-bottom: 4px;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            border-radius: 12px;
+            font-weight: 500;
+            font-size: 14px;
+            color: rgba(255,255,255,0.7);
+        }
+
+        .sidebar-menu li i { width: 22px; font-size: 16px; }
+        .sidebar-menu li:hover { 
+            background: rgba(255,255,255,0.08); 
+            color: white;
+            transform: translateX(-4px);
+        }
+        .sidebar-menu li.active { 
+            background: linear-gradient(135deg, var(--primary), var(--secondary)); 
+            color: white;
+            box-shadow: 0 4px 15px rgba(79,70,229,0.4);
+        }
+
+        .logout-btn {
+            margin: 20px 15px 30px;
+            padding: 12px;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.08);
+            color: rgba(255,255,255,0.7);
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: var(--transition);
+            width: calc(100% - 30px);
+        }
+        .logout-btn:hover { 
+            background: var(--danger); 
+            border-color: var(--danger);
+            color: white;
+        }
+
+        .main-content {
+            margin-right: 280px;
+            padding: 20px 25px;
+            transition: margin-right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            min-height: 100vh;
+        }
+        .main-content.sidebar-hidden { margin-right: 0; }
+
+        .header {
+            background: white;
+            padding: 16px 24px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            border: 1px solid rgba(0,0,0,0.04);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .menu-toggle {
+            background: var(--dark-secondary);
+            border: none;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+            padding: 10px 14px;
+            border-radius: 12px;
+            transition: var(--transition);
+        }
+        .menu-toggle:hover { background: var(--primary); }
+
+        .header h1 {
+            font-size: 22px;
+            color: var(--dark-secondary);
+            font-weight: 700;
+        }
+        .header h1 i { color: var(--primary); margin-left: 10px; }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: var(--light);
+            padding: 6px 16px 6px 20px;
+            border-radius: 40px;
+            border: 1px solid var(--gray-light);
+        }
+        .user-info i { font-size: 22px; color: var(--primary); }
+        .user-info span { font-weight: 600; color: var(--dark-secondary); font-size: 14px; }
+
+        .table-container {
+            background: white;
+            border-radius: var(--radius);
+            padding: 22px 24px;
+            overflow-x: auto;
+            margin-bottom: 25px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid rgba(0,0,0,0.04);
+        }
+
+        .table-container .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .table-container h3 {
+            font-size: 18px;
+            color: var(--dark-secondary);
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .table-container h3 i { color: var(--primary); }
+
+        .form-group { margin-bottom: 18px; }
+        .form-group label { 
+            display: block; 
+            margin-bottom: 6px; 
+            color: var(--dark-secondary); 
+            font-weight: 600; 
+            font-size: 14px; 
+        }
+        .form-group label i { color: var(--primary); margin-left: 6px; }
+        
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 11px 16px;
+            border: 2px solid var(--gray-light);
+            border-radius: var(--radius-sm);
+            font-size: 14px;
+            font-family: inherit;
+            transition: var(--transition);
+            background: white;
+        }
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(79,70,229,0.1);
+        }
+        .form-group textarea { min-height: 80px; resize: vertical; }
+
+        .btn {
+            padding: 10px 22px;
+            border: none;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+        .btn-primary { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(79,70,229,0.4); }
+        .btn-danger { background: var(--danger); color: white; }
+        .btn-danger:hover { background: #dc2626; transform: translateY(-2px); }
+        .btn-success { background: var(--success); color: white; }
+        .btn-success:hover { background: #059669; transform: translateY(-2px); }
+        .btn-warning { background: var(--warning); color: white; }
+        .btn-warning:hover { background: #d97706; transform: translateY(-2px); }
+        .btn-info { background: var(--info); color: white; }
+        .btn-info:hover { background: #2563eb; transform: translateY(-2px); }
+        .btn-outline { background: transparent; border: 2px solid var(--gray-light); color: var(--dark-secondary); }
+        .btn-outline:hover { border-color: var(--primary); color: var(--primary); }
+        .btn-sm { padding: 6px 14px; font-size: 12px; border-radius: 8px; }
+        .btn-xs { padding: 4px 10px; font-size: 11px; border-radius: 6px; }
+
+        .models-selection {
+            border: 2px solid var(--gray-light);
+            border-radius: var(--radius-sm);
+            padding: 16px;
+            margin-top: 8px;
+            background: var(--light);
+        }
+        .model-row {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+            padding: 10px 14px;
+            background: white;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--gray-light);
+        }
+        .model-row select { flex: 2; min-width: 150px; }
+        .model-row input[type="number"] { flex: 0.8; min-width: 80px; }
+        .model-row .model-status-badges {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+        .model-row .model-thumb-small {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            object-fit: cover;
+            cursor: pointer;
+            border: 2px solid var(--gray-light);
+            transition: var(--transition);
+        }
+        .model-row .model-thumb-small:hover { border-color: var(--primary); transform: scale(1.05); }
+
+        .model-badge {
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: 10px;
+            font-weight: 600;
+        }
+        .model-badge-new { background: var(--info-light); color: var(--info); }
+        .model-badge-repeat { background: var(--warning-light); color: var(--warning); }
+        .model-badge-sample { background: var(--success-light); color: var(--success); }
+        .model-badge-needs-photo { background: var(--danger-light); color: var(--danger); }
+        .model-badge-sample-taken { background: var(--success-light); color: var(--success); }
+
+        .helper-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 8px;
+        }
+        .helper-tag {
+            background: var(--gray-light);
+            padding: 6px 16px;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 13px;
+            border: 2px solid transparent;
+        }
+        .helper-tag:hover { border-color: var(--primary-light); }
+        .helper-tag.selected { 
+            background: var(--primary); 
+            color: white;
+            border-color: var(--primary);
+        }
+        .helper-tag.disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            border-color: var(--gray-light);
+        }
+        .helper-tag.disabled:hover { border-color: var(--gray-light); }
+
+        .add-new-link {
+            color: var(--primary);
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .add-new-link:hover { color: var(--primary-dark); text-decoration: underline; }
+
+        .validation-error {
+            color: var(--danger);
+            font-size: 12px;
+            margin-top: 4px;
+            display: block;
+        }
+
+        .text-muted { color: var(--gray); font-size: 13px; }
+
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--success);
+            color: white;
+            padding: 12px 24px;
+            border-radius: var(--radius-sm);
+            box-shadow: var(--shadow-lg);
+            z-index: 3000;
+            animation: slideUp 0.3s ease;
+            font-weight: 600;
+        }
+        .toast.error { background: var(--danger); }
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(8px);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            animation: modalFadeIn 0.3s ease;
+            cursor: pointer;
+        }
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        .modal-content {
+            background: white;
+            padding: 30px 35px;
+            border-radius: 24px;
+            max-width: 500px;
+            width: 92%;
+            max-height: 85vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-lg);
+            cursor: default;
+            position: relative;
+        }
+        .modal-content h3 {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--dark-secondary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .modal-content h3 i { color: var(--primary); }
+        .modal-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            margin-top: 22px;
+            flex-wrap: wrap;
+        }
+        .modal-close-btn {
+            position: absolute;
+            top: 15px;
+            left: 20px;
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: var(--gray);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .modal-close-btn:hover { color: var(--danger); transform: rotate(90deg); }
+
+        @media (max-width: 992px) {
+            .main-content { margin-right: 0; }
+            .sidebar { transform: translateX(100%); }
+            .sidebar.visible { transform: translateX(0); }
+            .sidebar.hidden { transform: translateX(100%); }
+        }
+        @media (max-width: 768px) {
+            .model-row { flex-direction: column; align-items: stretch; }
+            .model-row select, .model-row input { width: 100% !important; }
+            .header h1 { font-size: 17px; }
+            .modal-content { padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar" id="sidebar"></div>
+
+    <div class="main-content" id="mainContent">
+        <div class="header">
+            <div class="header-left">
+                <button class="menu-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+                <h1><i class="fas fa-plus-circle"></i> إضافة استلام جديد</h1>
+            </div>
+            <div class="user-info">
+                <i class="fas fa-user-circle"></i>
+                <span id="currentAdminName">مرحباً، مدير النظام</span>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <div class="section-header">
+                <h3><i class="fas fa-plus-circle"></i> إضافة استلام جديد</h3>
+            </div>
+            
+            <div class="form-group">
+                <label><i class="fas fa-barcode"></i> كود الفاتورة</label>
+                <input type="text" id="invoiceCode" placeholder="أدخل كود الفاتورة">
+            </div>
+
+            <div class="form-group">
+                <label><i class="fas fa-factory"></i> المصنع</label>
+                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    <select id="factorySelect" onchange="onFactoryChange()" style="flex:1">
+                        <option value="">اختر مصنع</option>
+                    </select>
+                    <button class="btn btn-primary btn-sm" onclick="openFactoryModal()"><i class="fas fa-plus"></i> مصنع جديد</button>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label><i class="fas fa-tshirt"></i> الموديلات والكميات</label>
+                <div id="modelsListContainer" class="models-selection"></div>
+                <span class="add-new-link" onclick="addModelRow()"><i class="fas fa-plus-circle"></i> إضافة موديل آخر</span>
+            </div>
+
+            <div class="form-group">
+                <label><i class="fas fa-user-check"></i> المسؤول الأساسي</label>
+                <select id="assignedToSelect" onchange="onAssignedToChange()" style="width:100%; padding:11px 16px; border:2px solid var(--gray-light); border-radius:var(--radius-sm);">
+                    <option value="">-- اختر موظف --</option>
+                </select>
+                <small class="text-muted">اختر الموظف المسؤول عن متابعة هذه الفاتورة</small>
+            </div>
+
+            <div class="form-group">
+                <label><i class="fas fa-users"></i> المساعدين (اختياري)</label>
+                <div id="helpersTagsContainer" class="helper-tags"></div>
+                <span id="helperValidationError" class="validation-error" style="display:none;"></span>
+            </div>
+
+            <button class="btn btn-primary" onclick="saveReceipt()"><i class="fas fa-save"></i> حفظ الفاتورة</button>
+        </div>
+    </div>
+
+    <!-- Factory Modal -->
+    <div id="factoryModal" class="modal" onclick="closeModalOnOutsideClick(event, 'factoryModal')">
+        <div class="modal-content">
+            <button class="modal-close-btn" onclick="closeFactoryModal()"><i class="fas fa-times"></i></button>
+            <h3><i class="fas fa-factory"></i> إضافة مصنع جديد</h3>
+            <div class="form-group"><label>اسم المصنع</label><input type="text" id="quickFactoryName" placeholder="مثال: مصنع النور"></div>
+            <div id="factoryErrorMsg" style="color:var(--danger);font-size:12px;margin-bottom:8px;"></div>
+            <div class="modal-buttons">
+                <button class="btn btn-primary" onclick="quickAddFactory()"><i class="fas fa-plus"></i> إضافة</button>
+                <button class="btn btn-outline" onclick="closeFactoryModal()">إلغاء</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="main.js"></script>
+
+    <script>
+        // ============================================================
+        // STATE
+        // ============================================================
+        let currentModelRows = [{ id: Date.now(), modelId: '', quantity: 0, isNew: false, newModelName: '', imageUrl: '', needsPhoto: false, sampleTaken: false }];
+        let selectedHelpers = [];
+        let allModelsList = [];
+        let employeesList = [];
+
+        // ============================================================
+        // HELPERS
+        // ============================================================
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('mainContent');
+            sidebar.classList.toggle('hidden');
+            sidebar.classList.toggle('visible');
+            mainContent.classList.toggle('sidebar-hidden');
+        }
+
+        document.addEventListener('click', function(event) {
+            const sidebar = document.getElementById('sidebar');
+            const menuToggle = document.querySelector('.menu-toggle');
+            const mainContent = document.getElementById('mainContent');
+            
+            const isSidebarVisible = sidebar.classList.contains('visible') && !sidebar.classList.contains('hidden');
+            
+            if (isSidebarVisible) {
+                const isClickInsideSidebar = sidebar.contains(event.target);
+                const isClickOnMenuToggle = menuToggle && menuToggle.contains(event.target);
+                
+                if (!isClickInsideSidebar && !isClickOnMenuToggle) {
+                    sidebar.classList.add('hidden');
+                    sidebar.classList.remove('visible');
+                    mainContent.classList.remove('sidebar-hidden');
+                }
+            }
+        });
+
+        window.addEventListener('resize', function() {
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('mainContent');
+            
+            if (window.innerWidth > 992) {
+                sidebar.classList.remove('hidden');
+                sidebar.classList.remove('visible');
+                mainContent.classList.remove('sidebar-hidden');
+            } else {
+                sidebar.classList.add('hidden');
+                sidebar.classList.remove('visible');
+                mainContent.classList.add('sidebar-hidden');
+            }
+        });
+
+        // ============================================================
+        // LOAD DATA
+        // ============================================================
+        async function loadFactories() {
+            const snapshot = await db.ref('factories').once('value');
+            const select = document.getElementById('factorySelect');
+            select.innerHTML = '<option value="">اختر مصنع</option>';
+            snapshot.forEach(child => {
+                const name = child.val().name;
+                select.innerHTML += `<option value="${name}" data-id="${child.key}">${name}</option>`;
+            });
+        }
+
+        async function loadAllModels() {
+            const snapshot = await db.ref('models').once('value');
+            allModelsList = [];
+            snapshot.forEach(child => {
+                allModelsList.push({
+                    id: child.key,
+                    name: child.val().name,
+                    factory: child.val().factory,
+                    imageUrl: child.val().imageUrl || '',
+                    code: child.val().code || ''
+                });
+            });
+            return allModelsList;
+        }
+
+        async function loadEmployeesList() {
+            const snapshot = await db.ref('users').once('value');
+            employeesList = [];
+            snapshot.forEach(child => {
+                const user = child.val();
+                if (user.role === 'employee') {
+                    employeesList.push({
+                        userId: child.key,
+                        username: user.username,
+                        fullName: user.fullName
+                    });
+                }
+            });
+            return employeesList;
+        }
+
+        async function populateAssignedToSelect() {
+            await loadEmployeesList();
+            const select = document.getElementById('assignedToSelect');
+            select.innerHTML = '<option value="">-- اختر موظف --</option>';
+            employeesList.forEach(emp => {
+                select.innerHTML += `<option value="${emp.userId}" data-username="${emp.username}" data-fullname="${emp.fullName}">${emp.fullName} (${emp.username})</option>`;
+            });
+        }
+
+        async function loadHelpersForSelect() {
+            await loadEmployeesList();
+            const container = document.getElementById('helpersTagsContainer');
+            container.innerHTML = '';
+            selectedHelpers = [];
+            const assignedUserId = document.getElementById('assignedToSelect').value;
+
+            employeesList.forEach(emp => {
+                const tag = document.createElement('div');
+                tag.className = 'helper-tag';
+                tag.innerText = emp.fullName;
+                tag.dataset.userId = emp.userId;
+                tag.dataset.username = emp.username;
+                
+                if (assignedUserId && assignedUserId === emp.userId) {
+                    tag.classList.add('disabled');
+                }
+                
+                tag.onclick = () => {
+                    const userId = tag.dataset.userId;
+                    if (tag.classList.contains('disabled')) {
+                        showToast('⚠️ هذا الموظف هو المسؤول الأساسي ولا يمكن إضافته كمساعد', true);
+                        return;
+                    }
+                    
+                    tag.classList.toggle('selected');
+                    if (selectedHelpers.some(h => h.userId === userId)) {
+                        selectedHelpers = selectedHelpers.filter(h => h.userId !== userId);
+                    } else {
+                        selectedHelpers.push({
+                            userId: userId,
+                            username: emp.username,
+                            fullName: emp.fullName
+                        });
+                    }
+                    updateHelperValidation();
+                };
+                container.appendChild(tag);
+            });
+        }
+
+        // ============================================================
+        // MODEL ROWS
+        // ============================================================
+        async function onFactoryChange() {
+            const factory = document.getElementById('factorySelect').value;
+            if (!factory) {
+                document.getElementById('modelsListContainer').innerHTML = '<p class="text-muted">الرجاء اختيار مصنع أولاً</p>';
+                return;
+            }
+            await loadAllModels();
+            const models = allModelsList.filter(m => m.factory === factory);
+            currentModelRows = [{ id: Date.now(), modelId: '', quantity: 0, isNew: false, newModelName: '', imageUrl: '', needsPhoto: false, sampleTaken: false }];
+            renderModelRows(models);
+        }
+
+        function renderModelRows(availableModels) {
+            const container = document.getElementById('modelsListContainer');
+            container.innerHTML = '';
+            
+            if (!availableModels || availableModels.length === 0) {
+                container.innerHTML = '<p class="text-muted">لا توجد موديلات لهذا المصنع، يمكنك إضافة موديل جديد</p>';
+            }
+
+            currentModelRows.forEach((row, idx) => {
+                const div = document.createElement('div');
+                div.className = 'model-row';
+                const showNewInput = row.isNew;
+
+                const modelData = availableModels.find(m => m.name === row.modelId);
+                const modelImage = modelData?.imageUrl || '';
+
+                div.innerHTML = `
+                    <select style="flex:2;min-width:150px;" onchange="updateModelRow(${row.id}, 'modelId', this.value); checkIfModelExists(${row.id}, this.value)">
+                        <option value="">اختر موديل موجود</option>
+                        ${availableModels.map(m => `<option value="${m.name}" ${row.modelId === m.name && !row.isNew ? 'selected' : ''}>${m.name}</option>`).join('')}
+                    </select>
+                    ${!showNewInput ? `<span class="add-new-link" onclick="showNewModelInput(${row.id})">+ جديد</span>` : ''}
+                    ${showNewInput ? `
+                        <div class="new-model-input-group" style="display:flex;gap:8px;flex:2;">
+                            <input type="text" placeholder="كود الموديل" id="newModelName_${row.id}" value="${row.newModelName || ''}" style="flex:1;">
+                            <button class="btn btn-success btn-sm" onclick="addNewModelToRow(${row.id})">إضافة</button>
+                            <button class="btn btn-outline btn-sm" onclick="cancelNewModel(${row.id})">إلغاء</button>
+                        </div>
+                    ` : ''}
+                    <input type="number" placeholder="الكمية" value="${row.quantity || 0}" onchange="updateModelRow(${row.id}, 'quantity', this.value)" style="flex:0.8;min-width:70px;">
+                    ${currentModelRows.length > 1 ? `<button class="btn btn-danger btn-sm" onclick="removeModelRow(${row.id})"><i class="fas fa-trash"></i></button>` : ''}
+                `;
+
+                if (row.modelId && row.modelId !== '') {
+                    const statusDiv = document.createElement('div');
+                    statusDiv.className = 'model-status-badges';
+
+                    const isNewModel = isModelNewlyAdded(row.modelId, document.getElementById('factorySelect').value);
+                    if (isNewModel) {
+                        statusDiv.innerHTML += '<span class="model-badge model-badge-new"><i class="fas fa-star"></i> جديد</span>';
+                        statusDiv.innerHTML += '<span class="model-badge model-badge-needs-photo"><i class="fas fa-camera"></i> يحتاج تصوير</span>';
+                        row.needsPhoto = true;
+                    } else {
+                        statusDiv.innerHTML += '<span class="model-badge model-badge-repeat"><i class="fas fa-repeat"></i> تكرار</span>';
+                    }
+
+                    div.appendChild(statusDiv);
+
+                    if (modelImage) {
+                        const imgSpan = document.createElement('div');
+                        imgSpan.innerHTML = `<img src="${modelImage}" class="model-thumb-small" onclick="showFullImage('${modelImage}')" title="اضغط لعرض الصورة">`;
+                        div.appendChild(imgSpan);
+                    } else if (row.needsPhoto) {
+                        const imgSpan = document.createElement('div');
+                        imgSpan.innerHTML = `<span style="color:var(--danger);font-size:12px;"><i class="fas fa-exclamation-triangle"></i> لا توجد صورة</span>`;
+                        div.appendChild(imgSpan);
+                    }
+                }
+                container.appendChild(div);
+            });
+        }
+
+        function isModelNewlyAdded(modelName, factoryName) {
+            const modelExists = allModelsList.some(m => m.name === modelName && m.factory === factoryName);
+            if (!modelExists) return true;
+            return false;
+        }
+
+        function checkIfModelExists(rowId, modelName) {
+            const factory = document.getElementById('factorySelect').value;
+            if (modelName && factory) {
+                const row = currentModelRows.find(r => r.id === rowId);
+                if (row) {
+                    row.isNew = false;
+                    renderModelRowsForFactory();
+                }
+            }
+        }
+
+        async function renderModelRowsForFactory() {
+            const factory = document.getElementById('factorySelect').value;
+            if (factory) {
+                await loadAllModels();
+                const models = allModelsList.filter(m => m.factory === factory);
+                renderModelRows(models);
+            }
+        }
+
+        function showNewModelInput(rowId) {
+            const row = currentModelRows.find(r => r.id === rowId);
+            if (row) {
+                row.isNew = true;
+                row.modelId = '';
+                renderModelRowsForFactory();
+            }
+        }
+
+        async function addNewModelToRow(rowId) {
+            const row = currentModelRows.find(r => r.id === rowId);
+            const factory = document.getElementById('factorySelect').value;
+            const newModelName = document.getElementById(`newModelName_${rowId}`).value.trim();
+
+            if (!newModelName || !factory) {
+                showToast('الرجاء إدخال كود الموديل واختيار المصنع', true);
+                return;
+            }
+
+            const exists = allModelsList.some(m => m.name === newModelName && m.factory === factory);
+            if (exists) {
+                showToast('هذا الموديل موجود بالفعل في هذا المصنع', true);
+                return;
+            }
+
+            await db.ref('models').push({ name: newModelName, factory: factory, imageUrl: '' });
+            await loadAllModels();
+
+            row.modelId = newModelName;
+            row.isNew = false;
+            row.newModelName = '';
+            row.needsPhoto = true;
+            await renderModelRowsForFactory();
+        }
+
+        function cancelNewModel(rowId) {
+            const row = currentModelRows.find(r => r.id === rowId);
+            if (row) {
+                row.isNew = false;
+                row.newModelName = '';
+                renderModelRowsForFactory();
+            }
+        }
+
+        function addModelRow() {
+            const factory = document.getElementById('factorySelect').value;
+            if (!factory) { showToast('الرجاء اختيار مصنع أولاً', true); return; }
+            currentModelRows.push({ id: Date.now(), modelId: '', quantity: 0, isNew: false, newModelName: '', imageUrl: '', needsPhoto: false, sampleTaken: false });
+            renderModelRowsForFactory();
+        }
+
+        function updateModelRow(id, field, value) {
+            const row = currentModelRows.find(r => r.id === id);
+            if (row) row[field] = field === 'quantity' ? parseInt(value) || 0 : value;
+        }
+
+        function removeModelRow(id) {
+            currentModelRows = currentModelRows.filter(r => r.id !== id);
+            renderModelRowsForFactory();
+        }
+
+        function onAssignedToChange() {
+            const select = document.getElementById('assignedToSelect');
+            const selectedUserId = select.value;
+            
+            document.querySelectorAll('.helper-tag').forEach(tag => {
+                const userId = tag.dataset.userId;
+                if (userId === selectedUserId && selectedUserId) {
+                    tag.classList.add('disabled');
+                    if (selectedHelpers.some(h => h.userId === userId)) {
+                        selectedHelpers = selectedHelpers.filter(h => h.userId !== userId);
+                        tag.classList.remove('selected');
+                    }
+                } else {
+                    tag.classList.remove('disabled');
+                }
+            });
+            updateHelperValidation();
+        }
+
+        function updateHelperValidation() {
+            const select = document.getElementById('assignedToSelect');
+            const selectedUserId = select.value;
+            const errorSpan = document.getElementById('helperValidationError');
+            
+            if (selectedUserId && selectedHelpers.some(h => h.userId === selectedUserId)) {
+                errorSpan.style.display = 'block';
+                errorSpan.textContent = '⚠️ لا يمكن اختيار المسؤول الأساسي ضمن المساعدين';
+                return false;
+            } else {
+                errorSpan.style.display = 'none';
+                return true;
+            }
+        }
+
+        // ============================================================
+        // SAVE RECEIPT
+        // ============================================================
+        async function saveReceipt() {
+            const invoiceCode = document.getElementById('invoiceCode').value.trim();
+            const factory = document.getElementById('factorySelect').value;
+
+            if (!invoiceCode || !factory) {
+                showToast('الرجاء إدخال كود الفاتورة واختيار المصنع', true);
+                return;
+            }
+
+            const models = [];
+            for (const row of currentModelRows) {
+                if (row.modelId && row.quantity > 0) {
+                    const exists = allModelsList.some(m => m.name === row.modelId && m.factory === factory);
+                    if (!exists) {
+                        await db.ref('models').push({ name: row.modelId, factory: factory, imageUrl: '' });
+                        await loadAllModels();
+                    }
+                    models.push({
+                        modelName: row.modelId,
+                        quantity: row.quantity,
+                        needsPhoto: row.needsPhoto,
+                        sampleTaken: row.sampleTaken
+                    });
+                }
+            }
+
+            if (models.length === 0) {
+                showToast('الرجاء إضافة موديل واحد على الأقل', true);
+                return;
+            }
+
+            const assignedToSelect = document.getElementById('assignedToSelect');
+            const selectedUserId = assignedToSelect.value;
+            let assignedTo = null;
+
+            if (selectedUserId) {
+                const selectedOption = assignedToSelect.options[assignedToSelect.selectedIndex];
+                assignedTo = {
+                    userId: selectedUserId,
+                    username: selectedOption.dataset.username || '',
+                    fullName: selectedOption.dataset.fullname || '',
+                    assignedAt: firebase.database.ServerValue.TIMESTAMP,
+                    assignedBy: {
+                        userId: currentAdmin.userId,
+                        username: currentAdmin.username,
+                        fullName: currentAdmin.fullName
+                    }
+                };
+            }
+
+            if (assignedTo && selectedHelpers.some(h => h.userId === assignedTo.userId)) {
+                showToast('⚠️ لا يمكن اختيار المسؤول الأساسي ضمن المساعدين', true);
+                return;
+            }
+
+            const receipt = {
+                invoiceCode: invoiceCode,
+                factory: factory,
+                models: models,
+                assignedTo: assignedTo,
+                helpers: selectedHelpers,
+                assignmentHistory: assignedTo ? [
+                    {
+                        fromUserId: null,
+                        fromName: null,
+                        toUserId: assignedTo.userId,
+                        toName: assignedTo.fullName,
+                        byUserId: currentAdmin.userId,
+                        byName: currentAdmin.fullName,
+                        assignedAt: firebase.database.ServerValue.TIMESTAMP
+                    }
+                ] : [],
+                receivedQty: 0,
+                receivedDetails: [],
+                status: assignedTo ? 'assigned' : 'new',
+                createdAt: firebase.database.ServerValue.TIMESTAMP,
+                totalRequiredQty: models.reduce((sum, m) => sum + m.quantity, 0),
+                createdBy: {
+                    userId: currentAdmin.userId,
+                    username: currentAdmin.username,
+                    fullName: currentAdmin.fullName
+                },
+                isArchived: false
+            };
+
+            await db.ref('receipts').push(receipt);
+            showToast('✅ تم حفظ الفاتورة بنجاح');
+
+            document.getElementById('invoiceCode').value = '';
+            currentModelRows = [{ id: Date.now(), modelId: '', quantity: 0, isNew: false, newModelName: '', imageUrl: '', needsPhoto: false, sampleTaken: false }];
+            selectedHelpers = [];
+            document.querySelectorAll('.helper-tag').forEach(t => {
+                t.classList.remove('selected');
+                t.classList.remove('disabled');
+            });
+            document.getElementById('assignedToSelect').value = '';
+            document.getElementById('helperValidationError').style.display = 'none';
+
+            if (document.getElementById('factorySelect').value) onFactoryChange();
+        }
+
+        // ============================================================
+        // FACTORY MODAL
+        // ============================================================
+        function openFactoryModal() {
+            document.getElementById('factoryModal').style.display = 'flex';
+            document.getElementById('quickFactoryName').value = '';
+            document.getElementById('factoryErrorMsg').innerHTML = '';
+        }
+
+        function closeFactoryModal() {
+            document.getElementById('factoryModal').style.display = 'none';
+        }
+
+        async function quickAddFactory() {
+            const name = document.getElementById('quickFactoryName').value.trim();
+            if (!name) {
+                document.getElementById('factoryErrorMsg').innerHTML = 'الرجاء إدخال اسم المصنع';
+                return;
+            }
+            const snapshot = await db.ref('factories').once('value');
+            let exists = false;
+            snapshot.forEach(child => { if (child.val().name === name) exists = true; });
+            if (exists) {
+                document.getElementById('factoryErrorMsg').innerHTML = 'هذا المصنع موجود بالفعل';
+                return;
+            }
+            await db.ref('factories').push({ name });
+            loadFactories();
+            closeFactoryModal();
+            showToast('✅ تم إضافة المصنع بنجاح');
+        }
+
+        // ============================================================
+        // IMAGE VIEW
+        // ============================================================
+        function showFullImage(imageUrl) {
+            // Simple alert for demo
+            window.open(imageUrl, '_blank');
+        }
+
+        // ============================================================
+        // INIT
+        // ============================================================
+        let currentAdmin = null;
+
+        async function init() {
+            currentAdmin = loadLayout();
+            await loadFactories();
+            await populateAssignedToSelect();
+            await loadHelpersForSelect();
+            await loadAllModels();
+        }
+
+        init();
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,1354 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إدارة حساب الأدمن - نظام إدارة الاستلامات</title>
+
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <style>
+        /* ============================================================
+           CSS VARIABLES
+           ============================================================ */
+        :root {
+            --primary: #4f46e5;
+            --primary-light: #818cf8;
+            --primary-dark: #3730a3;
+            --secondary: #7c3aed;
+            --success: #10b981;
+            --success-light: #d1fae5;
+            --warning: #f59e0b;
+            --warning-light: #fef3c7;
+            --danger: #ef4444;
+            --danger-light: #fee2e2;
+            --info: #3b82f6;
+            --info-light: #dbeafe;
+            --dark: #0f172a;
+            --dark-secondary: #1e293b;
+            --light: #f8fafc;
+            --gray: #64748b;
+            --gray-light: #e2e8f0;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+            --shadow: 0 4px 20px rgba(0,0,0,0.08);
+            --shadow-lg: 0 10px 40px rgba(0,0,0,0.12);
+            --radius: 16px;
+            --radius-sm: 10px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Cairo', 'Segoe UI', sans-serif;
+            background: #f1f5f9;
+            overflow-x: hidden;
+        }
+
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #e2e8f0; }
+        ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 10px; }
+
+        /* ============================================================
+           SIDEBAR
+           ============================================================ */
+        .sidebar {
+            position: fixed;
+            right: 0;
+            top: 0;
+            width: 280px;
+            height: 100%;
+            background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
+            color: white;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1000;
+            overflow-y: auto;
+            box-shadow: -5px 0 30px rgba(0,0,0,0.15);
+            transform: translateX(0);
+        }
+
+        .sidebar.hidden { transform: translateX(100%); }
+
+        .sidebar-header {
+            padding: 30px 20px 20px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            margin-bottom: 15px;
+        }
+
+        .sidebar-header .logo-icon {
+            font-size: 40px;
+            background: linear-gradient(135deg, var(--primary-light), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .sidebar-header h2 {
+            font-size: 22px;
+            font-weight: 700;
+            margin-top: 8px;
+            background: linear-gradient(135deg, var(--primary-light), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .sidebar-header p {
+            font-size: 12px;
+            opacity: 0.5;
+            margin-top: 4px;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 0 12px;
+        }
+
+        .sidebar-menu li {
+            padding: 12px 16px;
+            margin-bottom: 4px;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            border-radius: 12px;
+            font-weight: 500;
+            font-size: 14px;
+            color: rgba(255,255,255,0.7);
+        }
+
+        .sidebar-menu li i { width: 22px; font-size: 16px; }
+        .sidebar-menu li:hover { 
+            background: rgba(255,255,255,0.08); 
+            color: white;
+            transform: translateX(-4px);
+        }
+        .sidebar-menu li.active { 
+            background: linear-gradient(135deg, var(--primary), var(--secondary)); 
+            color: white;
+            box-shadow: 0 4px 15px rgba(79,70,229,0.4);
+        }
+
+        .logout-btn {
+            margin: 20px 15px 30px;
+            padding: 12px;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.08);
+            color: rgba(255,255,255,0.7);
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: var(--transition);
+            width: calc(100% - 30px);
+        }
+        .logout-btn:hover { 
+            background: var(--danger); 
+            border-color: var(--danger);
+            color: white;
+        }
+
+        /* ============================================================
+           MAIN CONTENT
+           ============================================================ */
+        .main-content {
+            margin-right: 280px;
+            padding: 20px 25px;
+            transition: margin-right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            min-height: 100vh;
+        }
+        .main-content.sidebar-hidden { margin-right: 0; }
+
+        /* ============================================================
+           HEADER
+           ============================================================ */
+        .header {
+            background: white;
+            padding: 16px 24px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            border: 1px solid rgba(0,0,0,0.04);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .menu-toggle {
+            background: var(--dark-secondary);
+            border: none;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+            padding: 10px 14px;
+            border-radius: 12px;
+            transition: var(--transition);
+        }
+        .menu-toggle:hover { background: var(--primary); }
+
+        .header h1 {
+            font-size: 22px;
+            color: var(--dark-secondary);
+            font-weight: 700;
+        }
+        .header h1 i { color: var(--primary); margin-left: 10px; }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: var(--light);
+            padding: 6px 16px 6px 20px;
+            border-radius: 40px;
+            border: 1px solid var(--gray-light);
+        }
+        .user-info i { font-size: 22px; color: var(--primary); }
+        .user-info span { font-weight: 600; color: var(--dark-secondary); font-size: 14px; }
+
+        /* ============================================================
+           ACCOUNT CONTAINER
+           ============================================================ */
+        .account-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        .account-card {
+            background: white;
+            border-radius: var(--radius);
+            padding: 28px 30px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid rgba(0,0,0,0.04);
+            transition: var(--transition);
+        }
+
+        .account-card:hover {
+            box-shadow: var(--shadow);
+        }
+
+        .account-card .card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid var(--gray-light);
+        }
+
+        .account-card .card-header .card-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+        }
+
+        .account-card .card-header .card-icon.purple { 
+            background: #ede9fe; 
+            color: var(--secondary); 
+        }
+
+        .account-card .card-header .card-icon.green { 
+            background: var(--success-light); 
+            color: var(--success); 
+        }
+
+        .account-card .card-header .card-icon.blue { 
+            background: var(--info-light); 
+            color: var(--info); 
+        }
+
+        .account-card .card-header .card-icon.red { 
+            background: var(--danger-light); 
+            color: var(--danger); 
+        }
+
+        .account-card .card-header h3 {
+            font-size: 18px;
+            color: var(--dark-secondary);
+            font-weight: 700;
+        }
+
+        .account-card .card-header p {
+            font-size: 12px;
+            color: var(--gray);
+            margin-top: 2px;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--gray-light);
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+        .info-row .info-label {
+            font-size: 14px;
+            color: var(--gray);
+            font-weight: 500;
+        }
+
+        .info-row .info-value {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--dark-secondary);
+            background: var(--light);
+            padding: 4px 14px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .info-row .info-value i {
+            color: var(--success);
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            color: var(--dark-secondary);
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .form-group label i {
+            color: var(--primary);
+            margin-left: 6px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid var(--gray-light);
+            border-radius: var(--radius-sm);
+            font-size: 14px;
+            font-family: inherit;
+            transition: var(--transition);
+            background: white;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(79,70,229,0.1);
+        }
+
+        .form-group input:disabled {
+            background: var(--light);
+            color: var(--gray);
+            cursor: not-allowed;
+        }
+
+        .form-group .input-wrapper {
+            position: relative;
+        }
+
+        .form-group .input-wrapper .toggle-password {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--gray);
+            cursor: pointer;
+            font-size: 16px;
+            transition: var(--transition);
+        }
+
+        .form-group .input-wrapper .toggle-password:hover {
+            color: var(--primary);
+        }
+
+        .form-group .password-strength {
+            margin-top: 8px;
+            display: flex;
+            gap: 6px;
+            align-items: center;
+        }
+
+        .form-group .password-strength .strength-bar {
+            flex: 1;
+            height: 4px;
+            background: var(--gray-light);
+            border-radius: 4px;
+            overflow: hidden;
+            display: flex;
+            gap: 4px;
+        }
+
+        .form-group .password-strength .strength-bar .bar-segment {
+            flex: 1;
+            height: 100%;
+            border-radius: 4px;
+            transition: var(--transition);
+        }
+
+        .form-group .password-strength .strength-bar .bar-segment.active.weak {
+            background: var(--danger);
+        }
+
+        .form-group .password-strength .strength-bar .bar-segment.active.medium {
+            background: var(--warning);
+        }
+
+        .form-group .password-strength .strength-bar .bar-segment.active.strong {
+            background: var(--success);
+        }
+
+        .form-group .password-strength .strength-text {
+            font-size: 12px;
+            font-weight: 600;
+            min-width: 60px;
+        }
+
+        .btn {
+            padding: 10px 22px;
+            border: none;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+
+        .btn-primary { 
+            background: linear-gradient(135deg, var(--primary), var(--secondary)); 
+            color: white; 
+        }
+        .btn-primary:hover { 
+            transform: translateY(-2px); 
+            box-shadow: 0 4px 15px rgba(79,70,229,0.4); 
+        }
+
+        .btn-success { 
+            background: var(--success); 
+            color: white; 
+        }
+        .btn-success:hover { 
+            background: #059669; 
+            transform: translateY(-2px); 
+        }
+
+        .btn-danger { 
+            background: var(--danger); 
+            color: white; 
+        }
+        .btn-danger:hover { 
+            background: #dc2626; 
+            transform: translateY(-2px); 
+        }
+
+        .btn-outline { 
+            background: transparent; 
+            border: 2px solid var(--gray-light); 
+            color: var(--dark-secondary); 
+        }
+        .btn-outline:hover { 
+            border-color: var(--primary); 
+            color: var(--primary); 
+        }
+
+        .btn-sm { 
+            padding: 6px 14px; 
+            font-size: 12px; 
+            border-radius: 8px; 
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        /* ============================================================
+           TOAST
+           ============================================================ */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--success);
+            color: white;
+            padding: 12px 24px;
+            border-radius: var(--radius-sm);
+            box-shadow: var(--shadow-lg);
+            z-index: 3000;
+            animation: slideUp 0.3s ease;
+            font-weight: 600;
+        }
+
+        .toast.error {
+            background: var(--danger);
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        /* ============================================================
+           MODAL
+           ============================================================ */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(8px);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            animation: modalFadeIn 0.3s ease;
+            cursor: pointer;
+        }
+
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px 35px;
+            border-radius: 24px;
+            max-width: 500px;
+            width: 92%;
+            max-height: 85vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-lg);
+            cursor: default;
+            position: relative;
+        }
+
+        .modal-content h3 {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--dark-secondary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .modal-content h3 i { color: var(--danger); }
+
+        .modal-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            margin-top: 22px;
+            flex-wrap: wrap;
+        }
+
+        .modal-close-btn {
+            position: absolute;
+            top: 15px;
+            left: 20px;
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: var(--gray);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .modal-close-btn:hover { 
+            color: var(--danger); 
+            transform: rotate(90deg); 
+        }
+
+        .text-muted { color: var(--gray); font-size: 13px; }
+        .text-danger { color: var(--danger); }
+        .text-success { color: var(--success); }
+        .text-warning { color: var(--warning); }
+        .fw-bold { font-weight: 700; }
+
+        /* ============================================================
+           RESPONSIVE
+           ============================================================ */
+        @media (max-width: 992px) {
+            .main-content { margin-right: 0; }
+            .sidebar { transform: translateX(100%); }
+            .sidebar.visible { transform: translateX(0); }
+            .sidebar.hidden { transform: translateX(100%); }
+            .account-container { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 768px) {
+            .header h1 { font-size: 17px; }
+            .account-card { padding: 20px; }
+            .modal-content { padding: 20px; }
+            .info-row { flex-direction: column; align-items: flex-start; gap: 6px; }
+        }
+
+        @media (max-width: 480px) {
+            .account-card { padding: 16px; }
+            .account-card .card-header h3 { font-size: 16px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ============================================================
+    SIDEBAR
+    ============================================================ -->
+    <div class="sidebar" id="sidebar"></div>
+
+    <!-- ============================================================
+    MAIN CONTENT
+    ============================================================ -->
+    <div class="main-content" id="mainContent">
+        <div class="header">
+            <div class="header-left">
+                <button class="menu-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+                <h1><i class="fas fa-user-cog"></i> إدارة حساب الأدمن</h1>
+            </div>
+            <div class="user-info">
+                <i class="fas fa-user-circle"></i>
+                <span id="currentAdminName">مرحباً، مدير النظام</span>
+            </div>
+        </div>
+
+        <!-- ==========================================================
+        ACCOUNT CARDS
+        ========================================================== -->
+        <div class="account-container">
+
+            <!-- معلومات الحساب -->
+            <div class="account-card">
+                <div class="card-header">
+                    <div class="card-icon purple"><i class="fas fa-user-shield"></i></div>
+                    <div>
+                        <h3>معلومات الحساب</h3>
+                        <p>بيانات حساب الأدمن الأساسية</p>
+                    </div>
+                </div>
+
+                <div class="info-row">
+                    <span class="info-label"><i class="fas fa-user"></i> اسم المستخدم</span>
+                    <span class="info-value" id="displayUsername">
+                        <i class="fas fa-check-circle"></i> <span id="usernameDisplay">admin</span>
+                    </span>
+                </div>
+
+                <div class="info-row">
+                    <span class="info-label"><i class="fas fa-id-card"></i> الاسم الكامل</span>
+                    <span class="info-value" id="displayFullName">
+                        <i class="fas fa-check-circle"></i> <span id="fullNameDisplay">مدير النظام</span>
+                    </span>
+                </div>
+
+                <div class="info-row">
+                    <span class="info-label"><i class="fas fa-role"></i> الدور</span>
+                    <span class="info-value" style="background:#ede9fe;color:var(--secondary);">
+                        <i class="fas fa-crown"></i> أدمن
+                    </span>
+                </div>
+
+                <div class="info-row">
+                    <span class="info-label"><i class="fas fa-calendar-alt"></i> آخر تحديث</span>
+                    <span class="info-value" id="lastUpdated">
+                        <i class="fas fa-clock"></i> <span id="lastUpdatedDisplay">اليوم</span>
+                    </span>
+                </div>
+            </div>
+
+            <!-- تغيير كلمة المرور -->
+            <div class="account-card">
+                <div class="card-header">
+                    <div class="card-icon green"><i class="fas fa-key"></i></div>
+                    <div>
+                        <h3>تغيير كلمة المرور</h3>
+                        <p>تحديث كلمة المرور الخاصة بحساب الأدمن</p>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label><i class="fas fa-lock"></i> كلمة المرور الحالية</label>
+                    <div class="input-wrapper">
+                        <input type="password" id="currentPassword" placeholder="أدخل كلمة المرور الحالية">
+                        <button class="toggle-password" onclick="togglePassword('currentPassword', this)">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label><i class="fas fa-lock"></i> كلمة المرور الجديدة</label>
+                    <div class="input-wrapper">
+                        <input type="password" id="newPassword" placeholder="أدخل كلمة المرور الجديدة" oninput="checkPasswordStrength(this.value)">
+                        <button class="toggle-password" onclick="togglePassword('newPassword', this)">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                    <div class="password-strength" id="passwordStrength" style="display:none;">
+                        <div class="strength-bar">
+                            <div class="bar-segment" id="seg1"></div>
+                            <div class="bar-segment" id="seg2"></div>
+                            <div class="bar-segment" id="seg3"></div>
+                            <div class="bar-segment" id="seg4"></div>
+                        </div>
+                        <span class="strength-text" id="strengthText"></span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label><i class="fas fa-lock"></i> تأكيد كلمة المرور الجديدة</label>
+                    <div class="input-wrapper">
+                        <input type="password" id="confirmPassword" placeholder="أعد إدخال كلمة المرور الجديدة">
+                        <button class="toggle-password" onclick="togglePassword('confirmPassword', this)">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button class="btn btn-success" onclick="changePassword()">
+                        <i class="fas fa-save"></i> تحديث كلمة المرور
+                    </button>
+                    <button class="btn btn-outline" onclick="clearPasswordFields()">
+                        <i class="fas fa-undo"></i> إعادة تعيين
+                    </button>
+                </div>
+            </div>
+
+            <!-- تغيير اسم المستخدم -->
+            <div class="account-card">
+                <div class="card-header">
+                    <div class="card-icon blue"><i class="fas fa-user-edit"></i></div>
+                    <div>
+                        <h3>تغيير اسم المستخدم</h3>
+                        <p>تحديث اسم المستخدم الخاص بحساب الأدمن</p>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label><i class="fas fa-user"></i> اسم المستخدم الحالي</label>
+                    <input type="text" id="currentUsernameDisplay" disabled>
+                </div>
+
+                <div class="form-group">
+                    <label><i class="fas fa-user-plus"></i> اسم المستخدم الجديد</label>
+                    <input type="text" id="newUsername" placeholder="أدخل اسم المستخدم الجديد">
+                    <small class="text-muted" id="usernameAvailability" style="display:block;margin-top:4px;"></small>
+                </div>
+
+                <div class="form-group">
+                    <label><i class="fas fa-lock"></i> تأكيد كلمة المرور</label>
+                    <div class="input-wrapper">
+                        <input type="password" id="usernameConfirmPassword" placeholder="أدخل كلمة المرور الحالية للتأكيد">
+                        <button class="toggle-password" onclick="togglePassword('usernameConfirmPassword', this)">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button class="btn btn-primary" onclick="changeUsername()">
+                        <i class="fas fa-save"></i> تحديث اسم المستخدم
+                    </button>
+                </div>
+            </div>
+
+            <!-- إجراءات الأمان -->
+            <div class="account-card">
+                <div class="card-header">
+                    <div class="card-icon red"><i class="fas fa-shield-alt"></i></div>
+                    <div>
+                        <h3>إجراءات الأمان</h3>
+                        <p>إدارة إجراءات الأمان للحساب</p>
+                    </div>
+                </div>
+
+                <div style="margin-bottom:16px;">
+                    <div class="info-row">
+                        <span class="info-label"><i class="fas fa-clock"></i> آخر تسجيل دخول</span>
+                        <span class="info-value" id="lastLoginDisplay">
+                            <i class="fas fa-clock"></i> <span>اليوم</span>
+                        </span>
+                    </div>
+                </div>
+
+                <div style="display:flex;flex-direction:column;gap:10px;margin-top:10px;">
+                    <button class="btn btn-danger" onclick="showLogoutModal()" style="width:100%;justify-content:center;">
+                        <i class="fas fa-sign-out-alt"></i> تسجيل الخروج من جميع الأجهزة
+                    </button>
+                    <button class="btn btn-outline" onclick="showResetModal()" style="width:100%;justify-content:center;">
+                        <i class="fas fa-undo-alt"></i> إعادة تعيين الحساب
+                    </button>
+                </div>
+
+                <div style="margin-top:16px;padding:12px 16px;background:var(--warning-light);border-radius:var(--radius-sm);border-right:4px solid var(--warning);">
+                    <small style="color:#92400e;">
+                        <i class="fas fa-info-circle"></i> 
+                        <strong>تنبيه:</strong> تغيير اسم المستخدم أو كلمة المرور سيؤدي إلى تسجيل الخروج من الجلسة الحالية.
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================
+    CONFIRMATION MODAL
+    ============================================================ -->
+    <div id="confirmModal" class="modal" onclick="closeModalOnOutsideClick(event, 'confirmModal')">
+        <div class="modal-content">
+            <button class="modal-close-btn" onclick="closeConfirmModal()"><i class="fas fa-times"></i></button>
+            <h3><i class="fas fa-exclamation-triangle"></i> <span id="confirmModalTitle">تأكيد العملية</span></h3>
+            <p id="confirmModalMessage" style="color:var(--dark-secondary);font-size:15px;line-height:1.6;margin-bottom:10px;">
+                هل أنت متأكد من رغبتك في تنفيذ هذا الإجراء؟
+            </p>
+            <div class="modal-buttons">
+                <button class="btn btn-danger" id="confirmModalBtn" onclick="executeConfirmAction()">
+                    <i class="fas fa-check"></i> تأكيد
+                </button>
+                <button class="btn btn-outline" onclick="closeConfirmModal()">إلغاء</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================
+    MAIN JS
+    ============================================================ -->
+    <script src="main.js"></script>
+
+    <script>
+        // ============================================================
+        // 1. GLOBAL STATE
+        // ============================================================
+        let currentAdminData = null;
+        let confirmAction = null;
+        let adminUserId = 'admin'; // Default admin user ID
+
+        // ============================================================
+        // 2. UI HELPERS
+        // ============================================================
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('mainContent');
+            sidebar.classList.toggle('hidden');
+            sidebar.classList.toggle('visible');
+            mainContent.classList.toggle('sidebar-hidden');
+        }
+
+        document.addEventListener('click', function(event) {
+            const sidebar = document.getElementById('sidebar');
+            const menuToggle = document.querySelector('.menu-toggle');
+            const mainContent = document.getElementById('mainContent');
+            
+            const isSidebarVisible = sidebar.classList.contains('visible') && !sidebar.classList.contains('hidden');
+            
+            if (isSidebarVisible) {
+                const isClickInsideSidebar = sidebar.contains(event.target);
+                const isClickOnMenuToggle = menuToggle && menuToggle.contains(event.target);
+                
+                if (!isClickInsideSidebar && !isClickOnMenuToggle) {
+                    sidebar.classList.add('hidden');
+                    sidebar.classList.remove('visible');
+                    mainContent.classList.remove('sidebar-hidden');
+                }
+            }
+        });
+
+        window.addEventListener('resize', function() {
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('mainContent');
+            
+            if (window.innerWidth > 992) {
+                sidebar.classList.remove('hidden');
+                sidebar.classList.remove('visible');
+                mainContent.classList.remove('sidebar-hidden');
+            } else {
+                sidebar.classList.add('hidden');
+                sidebar.classList.remove('visible');
+                mainContent.classList.add('sidebar-hidden');
+            }
+        });
+
+        function closeModalOnOutsideClick(event, modalId) {
+            const modal = document.getElementById(modalId);
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        }
+
+        function showToast(message, isError = false) {
+            const existing = document.querySelector('.toast');
+            if (existing) existing.remove();
+            const toast = document.createElement('div');
+            toast.className = `toast${isError ? ' error' : ''}`;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+
+        // ============================================================
+        // 3. TOGGLE PASSWORD VISIBILITY
+        // ============================================================
+        function togglePassword(inputId, btn) {
+            const input = document.getElementById(inputId);
+            if (input.type === 'password') {
+                input.type = 'text';
+                btn.innerHTML = '<i class="fas fa-eye-slash"></i>';
+            } else {
+                input.type = 'password';
+                btn.innerHTML = '<i class="fas fa-eye"></i>';
+            }
+        }
+
+        // ============================================================
+        // 4. PASSWORD STRENGTH CHECK
+        // ============================================================
+        function checkPasswordStrength(password) {
+            const container = document.getElementById('passwordStrength');
+            const seg1 = document.getElementById('seg1');
+            const seg2 = document.getElementById('seg2');
+            const seg3 = document.getElementById('seg3');
+            const seg4 = document.getElementById('seg4');
+            const text = document.getElementById('strengthText');
+
+            if (password.length === 0) {
+                container.style.display = 'none';
+                return;
+            }
+
+            container.style.display = 'flex';
+
+            let strength = 0;
+            if (password.length >= 8) strength++;
+            if (/[a-z]/.test(password) && /[A-Z]/.test(password)) strength++;
+            if (/[0-9]/.test(password)) strength++;
+            if (/[^a-zA-Z0-9]/.test(password)) strength++;
+
+            // Reset all segments
+            [seg1, seg2, seg3, seg4].forEach(el => {
+                el.className = 'bar-segment';
+            });
+
+            let level = '';
+            let color = '';
+
+            if (strength <= 1) {
+                level = 'ضعيف';
+                color = 'weak';
+                seg1.className = 'bar-segment active weak';
+            } else if (strength === 2) {
+                level = 'متوسط';
+                color = 'medium';
+                seg1.className = 'bar-segment active medium';
+                seg2.className = 'bar-segment active medium';
+            } else if (strength === 3) {
+                level = 'جيد';
+                color = 'medium';
+                seg1.className = 'bar-segment active medium';
+                seg2.className = 'bar-segment active medium';
+                seg3.className = 'bar-segment active medium';
+            } else {
+                level = 'قوي';
+                color = 'strong';
+                seg1.className = 'bar-segment active strong';
+                seg2.className = 'bar-segment active strong';
+                seg3.className = 'bar-segment active strong';
+                seg4.className = 'bar-segment active strong';
+            }
+
+            text.textContent = level;
+            text.style.color = color === 'weak' ? 'var(--danger)' : 
+                               color === 'medium' ? 'var(--warning)' : 'var(--success)';
+        }
+
+        // ============================================================
+        // 5. LOAD ADMIN DATA
+        // ============================================================
+        async function loadAdminData() {
+            try {
+                // Try to get admin from users table
+                const snapshot = await db.ref('users').once('value');
+                let adminFound = false;
+
+                snapshot.forEach(child => {
+                    const user = child.val();
+                    if (user.role === 'admin') {
+                        adminUserId = child.key;
+                        currentAdminData = {
+                            userId: child.key,
+                            username: user.username || 'admin',
+                            fullName: user.fullName || 'مدير النظام',
+                            password: user.password || 'admin123',
+                            role: user.role
+                        };
+                        adminFound = true;
+                    }
+                });
+
+                // If no admin found in users, check localStorage
+                if (!adminFound) {
+                    const localUser = localStorage.getItem('currentUser');
+                    if (localUser) {
+                        const userData = JSON.parse(localUser);
+                        currentAdminData = {
+                            userId: userData.userId || 'admin',
+                            username: userData.username || 'admin',
+                            fullName: userData.fullName || 'مدير النظام',
+                            password: userData.password || 'admin123',
+                            role: 'admin'
+                        };
+                        adminUserId = currentAdminData.userId;
+                    } else {
+                        // Fallback default admin
+                        currentAdminData = {
+                            userId: 'admin',
+                            username: 'admin',
+                            fullName: 'مدير النظام',
+                            password: 'admin123',
+                            role: 'admin'
+                        };
+                        adminUserId = 'admin';
+                    }
+                }
+
+                updateDisplay();
+            } catch (error) {
+                console.error('Error loading admin data:', error);
+                // Fallback
+                currentAdminData = {
+                    userId: 'admin',
+                    username: 'admin',
+                    fullName: 'مدير النظام',
+                    password: 'admin123',
+                    role: 'admin'
+                };
+                adminUserId = 'admin';
+                updateDisplay();
+            }
+        }
+
+        // ============================================================
+        // 6. UPDATE DISPLAY
+        // ============================================================
+        function updateDisplay() {
+            if (!currentAdminData) return;
+
+            document.getElementById('usernameDisplay').textContent = currentAdminData.username;
+            document.getElementById('fullNameDisplay').textContent = currentAdminData.fullName;
+            document.getElementById('currentUsernameDisplay').value = currentAdminData.username;
+            document.getElementById('currentAdminName').innerHTML = `مرحباً، ${currentAdminData.fullName}`;
+
+            // Update last updated
+            const now = new Date();
+            document.getElementById('lastUpdatedDisplay').textContent = 
+                now.toLocaleDateString('ar-EG') + ' ' + now.toLocaleTimeString('ar-EG');
+        }
+
+        // ============================================================
+        // 7. CHANGE PASSWORD
+        // ============================================================
+        async function changePassword() {
+            const currentPassword = document.getElementById('currentPassword').value;
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+            // Validation
+            if (!currentPassword) {
+                showToast('⚠️ الرجاء إدخال كلمة المرور الحالية', true);
+                return;
+            }
+
+            if (currentPassword !== currentAdminData.password) {
+                showToast('⚠️ كلمة المرور الحالية غير صحيحة', true);
+                return;
+            }
+
+            if (!newPassword || newPassword.length < 6) {
+                showToast('⚠️ كلمة المرور الجديدة يجب أن تكون 6 أحرف على الأقل', true);
+                return;
+            }
+
+            if (newPassword !== confirmPassword) {
+                showToast('⚠️ كلمتا المرور غير متطابقتين', true);
+                return;
+            }
+
+            if (newPassword === currentPassword) {
+                showToast('⚠️ كلمة المرور الجديدة لا يمكن أن تكون نفس القديمة', true);
+                return;
+            }
+
+            try {
+                // Update admin password in database
+                await db.ref(`users/${adminUserId}`).update({
+                    password: newPassword
+                });
+
+                // Update local data
+                currentAdminData.password = newPassword;
+
+                // Update localStorage
+                const localUser = localStorage.getItem('currentUser');
+                if (localUser) {
+                    const userData = JSON.parse(localUser);
+                    userData.password = newPassword;
+                    localStorage.setItem('currentUser', JSON.stringify(userData));
+                }
+
+                showToast('✅ تم تحديث كلمة المرور بنجاح');
+                clearPasswordFields();
+
+                // Logout after 2 seconds
+                setTimeout(() => {
+                    showToast('🔐 سيتم تسجيل الخروج لإعادة التحقق');
+                    setTimeout(() => {
+                        localStorage.removeItem('currentUser');
+                        window.location.href = 'index.html';
+                    }, 1500);
+                }, 1000);
+
+            } catch (error) {
+                console.error('Error changing password:', error);
+                showToast('⚠️ حدث خطأ أثناء تحديث كلمة المرور', true);
+            }
+        }
+
+        function clearPasswordFields() {
+            document.getElementById('currentPassword').value = '';
+            document.getElementById('newPassword').value = '';
+            document.getElementById('confirmPassword').value = '';
+            document.getElementById('passwordStrength').style.display = 'none';
+        }
+
+        // ============================================================
+        // 8. CHANGE USERNAME
+        // ============================================================
+        async function changeUsername() {
+            const newUsername = document.getElementById('newUsername').value.trim();
+            const confirmPassword = document.getElementById('usernameConfirmPassword').value;
+
+            if (!newUsername) {
+                showToast('⚠️ الرجاء إدخال اسم المستخدم الجديد', true);
+                return;
+            }
+
+            if (newUsername.length < 3) {
+                showToast('⚠️ اسم المستخدم يجب أن يكون 3 أحرف على الأقل', true);
+                return;
+            }
+
+            if (newUsername === currentAdminData.username) {
+                showToast('⚠️ اسم المستخدم الجديد لا يمكن أن يكون نفس القديم', true);
+                return;
+            }
+
+            if (!confirmPassword) {
+                showToast('⚠️ الرجاء إدخال كلمة المرور للتأكيد', true);
+                return;
+            }
+
+            if (confirmPassword !== currentAdminData.password) {
+                showToast('⚠️ كلمة المرور غير صحيحة', true);
+                return;
+            }
+
+            // Check if username already exists
+            try {
+                const snapshot = await db.ref('users').once('value');
+                let usernameExists = false;
+
+                snapshot.forEach(child => {
+                    const user = child.val();
+                    if (user.username === newUsername && child.key !== adminUserId) {
+                        usernameExists = true;
+                    }
+                });
+
+                if (usernameExists) {
+                    showToast('⚠️ اسم المستخدم موجود بالفعل', true);
+                    return;
+                }
+
+                // Update admin username in database
+                await db.ref(`users/${adminUserId}`).update({
+                    username: newUsername
+                });
+
+                // Update local data
+                currentAdminData.username = newUsername;
+
+                // Update localStorage
+                const localUser = localStorage.getItem('currentUser');
+                if (localUser) {
+                    const userData = JSON.parse(localUser);
+                    userData.username = newUsername;
+                    localStorage.setItem('currentUser', JSON.stringify(userData));
+                }
+
+                showToast('✅ تم تحديث اسم المستخدم بنجاح');
+                document.getElementById('newUsername').value = '';
+                document.getElementById('usernameConfirmPassword').value = '';
+                updateDisplay();
+
+                // Logout after 2 seconds
+                setTimeout(() => {
+                    showToast('🔐 سيتم تسجيل الخروج لإعادة التحقق');
+                    setTimeout(() => {
+                        localStorage.removeItem('currentUser');
+                        window.location.href = 'index.html';
+                    }, 1500);
+                }, 1000);
+
+            } catch (error) {
+                console.error('Error changing username:', error);
+                showToast('⚠️ حدث خطأ أثناء تحديث اسم المستخدم', true);
+            }
+        }
+
+        // ============================================================
+        // 9. CHECK USERNAME AVAILABILITY
+        // ============================================================
+        document.addEventListener('DOMContentLoaded', function() {
+            const usernameInput = document.getElementById('newUsername');
+            usernameInput.addEventListener('input', async function() {
+                const value = this.value.trim();
+                const availabilitySpan = document.getElementById('usernameAvailability');
+
+                if (value.length < 3) {
+                    availabilitySpan.innerHTML = '<span style="color:var(--gray);">يجب أن يكون 3 أحرف على الأقل</span>';
+                    return;
+                }
+
+                if (value === currentAdminData.username) {
+                    availabilitySpan.innerHTML = '<span style="color:var(--warning);">⚠️ هذا هو اسم المستخدم الحالي</span>';
+                    return;
+                }
+
+                try {
+                    const snapshot = await db.ref('users').once('value');
+                    let exists = false;
+                    snapshot.forEach(child => {
+                        const user = child.val();
+                        if (user.username === value && child.key !== adminUserId) {
+                            exists = true;
+                        }
+                    });
+
+                    if (exists) {
+                        availabilitySpan.innerHTML = '<span style="color:var(--danger);">❌ اسم المستخدم موجود بالفعل</span>';
+                    } else {
+                        availabilitySpan.innerHTML = '<span style="color:var(--success);">✅ اسم المستخدم متاح</span>';
+                    }
+                } catch (error) {
+                    availabilitySpan.innerHTML = '';
+                }
+            });
+        });
+
+        // ============================================================
+        // 10. CONFIRMATION MODAL
+        // ============================================================
+        function showLogoutModal() {
+            document.getElementById('confirmModalTitle').textContent = 'تسجيل الخروج من جميع الأجهزة';
+            document.getElementById('confirmModalMessage').innerHTML = `
+                هل أنت متأكد من رغبتك في تسجيل الخروج من جميع الأجهزة؟<br>
+                <small style="color:var(--gray);">سيتم إنهاء جميع الجلسات النشطة وسيُطلب منك إعادة تسجيل الدخول.</small>
+            `;
+            document.getElementById('confirmModalBtn').innerHTML = '<i class="fas fa-sign-out-alt"></i> تسجيل الخروج';
+            confirmAction = 'logoutAll';
+            document.getElementById('confirmModal').style.display = 'flex';
+        }
+
+        function showResetModal() {
+            document.getElementById('confirmModalTitle').textContent = 'إعادة تعيين الحساب';
+            document.getElementById('confirmModalMessage').innerHTML = `
+                هل أنت متأكد من رغبتك في إعادة تعيين الحساب؟<br>
+                <small style="color:var(--gray);">سيتم إعادة تعيين اسم المستخدم إلى "admin" وكلمة المرور إلى "admin123".</small>
+            `;
+            document.getElementById('confirmModalBtn').innerHTML = '<i class="fas fa-undo-alt"></i> إعادة تعيين';
+            confirmAction = 'resetAccount';
+            document.getElementById('confirmModal').style.display = 'flex';
+        }
+
+        function closeConfirmModal() {
+            document.getElementById('confirmModal').style.display = 'none';
+            confirmAction = null;
+        }
+
+        async function executeConfirmAction() {
+            if (confirmAction === 'logoutAll') {
+                localStorage.removeItem('currentUser');
+                showToast('✅ تم تسجيل الخروج من جميع الأجهزة');
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 1000);
+            } else if (confirmAction === 'resetAccount') {
+                try {
+                    await db.ref(`users/${adminUserId}`).update({
+                        username: 'admin',
+                        password: 'admin123',
+                        fullName: 'مدير النظام'
+                    });
+
+                    currentAdminData.username = 'admin';
+                    currentAdminData.password = 'admin123';
+                    currentAdminData.fullName = 'مدير النظام';
+
+                    localStorage.removeItem('currentUser');
+                    showToast('✅ تم إعادة تعيين الحساب بنجاح');
+                    setTimeout(() => {
+                        window.location.href = 'index.html';
+                    }, 1500);
+                } catch (error) {
+                    showToast('⚠️ حدث خطأ أثناء إعادة التعيين', true);
+                }
+            }
+
+            closeConfirmModal();
+        }
+
+        // ============================================================
+        // 11. INIT
+        // ============================================================
+        loadLayout();
+        loadAdminData();
+    </script>
+
+</body>
+</html>

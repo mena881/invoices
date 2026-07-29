@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>التقارير - نظام إدارة الاستلامات</title>
+
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
+
+    <!-- SheetJS -->
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-light: #818cf8;
+            --primary-dark: #3730a3;
+            --secondary: #7c3aed;
+            --success: #10b981;
+            --success-light: #d1fae5;
+            --warning: #f59e0b;
+            --warning-light: #fef3c7;
+            --danger: #ef4444;
+            --danger-light: #fee2e2;
+            --info: #3b82f6;
+            --info-light: #dbeafe;
+            --dark: #0f172a;
+            --dark-secondary: #1e293b;
+            --light: #f8fafc;
+            --gray: #64748b;
+            --gray-light: #e2e8f0;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+            --shadow: 0 4px 20px rgba(0,0,0,0.08);
+            --shadow-lg: 0 10px 40px rgba(0,0,0,0.12);
+            --radius: 16px;
+            --radius-sm: 10px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Cairo', 'Segoe UI', sans-serif;
+            background: #f1f5f9;
+            overflow-x: hidden;
+        }
+
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #e2e8f0; }
+        ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 10px; }
+
+        .sidebar {
+            position: fixed;
+            right: 0;
+            top: 0;
+            width: 280px;
+            height: 100%;
+            background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
+            color: white;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1000;
+            overflow-y: auto;
+            box-shadow: -5px 0 30px rgba(0,0,0,0.15);
+            transform: translateX(0);
+        }
+
+        .sidebar.hidden { transform: translateX(100%); }
+
+        .sidebar-header {
+            padding: 30px 20px 20px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            margin-bottom: 15px;
+        }
+
+        .sidebar-header .logo-icon {
+            font-size: 40px;
+            background: linear-gradient(135deg, var(--primary-light), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .sidebar-header h2 {
+            font-size: 22px;
+            font-weight: 700;
+            margin-top: 8px;
+            background: linear-gradient(135deg, var(--primary-light), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .sidebar-header p {
+            font-size: 12px;
+            opacity: 0.5;
+            margin-top: 4px;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 0 12px;
+        }
+
+        .sidebar-menu li {
+            padding: 12px 16px;
+            margin-bottom: 4px;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            border-radius: 12px;
+            font-weight: 500;
+            font-size: 14px;
+            color: rgba(255,255,255,0.7);
+        }
+
+        .sidebar-menu li i { width: 22px; font-size: 16px; }
+        .sidebar-menu li:hover { 
+            background: rgba(255,255,255,0.08); 
+            color: white;
+            transform: translateX(-4px);
+        }
+        .sidebar-menu li.active { 
+            background: linear-gradient(135deg, var(--primary), var(--secondary)); 
+            color: white;
+            box-shadow: 0 4px 15px rgba(79,70,229,0.4);
+        }
+
+        .logout-btn {
+            margin: 20px 15px 30px;
+            padding: 12px;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.08);
+            color: rgba(255,255,255,0.7);
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: var(--transition);
+            width: calc(100% - 30px);
+        }
+        .logout-btn:hover { 
+            background: var(--danger); 
+            border-color: var(--danger);
+            color: white;
+        }
+
+        .main-content {
+            margin-right: 280px;
+            padding: 20px 25px;
+            transition: margin-right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            min-height: 100vh;
+        }
+        .main-content.sidebar-hidden { margin-right: 0; }
+
+        .header {
+            background: white;
+            padding: 16px 24px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            border: 1px solid rgba(0,0,0,0.04);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .menu-toggle {
+            background: var(--dark-secondary);
+            border: none;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+            padding: 10px 14px;
+            border-radius: 12px;
+            transition: var(--transition);
+        }
+        .menu-toggle:hover { background: var(--primary); }
+
+        .header h1 {
+            font-size: 22px;
+            color: var(--dark-secondary);
+            font-weight: 700;
+        }
+        .header h1 i { color: var(--primary); margin-left: 10px; }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: var(--light);
+            padding: 6px 16px 6px 20px;
+            border-radius: 40px;
+            border: 1px solid var(--gray-light);
+        }
+        .user-info i { font-size: 22px; color: var(--primary); }
+        .user-info span { font-weight: 600; color: var(--dark-secondary); font-size: 14px; }
+
+        .table-container {
+            background: white;
+            border-radius: var(--radius);
+            padding: 22px 24px;
+            overflow-x: auto;
+            margin-bottom: 25px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid rgba(0,0,0,0.04);
+        }
+
+        .table-container .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .table-container h3 {
+            font-size: 18px;
+            color: var(--dark-secondary);
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .table-container h3 i { color: var(--primary); }
+
+        .btn {
+            padding: 10px 22px;
+            border: none;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+        .btn-primary { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(79,70,229,0.4); }
+        .btn-success { background: var(--success); color: white; }
+        .btn-success:hover { background: #059669; transform: translateY(-2px); }
+
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--success);
+            color: white;
+            padding: 12px 24px;
+            border-radius: var(--radius-sm);
+            box-shadow: var(--shadow-lg);
+            z-index: 3000;
+            animation: slideUp 0.3s ease;
+            font-weight: 600;
+        }
+        .toast.error { background: var(--danger); }
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .report-options {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+
+        @media (max-width: 992px) {
+            .main-content { margin-right: 0; }
+            .sidebar { transform: translateX(100%); }
+            .sidebar.visible { transform: translateX(0); }
+            .sidebar.hidden { transform: translateX(100%); }
+        }
+        @media (max-width: 768px) {
+            .header h1 { font-size: 17px; }
+            .table-container { padding: 16px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar" id="sidebar"></div>
+
+    <div class="main-content" id="mainContent">
+        <div class="header">
+            <div class="header-left">
+                <button class="menu-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+                <h1><i class="fas fa-chart-bar"></i> التقارير</h1>
+            </div>
+            <div class="user-info">
+                <i class="fas fa-user-circle"></i>
+                <span id="currentAdminName">مرحباً، مدير النظام</span>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <div class="section-header">
+                <h3><i class="fas fa-chart-bar"></i> التقارير</h3>
+            </div>
+            <div class="report-options">
+                <button class="btn btn-primary" onclick="exportFullReport()">
+                    <i class="fas fa-file-excel"></i> تصدير تقرير شامل
+                </button>
+                <button class="btn btn-success" onclick="exportClosedReceiptsBySizes()">
+                    <i class="fas fa-file-excel"></i> تصدير المكتملة حسب المقاسات
+                </button>
+            </div>
+            <p class="text-muted" style="margin-top:16px;font-size:13px;color:var(--gray);">
+                <i class="fas fa-info-circle"></i> التقارير يتم تصديرها بصيغة Excel مع كافة التفاصيل
+            </p>
+        </div>
+    </div>
+
+    <script src="main.js"></script>
+
+    <script>
+        // ============================================================
+        // UI HELPERS
+        // ============================================================
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('mainContent');
+            sidebar.classList.toggle('hidden');
+            sidebar.classList.toggle('visible');
+            mainContent.classList.toggle('sidebar-hidden');
+        }
+
+        document.addEventListener('click', function(event) {
+            const sidebar = document.getElementById('sidebar');
+            const menuToggle = document.querySelector('.menu-toggle');
+            const mainContent = document.getElementById('mainContent');
+            
+            const isSidebarVisible = sidebar.classList.contains('visible') && !sidebar.classList.contains('hidden');
+            
+            if (isSidebarVisible) {
+                const isClickInsideSidebar = sidebar.contains(event.target);
+                const isClickOnMenuToggle = menuToggle && menuToggle.contains(event.target);
+                
+                if (!isClickInsideSidebar && !isClickOnMenuToggle) {
+                    sidebar.classList.add('hidden');
+                    sidebar.classList.remove('visible');
+                    mainContent.classList.remove('sidebar-hidden');
+                }
+            }
+        });
+
+        window.addEventListener('resize', function() {
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('mainContent');
+            
+            if (window.innerWidth > 992) {
+                sidebar.classList.remove('hidden');
+                sidebar.classList.remove('visible');
+                mainContent.classList.remove('sidebar-hidden');
+            } else {
+                sidebar.classList.add('hidden');
+                sidebar.classList.remove('visible');
+                mainContent.classList.add('sidebar-hidden');
+            }
+        });
+
+        // ============================================================
+        // EXPORT FUNCTIONS
+        // ============================================================
+        async function getAllReceipts() {
+            const allReceipts = [];
+            const snapshot = await db.ref('receipts').once('value');
+            snapshot.forEach(child => {
+                const data = child.val();
+                if (!data.isArchived) {
+                    allReceipts.push({ id: child.key, ...data, _type: 'receipt' });
+                }
+            });
+
+            const blankSnapshot = await db.ref('blankReceipts').once('value');
+            blankSnapshot.forEach(child => {
+                const data = child.val();
+                if (data && data.invoiceCode) {
+                    const isClosed = data.closedDate ? true : (data.isClosed === true);
+                    allReceipts.push({
+                        id: child.key,
+                        _type: 'blank',
+                        invoiceCode: data.invoiceCode || '',
+                        factory: data.factory || '',
+                        models: [],
+                        status: isClosed ? 'closed' : 'blank',
+                        isBlank: true,
+                        closedDate: data.closedDate || null,
+                        createdAt: data.createdAt || firebase.database.ServerValue.TIMESTAMP,
+                        createdBy: { fullName: data.createdBy || 'غير معروف' },
+                        assignedTo: null,
+                        helpers: []
+                    });
+                }
+            });
+
+            return allReceipts;
+        }
+
+        function getSizeName(sizeId) {
+            // Simple mapping - in production would fetch from DB
+            const sizeMap = {
+                'size_s': 'S',
+                'size_m': 'M',
+                'size_l': 'L',
+                'size_xl': 'XL',
+                'size_xxl': 'XXL',
+                'size_3xl': '3XL'
+            };
+            return sizeMap[sizeId] || sizeId;
+        }
+
+        async function exportFullReport() {
+            const allReceipts = await getAllReceipts();
+            
+            const data = [];
+            data.push(['تقرير شامل - نظام إدارة الاستلامات']);
+            data.push(['تاريخ التقرير', new Date().toLocaleString('ar-EG')]);
+            data.push([]);
+            
+            const headerRow = ['رقم الفاتورة', 'المصنع', 'الموديل', 'اللون', 'المقاس', 'الكمية', 'الموظف', 'الحالة', 'نوع الفاتورة', 'تاريخ الإغلاق'];
+            data.push(headerRow);
+
+            const statusMap = {
+                'new': 'جديدة',
+                'assigned': 'بانتظار البدء',
+                'in_progress': 'جارى الاستلام',
+                'completed': 'مكتملة',
+                'closed': 'مغلقة',
+                'cancelled': 'ملغية',
+                'blank': 'مسودة'
+            };
+
+            for (const receipt of allReceipts) {
+                const employeeName = receipt.assignedTo ? receipt.assignedTo.fullName : 'غير مسند';
+                const status = statusMap[receipt.status] || receipt.status || 'جديدة';
+                const receiptType = receipt.isBlank ? 'مسودة' : 'عادية';
+                const closedDate = receipt.closedDate ? new Date(receipt.closedDate).toLocaleDateString('ar-EG') : '';
+
+                if (receipt.models && receipt.models.length > 0) {
+                    for (const model of receipt.models) {
+                        data.push([
+                            receipt.invoiceCode,
+                            receipt.factory || 'غير محدد',
+                            model.modelName || 'غير محدد',
+                            '-',
+                            'جميع المقاسات',
+                            model.quantity || 0,
+                            employeeName,
+                            status,
+                            receiptType,
+                            closedDate
+                        ]);
+                    }
+                } else {
+                    data.push([
+                        receipt.invoiceCode,
+                        receipt.factory || 'غير محدد',
+                        'لا توجد موديلات',
+                        '-',
+                        '-',
+                        0,
+                        employeeName,
+                        status,
+                        receiptType,
+                        closedDate
+                    ]);
+                }
+            }
+
+            const ws = XLSX.utils.aoa_to_sheet(data);
+            ws['!cols'] = [
+                { wch: 20 }, { wch: 15 }, { wch: 15 }, { wch: 12 },
+                { wch: 12 }, { wch: 12 }, { wch: 18 }, { wch: 15 }, { wch: 12 }, { wch: 18 }
+            ];
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, 'تقرير شامل');
+            XLSX.writeFile(wb, `تقرير_شامل_${new Date().toISOString().slice(0, 10)}.xlsx`);
+            
+            showToast('✅ تم تصدير التقرير الشامل بنجاح');
+        }
+
+        async function exportClosedReceiptsBySizes() {
+            const allReceipts = await getAllReceipts();
+            const closedReceipts = allReceipts.filter(r => r.status === 'closed' || r.status === 'completed');
+
+            const data = [];
+            data.push(['تقرير الفواتير المكتملة حسب المقاسات']);
+            data.push(['تاريخ التقرير', new Date().toLocaleString('ar-EG')]);
+            data.push([]);
+
+            const headerRow = ['رقم الفاتورة', 'المصنع', 'الموديل', 'اللون', 'المقاس', 'الكمية', 'الموظف', 'تاريخ الإغلاق', 'نوع الفاتورة'];
+            data.push(headerRow);
+
+            for (const receipt of closedReceipts) {
+                const employeeName = receipt.assignedTo ? receipt.assignedTo.fullName : 'غير مسند';
+                const closeDate = receipt.closedDate 
+                    ? new Date(receipt.closedDate).toLocaleDateString('ar-EG') 
+                    : (receipt.updatedAt ? new Date(receipt.updatedAt).toLocaleDateString('ar-EG') : '');
+                const receiptType = receipt.isBlank ? 'مسودة' : 'عادية';
+
+                if (receipt.models && receipt.models.length > 0) {
+                    for (const model of receipt.models) {
+                        data.push([
+                            receipt.invoiceCode,
+                            receipt.factory || 'غير محدد',
+                            model.modelName || 'غير محدد',
+                            '-',
+                            'جميع المقاسات',
+                            model.quantity || 0,
+                            employeeName,
+                            closeDate,
+                            receiptType
+                        ]);
+                    }
+                } else {
+                    data.push([
+                        receipt.invoiceCode,
+                        receipt.factory || 'غير محدد',
+                        'لا توجد موديلات',
+                        '-',
+                        '-',
+                        0,
+                        employeeName,
+                        closeDate,
+                        receiptType
+                    ]);
+                }
+            }
+
+            const ws = XLSX.utils.aoa_to_sheet(data);
+            ws['!cols'] = [
+                { wch: 20 }, { wch: 15 }, { wch: 15 }, { wch: 12 },
+                { wch: 12 }, { wch: 12 }, { wch: 18 }, { wch: 18 }, { wch: 12 }
+            ];
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, 'الفواتير المكتملة حسب المقاسات');
+            XLSX.writeFile(wb, `الفواتير_المكتملة_حسب_المقاسات_${new Date().toISOString().slice(0, 10)}.xlsx`);
+            
+            showToast('✅ تم تصدير تقرير المكتملة حسب المقاسات بنجاح');
+        }
+
+        // ============================================================
+        // INIT
+        // ============================================================
+        loadLayout();
+    </script>
+
+</body>
+</html>

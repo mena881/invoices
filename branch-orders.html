@@ -1,0 +1,1808 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>أوردرات الفروع - نظام إدارة الاستلامات</title>
+
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <style>
+        /* ============================================================
+           CSS VARIABLES
+           ============================================================ */
+        :root {
+            --primary: #4f46e5;
+            --primary-light: #818cf8;
+            --primary-dark: #3730a3;
+            --secondary: #7c3aed;
+            --success: #10b981;
+            --success-light: #d1fae5;
+            --warning: #f59e0b;
+            --warning-light: #fef3c7;
+            --danger: #ef4444;
+            --danger-light: #fee2e2;
+            --info: #3b82f6;
+            --info-light: #dbeafe;
+            --dark: #0f172a;
+            --dark-secondary: #1e293b;
+            --light: #f8fafc;
+            --gray: #64748b;
+            --gray-light: #e2e8f0;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+            --shadow: 0 4px 20px rgba(0,0,0,0.08);
+            --shadow-lg: 0 10px 40px rgba(0,0,0,0.12);
+            --radius: 16px;
+            --radius-sm: 10px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --closed-bg: #ecfdf5;
+            --closed-border: #10b981;
+            --pending-bg: #fef3c7;
+            --pending-border: #f59e0b;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Cairo', 'Segoe UI', sans-serif;
+            background: #f1f5f9;
+            overflow-x: hidden;
+        }
+
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #e2e8f0; }
+        ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 10px; }
+
+        /* ============================================================
+           SIDEBAR
+           ============================================================ */
+        .sidebar {
+            position: fixed;
+            right: 0;
+            top: 0;
+            width: 280px;
+            height: 100%;
+            background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
+            color: white;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1000;
+            overflow-y: auto;
+            box-shadow: -5px 0 30px rgba(0,0,0,0.15);
+            transform: translateX(0);
+        }
+
+        .sidebar.hidden { transform: translateX(100%); }
+
+        .sidebar-header {
+            padding: 30px 20px 20px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            margin-bottom: 15px;
+        }
+
+        .sidebar-header .logo-icon {
+            font-size: 40px;
+            background: linear-gradient(135deg, var(--primary-light), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .sidebar-header h2 {
+            font-size: 22px;
+            font-weight: 700;
+            margin-top: 8px;
+            background: linear-gradient(135deg, var(--primary-light), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .sidebar-header p {
+            font-size: 12px;
+            opacity: 0.5;
+            margin-top: 4px;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 0 12px;
+        }
+
+        .sidebar-menu li {
+            padding: 12px 16px;
+            margin-bottom: 4px;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            border-radius: 12px;
+            font-weight: 500;
+            font-size: 14px;
+            color: rgba(255,255,255,0.7);
+        }
+
+        .sidebar-menu li i { width: 22px; font-size: 16px; }
+        .sidebar-menu li:hover { 
+            background: rgba(255,255,255,0.08); 
+            color: white;
+            transform: translateX(-4px);
+        }
+        .sidebar-menu li.active { 
+            background: linear-gradient(135deg, var(--primary), var(--secondary)); 
+            color: white;
+            box-shadow: 0 4px 15px rgba(79,70,229,0.4);
+        }
+
+        .logout-btn {
+            margin: 20px 15px 30px;
+            padding: 12px;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.08);
+            color: rgba(255,255,255,0.7);
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: var(--transition);
+            width: calc(100% - 30px);
+        }
+        .logout-btn:hover { 
+            background: var(--danger); 
+            border-color: var(--danger);
+            color: white;
+        }
+
+        /* ============================================================
+           MAIN CONTENT
+           ============================================================ */
+        .main-content {
+            margin-right: 280px;
+            padding: 20px 25px;
+            transition: margin-right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            min-height: 100vh;
+        }
+        .main-content.sidebar-hidden { margin-right: 0; }
+
+        /* ============================================================
+           HEADER
+           ============================================================ */
+        .header {
+            background: white;
+            padding: 16px 24px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            border: 1px solid rgba(0,0,0,0.04);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .menu-toggle {
+            background: var(--dark-secondary);
+            border: none;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+            padding: 10px 14px;
+            border-radius: 12px;
+            transition: var(--transition);
+        }
+        .menu-toggle:hover { background: var(--primary); }
+
+        .header h1 {
+            font-size: 22px;
+            color: var(--dark-secondary);
+            font-weight: 700;
+        }
+        .header h1 i { color: var(--primary); margin-left: 10px; }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: var(--light);
+            padding: 6px 16px 6px 20px;
+            border-radius: 40px;
+            border: 1px solid var(--gray-light);
+        }
+        .user-info i { font-size: 22px; color: var(--primary); }
+        .user-info span { font-weight: 600; color: var(--dark-secondary); font-size: 14px; }
+
+        /* ============================================================
+           FILTERS
+           ============================================================ */
+        .filters-container {
+            background: var(--light);
+            border-radius: var(--radius-sm);
+            padding: 16px 20px;
+            margin-bottom: 18px;
+            border: 1px solid var(--gray-light);
+        }
+
+        .filters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+            gap: 12px;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .filter-group label {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--gray);
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .filter-group input, .filter-group select {
+            padding: 8px 12px;
+            border: 2px solid var(--gray-light);
+            border-radius: var(--radius-sm);
+            font-size: 13px;
+            transition: var(--transition);
+            background: white;
+            font-family: inherit;
+        }
+
+        .filter-group input:focus, .filter-group select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(79,70,229,0.1);
+        }
+
+        .filter-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid var(--gray-light);
+        }
+
+        /* ============================================================
+           TABLE CONTAINER
+           ============================================================ */
+        .table-container {
+            background: white;
+            border-radius: var(--radius);
+            padding: 22px 24px;
+            overflow-x: auto;
+            margin-bottom: 25px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid rgba(0,0,0,0.04);
+        }
+
+        .table-container .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .table-container h3 {
+            font-size: 18px;
+            color: var(--dark-secondary);
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .table-container h3 i { color: var(--primary); }
+
+        /* ============================================================
+           INVOICE CARD
+           ============================================================ */
+        .invoice-card {
+            background: var(--light);
+            border-radius: var(--radius);
+            padding: 18px 20px;
+            margin-bottom: 16px;
+            border: 1px solid var(--gray-light);
+            transition: var(--transition);
+        }
+        .invoice-card:hover { 
+            border-color: var(--primary-light);
+            box-shadow: var(--shadow-sm);
+        }
+        .invoice-card.is-closed {
+            background: var(--closed-bg);
+            border-color: var(--closed-border);
+        }
+        .invoice-card.is-pending {
+            background: var(--pending-bg);
+            border-color: var(--pending-border);
+        }
+
+        .invoice-card .invoice-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 12px;
+            cursor: pointer;
+        }
+        .invoice-card .invoice-header h4 {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--dark-secondary);
+        }
+        .invoice-card .invoice-header h4 i { color: var(--primary); margin-left: 8px; }
+        .invoice-card .invoice-header .toggle-icon {
+            font-size: 18px;
+            color: var(--gray);
+            transition: var(--transition);
+        }
+        .invoice-card .invoice-header .toggle-icon.open {
+            transform: rotate(180deg);
+        }
+
+        .invoice-card .invoice-body {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .invoice-card .invoice-body.open {
+            max-height: 10000px;
+        }
+
+        .invoice-card .invoice-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px 20px;
+            font-size: 13px;
+            color: var(--gray);
+            margin-bottom: 10px;
+        }
+        .invoice-card .invoice-meta span i { margin-left: 4px; width: 16px; }
+        .invoice-card .invoice-meta strong { color: var(--dark-secondary); }
+
+        .invoice-card .invoice-summary {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px 30px;
+            padding: 10px 14px;
+            background: white;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--gray-light);
+            margin-bottom: 12px;
+        }
+        .invoice-card .invoice-summary .summary-item {
+            display: flex;
+            flex-direction: column;
+        }
+        .invoice-card .invoice-summary .summary-item label {
+            font-size: 10px;
+            color: var(--gray);
+            text-transform: uppercase;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+        }
+        .invoice-card .invoice-summary .summary-item .value {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--dark-secondary);
+        }
+        .invoice-card .invoice-summary .summary-item .value.text-success { color: var(--success); }
+        .invoice-card .invoice-summary .summary-item .value.text-warning { color: var(--warning); }
+        .invoice-card .invoice-summary .summary-item .value.text-danger { color: var(--danger); }
+
+        .invoice-card .invoice-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 12px;
+            flex-wrap: wrap;
+        }
+
+        /* ============================================================
+           VIEW TOGGLE (مبسط / تفصيلي)
+           ============================================================ */
+        .view-toggle {
+            display: flex;
+            gap: 6px;
+            background: var(--gray-light);
+            padding: 4px;
+            border-radius: var(--radius-sm);
+            margin-bottom: 12px;
+        }
+        .view-toggle .view-btn {
+            padding: 6px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            transition: var(--transition);
+            background: transparent;
+            color: var(--gray);
+        }
+        .view-toggle .view-btn.active {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 2px 8px rgba(79,70,229,0.3);
+        }
+        .view-toggle .view-btn:hover:not(.active) {
+            background: rgba(255,255,255,0.5);
+        }
+
+        /* ============================================================
+           PRODUCT CARD (داخل الفاتورة)
+           ============================================================ */
+        .product-card {
+            background: white;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--gray-light);
+            margin-bottom: 10px;
+            overflow: hidden;
+            transition: var(--transition);
+        }
+        .product-card:hover {
+            border-color: var(--primary-light);
+        }
+        .product-card .product-header {
+            padding: 12px 16px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: var(--transition);
+            user-select: none;
+            background: #f8fafc;
+        }
+        .product-card .product-header:hover {
+            background: #e8ecf1;
+        }
+        .product-card .product-header .product-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .product-card .product-header .product-info .product-image-small {
+            width: 40px;
+            height: 40px;
+            border-radius: 6px;
+            object-fit: cover;
+            cursor: pointer;
+            border: 1px solid var(--gray-light);
+        }
+        .product-card .product-header .product-info .product-name-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .product-card .product-header .product-info .product-name {
+            font-weight: 700;
+            font-size: 15px;
+            color: var(--dark-secondary);
+        }
+        .product-card .product-header .product-info .product-sku {
+            font-size: 12px;
+            color: var(--gray);
+            background: var(--gray-light);
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-weight: 600;
+            direction: ltr;
+        }
+        .product-card .product-header .product-info .product-sku i {
+            color: var(--primary);
+            margin-left: 4px;
+        }
+        .product-card .product-header .product-info .product-summary-badge {
+            font-size: 12px;
+            padding: 2px 12px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+        .product-card .product-header .product-info .product-summary-badge.closed {
+            background: var(--success-light);
+            color: var(--success);
+        }
+        .product-card .product-header .product-info .product-summary-badge.pending {
+            background: var(--warning-light);
+            color: var(--warning);
+        }
+        .product-card .product-header .toggle-icon {
+            font-size: 16px;
+            color: var(--gray);
+            transition: var(--transition);
+        }
+        .product-card .product-header .toggle-icon.open {
+            transform: rotate(180deg);
+        }
+
+        .product-card .product-body {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 0 16px;
+        }
+        .product-card .product-body.open {
+            max-height: 5000px;
+            padding: 12px 16px 16px;
+        }
+
+        /* ============================================================
+           ITEMS TABLE (تفصيلي)
+           ============================================================ */
+        .items-table-wrapper {
+            overflow-x: auto;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--gray-light);
+        }
+
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            min-width: 700px;
+        }
+        .items-table th {
+            background: var(--primary);
+            color: white;
+            padding: 8px 12px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 12px;
+            white-space: nowrap;
+        }
+        .items-table td {
+            padding: 6px 10px;
+            text-align: center;
+            border-bottom: 1px solid var(--gray-light);
+            vertical-align: middle;
+        }
+        .items-table tr:last-child td { border-bottom: none; }
+        .items-table tr:hover { background: var(--light); }
+        .items-table .color-row {
+            background: #f8fafc;
+        }
+        .items-table .total-row {
+            background: #f1f5f9;
+            font-weight: 700;
+        }
+        .items-table .total-row td {
+            border-top: 2px solid var(--gray-light);
+            padding: 6px 12px;
+        }
+        .items-table .qty-cell {
+            font-weight: 600;
+        }
+        .items-table .qty-cell.created { color: var(--primary); }
+        .items-table .qty-cell.prepared { color: var(--warning); }
+        .items-table .qty-cell.received { color: var(--success); }
+        .items-table .qty-cell.diff { color: var(--danger); }
+        .items-table .qty-cell.diff.completed { color: var(--success); }
+
+        .items-table .product-image {
+            width: 40px;
+            height: 40px;
+            border-radius: 6px;
+            object-fit: cover;
+            cursor: pointer;
+            border: 1px solid var(--gray-light);
+            transition: var(--transition);
+        }
+        .items-table .product-image:hover {
+            border-color: var(--primary);
+            transform: scale(1.05);
+        }
+
+        .items-table .size-badge {
+            display: inline-block;
+            background: var(--gray-light);
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--dark-secondary);
+        }
+
+        .items-table .color-badge {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        .items-table .color-badge.has-color {
+            background: var(--info-light);
+            color: var(--info);
+        }
+        .items-table .color-badge.no-color {
+            background: var(--gray-light);
+            color: var(--gray);
+        }
+
+        .items-table .sku-tag {
+            display: inline-block;
+            font-size: 11px;
+            color: var(--gray);
+            background: var(--gray-light);
+            padding: 1px 8px;
+            border-radius: 10px;
+            font-weight: 600;
+            direction: ltr;
+        }
+
+        /* ============================================================
+           SUMMARY TABLE (مبسط)
+           ============================================================ */
+        .summary-table-wrapper {
+            overflow-x: auto;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--gray-light);
+        }
+
+        .summary-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            min-width: 500px;
+        }
+        .summary-table th {
+            background: var(--secondary);
+            color: white;
+            padding: 8px 12px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 12px;
+            white-space: nowrap;
+        }
+        .summary-table td {
+            padding: 8px 12px;
+            text-align: center;
+            border-bottom: 1px solid var(--gray-light);
+        }
+        .summary-table tr:last-child td { border-bottom: none; }
+        .summary-table tr:hover { background: var(--light); }
+        .summary-table .total-row {
+            background: #f1f5f9;
+            font-weight: 700;
+        }
+        .summary-table .total-row td {
+            border-top: 2px solid var(--gray-light);
+            padding: 6px 12px;
+        }
+
+        .summary-table .product-info-cell {
+            text-align: right;
+        }
+        .summary-table .product-info-cell .product-name {
+            font-weight: 600;
+            color: var(--dark-secondary);
+        }
+        .summary-table .product-info-cell .product-sku {
+            font-size: 11px;
+            color: var(--gray);
+            background: var(--gray-light);
+            padding: 1px 8px;
+            border-radius: 10px;
+            font-weight: 600;
+            direction: ltr;
+            margin-right: 6px;
+        }
+        .summary-table .product-info-cell .product-image-small {
+            width: 32px;
+            height: 32px;
+            border-radius: 4px;
+            object-fit: cover;
+            cursor: pointer;
+            border: 1px solid var(--gray-light);
+            vertical-align: middle;
+            margin-left: 8px;
+        }
+
+        /* ============================================================
+           STATUS BADGES
+           ============================================================ */
+        .status-badge {
+            padding: 4px 14px;
+            border-radius: 30px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-block;
+        }
+        .status-closed { background: var(--success-light); color: var(--success); }
+        .status-pending { background: var(--warning-light); color: var(--warning); }
+        .status-cancelled { background: var(--danger-light); color: var(--danger); }
+
+        /* ============================================================
+           BUTTONS
+           ============================================================ */
+        .btn {
+            padding: 8px 18px;
+            border: none;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            text-decoration: none;
+        }
+
+        .btn-primary { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(79,70,229,0.4); }
+        .btn-success { background: var(--success); color: white; }
+        .btn-success:hover { background: #059669; transform: translateY(-2px); }
+        .btn-danger { background: var(--danger); color: white; }
+        .btn-danger:hover { background: #dc2626; transform: translateY(-2px); }
+        .btn-warning { background: var(--warning); color: white; }
+        .btn-warning:hover { background: #d97706; transform: translateY(-2px); }
+        .btn-info { background: var(--info); color: white; }
+        .btn-info:hover { background: #2563eb; transform: translateY(-2px); }
+        .btn-outline { background: transparent; border: 2px solid var(--gray-light); color: var(--dark-secondary); }
+        .btn-outline:hover { border-color: var(--primary); color: var(--primary); }
+        .btn-sm { padding: 6px 14px; font-size: 12px; border-radius: 8px; }
+        .btn-xs { padding: 4px 10px; font-size: 11px; border-radius: 6px; }
+
+        /* ============================================================
+           PAGINATION
+           ============================================================ */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 6px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        .pagination button {
+            padding: 8px 16px;
+            background: var(--gray-light);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 600;
+            font-size: 13px;
+            color: var(--dark-secondary);
+        }
+        .pagination button.active { 
+            background: var(--primary); 
+            color: white;
+            box-shadow: 0 2px 10px rgba(79,70,229,0.3);
+        }
+        .pagination button:hover:not(.active) { background: #cbd5e1; }
+        .pagination .load-more-btn {
+            background: transparent;
+            border: 2px dashed var(--gray-light);
+            color: var(--gray);
+            padding: 8px 30px;
+            width: 100%;
+            max-width: 300px;
+        }
+        .pagination .load-more-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: var(--info-light);
+        }
+
+        /* ============================================================
+           TOAST
+           ============================================================ */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--success);
+            color: white;
+            padding: 12px 24px;
+            border-radius: var(--radius-sm);
+            box-shadow: var(--shadow-lg);
+            z-index: 3000;
+            animation: slideUp 0.3s ease;
+            font-weight: 600;
+        }
+        .toast.error { background: var(--danger); }
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        /* ============================================================
+           MODAL
+           ============================================================ */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(8px);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            animation: modalFadeIn 0.3s ease;
+            cursor: pointer;
+        }
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        .modal-content {
+            background: white;
+            padding: 30px 35px;
+            border-radius: 24px;
+            max-width: 900px;
+            width: 92%;
+            max-height: 85vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-lg);
+            cursor: default;
+            position: relative;
+        }
+        .modal-content h3 {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--dark-secondary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .modal-content h3 i { color: var(--primary); }
+        .modal-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            margin-top: 22px;
+            flex-wrap: wrap;
+        }
+        .modal-close-btn {
+            position: absolute;
+            top: 15px;
+            left: 20px;
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: var(--gray);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .modal-close-btn:hover { color: var(--danger); transform: rotate(90deg); }
+
+        .text-muted { color: var(--gray); font-size: 13px; }
+        .text-success { color: var(--success); }
+        .text-warning { color: var(--warning); }
+        .text-danger { color: var(--danger); }
+        .text-primary { color: var(--primary); }
+        .fw-bold { font-weight: 700; }
+        .flex-between { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+
+        /* ============================================================
+           RESPONSIVE
+           ============================================================ */
+        @media (max-width: 992px) {
+            .main-content { margin-right: 0; }
+            .sidebar { transform: translateX(100%); }
+            .sidebar.visible { transform: translateX(0); }
+            .sidebar.hidden { transform: translateX(100%); }
+            .filters-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 768px) {
+            .header h1 { font-size: 17px; }
+            .invoice-card .invoice-header { flex-direction: column; align-items: flex-start; }
+            .modal-content { padding: 20px; }
+            .table-container { padding: 16px; }
+            .filters-grid { grid-template-columns: 1fr; }
+            .items-table { font-size: 12px; min-width: 500px; }
+            .items-table th, .items-table td { padding: 4px 8px; }
+            .invoice-card .invoice-summary { gap: 10px; }
+            .product-card .product-header .product-info { gap: 8px; }
+            .product-card .product-header .product-info .product-name { font-size: 13px; }
+            .summary-table { font-size: 12px; min-width: 400px; }
+        }
+        @media (max-width: 480px) {
+            .invoice-card { padding: 14px 16px; }
+            .items-table { font-size: 11px; min-width: 400px; }
+            .items-table th, .items-table td { padding: 3px 6px; }
+            .view-toggle .view-btn { padding: 4px 10px; font-size: 11px; }
+            .summary-table { font-size: 11px; min-width: 350px; }
+            .summary-table td, .summary-table th { padding: 4px 6px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ============================================================
+    SIDEBAR
+    ============================================================ -->
+    <div class="sidebar" id="sidebar"></div>
+
+    <!-- ============================================================
+    MAIN CONTENT
+    ============================================================ -->
+    <div class="main-content" id="mainContent">
+        <div class="header">
+            <div class="header-left">
+                <button class="menu-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+                <h1><i class="fas fa-store"></i> أوردرات الفروع</h1>
+            </div>
+            <div class="user-info">
+                <i class="fas fa-user-circle"></i>
+                <span id="currentAdminName">مرحباً، مدير النظام</span>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <div class="section-header">
+                <h3><i class="fas fa-store"></i> أوردرات الفروع</h3>
+                <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+                    <span class="text-muted" id="invoiceCountDisplay">0 فاتورة</span>
+                </div>
+            </div>
+
+            <!-- FILTERS -->
+            <div class="filters-container">
+                <div class="filters-grid">
+                    <div class="filter-group">
+                        <label><i class="fas fa-search"></i> بحث</label>
+                        <input type="text" id="searchInput" placeholder="كود / فرع / منتج / SKU..." oninput="applyFilters()">
+                    </div>
+                    <div class="filter-group">
+                        <label><i class="fas fa-tag"></i> الحالة</label>
+                        <select id="statusFilter" onchange="applyFilters()">
+                            <option value="all">الكل</option>
+                            <option value="closed">مغلقة</option>
+                            <option value="pending">قيد الانتظار</option>
+                            <option value="cancelled">ملغية</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label><i class="fas fa-calendar-alt"></i> من تاريخ</label>
+                        <input type="date" id="dateFrom" onchange="applyFilters()">
+                    </div>
+                    <div class="filter-group">
+                        <label><i class="fas fa-calendar-alt"></i> إلى تاريخ</label>
+                        <input type="date" id="dateTo" onchange="applyFilters()">
+                    </div>
+                </div>
+                <div class="filter-actions">
+                    <button class="btn btn-success btn-sm" onclick="exportFilteredToExcel()">
+                        <i class="fas fa-file-excel"></i> تصدير المفلتر
+                    </button>
+                    <button class="btn btn-outline btn-sm" onclick="resetFilters()">
+                        <i class="fas fa-undo"></i> إعادة تعيين
+                    </button>
+                    <span class="text-muted" style="margin-right:auto;font-size:12px;" id="filterResultsCount">0 فاتورة</span>
+                </div>
+            </div>
+
+            <!-- INVOICES LIST -->
+            <div id="invoicesContainer"></div>
+            <div id="paginationContainer" class="pagination"></div>
+        </div>
+    </div>
+
+    <!-- ============================================================
+    IMAGE VIEW MODAL
+    ============================================================ -->
+    <div id="imageViewModal" class="modal" onclick="closeModalOnOutsideClick(event, 'imageViewModal')">
+        <div class="modal-content" style="max-width: 500px; text-align: center;">
+            <button class="modal-close-btn" onclick="closeImageViewModal()"><i class="fas fa-times"></i></button>
+            <h3><i class="fas fa-image"></i> معاينة الصورة</h3>
+            <img id="fullImageView" src="" style="max-width:100%;max-height:400px;border-radius:12px;margin:16px 0;">
+            <div class="modal-buttons"><button class="btn btn-outline" onclick="closeImageViewModal()">إلغاء</button></div>
+        </div>
+    </div>
+
+    <!-- ============================================================
+    MAIN JS
+    ============================================================ -->
+    <script src="main.js"></script>
+
+    <script>
+        // ============================================================
+        // 1. GLOBAL STATE
+        // ============================================================
+        let allInvoices = [];
+        let filteredInvoices = [];
+        let currentPage = 1;
+        const itemsPerPage = 20;
+        let productViewMode = {}; // تخزين وضع العرض لكل فاتورة: 'simple' أو 'detailed'
+
+        // ============================================================
+        // 2. UI HELPERS
+        // ============================================================
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('mainContent');
+            sidebar.classList.toggle('hidden');
+            sidebar.classList.toggle('visible');
+            mainContent.classList.toggle('sidebar-hidden');
+        }
+
+        document.addEventListener('click', function(event) {
+            const sidebar = document.getElementById('sidebar');
+            const menuToggle = document.querySelector('.menu-toggle');
+            const mainContent = document.getElementById('mainContent');
+            
+            const isSidebarVisible = sidebar.classList.contains('visible') && !sidebar.classList.contains('hidden');
+            
+            if (isSidebarVisible) {
+                const isClickInsideSidebar = sidebar.contains(event.target);
+                const isClickOnMenuToggle = menuToggle && menuToggle.contains(event.target);
+                
+                if (!isClickInsideSidebar && !isClickOnMenuToggle) {
+                    sidebar.classList.add('hidden');
+                    sidebar.classList.remove('visible');
+                    mainContent.classList.remove('sidebar-hidden');
+                }
+            }
+        });
+
+        window.addEventListener('resize', function() {
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('mainContent');
+            
+            if (window.innerWidth > 992) {
+                sidebar.classList.remove('hidden');
+                sidebar.classList.remove('visible');
+                mainContent.classList.remove('sidebar-hidden');
+            } else {
+                sidebar.classList.add('hidden');
+                sidebar.classList.remove('visible');
+                mainContent.classList.add('sidebar-hidden');
+            }
+        });
+
+        function closeModalOnOutsideClick(event, modalId) {
+            const modal = document.getElementById(modalId);
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        }
+
+        function showToast(message, isError = false) {
+            const existing = document.querySelector('.toast');
+            if (existing) existing.remove();
+            const toast = document.createElement('div');
+            toast.className = `toast${isError ? ' error' : ''}`;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+
+        function showFullImage(imageUrl) {
+            document.getElementById('fullImageView').src = imageUrl;
+            document.getElementById('imageViewModal').style.display = 'flex';
+        }
+
+        function closeImageViewModal() {
+            document.getElementById('imageViewModal').style.display = 'none';
+        }
+
+        // ============================================================
+        // 3. TOGGLE FUNCTIONS
+        // ============================================================
+        function toggleInvoice(invoiceId) {
+            const body = document.getElementById(`invoice-body-${invoiceId}`);
+            const icon = document.getElementById(`invoice-icon-${invoiceId}`);
+            if (body) {
+                body.classList.toggle('open');
+                if (icon) {
+                    icon.classList.toggle('open');
+                }
+            }
+        }
+
+        function toggleProduct(productId) {
+            const body = document.getElementById(`product-body-${productId}`);
+            const icon = document.getElementById(`product-icon-${productId}`);
+            if (body) {
+                body.classList.toggle('open');
+                if (icon) {
+                    icon.classList.toggle('open');
+                }
+            }
+        }
+
+        function toggleView(invoiceId, mode) {
+            productViewMode[invoiceId] = mode;
+            
+            // تحديث الأزرار
+            const container = document.getElementById(`view-toggle-${invoiceId}`);
+            if (container) {
+                const buttons = container.querySelectorAll('.view-btn');
+                buttons.forEach(btn => {
+                    btn.classList.remove('active');
+                    if (btn.dataset.mode === mode) {
+                        btn.classList.add('active');
+                    }
+                });
+            }
+            
+            // إعادة عرض المنتجات في هذه الفاتورة
+            const invoice = allInvoices.find(inv => inv.id === invoiceId);
+            if (invoice) {
+                const productsContainer = document.getElementById(`products-container-${invoiceId}`);
+                if (productsContainer) {
+                    productsContainer.innerHTML = buildProductsHTML(invoice, mode);
+                }
+            }
+        }
+
+        // ============================================================
+        // 4. LOAD INVOICES
+        // ============================================================
+        async function loadInvoices() {
+            const snapshot = await db.ref('invoices').once('value');
+            allInvoices = [];
+            snapshot.forEach(child => {
+                const data = child.val();
+                if (data && data.items && data.items.length > 0) {
+                    allInvoices.push({
+                        id: child.key,
+                        ...data
+                    });
+                }
+            });
+
+            // Set default view mode for each invoice
+            allInvoices.forEach(inv => {
+                if (!productViewMode[inv.id]) {
+                    productViewMode[inv.id] = 'simple';
+                }
+            });
+
+            // Sort by createdAt (newest first)
+            allInvoices.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+            
+            applyFilters();
+        }
+
+        // ============================================================
+        // 5. ADVANCED FILTERS
+        // ============================================================
+        function applyFilters() {
+            const search = document.getElementById('searchInput').value.toLowerCase().trim();
+            const status = document.getElementById('statusFilter').value;
+            const dateFrom = document.getElementById('dateFrom').value;
+            const dateTo = document.getElementById('dateTo').value;
+
+            filteredInvoices = allInvoices.filter(inv => {
+                // Search filter (include SKU)
+                const matchesSearch = search === '' ||
+                    (inv.branch || '').toLowerCase().includes(search) ||
+                    (inv.invoiceCode || '').toLowerCase().includes(search) ||
+                    (inv.items && inv.items.some(item => 
+                        (item.name || '').toLowerCase().includes(search) ||
+                        (item.sku || '').toLowerCase().includes(search)
+                    ));
+
+                // Status filter
+                let matchesStatus = status === 'all';
+                if (!matchesStatus) {
+                    matchesStatus = (inv.status || 'pending') === status;
+                }
+
+                // Date range filter
+                let matchesDate = true;
+                const createdAt = inv.createdAt ? new Date(inv.createdAt) : null;
+
+                if (dateFrom && createdAt) {
+                    const fromDate = new Date(dateFrom);
+                    fromDate.setHours(0, 0, 0, 0);
+                    if (createdAt < fromDate) matchesDate = false;
+                }
+                if (dateTo && createdAt) {
+                    const toDate = new Date(dateTo);
+                    toDate.setHours(23, 59, 59, 999);
+                    if (createdAt > toDate) matchesDate = false;
+                }
+
+                return matchesSearch && matchesStatus && matchesDate;
+            });
+
+            currentPage = 1;
+            document.getElementById('filterResultsCount').textContent = `${filteredInvoices.length} فاتورة`;
+            renderInvoices();
+        }
+
+        function resetFilters() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('statusFilter').value = 'all';
+            document.getElementById('dateFrom').value = '';
+            document.getElementById('dateTo').value = '';
+            applyFilters();
+        }
+
+        // ============================================================
+        // 6. BUILD PRODUCTS HTML
+        // ============================================================
+        function buildProductsHTML(invoice, mode) {
+            const items = invoice.items || [];
+            if (items.length === 0) {
+                return '<p class="text-muted" style="padding:12px;text-align:center;">لا توجد منتجات</p>';
+            }
+
+            if (mode === 'simple') {
+                return buildSimpleView(items);
+            } else {
+                return buildDetailedView(items);
+            }
+        }
+
+        // ============================================================
+        // 6a. BUILD SIMPLE VIEW (مبسط - تجميع المنتج كامل)
+        // ============================================================
+        function buildSimpleView(items) {
+            // تجميع المنتجات حسب الاسم و SKU
+            const grouped = {};
+            items.forEach(item => {
+                const key = `${item.name}|${item.sku || ''}`;
+                if (!grouped[key]) {
+                    grouped[key] = {
+                        name: item.name,
+                        sku: item.sku || '',
+                        image: item.image || '',
+                        totalQty: 0,
+                        totalPrepared: 0,
+                        totalReceived: 0
+                    };
+                }
+                grouped[key].totalQty += (item.qty || 0);
+                grouped[key].totalPrepared += (item.preparedQty || 0);
+                grouped[key].totalReceived += (item.receivedQty || 0);
+            });
+
+            let html = `
+                <div class="summary-table-wrapper">
+                    <table class="summary-table">
+                        <thead>
+                            <tr>
+                                <th>المنتج</th>
+                                <th>الكمية</th>
+                                <th>التحضير</th>
+                                <th>المستلم</th>
+                                <th>المتبقي</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+
+            let grandTotalQty = 0;
+            let grandTotalPrepared = 0;
+            let grandTotalReceived = 0;
+
+            for (const key in grouped) {
+                const g = grouped[key];
+                const remaining = g.totalQty - g.totalReceived;
+                grandTotalQty += g.totalQty;
+                grandTotalPrepared += g.totalPrepared;
+                grandTotalReceived += g.totalReceived;
+
+                const isCompleted = remaining === 0 && g.totalQty > 0;
+
+                html += `
+                    <tr>
+                        <td class="product-info-cell">
+                            ${g.image ? 
+                                `<img src="${g.image}" class="product-image-small" onclick="event.stopPropagation();showFullImage('${g.image}')" title="اضغط لعرض الصورة">` : 
+                                `<span style="color:var(--gray);font-size:18px;"><i class="fas fa-tshirt"></i></span>`
+                            }
+                            <span class="product-name">${g.name}</span>
+                            ${g.sku ? `<span class="product-sku"><i class="fas fa-tag"></i> ${g.sku}</span>` : ''}
+                        </td>
+                        <td class="qty-cell created">${g.totalQty}</td>
+                        <td class="qty-cell prepared">${g.totalPrepared}</td>
+                        <td class="qty-cell received">${g.totalReceived}</td>
+                        <td class="qty-cell diff ${isCompleted ? 'completed' : ''}">${remaining}</td>
+                    </tr>
+                `;
+            }
+
+            const totalRemaining = grandTotalQty - grandTotalReceived;
+            html += `
+                <tr class="total-row">
+                    <td style="text-align:right;"><strong>الإجمالي</strong></td>
+                    <td><strong>${grandTotalQty}</strong></td>
+                    <td><strong>${grandTotalPrepared}</strong></td>
+                    <td><strong>${grandTotalReceived}</strong></td>
+                    <td><strong class="${totalRemaining > 0 ? 'text-danger' : 'text-success'}">${totalRemaining}</strong></td>
+                </tr>
+            `;
+
+            html += `</tbody></table></div>`;
+            return html;
+        }
+
+        // ============================================================
+        // 6b. BUILD DETAILED VIEW (تفصيلي - الألوان والمقاسات)
+        // ============================================================
+        function buildDetailedView(items) {
+            // تجميع المنتجات حسب الاسم، اللون، والمقاس
+            const grouped = {};
+            items.forEach(item => {
+                const key = `${item.name}|${item.color || ''}|${item.size || ''}|${item.sku || ''}`;
+                if (!grouped[key]) {
+                    grouped[key] = {
+                        name: item.name,
+                        color: item.color || '',
+                        size: item.size || 'غير محدد',
+                        sku: item.sku || '',
+                        image: item.image || '',
+                        qty: 0,
+                        preparedQty: 0,
+                        receivedQty: 0
+                    };
+                }
+                grouped[key].qty += (item.qty || 0);
+                grouped[key].preparedQty += (item.preparedQty || 0);
+                grouped[key].receivedQty += (item.receivedQty || 0);
+            });
+
+            // تحويل إلى مصفوفة وترتيب
+            const groupedArray = Object.values(grouped);
+            
+            // تجميع حسب المنتج لعرضه كبطاقات
+            const productGroups = {};
+            groupedArray.forEach(item => {
+                const key = `${item.name}|${item.sku}`;
+                if (!productGroups[key]) {
+                    productGroups[key] = {
+                        name: item.name,
+                        sku: item.sku,
+                        image: item.image,
+                        colors: {}
+                    };
+                }
+                const colorKey = item.color || 'بدون لون';
+                if (!productGroups[key].colors[colorKey]) {
+                    productGroups[key].colors[colorKey] = [];
+                }
+                productGroups[key].colors[colorKey].push({
+                    size: item.size,
+                    qty: item.qty,
+                    preparedQty: item.preparedQty,
+                    receivedQty: item.receivedQty
+                });
+            });
+
+            let html = '';
+
+            for (const key in productGroups) {
+                const product = productGroups[key];
+                const productId = `prod-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`;
+                
+                // حساب إجماليات المنتج
+                let totalQty = 0, totalPrepared = 0, totalReceived = 0;
+                for (const color in product.colors) {
+                    product.colors[color].forEach(sizeData => {
+                        totalQty += sizeData.qty;
+                        totalPrepared += sizeData.preparedQty || 0;
+                        totalReceived += sizeData.receivedQty || 0;
+                    });
+                }
+                const isCompleted = (totalQty - totalReceived) === 0 && totalQty > 0;
+
+                html += `
+                    <div class="product-card">
+                        <div class="product-header" onclick="toggleProduct('${productId}')">
+                            <div class="product-info">
+                                ${product.image ? 
+                                    `<img src="${product.image}" class="product-image-small" onclick="event.stopPropagation();showFullImage('${product.image}')" title="اضغط لعرض الصورة">` : 
+                                    `<span style="color:var(--gray);font-size:20px;"><i class="fas fa-tshirt"></i></span>`
+                                }
+                                <div class="product-name-wrapper">
+                                    <span class="product-name">${product.name}</span>
+                                    ${product.sku ? `<span class="product-sku"><i class="fas fa-tag"></i> ${product.sku}</span>` : ''}
+                                </div>
+                                <span class="product-summary-badge ${isCompleted ? 'closed' : 'pending'}">
+                                    ${isCompleted ? '✅ مكتمل' : '⏳ قيد التنفيذ'}
+                                </span>
+                            </div>
+                            <span class="toggle-icon" id="product-icon-${productId}"><i class="fas fa-chevron-down"></i></span>
+                        </div>
+                        <div class="product-body" id="product-body-${productId}">
+                            <div class="items-table-wrapper">
+                                <table class="items-table">
+                                    <thead>
+                                        <tr>
+                                            <th>اللون</th>
+                                            <th>المقاس</th>
+                                            <th>الكمية</th>
+                                            <th>التحضير</th>
+                                            <th>المستلم</th>
+                                            <th>المتبقي</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                `;
+
+                let productTotalQty = 0, productTotalPrepared = 0, productTotalReceived = 0;
+                let colorIndex = 0;
+                const colorKeys = Object.keys(product.colors);
+
+                for (const color of colorKeys) {
+                    const sizes = product.colors[color];
+                    const isFirstColor = colorIndex === 0;
+                    const hasColor = color !== 'بدون لون';
+
+                    sizes.forEach((sizeData, idx) => {
+                        const remaining = sizeData.qty - sizeData.receivedQty;
+                        productTotalQty += sizeData.qty;
+                        productTotalPrepared += sizeData.preparedQty || 0;
+                        productTotalReceived += sizeData.receivedQty || 0;
+
+                        html += `
+                            <tr>
+                                ${idx === 0 ? `
+                                    <td rowspan="${sizes.length}" style="font-weight:600;">
+                                        <span class="color-badge ${hasColor ? 'has-color' : 'no-color'}">
+                                            ${color}
+                                        </span>
+                                    </td>
+                                ` : ''}
+                                <td><span class="size-badge">${sizeData.size}</span></td>
+                                <td class="qty-cell created">${sizeData.qty}</td>
+                                <td class="qty-cell prepared">${sizeData.preparedQty || 0}</td>
+                                <td class="qty-cell received">${sizeData.receivedQty || 0}</td>
+                                <td class="qty-cell diff ${remaining === 0 ? 'completed' : ''}">${remaining}</td>
+                            </tr>
+                        `;
+                    });
+
+                    // إضافة صف إجمالي اللون
+                    let colorTotalQty = 0, colorTotalPrepared = 0, colorTotalReceived = 0;
+                    sizes.forEach(s => {
+                        colorTotalQty += s.qty;
+                        colorTotalPrepared += s.preparedQty || 0;
+                        colorTotalReceived += s.receivedQty || 0;
+                    });
+                    const colorRemaining = colorTotalQty - colorTotalReceived;
+                    html += `
+                        <tr class="color-row" style="background:#f8fafc;font-weight:600;">
+                            <td colspan="2" style="text-align:left;padding-right:20px;">
+                                <span style="color:var(--gray);font-size:12px;">إجمالي ${color}</span>
+                            </td>
+                            <td>${colorTotalQty}</td>
+                            <td>${colorTotalPrepared}</td>
+                            <td>${colorTotalReceived}</td>
+                            <td class="${colorRemaining === 0 ? 'text-success' : 'text-danger'}">${colorRemaining}</td>
+                        </tr>
+                    `;
+                    
+                    colorIndex++;
+                }
+
+                // إجمالي المنتج
+                const totalRemaining = productTotalQty - productTotalReceived;
+                html += `
+                    <tr class="total-row">
+                        <td colspan="2" style="text-align:left;padding-right:20px;">
+                            <strong>إجمالي ${product.name}</strong>
+                        </td>
+                        <td><strong>${productTotalQty}</strong></td>
+                        <td><strong>${productTotalPrepared}</strong></td>
+                        <td><strong>${productTotalReceived}</strong></td>
+                        <td><strong class="${totalRemaining === 0 ? 'text-success' : 'text-danger'}">${totalRemaining}</strong></td>
+                    </tr>
+                `;
+
+                html += `
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            return html;
+        }
+
+        // ============================================================
+        // 7. RENDER INVOICES
+        // ============================================================
+        function renderInvoices() {
+            const container = document.getElementById('invoicesContainer');
+            const paginationContainer = document.getElementById('paginationContainer');
+            
+            const start = (currentPage - 1) * itemsPerPage;
+            const end = Math.min(start + itemsPerPage, filteredInvoices.length);
+            const pageInvoices = filteredInvoices.slice(start, end);
+
+            container.innerHTML = '';
+            
+            if (pageInvoices.length === 0) {
+                container.innerHTML = '<p class="text-muted" style="text-align:center;padding:30px 0;">لا توجد فواتير تطابق البحث</p>';
+                paginationContainer.innerHTML = '';
+                document.getElementById('invoiceCountDisplay').innerText = '0 فاتورة';
+                return;
+            }
+
+            document.getElementById('invoiceCountDisplay').innerText = `${filteredInvoices.length} فاتورة`;
+
+            pageInvoices.forEach(inv => {
+                const isClosed = inv.status === 'closed';
+                const isPending = inv.status === 'pending' || !inv.status;
+                
+                let cardClasses = 'invoice-card';
+                if (isClosed) cardClasses += ' is-closed';
+                if (isPending) cardClasses += ' is-pending';
+
+                const statusLabels = {
+                    'closed': 'مغلقة',
+                    'pending': 'قيد الانتظار',
+                    'cancelled': 'ملغية'
+                };
+                const statusClasses = {
+                    'closed': 'status-closed',
+                    'pending': 'status-pending',
+                    'cancelled': 'status-cancelled'
+                };
+                const status = inv.status || 'pending';
+
+                const createdAt = inv.createdAt ? new Date(inv.createdAt).toLocaleString('ar-EG') : 'غير معروف';
+                const totalPieces = inv.totalPieces || 0;
+                const totalValue = inv.totalValue || 0;
+                const itemsCount = inv.itemsCount || inv.items?.length || 0;
+
+                // تحديد وضع العرض الحالي
+                const currentMode = productViewMode[inv.id] || 'simple';
+
+                // بناء المنتجات حسب وضع العرض
+                const productsHTML = buildProductsHTML(inv, currentMode);
+
+                container.innerHTML += `
+                    <div class="${cardClasses}">
+                        <div class="invoice-header" onclick="toggleInvoice('${inv.id}')">
+                            <h4><i class="fas fa-file-invoice"></i> ${inv.branch || 'فرع غير محدد'} ${isClosed ? '🔒' : ''}</h4>
+                            <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+                                <span class="status-badge ${statusClasses[status] || 'status-pending'}">${statusLabels[status] || status}</span>
+                                <span class="toggle-icon" id="invoice-icon-${inv.id}"><i class="fas fa-chevron-down"></i></span>
+                            </div>
+                        </div>
+                        <div class="invoice-body" id="invoice-body-${inv.id}">
+                            <div class="invoice-meta">
+                                <span><i class="fas fa-barcode"></i> <strong>${inv.invoiceCode || 'بدون كود'}</strong></span>
+                                <span><i class="fas fa-calendar-alt"></i> ${createdAt}</span>
+                                <span><i class="fas fa-box"></i> ${itemsCount} منتج</span>
+                                ${inv.createdBy ? `<span><i class="fas fa-user"></i> ${inv.createdBy}</span>` : ''}
+                            </div>
+                            <div class="invoice-summary">
+                                <div class="summary-item">
+                                    <label>إجمالي القطع</label>
+                                    <div class="value">${totalPieces}</div>
+                                </div>
+                                <div class="summary-item">
+                                    <label>إجمالي القيمة</label>
+                                    <div class="value text-success">${totalValue.toLocaleString()} ج.م</div>
+                                </div>
+                                <div class="summary-item">
+                                    <label>عدد المنتجات</label>
+                                    <div class="value">${itemsCount}</div>
+                                </div>
+                            </div>
+                            
+                            <!-- View Toggle -->
+                            <div class="view-toggle" id="view-toggle-${inv.id}">
+                                <button class="view-btn ${currentMode === 'simple' ? 'active' : ''}" data-mode="simple" onclick="toggleView('${inv.id}', 'simple')">
+                                    <i class="fas fa-th"></i> مبسط
+                                </button>
+                                <button class="view-btn ${currentMode === 'detailed' ? 'active' : ''}" data-mode="detailed" onclick="toggleView('${inv.id}', 'detailed')">
+                                    <i class="fas fa-list"></i> تفصيلي
+                                </button>
+                            </div>
+
+                            <!-- Products Container -->
+                            <div id="products-container-${inv.id}">
+                                ${productsHTML}
+                            </div>
+
+                            <div class="invoice-actions">
+                                <button class="btn btn-success btn-sm" onclick="exportInvoiceToExcel('${inv.id}')">
+                                    <i class="fas fa-file-excel"></i> تصدير
+                                </button>
+                                <button class="btn btn-warning btn-sm" onclick="toggleInvoiceStatus('${inv.id}')">
+                                    <i class="fas fa-${isClosed ? 'undo' : 'check'}"></i> ${isClosed ? 'فتح' : 'إغلاق'}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            // Pagination
+            paginationContainer.innerHTML = '';
+            const totalPages = Math.ceil(filteredInvoices.length / itemsPerPage);
+            
+            if (totalPages > 1) {
+                if (currentPage < totalPages) {
+                    const loadMoreBtn = document.createElement('button');
+                    loadMoreBtn.className = 'load-more-btn';
+                    loadMoreBtn.innerHTML = `<i class="fas fa-chevron-down"></i> عرض المزيد (${filteredInvoices.length - (currentPage * itemsPerPage)} متبقية)`;
+                    loadMoreBtn.onclick = () => {
+                        currentPage++;
+                        renderInvoices();
+                    };
+                    paginationContainer.appendChild(loadMoreBtn);
+                } else {
+                    paginationContainer.innerHTML = `<span class="text-muted">تم عرض جميع الفواتير (${filteredInvoices.length})</span>`;
+                }
+            }
+        }
+
+        // ============================================================
+        // 8. TOGGLE INVOICE STATUS (فتح / إغلاق الفاتورة)
+        // ============================================================
+        async function toggleInvoiceStatus(invoiceId) {
+            const invoice = allInvoices.find(inv => inv.id === invoiceId);
+            if (!invoice) return;
+
+            const newStatus = invoice.status === 'closed' ? 'pending' : 'closed';
+            
+            try {
+                await db.ref(`invoices/${invoiceId}`).update({
+                    status: newStatus
+                });
+                
+                invoice.status = newStatus;
+                showToast(`✅ تم ${newStatus === 'closed' ? 'إغلاق' : 'فتح'} الفاتورة بنجاح`);
+                renderInvoices();
+            } catch (error) {
+                showToast('⚠️ حدث خطأ أثناء تحديث الحالة', true);
+            }
+        }
+
+        // ============================================================
+        // 9. EXPORT INVOICE TO EXCEL
+        // ============================================================
+        function exportInvoiceToExcel(invoiceId) {
+            const invoice = allInvoices.find(inv => inv.id === invoiceId);
+            if (!invoice) {
+                showToast('⚠️ الفاتورة غير موجودة', true);
+                return;
+            }
+
+            const data = [];
+            
+            // Header
+            data.push(['أوردر فرع - تفاصيل']);
+            data.push(['الفرع', invoice.branch || 'غير محدد']);
+            data.push(['كود الفاتورة', invoice.invoiceCode || 'بدون كود']);
+            data.push(['الحالة', invoice.status === 'closed' ? 'مغلقة' : invoice.status === 'cancelled' ? 'ملغية' : 'قيد الانتظار']);
+            data.push(['تاريخ الإنشاء', invoice.createdAt ? new Date(invoice.createdAt).toLocaleString('ar-EG') : 'غير معروف']);
+            data.push(['إجمالي القطع', invoice.totalPieces || 0]);
+            data.push(['إجمالي القيمة', (invoice.totalValue || 0).toLocaleString() + ' ج.م']);
+            data.push([]);
+
+            // Table header with SKU
+            const headerRow = ['المنتج', 'SKU', 'اللون', 'المقاس', 'الكمية', 'التحضير', 'المستلم', 'المتبقي', 'السعر'];
+            data.push(headerRow);
+
+            if (invoice.items && invoice.items.length > 0) {
+                invoice.items.forEach(item => {
+                    const remaining = (item.qty || 0) - (item.receivedQty || 0);
+                    data.push([
+                        item.name || 'غير محدد',
+                        item.sku || '-',
+                        item.color || 'بدون لون',
+                        item.size || 'غير محدد',
+                        item.qty || 0,
+                        item.preparedQty || 0,
+                        item.receivedQty || 0,
+                        remaining,
+                        item.unitPrice || 0
+                    ]);
+                });
+            }
+
+            // Summary
+            data.push([]);
+            data.push(['ملخص الفاتورة']);
+            data.push(['إجمالي القطع', invoice.totalPieces || 0]);
+            data.push(['إجمالي القيمة', (invoice.totalValue || 0).toLocaleString() + ' ج.م']);
+
+            const ws = XLSX.utils.aoa_to_sheet(data);
+            ws['!cols'] = [
+                { wch: 25 }, { wch: 15 }, { wch: 15 }, { wch: 12 }, 
+                { wch: 12 }, { wch: 12 }, { wch: 12 }, { wch: 12 }, { wch: 12 }
+            ];
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, 'تفاصيل الأوردر');
+            XLSX.writeFile(wb, `أوردر_${invoice.branch || 'فرع'}_${invoice.invoiceCode || 'بدون_كود'}.xlsx`);
+            
+            showToast('✅ تم تصدير الفاتورة بنجاح');
+        }
+
+        // ============================================================
+        // 10. EXPORT FILTERED TO EXCEL
+        // ============================================================
+        function exportFilteredToExcel() {
+            if (filteredInvoices.length === 0) {
+                showToast('⚠️ لا توجد فواتير للتصدير', true);
+                return;
+            }
+
+            const data = [];
+            data.push(['تقرير أوردرات الفروع']);
+            data.push(['تاريخ التقرير', new Date().toLocaleString('ar-EG')]);
+            data.push(['عدد الفواتير', filteredInvoices.length]);
+            data.push([]);
+
+            const headerRow = ['الفرع', 'كود الفاتورة', 'الحالة', 'المنتج', 'SKU', 'اللون', 'المقاس', 'الكمية', 'التحضير', 'المستلم', 'المتبقي', 'السعر', 'تاريخ الإنشاء'];
+            data.push(headerRow);
+
+            filteredInvoices.forEach(inv => {
+                const status = inv.status === 'closed' ? 'مغلقة' : inv.status === 'cancelled' ? 'ملغية' : 'قيد الانتظار';
+                const createdAt = inv.createdAt ? new Date(inv.createdAt).toLocaleDateString('ar-EG') : '';
+
+                if (inv.items && inv.items.length > 0) {
+                    inv.items.forEach(item => {
+                        const remaining = (item.qty || 0) - (item.receivedQty || 0);
+                        data.push([
+                            inv.branch || 'غير محدد',
+                            inv.invoiceCode || 'بدون كود',
+                            status,
+                            item.name || 'غير محدد',
+                            item.sku || '-',
+                            item.color || 'بدون لون',
+                            item.size || 'غير محدد',
+                            item.qty || 0,
+                            item.preparedQty || 0,
+                            item.receivedQty || 0,
+                            remaining,
+                            item.unitPrice || 0,
+                            createdAt
+                        ]);
+                    });
+                }
+            });
+
+            const ws = XLSX.utils.aoa_to_sheet(data);
+            ws['!cols'] = [
+                { wch: 20 }, { wch: 15 }, { wch: 12 }, { wch: 25 },
+                { wch: 15 }, { wch: 15 }, { wch: 12 }, { wch: 12 },
+                { wch: 12 }, { wch: 12 }, { wch: 12 }, { wch: 12 }, { wch: 15 }
+            ];
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, 'تقرير الأوردرات');
+            XLSX.writeFile(wb, `تقرير_أوردرات_الفروع_${new Date().toISOString().slice(0, 10)}.xlsx`);
+            
+            showToast('✅ تم تصدير التقرير بنجاح');
+        }
+
+        // ============================================================
+        // 11. INIT
+        // ============================================================
+        loadLayout();
+        loadInvoices();
+    </script>
+
+</body>
+</html>

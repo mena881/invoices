@@ -1,0 +1,2233 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>جميع الاستلامات - نظام إدارة الاستلامات</title>
+
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-light: #818cf8;
+            --primary-dark: #3730a3;
+            --secondary: #7c3aed;
+            --success: #10b981;
+            --success-light: #d1fae5;
+            --warning: #f59e0b;
+            --warning-light: #fef3c7;
+            --danger: #ef4444;
+            --danger-light: #fee2e2;
+            --info: #3b82f6;
+            --info-light: #dbeafe;
+            --dark: #0f172a;
+            --dark-secondary: #1e293b;
+            --light: #f8fafc;
+            --gray: #64748b;
+            --gray-light: #e2e8f0;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+            --shadow: 0 4px 20px rgba(0,0,0,0.08);
+            --shadow-lg: 0 10px 40px rgba(0,0,0,0.12);
+            --radius: 16px;
+            --radius-sm: 10px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --blank-bg: #fff8e7;
+            --blank-border: #f59e0b;
+            --closed-bg: #ecfdf5;
+            --closed-border: #10b981;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Cairo', 'Segoe UI', sans-serif;
+            background: #f1f5f9;
+            overflow-x: hidden;
+        }
+
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #e2e8f0; }
+        ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 10px; }
+
+        .sidebar {
+            position: fixed;
+            right: 0;
+            top: 0;
+            width: 280px;
+            height: 100%;
+            background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
+            color: white;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1000;
+            overflow-y: auto;
+            box-shadow: -5px 0 30px rgba(0,0,0,0.15);
+            transform: translateX(0);
+        }
+
+        .sidebar.hidden { transform: translateX(100%); }
+
+        .sidebar-header {
+            padding: 30px 20px 20px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            margin-bottom: 15px;
+        }
+
+        .sidebar-header .logo-icon {
+            font-size: 40px;
+            background: linear-gradient(135deg, var(--primary-light), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .sidebar-header h2 {
+            font-size: 22px;
+            font-weight: 700;
+            margin-top: 8px;
+            background: linear-gradient(135deg, var(--primary-light), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .sidebar-header p {
+            font-size: 12px;
+            opacity: 0.5;
+            margin-top: 4px;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 0 12px;
+        }
+
+        .sidebar-menu li {
+            padding: 12px 16px;
+            margin-bottom: 4px;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            border-radius: 12px;
+            font-weight: 500;
+            font-size: 14px;
+            color: rgba(255,255,255,0.7);
+        }
+
+        .sidebar-menu li i { width: 22px; font-size: 16px; }
+        .sidebar-menu li:hover { 
+            background: rgba(255,255,255,0.08); 
+            color: white;
+            transform: translateX(-4px);
+        }
+        .sidebar-menu li.active { 
+            background: linear-gradient(135deg, var(--primary), var(--secondary)); 
+            color: white;
+            box-shadow: 0 4px 15px rgba(79,70,229,0.4);
+        }
+
+        .logout-btn {
+            margin: 20px 15px 30px;
+            padding: 12px;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.08);
+            color: rgba(255,255,255,0.7);
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: var(--transition);
+            width: calc(100% - 30px);
+        }
+        .logout-btn:hover { 
+            background: var(--danger); 
+            border-color: var(--danger);
+            color: white;
+        }
+
+        .main-content {
+            margin-right: 280px;
+            padding: 20px 25px;
+            transition: margin-right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            min-height: 100vh;
+        }
+        .main-content.sidebar-hidden { margin-right: 0; }
+
+        .header {
+            background: white;
+            padding: 16px 24px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            border: 1px solid rgba(0,0,0,0.04);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .menu-toggle {
+            background: var(--dark-secondary);
+            border: none;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+            padding: 10px 14px;
+            border-radius: 12px;
+            transition: var(--transition);
+        }
+        .menu-toggle:hover { background: var(--primary); }
+
+        .header h1 {
+            font-size: 22px;
+            color: var(--dark-secondary);
+            font-weight: 700;
+        }
+        .header h1 i { color: var(--primary); margin-left: 10px; }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: var(--light);
+            padding: 6px 16px 6px 20px;
+            border-radius: 40px;
+            border: 1px solid var(--gray-light);
+        }
+        .user-info i { font-size: 22px; color: var(--primary); }
+        .user-info span { font-weight: 600; color: var(--dark-secondary); font-size: 14px; }
+
+        .table-container {
+            background: white;
+            border-radius: var(--radius);
+            padding: 22px 24px;
+            overflow-x: auto;
+            margin-bottom: 25px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid rgba(0,0,0,0.04);
+        }
+
+        .table-container .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .table-container h3 {
+            font-size: 18px;
+            color: var(--dark-secondary);
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .table-container h3 i { color: var(--primary); }
+
+        .filters-container {
+            background: var(--light);
+            border-radius: var(--radius-sm);
+            padding: 16px 20px;
+            margin-bottom: 18px;
+            border: 1px solid var(--gray-light);
+        }
+
+        .filters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 12px;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .filter-group label {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--gray);
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .filter-group input, .filter-group select {
+            padding: 8px 12px;
+            border: 2px solid var(--gray-light);
+            border-radius: var(--radius-sm);
+            font-size: 13px;
+            transition: var(--transition);
+            background: white;
+            font-family: inherit;
+        }
+
+        .filter-group input:focus, .filter-group select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(79,70,229,0.1);
+        }
+
+        .filter-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid var(--gray-light);
+        }
+
+        .btn {
+            padding: 8px 18px;
+            border: none;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            text-decoration: none;
+        }
+
+        .btn-primary { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(79,70,229,0.4); }
+        .btn-success { background: var(--success); color: white; }
+        .btn-success:hover { background: #059669; transform: translateY(-2px); }
+        .btn-danger { background: var(--danger); color: white; }
+        .btn-danger:hover { background: #dc2626; transform: translateY(-2px); }
+        .btn-warning { background: var(--warning); color: white; }
+        .btn-warning:hover { background: #d97706; transform: translateY(-2px); }
+        .btn-info { background: var(--info); color: white; }
+        .btn-info:hover { background: #2563eb; transform: translateY(-2px); }
+        .btn-outline { background: transparent; border: 2px solid var(--gray-light); color: var(--dark-secondary); }
+        .btn-outline:hover { border-color: var(--primary); color: var(--primary); }
+        .btn-sm { padding: 6px 14px; font-size: 12px; border-radius: 8px; }
+        .btn-xs { padding: 4px 10px; font-size: 11px; border-radius: 6px; }
+
+        .search-bar {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 18px;
+            flex-wrap: wrap;
+        }
+        .search-bar input {
+            padding: 10px 16px;
+            border: 2px solid var(--gray-light);
+            border-radius: var(--radius-sm);
+            flex: 1;
+            min-width: 200px;
+            font-size: 14px;
+            transition: var(--transition);
+            background: white;
+        }
+        .search-bar input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(79,70,229,0.1);
+        }
+
+        .receipt-card {
+            background: var(--light);
+            border-radius: var(--radius);
+            padding: 18px 20px;
+            margin-bottom: 14px;
+            border: 1px solid var(--gray-light);
+            transition: var(--transition);
+        }
+        .receipt-card:hover { 
+            border-color: var(--primary-light);
+            box-shadow: var(--shadow-sm);
+        }
+        .receipt-card.is-blank {
+            background: var(--blank-bg);
+            border-color: var(--blank-border);
+        }
+        .receipt-card.is-closed {
+            background: var(--closed-bg);
+            border-color: var(--closed-border);
+        }
+        .receipt-card .receipt-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .receipt-card .receipt-header h4 {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--dark-secondary);
+        }
+        .receipt-card .receipt-header h4 i { color: var(--primary); margin-left: 8px; }
+        .receipt-card .receipt-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px 20px;
+            font-size: 13px;
+            color: var(--gray);
+        }
+        .receipt-card .receipt-meta span i { margin-left: 4px; width: 16px; }
+        .receipt-card .receipt-meta strong { color: var(--dark-secondary); }
+        .receipt-card .progress-section {
+            margin-top: 10px;
+        }
+        .receipt-card .progress-bar {
+            height: 6px;
+            background: var(--gray-light);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 6px;
+        }
+        .receipt-card .progress-fill {
+            height: 100%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 10px;
+            transition: width 0.6s ease;
+        }
+        .receipt-card .receipt-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 12px;
+            flex-wrap: wrap;
+        }
+
+        .status-badge {
+            padding: 4px 14px;
+            border-radius: 30px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-block;
+        }
+        .status-new { background: var(--info-light); color: var(--info); }
+        .status-assigned { background: var(--warning-light); color: var(--warning); }
+        .status-in_progress { background: #fce4ec; color: #dc2626; }
+        .status-completed { background: var(--success-light); color: var(--success); }
+        .status-closed { background: #d1fae5; color: #065f46; }
+        .status-cancelled { background: var(--danger-light); color: var(--danger); }
+        .status-blank { background: #fef3c7; color: #92400e; }
+        .status-blank-label { background: #fef3c7; color: #92400e; }
+
+        .sample-badge {
+            display: inline-block;
+            background: var(--success-light);
+            color: var(--success);
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        .no-sample-badge {
+            display: inline-block;
+            background: var(--danger-light);
+            color: var(--danger);
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 6px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        .pagination button {
+            padding: 8px 16px;
+            background: var(--gray-light);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 600;
+            font-size: 13px;
+            color: var(--dark-secondary);
+        }
+        .pagination button.active { 
+            background: var(--primary); 
+            color: white;
+            box-shadow: 0 2px 10px rgba(79,70,229,0.3);
+        }
+        .pagination button:hover:not(.active) { background: #cbd5e1; }
+        .pagination .load-more-btn {
+            background: transparent;
+            border: 2px dashed var(--gray-light);
+            color: var(--gray);
+            padding: 8px 30px;
+            width: 100%;
+            max-width: 300px;
+        }
+        .pagination .load-more-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: var(--info-light);
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--success);
+            color: white;
+            padding: 12px 24px;
+            border-radius: var(--radius-sm);
+            box-shadow: var(--shadow-lg);
+            z-index: 3000;
+            animation: slideUp 0.3s ease;
+            font-weight: 600;
+        }
+        .toast.error { background: var(--danger); }
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(8px);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            animation: modalFadeIn 0.3s ease;
+            cursor: pointer;
+        }
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        .modal-content {
+            background: white;
+            padding: 30px 35px;
+            border-radius: 24px;
+            max-width: 900px;
+            width: 92%;
+            max-height: 85vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-lg);
+            cursor: default;
+            position: relative;
+        }
+        .modal-content h3 {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--dark-secondary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .modal-content h3 i { color: var(--primary); }
+        .modal-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            margin-top: 22px;
+            flex-wrap: wrap;
+        }
+        .modal-close-btn {
+            position: absolute;
+            top: 15px;
+            left: 20px;
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: var(--gray);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .modal-close-btn:hover { color: var(--danger); transform: rotate(90deg); }
+
+        .receipt-details-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 18px;
+            background: var(--light);
+            padding: 16px;
+            border-radius: var(--radius-sm);
+        }
+        .receipt-details-grid .detail-item {
+            display: flex;
+            flex-direction: column;
+        }
+        .receipt-details-grid .detail-item label {
+            font-size: 11px;
+            color: var(--gray);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+        .receipt-details-grid .detail-item .value {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--dark-secondary);
+            margin-top: 2px;
+        }
+
+        .model-accordion {
+            border: 1px solid var(--gray-light);
+            border-radius: var(--radius-sm);
+            margin-bottom: 12px;
+            overflow: hidden;
+            transition: var(--transition);
+        }
+        .model-accordion:hover {
+            border-color: var(--primary-light);
+        }
+        .model-accordion .accordion-header {
+            background: var(--light);
+            padding: 14px 18px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: var(--transition);
+            user-select: none;
+        }
+        .model-accordion .accordion-header:hover {
+            background: #e8ecf1;
+        }
+        .model-accordion .accordion-header .model-info {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+        .model-accordion .accordion-header .model-info .model-name-tag {
+            font-weight: 700;
+            font-size: 16px;
+            color: var(--dark-secondary);
+        }
+        .model-accordion .accordion-header .model-info .model-qty-tag {
+            background: var(--primary);
+            color: white;
+            padding: 2px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .model-accordion .accordion-header .model-info .model-thumb-small {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            object-fit: cover;
+            cursor: pointer;
+            border: 2px solid var(--gray-light);
+            transition: var(--transition);
+        }
+        .model-accordion .accordion-header .model-info .model-thumb-small:hover {
+            border-color: var(--primary);
+            transform: scale(1.05);
+        }
+        .model-accordion .accordion-header .toggle-icon {
+            font-size: 18px;
+            color: var(--gray);
+            transition: var(--transition);
+        }
+        .model-accordion .accordion-header .toggle-icon.open {
+            transform: rotate(180deg);
+        }
+        .model-accordion .accordion-body {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 0 18px;
+        }
+        .model-accordion .accordion-body.open {
+            max-height: 2000px;
+            padding: 16px 18px 20px;
+        }
+
+        .color-accordion {
+            border: 1px solid var(--gray-light);
+            border-radius: var(--radius-sm);
+            margin-bottom: 10px;
+            overflow: hidden;
+            transition: var(--transition);
+        }
+        .color-accordion:hover {
+            border-color: var(--primary-light);
+        }
+        .color-accordion .color-header {
+            background: #f1f5f9;
+            padding: 10px 16px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: var(--transition);
+            user-select: none;
+        }
+        .color-accordion .color-header:hover {
+            background: #e2e8f0;
+        }
+        .color-accordion .color-header .color-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .color-accordion .color-header .color-info .color-thumb-small {
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            object-fit: cover;
+            cursor: pointer;
+            border: 2px solid var(--gray-light);
+            transition: var(--transition);
+        }
+        .color-accordion .color-header .color-info .color-thumb-small:hover {
+            border-color: var(--primary);
+            transform: scale(1.05);
+        }
+        .color-accordion .color-header .color-info .color-name-tag {
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--dark-secondary);
+        }
+        .color-accordion .color-header .color-info .color-sample-badge {
+            background: var(--success-light);
+            color: var(--success);
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        .color-accordion .color-header .toggle-icon {
+            font-size: 16px;
+            color: var(--gray);
+            transition: var(--transition);
+        }
+        .color-accordion .color-header .toggle-icon.open {
+            transform: rotate(180deg);
+        }
+        .color-accordion .color-body {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 0 16px;
+        }
+        .color-accordion .color-body.open {
+            max-height: 1000px;
+            padding: 12px 16px 16px;
+        }
+
+        .sizes-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+        .sizes-table th {
+            background: var(--primary);
+            color: white;
+            padding: 6px 12px;
+            text-align: center;
+            font-weight: 600;
+        }
+        .sizes-table td {
+            padding: 5px 12px;
+            text-align: center;
+            border-bottom: 1px solid var(--gray-light);
+        }
+        .sizes-table tr:last-child td { border-bottom: none; }
+        .sizes-table tr:hover { background: var(--light); }
+        .sizes-table .total-row {
+            background: #f1f5f9;
+            font-weight: 700;
+        }
+        .sizes-table .total-row td {
+            border-top: 2px solid var(--gray-light);
+            padding: 6px 12px;
+        }
+
+        .text-muted { color: var(--gray); font-size: 13px; }
+        .text-warning { color: var(--warning); }
+        .text-success { color: var(--success); }
+        .text-danger { color: var(--danger); }
+        .flex-between { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+
+        .qty-edit-btn {
+            background: none;
+            border: none;
+            color: var(--warning);
+            cursor: pointer;
+            font-size: 13px;
+            padding: 2px 6px;
+            transition: var(--transition);
+        }
+        .qty-edit-btn:hover {
+            color: #d97706;
+            transform: scale(1.1);
+        }
+        .qty-input-small {
+            width: 60px;
+            padding: 2px 6px;
+            border: 2px solid var(--primary);
+            border-radius: 6px;
+            font-size: 13px;
+            text-align: center;
+            font-weight: 600;
+        }
+        .qty-input-small:focus {
+            outline: none;
+            border-color: var(--success);
+            box-shadow: 0 0 0 3px rgba(16,185,129,0.2);
+        }
+        .qty-save-btn {
+            background: var(--success);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 2px 8px;
+            font-size: 11px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .qty-save-btn:hover {
+            background: #059669;
+        }
+        .qty-cancel-btn {
+            background: var(--gray-light);
+            color: var(--dark-secondary);
+            border: none;
+            border-radius: 6px;
+            padding: 2px 8px;
+            font-size: 11px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .qty-cancel-btn:hover {
+            background: var(--gray);
+            color: white;
+        }
+
+        @media (max-width: 992px) {
+            .main-content { margin-right: 0; }
+            .sidebar { transform: translateX(100%); }
+            .sidebar.visible { transform: translateX(0); }
+            .sidebar.hidden { transform: translateX(100%); }
+            .filters-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 768px) {
+            .header h1 { font-size: 17px; }
+            .receipt-card .receipt-header { flex-direction: column; align-items: flex-start; }
+            .receipt-details-grid { grid-template-columns: 1fr; }
+            .modal-content { padding: 20px; }
+            .table-container { padding: 16px; }
+            .filters-grid { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 480px) {
+            .receipt-card { padding: 14px 16px; }
+            .receipt-card .receipt-meta { gap: 8px; font-size: 12px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar" id="sidebar"></div>
+
+    <div class="main-content" id="mainContent">
+        <div class="header">
+            <div class="header-left">
+                <button class="menu-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+                <h1><i class="fas fa-list-ul"></i> جميع الاستلامات</h1>
+            </div>
+            <div class="user-info">
+                <i class="fas fa-user-circle"></i>
+                <span id="currentAdminName">مرحباً، مدير النظام</span>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <div class="section-header">
+                <h3><i class="fas fa-list-ul"></i> جميع الاستلامات</h3>
+                <span class="text-muted" id="receiptCountDisplay">0 فاتورة</span>
+            </div>
+
+            <!-- ADVANCED FILTERS -->
+            <div class="filters-container">
+                <div class="filters-grid">
+                    <div class="filter-group">
+                        <label><i class="fas fa-search"></i> بحث</label>
+                        <input type="text" id="searchInput" placeholder="كود / مصنع / موديل..." oninput="applyFilters()">
+                    </div>
+                    <div class="filter-group">
+                        <label><i class="fas fa-tag"></i> الحالة</label>
+                        <select id="statusFilter" onchange="applyFilters()">
+                            <option value="all">الكل</option>
+                            <option value="new">جديدة</option>
+                            <option value="assigned">مسندة</option>
+                            <option value="in_progress">تحت التنفيذ</option>
+                            <option value="completed">مكتملة</option>
+                            <option value="closed">مغلقة</option>
+                            <option value="cancelled">ملغية</option>
+                            <option value="blank">Blank</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label><i class="fas fa-user"></i> الموظف</label>
+                        <select id="employeeFilter" onchange="applyFilters()">
+                            <option value="all">كل الموظفين</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label><i class="fas fa-factory"></i> المصنع</label>
+                        <select id="factoryFilter" onchange="applyFilters()">
+                            <option value="all">كل المصانع</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label><i class="fas fa-calendar-alt"></i> من تاريخ</label>
+                        <input type="date" id="dateFrom" onchange="applyFilters()">
+                    </div>
+                    <div class="filter-group">
+                        <label><i class="fas fa-calendar-alt"></i> إلى تاريخ</label>
+                        <input type="date" id="dateTo" onchange="applyFilters()">
+                    </div>
+                </div>
+                <div class="filter-actions">
+                    <button class="btn btn-outline btn-sm" onclick="resetFilters()">
+                        <i class="fas fa-undo"></i> إعادة تعيين
+                    </button>
+                    <span class="text-muted" style="margin-right:auto;font-size:12px;" id="filterResultsCount">0 فاتورة</span>
+                </div>
+            </div>
+
+            <div id="receiptsCardsContainer"></div>
+            <div id="paginationContainer" class="pagination"></div>
+        </div>
+    </div>
+
+    <!-- RECEIPT VIEW MODAL -->
+    <div id="receiptViewModal" class="modal" onclick="closeModalOnOutsideClick(event, 'receiptViewModal')">
+        <div class="modal-content">
+            <button class="modal-close-btn" onclick="closeReceiptViewModal()"><i class="fas fa-times"></i></button>
+            <h3><i class="fas fa-file-invoice"></i> تفاصيل الفاتورة</h3>
+            <div id="receiptViewDetails"></div>
+
+            <div id="assignmentHistoryContainer" style="margin-top:20px;border-top:1px solid var(--gray-light);padding-top:15px;">
+                <h4><i class="fas fa-history"></i> سجل الإسناد</h4>
+                <div id="assignmentHistoryList"></div>
+            </div>
+
+            <div id="reassignContainer" class="form-group" style="margin-top:15px;display:none;">
+                <label><i class="fas fa-exchange-alt"></i> إعادة إسناد الفاتورة</label>
+                <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                    <select id="reassignSelect" style="flex:1; padding:10px 16px; border:2px solid var(--gray-light); border-radius:var(--radius-sm);">
+                        <option value="">-- اختر موظف --</option>
+                    </select>
+                    <button class="btn btn-warning" onclick="reassignReceipt()"><i class="fas fa-user-check"></i> إسناد</button>
+                </div>
+            </div>
+
+            <div class="flex-between" style="margin-top:20px;">
+                <button class="btn btn-success btn-sm" onclick="exportSingleReceiptToExcel()"><i class="fas fa-file-excel"></i> تصدير الفاتورة</button>
+                <button class="btn btn-outline" onclick="closeReceiptViewModal()">إغلاق</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- IMAGE VIEW MODAL -->
+    <div id="imageViewModal" class="modal" onclick="closeModalOnOutsideClick(event, 'imageViewModal')">
+        <div class="modal-content" style="max-width: 500px; text-align: center;">
+            <button class="modal-close-btn" onclick="closeImageViewModal()"><i class="fas fa-times"></i></button>
+            <h3><i class="fas fa-image"></i> معاينة الصورة</h3>
+            <img id="fullImageView" src="" style="max-width:100%;max-height:400px;border-radius:12px;margin:16px 0;">
+            <div class="modal-buttons"><button class="btn btn-outline" onclick="closeImageViewModal()">إلغاء</button></div>
+        </div>
+    </div>
+
+    <script src="main.js"></script>
+
+    <script>
+        // ============================================================
+        // 1. GLOBAL STATE
+        // ============================================================
+        let allReceipts = [];
+        let filteredReceipts = [];
+        let currentReceiptsPage = 1;
+        let currentViewReceipt = null;
+        let employeesList = [];
+        let allSizesMap = {};
+        let allModelsList = [];
+        let allFactories = [];
+        const itemsPerPage = 50;
+
+        // ============================================================
+        // 2. UI HELPERS
+        // ============================================================
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('mainContent');
+            sidebar.classList.toggle('hidden');
+            sidebar.classList.toggle('visible');
+            mainContent.classList.toggle('sidebar-hidden');
+        }
+
+        document.addEventListener('click', function(event) {
+            const sidebar = document.getElementById('sidebar');
+            const menuToggle = document.querySelector('.menu-toggle');
+            const mainContent = document.getElementById('mainContent');
+            
+            const isSidebarVisible = sidebar.classList.contains('visible') && !sidebar.classList.contains('hidden');
+            
+            if (isSidebarVisible) {
+                const isClickInsideSidebar = sidebar.contains(event.target);
+                const isClickOnMenuToggle = menuToggle && menuToggle.contains(event.target);
+                
+                if (!isClickInsideSidebar && !isClickOnMenuToggle) {
+                    sidebar.classList.add('hidden');
+                    sidebar.classList.remove('visible');
+                    mainContent.classList.remove('sidebar-hidden');
+                }
+            }
+        });
+
+        window.addEventListener('resize', function() {
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('mainContent');
+            
+            if (window.innerWidth > 992) {
+                sidebar.classList.remove('hidden');
+                sidebar.classList.remove('visible');
+                mainContent.classList.remove('sidebar-hidden');
+            } else {
+                sidebar.classList.add('hidden');
+                sidebar.classList.remove('visible');
+                mainContent.classList.add('sidebar-hidden');
+            }
+        });
+
+        function closeModalOnOutsideClick(event, modalId) {
+            const modal = document.getElementById(modalId);
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        }
+
+        function showToast(message, isError = false) {
+            const existing = document.querySelector('.toast');
+            if (existing) existing.remove();
+            const toast = document.createElement('div');
+            toast.className = `toast${isError ? ' error' : ''}`;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+
+        function showFullImage(imageUrl) {
+            document.getElementById('fullImageView').src = imageUrl;
+            document.getElementById('imageViewModal').style.display = 'flex';
+        }
+
+        function closeImageViewModal() {
+            document.getElementById('imageViewModal').style.display = 'none';
+        }
+
+        // ============================================================
+        // 3. LOAD DATA
+        // ============================================================
+        async function loadSizesMap() {
+            const snapshot = await db.ref('sizes').once('value');
+            allSizesMap = {};
+            snapshot.forEach(child => {
+                allSizesMap[child.key] = child.val().name;
+            });
+            return allSizesMap;
+        }
+
+        function getSizeName(sizeId) {
+            return allSizesMap[sizeId] || sizeId || 'غير محدد';
+        }
+
+        async function loadAllModels() {
+            const snapshot = await db.ref('models').once('value');
+            allModelsList = [];
+            snapshot.forEach(child => {
+                allModelsList.push({
+                    id: child.key,
+                    name: child.val().name,
+                    factory: child.val().factory,
+                    imageUrl: child.val().imageUrl || '',
+                    code: child.val().code || ''
+                });
+            });
+            return allModelsList;
+        }
+
+        async function loadEmployeesList() {
+            const snapshot = await db.ref('users').once('value');
+            employeesList = [];
+            snapshot.forEach(child => {
+                const user = child.val();
+                if (user.role === 'employee') {
+                    employeesList.push({
+                        userId: child.key,
+                        username: user.username,
+                        fullName: user.fullName
+                    });
+                }
+            });
+            return employeesList;
+        }
+
+        async function loadFactoriesList() {
+            const snapshot = await db.ref('factories').once('value');
+            allFactories = [];
+            snapshot.forEach(child => {
+                allFactories.push(child.val().name);
+            });
+            return allFactories;
+        }
+
+        async function populateFilterSelects() {
+            await loadEmployeesList();
+            await loadFactoriesList();
+
+            const employeeSelect = document.getElementById('employeeFilter');
+            employeeSelect.innerHTML = '<option value="all">كل الموظفين</option>';
+            employeesList.forEach(emp => {
+                employeeSelect.innerHTML += `<option value="${emp.userId}">${emp.fullName}</option>`;
+            });
+
+            const factorySelect = document.getElementById('factoryFilter');
+            factorySelect.innerHTML = '<option value="all">كل المصانع</option>';
+            allFactories.forEach(factory => {
+                factorySelect.innerHTML += `<option value="${factory}">${factory}</option>`;
+            });
+        }
+
+        async function populateReassignSelect() {
+            await loadEmployeesList();
+            const select = document.getElementById('reassignSelect');
+            select.innerHTML = '<option value="">-- اختر موظف --</option>';
+            employeesList.forEach(emp => {
+                select.innerHTML += `<option value="${emp.userId}" data-username="${emp.username}" data-fullname="${emp.fullName}">${emp.fullName} (${emp.username})</option>`;
+            });
+        }
+
+        // ============================================================
+        // 4. CONVERT BLANK RECEIPT
+        // ============================================================
+        function convertBlankReceiptToReceipt(id, data) {
+            if (!data || !data.invoiceCode) return null;
+            
+            const isClosed = data.closedDate ? true : (data.isClosed === true);
+            
+            const models = [];
+            const modelColors = data.modelColors || {};
+            let totalQty = 0;
+            
+            for (const modelName in modelColors) {
+                const colors = modelColors[modelName];
+                let modelTotalQty = 0;
+                for (const color in colors) {
+                    const sizes = colors[color];
+                    for (const sizeId in sizes) {
+                        const qtyArray = sizes[sizeId];
+                        if (Array.isArray(qtyArray)) {
+                            const qty = qtyArray.reduce((sum, v) => sum + (typeof v === 'number' ? v : 0), 0);
+                            modelTotalQty += qty;
+                            totalQty += qty;
+                        } else if (typeof qtyArray === 'number') {
+                            modelTotalQty += qtyArray;
+                            totalQty += qtyArray;
+                        }
+                    }
+                }
+                if (modelTotalQty > 0) {
+                    models.push({
+                        modelName: modelName,
+                        quantity: modelTotalQty,
+                        needsPhoto: false,
+                        sampleTaken: false
+                    });
+                } else {
+                    models.push({
+                        modelName: modelName,
+                        quantity: 0,
+                        needsPhoto: false,
+                        sampleTaken: false
+                    });
+                }
+            }
+
+            if (models.length === 0) {
+                for (const modelName in modelColors) {
+                    models.push({
+                        modelName: modelName,
+                        quantity: 0,
+                        needsPhoto: false,
+                        sampleTaken: false
+                    });
+                }
+            }
+
+            const status = isClosed ? 'closed' : 'blank';
+
+            let assignedTo = null;
+            if (data.assignedEmployees && data.assignedEmployees.length > 0) {
+                const assignedName = data.assignedEmployees[0] || '';
+                const assignedUsername = data.assignedEmployeesUsernames && data.assignedEmployeesUsernames[0] || '';
+                const employee = employeesList.find(e => e.username === assignedUsername);
+                if (employee) {
+                    assignedTo = {
+                        userId: employee.userId,
+                        username: assignedUsername,
+                        fullName: assignedName,
+                        assignedAt: data.createdAt || firebase.database.ServerValue.TIMESTAMP,
+                        assignedBy: {
+                            userId: 'admin',
+                            username: 'admin',
+                            fullName: 'مدير النظام'
+                        }
+                    };
+                } else {
+                    assignedTo = {
+                        userId: null,
+                        username: assignedUsername,
+                        fullName: assignedName,
+                        assignedAt: data.createdAt || firebase.database.ServerValue.TIMESTAMP,
+                        assignedBy: {
+                            userId: 'admin',
+                            username: 'admin',
+                            fullName: 'مدير النظام'
+                        }
+                    };
+                }
+            }
+
+            return {
+                id: id,
+                _type: 'blank',
+                invoiceCode: data.invoiceCode || '',
+                factory: data.factory || '',
+                models: models,
+                modelColors: data.modelColors || {},
+                modelColorsImages: data.modelColorsImages || {},
+                modelNotes: data.modelNotes || {},
+                assignedTo: assignedTo,
+                helpers: [],
+                assignmentHistory: [],
+                receivedQty: data.modelColors ? totalQty : 0,
+                receivedDetails: [],
+                status: status,
+                createdAt: data.createdAt || firebase.database.ServerValue.TIMESTAMP,
+                closedDate: data.closedDate || null,
+                totalRequiredQty: models.reduce((sum, m) => sum + m.quantity, 0),
+                createdBy: {
+                    userId: 'admin',
+                    username: data.createdByUsername || 'admin',
+                    fullName: data.createdBy || 'مدير النظام'
+                },
+                isArchived: false,
+                isBlank: true,
+                description: data.description || '',
+                notes: data.notes || '',
+                sampleRequests: data.sampleRequests || {},
+                isClosed: isClosed,
+                closedModels: data.isClosed ? {} : {},
+                closedModelsDate: data.isClosed ? { 'all': data.closedDate || new Date().toISOString() } : {}
+            };
+        }
+
+        // ============================================================
+        // 5. LOAD RECEIPTS
+        // ============================================================
+        async function loadReceiptsList() {
+            await loadEmployeesList();
+            await loadAllModels();
+            await populateFilterSelects();
+
+            const snapshot = await db.ref('receipts').once('value');
+            allReceipts = [];
+            snapshot.forEach(child => {
+                const data = child.val();
+                if (!data.isArchived) {
+                    allReceipts.push({ id: child.key, ...data, _type: 'receipt' });
+                }
+            });
+
+            const blankSnapshot = await db.ref('blankReceipts').once('value');
+            blankSnapshot.forEach(child => {
+                const data = child.val();
+                const converted = convertBlankReceiptToReceipt(child.key, data);
+                if (converted) {
+                    allReceipts.push(converted);
+                }
+            });
+
+            allReceipts.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+            applyFilters();
+        }
+
+        // ============================================================
+        // 6. ADVANCED FILTERS
+        // ============================================================
+        function applyFilters() {
+            const search = document.getElementById('searchInput').value.toLowerCase().trim();
+            const status = document.getElementById('statusFilter').value;
+            const employeeId = document.getElementById('employeeFilter').value;
+            const factory = document.getElementById('factoryFilter').value;
+            const dateFrom = document.getElementById('dateFrom').value;
+            const dateTo = document.getElementById('dateTo').value;
+
+            filteredReceipts = allReceipts.filter(r => {
+                const matchesSearch = search === '' ||
+                    (r.invoiceCode || '').toLowerCase().includes(search) ||
+                    (r.factory || '').toLowerCase().includes(search) ||
+                    (r.models && r.models.some(m => (m.modelName || '').toLowerCase().includes(search)));
+
+                let matchesStatus = status === 'all';
+                if (!matchesStatus) {
+                    if (status === 'blank') {
+                        matchesStatus = r.isBlank === true && r.status !== 'closed';
+                    } else if (status === 'closed') {
+                        matchesStatus = r.status === 'closed' || (r.isBlank === true && r.closedDate);
+                    } else {
+                        matchesStatus = (r.status || 'new') === status;
+                    }
+                }
+
+                let matchesEmployee = employeeId === 'all';
+                if (!matchesEmployee) {
+                    matchesEmployee = r.assignedTo && r.assignedTo.userId === employeeId;
+                }
+
+                let matchesFactory = factory === 'all';
+                if (!matchesFactory) {
+                    matchesFactory = (r.factory || '') === factory;
+                }
+
+                let matchesDate = true;
+                const createdAt = r.createdAt ? new Date(r.createdAt) : null;
+                const closedAt = r.closedDate ? new Date(r.closedDate) : null;
+                const dateToCheck = r.closedDate ? closedAt : createdAt;
+
+                if (dateFrom && dateToCheck) {
+                    const fromDate = new Date(dateFrom);
+                    fromDate.setHours(0, 0, 0, 0);
+                    if (dateToCheck < fromDate) matchesDate = false;
+                }
+                if (dateTo && dateToCheck) {
+                    const toDate = new Date(dateTo);
+                    toDate.setHours(23, 59, 59, 999);
+                    if (dateToCheck > toDate) matchesDate = false;
+                }
+
+                return matchesSearch && matchesStatus && matchesEmployee && matchesFactory && matchesDate;
+            });
+
+            currentReceiptsPage = 1;
+            document.getElementById('filterResultsCount').textContent = `${filteredReceipts.length} فاتورة`;
+            renderReceiptsList();
+        }
+
+        function resetFilters() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('statusFilter').value = 'all';
+            document.getElementById('employeeFilter').value = 'all';
+            document.getElementById('factoryFilter').value = 'all';
+            document.getElementById('dateFrom').value = '';
+            document.getElementById('dateTo').value = '';
+            applyFilters();
+        }
+
+        // ============================================================
+        // 7. RENDER RECEIPTS LIST
+        // ============================================================
+        function renderReceiptsList() {
+            const container = document.getElementById('receiptsCardsContainer');
+            const paginationContainer = document.getElementById('paginationContainer');
+            
+            const start = (currentReceiptsPage - 1) * itemsPerPage;
+            const end = Math.min(start + itemsPerPage, filteredReceipts.length);
+            const pageReceipts = filteredReceipts.slice(start, end);
+
+            container.innerHTML = '';
+            
+            if (pageReceipts.length === 0) {
+                container.innerHTML = '<p class="text-muted" style="text-align:center;padding:30px 0;">لا توجد فواتير تطابق البحث</p>';
+                paginationContainer.innerHTML = '';
+                document.getElementById('receiptCountDisplay').innerText = '0 فاتورة';
+                return;
+            }
+
+            document.getElementById('receiptCountDisplay').innerText = `${filteredReceipts.length} فاتورة`;
+
+            pageReceipts.forEach(r => {
+                const isBlank = r.isBlank === true;
+                const isClosed = r.status === 'closed' || (isBlank && r.closedDate);
+                const totalReq = r.totalRequiredQty || r.models?.reduce((s, m) => s + (m.quantity || 0), 0) || 0;
+                const received = r.receivedQty || 0;
+                const remaining = totalReq - received;
+                const percent = totalReq > 0 ? (received / totalReq) * 100 : 0;
+                const status = r.status || 'new';
+
+                const statusLabels = {
+                    'new': 'جديدة',
+                    'assigned': 'مسندة',
+                    'in_progress': 'تحت التنفيذ',
+                    'completed': 'مكتملة',
+                    'closed': 'مغلقة',
+                    'cancelled': 'ملغية',
+                    'blank': 'Blank'
+                };
+                const statusClasses = {
+                    'new': 'status-new',
+                    'assigned': 'status-assigned',
+                    'in_progress': 'status-in_progress',
+                    'completed': 'status-completed',
+                    'closed': 'status-closed',
+                    'cancelled': 'status-cancelled',
+                    'blank': 'status-blank'
+                };
+
+                let displayStatus = status;
+                if (isBlank && isClosed) {
+                    displayStatus = 'closed';
+                } else if (isBlank) {
+                    displayStatus = 'blank';
+                }
+
+                // Display label for blank receipts
+                const statusLabel = displayStatus === 'blank' ? 'Blank' : statusLabels[displayStatus] || status;
+
+                const assignedToName = r.assignedTo ? r.assignedTo.fullName : 'غير مسند';
+                const createdByName = r.createdBy ? r.createdBy.fullName : 'غير معروف';
+
+                let modelsDisplay = '';
+                if (r.models && r.models.length > 0) {
+                    modelsDisplay = r.models.map(m => `${m.modelName}(${m.quantity})`).join(', ');
+                } else if (r.modelColors) {
+                    modelsDisplay = Object.keys(r.modelColors).join(', ');
+                }
+
+                let hasSample = false;
+                if (r.sampleRequests) {
+                    for (const m in r.sampleRequests) {
+                        for (const c in r.sampleRequests[m]) {
+                            for (const s in r.sampleRequests[m][c]) {
+                                if (r.sampleRequests[m][c][s] === true) {
+                                    hasSample = true;
+                                    break;
+                                }
+                            }
+                            if (hasSample) break;
+                        }
+                        if (hasSample) break;
+                    }
+                }
+
+                let cardClasses = 'receipt-card';
+                if (isBlank && isClosed) {
+                    cardClasses += ' is-closed';
+                } else if (isBlank) {
+                    cardClasses += ' is-blank';
+                }
+
+                let closedDateDisplay = '';
+                if (r.closedDate) {
+                    const date = new Date(r.closedDate);
+                    closedDateDisplay = ` | 🕒 إغلاق: ${date.toLocaleDateString('ar-EG')}`;
+                }
+
+                container.innerHTML += `
+                    <div class="${cardClasses}">
+                        <div class="receipt-header">
+                            <h4><i class="fas fa-file-invoice"></i> ${isBlank ? '📝 [Blank] ' : ''}${r.invoiceCode || 'بدون كود'} ${isClosed ? '🔒' : ''}</h4>
+                            <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+                                <span class="status-badge ${statusClasses[displayStatus] || 'status-new'}">${statusLabel}</span>
+                                ${hasSample ? '<span class="sample-badge"><i class="fas fa-camera"></i> عينات</span>' : ''}
+                            </div>
+                        </div>
+                        <div class="receipt-meta">
+                            <span><i class="fas fa-factory"></i> <strong>${r.factory || 'غير محدد'}</strong></span>
+                            <span><i class="fas fa-user-check"></i> ${assignedToName}</span>
+                            <span><i class="fas fa-user-edit"></i> ${createdByName}</span>
+                            ${isBlank ? `<span class="text-warning"><i class="fas fa-pencil-alt"></i> Blank</span>` : ''}
+                            ${isClosed ? `<span class="text-success"><i class="fas fa-check-circle"></i> مغلقة</span>` : ''}
+                            ${closedDateDisplay}
+                        </div>
+                        <div class="receipt-meta">
+                            <span><i class="fas fa-cube"></i> ${modelsDisplay || 'لا توجد موديلات'}</span>
+                        </div>
+                        <div class="progress-section">
+                            <div class="receipt-meta">
+                                <span><strong>المطلوب:</strong> ${totalReq}</span>
+                                <span><strong>المستلم:</strong> ${received}</span>
+                                <span><strong>المتبقي:</strong> ${remaining}</span>
+                                <span><strong>النسبة:</strong> ${percent.toFixed(1)}%</span>
+                            </div>
+                            <div class="progress-bar"><div class="progress-fill" style="width:${Math.min(percent, 100)}%"></div></div>
+                        </div>
+                        <div class="receipt-actions">
+                            <button class="btn btn-info btn-sm" onclick="viewReceiptDetails('${r.id}')"><i class="fas fa-eye"></i> عرض</button>
+                            <button class="btn btn-success btn-sm" onclick="exportSingleReceiptFromCard('${r.id}')"><i class="fas fa-file-excel"></i> تصدير</button>
+                            <button class="btn btn-danger btn-sm" onclick="deleteReceipt('${r.id}')"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            paginationContainer.innerHTML = '';
+            const totalPages = Math.ceil(filteredReceipts.length / itemsPerPage);
+            
+            if (totalPages > 1) {
+                if (currentReceiptsPage < totalPages) {
+                    const loadMoreBtn = document.createElement('button');
+                    loadMoreBtn.className = 'load-more-btn';
+                    loadMoreBtn.innerHTML = `<i class="fas fa-chevron-down"></i> عرض المزيد (${filteredReceipts.length - (currentReceiptsPage * itemsPerPage)} متبقية)`;
+                    loadMoreBtn.onclick = () => {
+                        currentReceiptsPage++;
+                        renderReceiptsList();
+                    };
+                    paginationContainer.appendChild(loadMoreBtn);
+                } else {
+                    paginationContainer.innerHTML = `<span class="text-muted">تم عرض جميع الفواتير (${filteredReceipts.length})</span>`;
+                }
+            }
+        }
+
+        // ============================================================
+        // 8. VIEW RECEIPT DETAILS
+        // ============================================================
+        async function viewReceiptDetails(receiptId) {
+            let receipt = allReceipts.find(r => r.id === receiptId);
+            if (!receipt) {
+                showToast('الفاتورة غير موجودة', true);
+                return;
+            }
+            
+            currentViewReceipt = receipt;
+
+            await populateReassignSelect();
+            await loadSizesMap();
+
+            const isBlank = receipt.isBlank === true;
+            const isClosed = receipt.status === 'closed' || (isBlank && receipt.closedDate);
+            const modelColors = receipt.modelColors || {};
+            const modelColorsImages = receipt.modelColorsImages || {};
+            const receiptModels = receipt.models || [];
+            const status = receipt.status || 'new';
+
+            const statusLabels = {
+                'new': 'جديدة',
+                'assigned': 'مسندة',
+                'in_progress': 'تحت التنفيذ',
+                'completed': 'مكتملة',
+                'closed': 'مغلقة',
+                'cancelled': 'ملغية',
+                'blank': 'Blank'
+            };
+            const statusClasses = {
+                'new': 'status-new',
+                'assigned': 'status-assigned',
+                'in_progress': 'status-in_progress',
+                'completed': 'status-completed',
+                'closed': 'status-closed',
+                'cancelled': 'status-cancelled',
+                'blank': 'status-blank'
+            };
+
+            let displayStatus = status;
+            if (isBlank && isClosed) {
+                displayStatus = 'closed';
+            } else if (isBlank) {
+                displayStatus = 'blank';
+            }
+
+            const totalReq = receipt.totalRequiredQty || receiptModels.reduce((s, m) => s + (m.quantity || 0), 0) || 0;
+            const received = receipt.receivedQty || 0;
+            const remaining = totalReq - received;
+            const assignedToName = receipt.assignedTo ? receipt.assignedTo.fullName : 'غير مسند';
+            const helpersNames = receipt.helpers && receipt.helpers.length > 0 
+                ? receipt.helpers.map(h => h.fullName).join(', ') 
+                : 'لا يوجد';
+            const createdByName = receipt.createdBy ? receipt.createdBy.fullName : 'غير معروف';
+            const createdAt = receipt.createdAt ? new Date(receipt.createdAt).toLocaleString('ar-EG') : 'غير معروف';
+
+            let closedDateInfo = '';
+            if (receipt.closedDate) {
+                const date = new Date(receipt.closedDate);
+                closedDateInfo = `<div class="detail-item"><label>تاريخ الإغلاق</label><div class="value">${date.toLocaleDateString('ar-EG')} ${date.toLocaleTimeString('ar-EG')}</div></div>`;
+            }
+
+            // Build model accordions
+            let modelsAccordionHtml = '';
+            const modelGroups = {};
+            
+            if (Object.keys(modelColors).length > 0) {
+                for (const [modelName, colors] of Object.entries(modelColors)) {
+                    if (!modelGroups[modelName]) {
+                        modelGroups[modelName] = {
+                            totalQty: 0,
+                            colors: {}
+                        };
+                    }
+                    
+                    if (typeof colors === 'object' && colors !== null) {
+                        for (const [color, sizes] of Object.entries(colors)) {
+                            if (!modelGroups[modelName].colors[color]) {
+                                modelGroups[modelName].colors[color] = {};
+                            }
+                            
+                            if (typeof sizes === 'object' && sizes !== null) {
+                                for (const [sizeId, batches] of Object.entries(sizes)) {
+                                    let qty = 0;
+                                    if (Array.isArray(batches)) {
+                                        qty = batches.reduce((sum, v) => sum + (typeof v === 'number' ? v : 0), 0);
+                                    } else if (typeof batches === 'number') {
+                                        qty = batches;
+                                    } else if (batches && typeof batches === 'object') {
+                                        qty = Object.values(batches).reduce((sum, v) => sum + (typeof v === 'number' ? v : 0), 0);
+                                    }
+                                    if (qty > 0) {
+                                        modelGroups[modelName].colors[color][sizeId] = qty;
+                                        modelGroups[modelName].totalQty += qty;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            } else if (receiptModels.length > 0) {
+                for (const model of receiptModels) {
+                    const modelName = model.modelName;
+                    if (!modelGroups[modelName]) {
+                        modelGroups[modelName] = {
+                            totalQty: model.quantity || 0,
+                            colors: {}
+                        };
+                    }
+                }
+            }
+
+            for (const [modelName, group] of Object.entries(modelGroups)) {
+                const accordionId = `accordion-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`;
+                const colorEntries = Object.entries(group.colors);
+                
+                const modelData = allModelsList.find(m => m.name === modelName);
+                const modelImage = modelData?.imageUrl || '';
+                const modelCode = modelData?.code || '';
+                
+                let colorsHtml = '';
+                
+                if (colorEntries.length === 0) {
+                    colorsHtml = `
+                        <div style="padding:8px 0;color:var(--dark-secondary);">
+                            <strong>الكمية الإجمالية: ${group.totalQty}</strong>
+                            <button class="qty-edit-btn" onclick="editModelQty('${receipt.id}', '${modelName}')" title="تعديل الكمية">
+                                <i class="fas fa-pen"></i>
+                            </button>
+                        </div>
+                    `;
+                } else {
+                    for (const [color, sizes] of colorEntries) {
+                        const colorAccordionId = `color-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`;
+                        const sizeEntries = Object.entries(sizes);
+                        
+                        const colorImage = modelColorsImages[modelName]?.[color] || '';
+                        
+                        let sizesHtml = '';
+                        
+                        if (sizeEntries.length === 0) {
+                            sizesHtml = '<p class="text-muted" style="padding:8px 0;">لا توجد مقاسات</p>';
+                        } else {
+                            let tableHtml = `
+                                <table class="sizes-table">
+                                    <thead>
+                                        <tr>
+                                            <th>المقاس</th>
+                                            <th>الكمية</th>
+                                            <th style="min-width:100px;">📸 عينة تصوير</th>
+                                            <th>تعديل</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                            `;
+                            let total = 0;
+                            for (const [sizeId, qty] of sizeEntries) {
+                                const sizeName = getSizeName(sizeId);
+                                total += qty;
+                                const hasSample = checkSizeHasSample(receipt, modelName, color, sizeId);
+                                const rowId = `qty-${receipt.id}-${modelName}-${color}-${sizeId}`;
+                                tableHtml += `
+                                    <tr id="${rowId}">
+                                        <td><strong>${sizeName}</strong></td>
+                                        <td class="qty-display-${rowId}">${qty}</td>
+                                        <td style="text-align:center;">${hasSample ? '<span class="sample-badge">✅ تم التصوير</span>' : '<span class="no-sample-badge">❌ لم يتم</span>'}</td>
+                                        <td style="text-align:center;">
+                                            <button class="qty-edit-btn" onclick="editQty('${receipt.id}', '${modelName}', '${color}', '${sizeId}', ${qty})" title="تعديل الكمية">
+                                                <i class="fas fa-pen"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                `;
+                            }
+                            tableHtml += `
+                                    <tr class="total-row">
+                                        <td><strong>الإجمالي</strong></td>
+                                        <td><strong>${total}</strong></td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                </tbody></table>
+                            `;
+                            sizesHtml = tableHtml;
+                        }
+                        
+                        colorsHtml += `
+                            <div class="color-accordion">
+                                <div class="color-header" onclick="toggleAccordion('${colorAccordionId}')">
+                                    <div class="color-info">
+                                        ${colorImage ? 
+                                            `<img src="${colorImage}" class="color-thumb-small" onclick="event.stopPropagation();showFullImage('${colorImage}')" title="اضغط لعرض الصورة">` : 
+                                            (modelImage ? 
+                                                `<img src="${modelImage}" class="color-thumb-small" onclick="event.stopPropagation();showFullImage('${modelImage}')" title="اضغط لعرض الصورة (صورة الموديل)">` : 
+                                                `<span style="width:32px;height:32px;border-radius:6px;background:var(--gray-light);display:flex;align-items:center;justify-content:center;color:var(--gray);font-size:12px;"><i class="fas fa-image"></i></span>`
+                                            )
+                                        }
+                                        <span class="color-name-tag">${color}</span>
+                                        ${receipt.sampleRequests && receipt.sampleRequests[modelName] && receipt.sampleRequests[modelName][color] ? 
+                                            `<span class="color-sample-badge"><i class="fas fa-camera"></i> عينات مطلوبة</span>` : ''}
+                                    </div>
+                                    <span class="toggle-icon" id="toggle-${colorAccordionId}"><i class="fas fa-chevron-down"></i></span>
+                                </div>
+                                <div class="color-body" id="${colorAccordionId}">
+                                    ${sizesHtml}
+                                </div>
+                            </div>
+                        `;
+                    }
+                }
+                
+                modelsAccordionHtml += `
+                    <div class="model-accordion">
+                        <div class="accordion-header" onclick="toggleAccordion('${accordionId}')">
+                            <div class="model-info">
+                                ${modelImage ? 
+                                    `<img src="${modelImage}" class="model-thumb-small" onclick="event.stopPropagation();showFullImage('${modelImage}')" title="اضغط لعرض الصورة">` : 
+                                    `<span style="width:40px;height:40px;border-radius:8px;background:var(--gray-light);display:flex;align-items:center;justify-content:center;color:var(--gray);font-size:14px;"><i class="fas fa-tshirt"></i></span>`
+                                }
+                                <span class="model-name-tag">${modelName}</span>
+                                <span class="model-qty-tag">${group.totalQty} قطعة</span>
+                                ${colorEntries.length > 0 ? `<span style="font-size:12px;color:var(--gray);">(${colorEntries.length} لون)</span>` : ''}
+                                ${modelCode ? `<span style="font-size:11px;color:var(--gray);background:var(--gray-light);padding:2px 8px;border-radius:10px;"><i class="fas fa-tag"></i> ${modelCode}</span>` : ''}
+                            </div>
+                            <span class="toggle-icon" id="toggle-${accordionId}"><i class="fas fa-chevron-down"></i></span>
+                        </div>
+                        <div class="accordion-body" id="${accordionId}">
+                            ${colorsHtml}
+                        </div>
+                    </div>
+                `;
+            }
+
+            if (!modelsAccordionHtml) {
+                modelsAccordionHtml = '<p class="text-muted">لا توجد موديلات</p>';
+            }
+
+            const statusLabel = displayStatus === 'blank' ? 'Blank' : statusLabels[displayStatus] || status;
+
+            document.getElementById('receiptViewDetails').innerHTML = `
+                <div class="receipt-details-grid">
+                    <div class="detail-item">
+                        <label>كود الفاتورة</label>
+                        <div class="value">${isBlank ? '📝 [Blank] ' : ''}${receipt.invoiceCode || 'بدون كود'} ${isClosed ? '🔒' : ''}</div>
+                    </div>
+                    <div class="detail-item">
+                        <label>المصنع</label>
+                        <div class="value">${receipt.factory || 'غير محدد'}</div>
+                    </div>
+                    <div class="detail-item">
+                        <label>الحالة</label>
+                        <div class="value"><span class="status-badge ${statusClasses[displayStatus] || 'status-new'}">${statusLabel}</span></div>
+                    </div>
+                    <div class="detail-item">
+                        <label>المسؤول الأساسي</label>
+                        <div class="value">${assignedToName}</div>
+                    </div>
+                    <div class="detail-item">
+                        <label>المساعدين</label>
+                        <div class="value">${helpersNames}</div>
+                    </div>
+                    <div class="detail-item">
+                        <label>منشئ الفاتورة</label>
+                        <div class="value">${createdByName}</div>
+                    </div>
+                    <div class="detail-item">
+                        <label>تاريخ الإنشاء</label>
+                        <div class="value">${createdAt}</div>
+                    </div>
+                    ${closedDateInfo}
+                    <div class="detail-item">
+                        <label>إجمالي المطلوب</label>
+                        <div class="value">${totalReq}</div>
+                    </div>
+                    <div class="detail-item">
+                        <label>إجمالي المستلم</label>
+                        <div class="value">${received}</div>
+                    </div>
+                    <div class="detail-item">
+                        <label>المتبقي</label>
+                        <div class="value">${remaining}</div>
+                    </div>
+                </div>
+
+                ${isBlank ? `<div style="margin-bottom:15px;background:#fef3c7;padding:10px 16px;border-radius:8px;border-right:4px solid #f59e0b;">
+                    <span class="text-warning"><i class="fas fa-info-circle"></i> هذه فاتورة Blank</span>
+                    ${isClosed ? ` <span class="text-success"><i class="fas fa-check-circle"></i> تم إغلاقها</span>` : ''}
+                </div>` : ''}
+
+                <div style="margin-bottom:18px;">
+                    <label class="text-muted">نسبة التنفيذ</label>
+                    <div style="display:flex;align-items:center;gap:12px;">
+                        <div class="progress-bar" style="flex:1;"><div class="progress-fill" style="width:${totalReq > 0 ? (received/totalReq)*100 : 0}%"></div></div>
+                        <span>${totalReq > 0 ? ((received/totalReq)*100).toFixed(1) : 0}%</span>
+                    </div>
+                </div>
+
+                <div>
+                    <h4 style="margin-bottom:12px;"><i class="fas fa-tshirt"></i> الموديلات والألوان والمقاسات</h4>
+                    ${modelsAccordionHtml}
+                </div>
+            `;
+
+            // Assignment History
+            let historyHtml = '';
+            if (receipt.assignmentHistory && receipt.assignmentHistory.length > 0) {
+                historyHtml = '<ul style="list-style:none;padding:0;">';
+                receipt.assignmentHistory.forEach(item => {
+                    const fromText = item.fromName || 'بداية';
+                    const date = item.assignedAt ? new Date(item.assignedAt).toLocaleString('ar-EG') : 'غير معروف';
+                    const byName = item.byName || item.by || 'غير معروف';
+                    historyHtml += `<li class="history-item" style="padding:8px 0;border-bottom:1px solid var(--gray-light);">
+                        <span style="font-weight:600;">${fromText}</span> 
+                        <span style="color:var(--primary);font-weight:700;margin:0 6px;">→</span> 
+                        <span style="font-weight:600;color:var(--primary);">${item.toName}</span>
+                        <span style="color:var(--gray);font-size:12px;margin-right:8px;">بواسطة: ${byName} | ${date}</span>
+                    </li>`;
+                });
+                historyHtml += '</ul>';
+            } else {
+                historyHtml = '<p class="text-muted">لا يوجد سجل إسناد</p>';
+            }
+            document.getElementById('assignmentHistoryList').innerHTML = historyHtml;
+
+            const isClosedStatus = displayStatus === 'closed' || displayStatus === 'completed' || displayStatus === 'cancelled';
+            document.getElementById('reassignContainer').style.display = isClosedStatus ? 'none' : 'block';
+
+            document.getElementById('receiptViewModal').style.display = 'flex';
+        }
+
+        // ============================================================
+        // 9. EDIT QUANTITY
+        // ============================================================
+        function editQty(receiptId, modelName, color, sizeId, currentQty) {
+            const rowId = `qty-${receiptId}-${modelName}-${color}-${sizeId}`;
+            const displayCell = document.querySelector(`.qty-display-${rowId}`);
+            const row = document.getElementById(rowId);
+            if (!displayCell || !row) return;
+            
+            displayCell.innerHTML = `
+                <input type="number" class="qty-input-small" value="${currentQty}" min="0" id="input-${rowId}">
+                <button class="qty-save-btn" onclick="saveQty('${receiptId}', '${modelName}', '${color}', '${sizeId}', '${rowId}')">
+                    <i class="fas fa-check"></i>
+                </button>
+                <button class="qty-cancel-btn" onclick="cancelQtyEdit('${rowId}', ${currentQty})">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+            
+            const input = document.getElementById(`input-${rowId}`);
+            if (input) {
+                input.focus();
+                input.select();
+                input.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        saveQty(receiptId, modelName, color, sizeId, rowId);
+                    }
+                    if (e.key === 'Escape') {
+                        cancelQtyEdit(rowId, currentQty);
+                    }
+                });
+            }
+        }
+
+        function cancelQtyEdit(rowId, currentQty) {
+            const displayCell = document.querySelector(`.qty-display-${rowId}`);
+            if (displayCell) {
+                displayCell.textContent = currentQty;
+            }
+        }
+
+        async function saveQty(receiptId, modelName, color, sizeId, rowId) {
+            const input = document.getElementById(`input-${rowId}`);
+            if (!input) return;
+            
+            const newQty = parseInt(input.value);
+            if (isNaN(newQty) || newQty < 0) {
+                showToast('⚠️ الرجاء إدخال كمية صحيحة', true);
+                return;
+            }
+            
+            const displayCell = document.querySelector(`.qty-display-${rowId}`);
+            const receipt = allReceipts.find(r => r.id === receiptId);
+            if (!receipt) {
+                showToast('⚠️ الفاتورة غير موجودة', true);
+                return;
+            }
+            
+            const refPath = receipt.isBlank ? `blankReceipts/${receiptId}` : `receipts/${receiptId}`;
+            const snapshot = await db.ref(refPath).once('value');
+            const data = snapshot.val();
+            if (!data) {
+                showToast('⚠️ البيانات غير موجودة', true);
+                return;
+            }
+            
+            if (data.modelColors && data.modelColors[modelName] && data.modelColors[modelName][color] && data.modelColors[modelName][color][sizeId]) {
+                const current = data.modelColors[modelName][color][sizeId];
+                if (Array.isArray(current)) {
+                    data.modelColors[modelName][color][sizeId] = [newQty];
+                } else {
+                    data.modelColors[modelName][color][sizeId] = newQty;
+                }
+            } else {
+                if (!data.modelColors) data.modelColors = {};
+                if (!data.modelColors[modelName]) data.modelColors[modelName] = {};
+                if (!data.modelColors[modelName][color]) data.modelColors[modelName][color] = {};
+                data.modelColors[modelName][color][sizeId] = newQty;
+            }
+            
+            let totalQty = 0;
+            for (const m in data.modelColors) {
+                for (const c in data.modelColors[m]) {
+                    for (const s in data.modelColors[m][c]) {
+                        const val = data.modelColors[m][c][s];
+                        if (Array.isArray(val)) {
+                            totalQty += val.reduce((sum, v) => sum + (typeof v === 'number' ? v : 0), 0);
+                        } else if (typeof val === 'number') {
+                            totalQty += val;
+                        }
+                    }
+                }
+            }
+            data.receivedQty = totalQty;
+            
+            await db.ref(refPath).update({
+                modelColors: data.modelColors,
+                receivedQty: data.receivedQty
+            });
+            
+            displayCell.textContent = newQty;
+            
+            if (receipt.isBlank) {
+                const blankIndex = allReceipts.findIndex(r => r.id === receiptId);
+                if (blankIndex !== -1) {
+                    allReceipts[blankIndex].modelColors = data.modelColors;
+                    allReceipts[blankIndex].receivedQty = data.receivedQty;
+                }
+            } else {
+                const receiptIndex = allReceipts.findIndex(r => r.id === receiptId);
+                if (receiptIndex !== -1) {
+                    allReceipts[receiptIndex].modelColors = data.modelColors;
+                    allReceipts[receiptIndex].receivedQty = data.receivedQty;
+                }
+            }
+            
+            if (currentViewReceipt && currentViewReceipt.id === receiptId) {
+                currentViewReceipt.modelColors = data.modelColors;
+                currentViewReceipt.receivedQty = data.receivedQty;
+            }
+            
+            showToast('✅ تم تحديث الكمية بنجاح');
+            viewReceiptDetails(receiptId);
+            loadReceiptsList();
+        }
+
+        function checkSizeHasSample(receipt, modelName, color, sizeId) {
+            if (!receipt) return false;
+            if (receipt.sampleRequests) {
+                for (const m in receipt.sampleRequests) {
+                    if (modelName && m !== modelName) continue;
+                    const colors = receipt.sampleRequests[m];
+                    for (const c in colors) {
+                        if (color && c !== color) continue;
+                        if (colors[c] && colors[c][sizeId] === true) {
+                            return true;
+                        }
+                    }
+                }
+            }
+            return false;
+        }
+
+        function toggleAccordion(accordionId) {
+            const body = document.getElementById(accordionId);
+            const icon = document.getElementById(`toggle-${accordionId}`);
+            if (body) {
+                body.classList.toggle('open');
+                if (icon) {
+                    icon.classList.toggle('open');
+                }
+            }
+        }
+
+        // ============================================================
+        // 10. EXPORT SINGLE RECEIPT TO EXCEL (من داخل الفاتورة)
+        // ============================================================
+        function exportSingleReceiptToExcel() {
+            if (!currentViewReceipt) {
+                showToast('⚠️ لا توجد فاتورة للتصدير', true);
+                return;
+            }
+            exportReceiptToExcel(currentViewReceipt);
+        }
+
+        function exportSingleReceiptFromCard(receiptId) {
+            const receipt = allReceipts.find(r => r.id === receiptId);
+            if (!receipt) {
+                showToast('⚠️ الفاتورة غير موجودة', true);
+                return;
+            }
+            exportReceiptToExcel(receipt);
+        }
+
+        function exportReceiptToExcel(receipt) {
+            const data = [];
+            
+            // Header
+            data.push(['تفاصيل الفاتورة']);
+            data.push(['كود الفاتورة', receipt.invoiceCode || 'بدون كود']);
+            data.push(['المصنع', receipt.factory || 'غير محدد']);
+            data.push(['الحالة', getStatusLabel(receipt.status)]);
+            data.push(['المسؤول الأساسي', receipt.assignedTo ? receipt.assignedTo.fullName : 'غير مسند']);
+            data.push(['المساعدين', receipt.helpers && receipt.helpers.length > 0 ? receipt.helpers.map(h => h.fullName).join(', ') : 'لا يوجد']);
+            data.push(['منشئ الفاتورة', receipt.createdBy ? receipt.createdBy.fullName : 'غير معروف']);
+            data.push(['تاريخ الإنشاء', receipt.createdAt ? new Date(receipt.createdAt).toLocaleString('ar-EG') : 'غير معروف']);
+            if (receipt.closedDate) {
+                data.push(['تاريخ الإغلاق', new Date(receipt.closedDate).toLocaleString('ar-EG')]);
+            }
+            data.push([]);
+            
+            // Table header
+            const headerRow = ['الموديل', 'اللون', 'المقاس', 'الكمية', 'عينة تصوير', 'ملاحظات'];
+            data.push(headerRow);
+            
+            const modelColors = receipt.modelColors || {};
+            const modelNotes = receipt.modelNotes || {};
+            let hasData = false;
+            
+            for (const [modelName, colors] of Object.entries(modelColors)) {
+                if (typeof colors === 'object' && colors !== null) {
+                    for (const [color, sizes] of Object.entries(colors)) {
+                        if (typeof sizes === 'object' && sizes !== null) {
+                            for (const [sizeId, batches] of Object.entries(sizes)) {
+                                const sizeName = getSizeName(sizeId);
+                                let qty = 0;
+                                if (Array.isArray(batches)) {
+                                    qty = batches.reduce((sum, v) => sum + (typeof v === 'number' ? v : 0), 0);
+                                } else if (typeof batches === 'number') {
+                                    qty = batches;
+                                } else if (batches && typeof batches === 'object') {
+                                    qty = Object.values(batches).reduce((sum, v) => sum + (typeof v === 'number' ? v : 0), 0);
+                                }
+                                if (qty > 0) {
+                                    const hasSample = checkSizeHasSample(receipt, modelName, color, sizeId);
+                                    const note = modelNotes[modelName] || '';
+                                    data.push([
+                                        modelName,
+                                        color,
+                                        sizeName,
+                                        qty,
+                                        hasSample ? '✅ تم التصوير' : '❌ لم يتم',
+                                        note
+                                    ]);
+                                    hasData = true;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            
+            // If no data in modelColors, try models array
+            if (!hasData && receipt.models && receipt.models.length > 0) {
+                for (const model of receipt.models) {
+                    data.push([
+                        model.modelName || 'غير محدد',
+                        '-',
+                        'جميع المقاسات',
+                        model.quantity || 0,
+                        '❌',
+                        modelNotes[model.modelName] || ''
+                    ]);
+                }
+                hasData = true;
+            }
+            
+            if (!hasData) {
+                data.push(['لا توجد موديلات', '-', '-', 0, '❌', '']);
+            }
+            
+            // Summary
+            data.push([]);
+            data.push(['ملخص الفاتورة']);
+            data.push(['إجمالي المطلوب', receipt.totalRequiredQty || 0]);
+            data.push(['إجمالي المستلم', receipt.receivedQty || 0]);
+            data.push(['المتبقي', (receipt.totalRequiredQty || 0) - (receipt.receivedQty || 0)]);
+            
+            const ws = XLSX.utils.aoa_to_sheet(data);
+            ws['!cols'] = [
+                { wch: 20 }, { wch: 15 }, { wch: 12 }, { wch: 12 }, { wch: 15 }, { wch: 25 }
+            ];
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, 'تفاصيل الفاتورة');
+            XLSX.writeFile(wb, `فاتورة_${receipt.invoiceCode || 'بدون_كود'}_${new Date().toISOString().slice(0, 10)}.xlsx`);
+            
+            showToast('✅ تم تصدير الفاتورة بنجاح');
+        }
+
+        function getStatusLabel(status) {
+            const labels = {
+                'new': 'جديدة',
+                'assigned': 'مسندة',
+                'in_progress': 'تحت التنفيذ',
+                'completed': 'مكتملة',
+                'closed': 'مغلقة',
+                'cancelled': 'ملغية',
+                'blank': 'Blank'
+            };
+            return labels[status] || status || 'غير معروف';
+        }
+
+        // ============================================================
+        // 11. REASSIGN RECEIPT
+        // ============================================================
+        async function reassignReceipt() {
+            if (!currentViewReceipt) return;
+
+            const status = currentViewReceipt.status || 'new';
+            if (status === 'closed' || status === 'completed' || status === 'cancelled') {
+                showToast('⚠️ لا يمكن إعادة إسناد فاتورة مغلقة أو مكتملة', true);
+                return;
+            }
+
+            const select = document.getElementById('reassignSelect');
+            const selectedUserId = select.value;
+            if (!selectedUserId) {
+                showToast('الرجاء اختيار موظف', true);
+                return;
+            }
+
+            const selectedOption = select.options[select.selectedIndex];
+            const newAssignedTo = {
+                userId: selectedUserId,
+                username: selectedOption.dataset.username || '',
+                fullName: selectedOption.dataset.fullname || '',
+                assignedAt: firebase.database.ServerValue.TIMESTAMP,
+                assignedBy: {
+                    userId: 'admin',
+                    username: 'admin',
+                    fullName: 'مدير النظام'
+                }
+            };
+
+            const oldAssigned = currentViewReceipt.assignedTo;
+            const oldName = oldAssigned ? oldAssigned.fullName : null;
+            const oldUserId = oldAssigned ? oldAssigned.userId : null;
+
+            const updates = {
+                assignedTo: newAssignedTo,
+                status: 'assigned'
+            };
+
+            const historyEntry = {
+                fromUserId: oldUserId,
+                fromName: oldName,
+                toUserId: newAssignedTo.userId,
+                toName: newAssignedTo.fullName,
+                byUserId: 'admin',
+                byName: 'مدير النظام',
+                assignedAt: firebase.database.ServerValue.TIMESTAMP
+            };
+
+            const currentHistory = currentViewReceipt.assignmentHistory || [];
+            updates.assignmentHistory = [...currentHistory, historyEntry];
+
+            const refPath = currentViewReceipt.isBlank ? `blankReceipts/${currentViewReceipt.id}` : `receipts/${currentViewReceipt.id}`;
+            await db.ref(refPath).update(updates);
+
+            showToast('✅ تم إسناد الفاتورة إلى ' + newAssignedTo.fullName);
+
+            const updatedReceipt = { ...currentViewReceipt, ...updates };
+            currentViewReceipt = updatedReceipt;
+
+            await viewReceiptDetails(currentViewReceipt.id);
+            loadReceiptsList();
+        }
+
+        // ============================================================
+        // 12. DELETE RECEIPT
+        // ============================================================
+        function deleteReceipt(id) {
+            if (confirm('تأكيد حذف هذه الفاتورة؟')) {
+                const receipt = allReceipts.find(r => r.id === id);
+                const refPath = receipt && receipt.isBlank ? `blankReceipts/${id}` : `receipts/${id}`;
+                db.ref(refPath).remove().then(() => {
+                    loadReceiptsList();
+                    showToast('✅ تم حذف الفاتورة بنجاح');
+                }).catch(err => {
+                    showToast('⚠️ حدث خطأ أثناء الحذف', true);
+                });
+            }
+        }
+
+        function closeReceiptViewModal() {
+            document.getElementById('receiptViewModal').style.display = 'none';
+            currentViewReceipt = null;
+        }
+
+        // ============================================================
+        // 13. INIT
+        // ============================================================
+        loadLayout();
+        loadSizesMap().then(() => {
+            loadReceiptsList();
+        });
+    </script>
+
+</body>
+</html>
