@@ -1,0 +1,1506 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>جميع المرتجعات - نظام إدارة المرتجعات</title>
+
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="api.js"></script>
+
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-light: #818cf8;
+            --primary-dark: #3730a3;
+            --secondary: #7c3aed;
+            --success: #10b981;
+            --success-light: #d1fae5;
+            --warning: #f59e0b;
+            --warning-light: #fef3c7;
+            --danger: #ef4444;
+            --danger-light: #fee2e2;
+            --info: #3b82f6;
+            --info-light: #dbeafe;
+            --dark: #0f172a;
+            --dark-secondary: #1e293b;
+            --light: #f8fafc;
+            --gray: #64748b;
+            --gray-light: #e2e8f0;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+            --shadow: 0 4px 20px rgba(0,0,0,0.08);
+            --shadow-lg: 0 10px 40px rgba(0,0,0,0.12);
+            --radius: 16px;
+            --radius-sm: 10px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Cairo', 'Segoe UI', sans-serif;
+            background: #f1f5f9;
+            overflow-x: hidden;
+        }
+
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #e2e8f0; }
+        ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 10px; }
+
+        .sidebar {
+            position: fixed;
+            right: 0;
+            top: 0;
+            width: 280px;
+            height: 100%;
+            background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
+            color: white;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1000;
+            overflow-y: auto;
+            box-shadow: -5px 0 30px rgba(0,0,0,0.15);
+            transform: translateX(0);
+        }
+
+        .sidebar.hidden { transform: translateX(100%); }
+
+        .sidebar-header {
+            padding: 30px 20px 20px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            margin-bottom: 15px;
+        }
+
+        .sidebar-header .logo-icon {
+            font-size: 40px;
+            background: linear-gradient(135deg, var(--primary-light), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .sidebar-header h2 {
+            font-size: 22px;
+            font-weight: 700;
+            margin-top: 8px;
+            background: linear-gradient(135deg, var(--primary-light), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .sidebar-header p {
+            font-size: 12px;
+            opacity: 0.5;
+            margin-top: 4px;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 0 12px;
+        }
+
+        .sidebar-menu li {
+            padding: 12px 16px;
+            margin-bottom: 4px;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            border-radius: 12px;
+            font-weight: 500;
+            font-size: 14px;
+            color: rgba(255,255,255,0.7);
+        }
+
+        .sidebar-menu li i { width: 22px; font-size: 16px; }
+        .sidebar-menu li:hover { 
+            background: rgba(255,255,255,0.08); 
+            color: white;
+            transform: translateX(-4px);
+        }
+        .sidebar-menu li.active { 
+            background: linear-gradient(135deg, var(--primary), var(--secondary)); 
+            color: white;
+            box-shadow: 0 4px 15px rgba(79,70,229,0.4);
+        }
+
+        .logout-btn {
+            margin: 20px 15px 30px;
+            padding: 12px;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.08);
+            color: rgba(255,255,255,0.7);
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: var(--transition);
+            width: calc(100% - 30px);
+        }
+        .logout-btn:hover { 
+            background: var(--danger); 
+            border-color: var(--danger);
+            color: white;
+        }
+
+        .main-content {
+            margin-right: 280px;
+            padding: 20px 25px;
+            transition: margin-right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            min-height: 100vh;
+        }
+        .main-content.sidebar-hidden { margin-right: 0; }
+
+        .header {
+            background: white;
+            padding: 16px 24px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            border: 1px solid rgba(0,0,0,0.04);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .menu-toggle {
+            background: var(--dark-secondary);
+            border: none;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+            padding: 10px 14px;
+            border-radius: 12px;
+            transition: var(--transition);
+        }
+        .menu-toggle:hover { background: var(--primary); }
+
+        .header h1 {
+            font-size: 22px;
+            color: var(--dark-secondary);
+            font-weight: 700;
+        }
+        .header h1 i { color: var(--primary); margin-left: 10px; }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: var(--light);
+            padding: 6px 16px 6px 20px;
+            border-radius: 40px;
+            border: 1px solid var(--gray-light);
+        }
+        .user-info i { font-size: 22px; color: var(--primary); }
+        .user-info span { font-weight: 600; color: var(--dark-secondary); font-size: 14px; }
+
+        /* ===== TABS ===== */
+        .tabs-container {
+            display: flex;
+            gap: 4px;
+            background: #fff;
+            border-radius: 14px;
+            padding: 5px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid #e8ecf1;
+            flex-wrap: wrap;
+        }
+        .tab-btn {
+            padding: 10px 22px;
+            border: none;
+            background: transparent;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--gray);
+            transition: var(--transition);
+            font-family: 'Cairo', sans-serif;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .tab-btn:hover { background: var(--light); color: var(--dark-secondary); }
+        .tab-btn.active {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(79,70,229,0.3);
+        }
+        .tab-btn i { font-size: 15px; }
+        .tab-content { display: none; animation: fadeIn 0.3s ease; }
+        .tab-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+        .table-container {
+            background: white;
+            border-radius: var(--radius);
+            padding: 22px 24px;
+            overflow-x: auto;
+            margin-bottom: 25px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid rgba(0,0,0,0.04);
+        }
+
+        .table-container .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .table-container h3 {
+            font-size: 18px;
+            color: var(--dark-secondary);
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .table-container h3 i { color: var(--primary); }
+        .count-badge {
+            font-size: 12px;
+            background: var(--gray-light);
+            padding: 3px 14px;
+            border-radius: 30px;
+            color: var(--gray);
+            font-weight: 600;
+        }
+
+        .table-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 14px;
+            justify-content: space-between;
+        }
+        .table-controls .controls-left {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+        }
+        .table-controls .controls-right {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .search-box {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+            background: var(--light);
+            border-radius: var(--radius-sm);
+            padding: 4px 12px 4px 4px;
+            border: 2px solid var(--gray-light);
+            transition: var(--transition);
+        }
+        .search-box:focus-within {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(79,70,229,0.08);
+        }
+        .search-box input {
+            padding: 6px 8px;
+            border: none;
+            background: transparent;
+            font-size: 13px;
+            font-family: inherit;
+            min-width: 160px;
+            outline: none;
+            color: var(--dark-secondary);
+        }
+        .search-box button {
+            background: none;
+            border: none;
+            color: var(--gray);
+            cursor: pointer;
+            font-size: 14px;
+            padding: 4px 6px;
+        }
+        .search-box button:hover { color: var(--primary); }
+
+        .pagination {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+        .pagination select {
+            padding: 5px 10px;
+            border: 2px solid var(--gray-light);
+            border-radius: 6px;
+            font-family: 'Cairo', sans-serif;
+            font-size: 12px;
+            background: white;
+            cursor: pointer;
+        }
+        .pagination .page-info {
+            font-size: 13px;
+            color: var(--gray);
+            font-weight: 600;
+        }
+        .pagination button {
+            padding: 5px 12px;
+            border: none;
+            border-radius: 6px;
+            background: var(--light);
+            color: var(--dark-secondary);
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+        .pagination button:hover:not(:disabled) { background: var(--gray-light); }
+        .pagination button:disabled { opacity: 0.4; cursor: not-allowed; }
+
+        .btn {
+            padding: 8px 18px;
+            border: none;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-family: 'Cairo', sans-serif;
+            text-decoration: none;
+        }
+        .btn-primary { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: #fff; box-shadow: 0 4px 15px rgba(79,70,229,0.3); }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(79,70,229,0.4); }
+        .btn-success { background: var(--success); color: #fff; box-shadow: 0 4px 15px rgba(16,185,129,0.3); }
+        .btn-success:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(16,185,129,0.4); }
+        .btn-warning { background: var(--warning); color: #fff; box-shadow: 0 4px 15px rgba(245,158,11,0.3); }
+        .btn-warning:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(245,158,11,0.4); }
+        .btn-outline { background: transparent; border: 2px solid var(--gray-light); color: var(--dark-secondary); }
+        .btn-outline:hover { border-color: var(--primary); color: var(--primary); }
+        .btn-sm { padding: 5px 12px; font-size: 11px; border-radius: 6px; }
+
+        .btn-column-toggle {
+            padding: 5px 14px;
+            border: 2px solid var(--gray-light);
+            border-radius: 8px;
+            background: #fff;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--gray);
+            transition: var(--transition);
+            font-family: 'Cairo', sans-serif;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .btn-column-toggle:hover { border-color: var(--primary); color: var(--primary); background: var(--light); }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+            min-width: 800px;
+        }
+        .data-table thead { background: var(--light); border-radius: 10px; }
+        .data-table th {
+            padding: 10px 8px;
+            text-align: center;
+            font-weight: 700;
+            color: var(--dark-secondary);
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.2px;
+            border-bottom: 2px solid var(--gray-light);
+            white-space: nowrap;
+            position: sticky;
+            top: 0;
+            background: var(--light);
+            z-index: 5;
+            cursor: pointer;
+            user-select: none;
+        }
+        .data-table th:hover { color: var(--primary); }
+        .data-table th .sort-icon {
+            font-size: 10px;
+            margin-right: 4px;
+            opacity: 0.5;
+        }
+        .data-table th.sorted .sort-icon { opacity: 1; color: var(--primary); }
+        .data-table td {
+            padding: 8px 8px;
+            text-align: center;
+            border-bottom: 1px solid var(--gray-light);
+            color: var(--dark-secondary);
+            font-size: 12px;
+            max-width: 120px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            vertical-align: middle;
+        }
+        .data-table tbody tr:hover { background: var(--light); }
+        .data-table .company-badge {
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: 10px;
+            font-weight: 700;
+        }
+        .data-table .company-badge.winjas { background: #dbeafe; color: #1e40af; }
+        .data-table .company-badge.xpress { background: #fef3c7; color: #92400e; }
+
+        .col-hidden { display: none !important; }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 16px;
+            color: var(--gray);
+        }
+        .empty-state i { font-size: 40px; margin-bottom: 12px; opacity: 0.4; }
+        .empty-state p { font-size: 14px; }
+
+        /* ===== MODALS ===== */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.55);
+            backdrop-filter: blur(6px);
+            z-index: 99999;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.25s ease;
+        }
+        .modal-overlay.open { display: flex; }
+        .modal-box {
+            background: #fff;
+            border-radius: 20px;
+            padding: 26px 30px;
+            max-width: 640px;
+            width: 95%;
+            max-height: 85vh;
+            overflow-y: auto;
+            box-shadow: 0 25px 60px rgba(0,0,0,0.3);
+            animation: slideUp 0.3s ease;
+        }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(24px) scale(0.97); } to { opacity: 1; transform: translateY(0) scale(1); } }
+        .modal-box h3 {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--dark-secondary);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .modal-box h3 i { color: var(--primary); }
+        .modal-close {
+            float: left;
+            background: none;
+            border: none;
+            font-size: 22px;
+            color: var(--gray);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .modal-close:hover { color: var(--danger); transform: rotate(90deg); }
+        .modal-box .form-group { margin-bottom: 14px; }
+        .modal-box .form-group label {
+            display: block;
+            font-weight: 600;
+            font-size: 13px;
+            color: var(--dark-secondary);
+            margin-bottom: 4px;
+        }
+        .modal-box .form-group input, .modal-box .form-group select {
+            width: 100%;
+            padding: 8px 12px;
+            border: 2px solid var(--gray-light);
+            border-radius: 8px;
+            font-size: 13px;
+            font-family: 'Cairo', sans-serif;
+            transition: var(--transition);
+            background: #fff;
+        }
+        .modal-box .form-group input:focus, .modal-box .form-group select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(79,70,229,0.1);
+        }
+        .modal-box .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .modal-box .modal-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 18px;
+            flex-wrap: wrap;
+        }
+        @media (max-width: 768px) { .modal-box .form-row { grid-template-columns: 1fr; } .modal-box { padding: 18px; } }
+
+        .col-vis-modal .col-check-list {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px 20px;
+            margin: 12px 0;
+        }
+        .col-vis-modal .col-check-list label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            color: var(--dark-secondary);
+            cursor: pointer;
+        }
+        .col-vis-modal .col-check-list input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            accent-color: var(--primary);
+            cursor: pointer;
+        }
+
+        .toast-container {
+            position: fixed;
+            bottom: 30px;
+            left: 30px;
+            z-index: 99999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            direction: rtl;
+        }
+        .toast {
+            padding: 14px 24px;
+            border-radius: 14px;
+            color: #fff;
+            font-weight: 700;
+            font-size: 14px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+            animation: slideUp 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-width: 200px;
+        }
+        .toast.success { background: var(--success); }
+        .toast.error { background: var(--danger); }
+        .toast.info { background: var(--info); }
+        .toast.warning { background: var(--warning); }
+
+        @media (max-width: 992px) {
+            .main-content { margin-right: 0; }
+            .sidebar { transform: translateX(100%); }
+            .sidebar.visible { transform: translateX(0); }
+            .sidebar.hidden { transform: translateX(100%); }
+        }
+        @media (max-width: 768px) {
+            .header h1 { font-size: 17px; }
+            .table-controls { flex-direction: column; align-items: stretch; }
+            .search-box input { min-width: 120px; }
+            .data-table { min-width: 650px; }
+            .modal-box { padding: 18px; }
+            .col-vis-modal .col-check-list { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 480px) {
+            .main-content { padding: 12px; }
+            .header { padding: 12px 16px; }
+            .table-container { padding: 14px 16px; }
+            .data-table { min-width: 500px; font-size: 11px; }
+            .data-table th, .data-table td { padding: 4px 4px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar" id="sidebar"></div>
+
+    <div class="main-content" id="mainContent">
+        <div class="header">
+            <div class="header-left">
+                <button class="menu-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+                <h1><i class="fas fa-archive"></i> جميع المرتجعات</h1>
+            </div>
+            <div class="user-info">
+                <i class="fas fa-user-circle"></i>
+                <span id="currentAdminName">مرحباً، مدير النظام</span>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs-container">
+            <button class="tab-btn active" data-tab="tab-winjas" onclick="switchTab('tab-winjas')">
+                <i class="fas fa-truck"></i> وينجز <span class="count-badge" id="winjasCountTab">0</span>
+            </button>
+            <button class="tab-btn" data-tab="tab-xpress" onclick="switchTab('tab-xpress')">
+                <i class="fas fa-bolt"></i> شيركس <span class="count-badge" id="xpressCountTab">0</span>
+            </button>
+        </div>
+
+        <!-- TAB: Winjas Returns -->
+        <div class="tab-content active" id="tab-winjas">
+            <div class="table-container">
+                <div class="section-header">
+                    <h3><i class="fas fa-truck"></i> مرتجعات وينجز</h3>
+                    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+                        <span class="count-badge" id="winjasCount">0</span>
+                        <button class="btn btn-success btn-sm" onclick="exportTab('winjas')">
+                            <i class="fas fa-file-excel"></i> تصدير
+                        </button>
+                        <button class="btn-column-toggle" onclick="openColumnVisibility('winjas')">
+                            <i class="fas fa-eye"></i> أعمدة
+                        </button>
+                    </div>
+                </div>
+
+                <div class="table-controls">
+                    <div class="controls-left">
+                        <div class="search-box">
+                            <input type="text" id="winjasSearch" placeholder="بحث..." oninput="renderWinjasTable(1)">
+                            <button onclick="document.getElementById('winjasSearch').value='';renderWinjasTable(1);">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                        <button class="btn btn-sm btn-outline" onclick="renderWinjasTable(1)">
+                            <i class="fas fa-sync"></i> تحديث
+                        </button>
+                    </div>
+                    <div class="controls-right">
+                        <div class="pagination">
+                            <select id="winjasPageSize" onchange="renderWinjasTable(1)">
+                                <option value="20">20</option>
+                                <option value="50" selected>50</option>
+                                <option value="100">100</option>
+                                <option value="500">500</option>
+                                <option value="1000">1000</option>
+                            </select>
+                            <button onclick="renderWinjasTable(currentWinjasPage-1)" id="winjasPrev" disabled>
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
+                            <span class="page-info" id="winjasPageInfo">صفحة 1</span>
+                            <button onclick="renderWinjasTable(currentWinjasPage+1)" id="winjasNext">
+                                <i class="fas fa-chevron-left"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="overflow-x:auto;">
+                    <table class="data-table" id="winjasTable">
+                        <thead id="winjasTableHead">
+                            <tr>
+                                <th data-col="0">#</th>
+                                <th data-col="1">الاسم</th>
+                                <th data-col="2">رقم الموبيل</th>
+                                <th data-col="3">المحافظة</th>
+                                <th data-col="4">مصنع</th>
+                                <th data-col="5">كود المورد</th>
+                                <th data-col="6">كود اسباركل</th>
+                                <th data-col="7">الوصف</th>
+                                <th data-col="8">المقاس</th>
+                                <th data-col="9">عدد القطع</th>
+                                <th data-col="10">السعر</th>
+                                <th data-col="11">كود الشحن</th>
+                                <th data-col="12">كود الأوردر</th>
+                                <th data-col="13">الملحوظة</th>
+                                <th data-col="14">تاريخ العميله</th>
+                                <th data-col="15">تاريخ الوصول</th>
+                                <th data-col="16">رقم المرتجع</th>
+                            </tr>
+                        </thead>
+                        <tbody id="winjasTableBody">
+                            <tr><td colspan="17" class="empty-state"><i class="fas fa-inbox"></i><p>لا توجد مرتجعات</p></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB: Xpress Returns -->
+        <div class="tab-content" id="tab-xpress">
+            <div class="table-container">
+                <div class="section-header">
+                    <h3><i class="fas fa-bolt"></i> مرتجعات شيركس</h3>
+                    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+                        <span class="count-badge" id="xpressCount">0</span>
+                        <button class="btn btn-success btn-sm" onclick="exportTab('xpress')">
+                            <i class="fas fa-file-excel"></i> تصدير
+                        </button>
+                        <button class="btn-column-toggle" onclick="openColumnVisibility('xpress')">
+                            <i class="fas fa-eye"></i> أعمدة
+                        </button>
+                    </div>
+                </div>
+
+                <div class="table-controls">
+                    <div class="controls-left">
+                        <div class="search-box">
+                            <input type="text" id="xpressSearch" placeholder="بحث..." oninput="renderXpressTable(1)">
+                            <button onclick="document.getElementById('xpressSearch').value='';renderXpressTable(1);">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                        <button class="btn btn-sm btn-outline" onclick="renderXpressTable(1)">
+                            <i class="fas fa-sync"></i> تحديث
+                        </button>
+                    </div>
+                    <div class="controls-right">
+                        <div class="pagination">
+                            <select id="xpressPageSize" onchange="renderXpressTable(1)">
+                                <option value="20">20</option>
+                                <option value="50" selected>50</option>
+                                <option value="100">100</option>
+                                <option value="500">500</option>
+                                <option value="1000">1000</option>
+                            </select>
+                            <button onclick="renderXpressTable(currentXpressPage-1)" id="xpressPrev" disabled>
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
+                            <span class="page-info" id="xpressPageInfo">صفحة 1</span>
+                            <button onclick="renderXpressTable(currentXpressPage+1)" id="xpressNext">
+                                <i class="fas fa-chevron-left"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="overflow-x:auto;">
+                    <table class="data-table" id="xpressTable">
+                        <thead id="xpressTableHead">
+                            <tr>
+                                <th data-col="0">#</th>
+                                <th data-col="1">الاسم</th>
+                                <th data-col="2">رقم الموبيل</th>
+                                <th data-col="3">المحافظة</th>
+                                <th data-col="4">مصنع</th>
+                                <th data-col="5">كود المورد</th>
+                                <th data-col="6">كود اسباركل</th>
+                                <th data-col="7">الوصف</th>
+                                <th data-col="8">المقاس</th>
+                                <th data-col="9">عدد القطع</th>
+                                <th data-col="10">السعر</th>
+                                <th data-col="11">كود الشحن</th>
+                                <th data-col="12">كود الأوردر</th>
+                                <th data-col="13">تاريخ الشحن</th>
+                                <th data-col="14">الملحوظة2</th>
+                                <th data-col="15">تاريخ العميله</th>
+                                <th data-col="16">تاريخ الوصول</th>
+                                <th data-col="17">رقم المرتجع</th>
+                            </tr>
+                        </thead>
+                        <tbody id="xpressTableBody">
+                            <tr><td colspan="18" class="empty-state"><i class="fas fa-inbox"></i><p>لا توجد مرتجعات</p></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Export Modal -->
+    <div class="modal-overlay" id="exportModal">
+        <div class="modal-box">
+            <button class="modal-close" onclick="closeExportModal()"><i class="fas fa-times"></i></button>
+            <h3><i class="fas fa-file-export"></i> تصدير المرتجعات</h3>
+            <div class="form-group">
+                <label>الشركة</label>
+                <select id="exportCompany">
+                    <option value="all">الكل</option>
+                    <option value="winjas">وينجز</option>
+                    <option value="xpress">شيركس</option>
+                </select>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>من تاريخ</label>
+                    <input type="date" id="exportDateFrom">
+                </div>
+                <div class="form-group">
+                    <label>إلى تاريخ</label>
+                    <input type="date" id="exportDateTo">
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-outline" onclick="closeExportModal()">إلغاء</button>
+                <button class="btn btn-success" onclick="exportWithDate()"><i class="fas fa-file-excel"></i> تصدير</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Column Visibility Modal -->
+    <div class="modal-overlay" id="colVisModal">
+        <div class="modal-box col-vis-modal">
+            <button class="modal-close" onclick="closeColVisModal()"><i class="fas fa-times"></i></button>
+            <h3><i class="fas fa-eye"></i> إظهار/إخفاء الأعمدة</h3>
+            <div id="colVisList" class="col-check-list"></div>
+            <div class="modal-actions">
+                <button class="btn btn-outline" onclick="closeColVisModal()">إلغاء</button>
+                <button class="btn btn-primary" onclick="applyColVis()">تطبيق</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script src="main.js"></script>
+
+    <script>
+        // ============================================================
+        // STATE
+        // ============================================================
+        let winjasData = [];
+        let xpressData = [];
+        let currentWinjasPage = 1;
+        let currentXpressPage = 1;
+        let winjasSort = { field: null, asc: true };
+        let xpressSort = { field: null, asc: true };
+
+        // Column visibility state
+        const WINJAS_COLS = ['#', 'الاسم', 'رقم الموبيل', 'المحافظة', 'مصنع', 'كود المورد', 'كود اسباركل',
+            'الوصف', 'المقاس', 'عدد القطع', 'السعر', 'كود الشحن', 'كود الأوردر', 'الملحوظة',
+            'تاريخ العميله', 'تاريخ الوصول', 'رقم المرتجع'
+        ];
+        const XPRESS_COLS = ['#', 'الاسم', 'رقم الموبيل', 'المحافظة', 'مصنع', 'كود المورد', 'كود اسباركل',
+            'الوصف', 'المقاس', 'عدد القطع', 'السعر', 'كود الشحن', 'كود الأوردر', 'تاريخ الشحن',
+            'الملحوظة2', 'تاريخ العميله', 'تاريخ الوصول', 'رقم المرتجع'
+        ];
+
+        // ============================================================
+        // HELPERS
+        // ============================================================
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('mainContent');
+            sidebar.classList.toggle('hidden');
+            sidebar.classList.toggle('visible');
+            mainContent.classList.toggle('sidebar-hidden');
+        }
+
+        document.addEventListener('click', function(event) {
+            const sidebar = document.getElementById('sidebar');
+            const menuToggle = document.querySelector('.menu-toggle');
+            const mainContent = document.getElementById('mainContent');
+
+            const isSidebarVisible = sidebar.classList.contains('visible') && !sidebar.classList.contains('hidden');
+
+            if (isSidebarVisible) {
+                const isClickInsideSidebar = sidebar.contains(event.target);
+                const isClickOnMenuToggle = menuToggle && menuToggle.contains(event.target);
+
+                if (!isClickInsideSidebar && !isClickOnMenuToggle) {
+                    sidebar.classList.add('hidden');
+                    sidebar.classList.remove('visible');
+                    mainContent.classList.remove('sidebar-hidden');
+                }
+            }
+        });
+
+        window.addEventListener('resize', function() {
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('mainContent');
+
+            if (window.innerWidth > 992) {
+                sidebar.classList.remove('hidden');
+                sidebar.classList.remove('visible');
+                mainContent.classList.remove('sidebar-hidden');
+            } else {
+                sidebar.classList.add('hidden');
+                sidebar.classList.remove('visible');
+                mainContent.classList.add('sidebar-hidden');
+            }
+        });
+
+        function showToast(msg, type = 'success') {
+            const c = document.getElementById('toastContainer');
+            const t = document.createElement('div');
+            t.className = 'toast ' + type;
+            const icon = type === 'success' ? 'fa-check-circle' :
+                type === 'error' ? 'fa-exclamation-circle' :
+                type === 'warning' ? 'fa-exclamation-triangle' : 'fa-info-circle';
+            t.innerHTML = `<i class="fas ${icon}"></i> ${msg}`;
+            c.appendChild(t);
+            setTimeout(() => {
+                t.style.opacity = '0';
+                t.style.transform = 'translateY(20px)';
+                setTimeout(() => t.remove(), 400);
+            }, 3000);
+        }
+
+        function formatDateTime(iso) {
+            if (!iso) return '-';
+            try {
+                const d = new Date(iso);
+                if (isNaN(d)) return '-';
+                const dd = String(d.getDate()).padStart(2, '0');
+                const mm = String(d.getMonth() + 1).padStart(2, '0');
+                const yyyy = d.getFullYear();
+                const hh = String(d.getHours()).padStart(2, '0');
+                const min = String(d.getMinutes()).padStart(2, '0');
+                return dd + '/' + mm + '/' + yyyy + ' ' + hh + ':' + min;
+            } catch (_) { return '-'; }
+        }
+
+        function getToday() { return new Date().toISOString().slice(0, 10); }
+
+        function getColumnVisibility(table) {
+            const key = table + '_columns_visibility';
+            const stored = localStorage.getItem(key);
+            if (stored) {
+                try {
+                    const parsed = JSON.parse(stored);
+                    const count = table === 'winjas' ? WINJAS_COLS.length : XPRESS_COLS.length;
+                    if (parsed.length === count) return parsed;
+                } catch (_) {}
+            }
+            const count = table === 'winjas' ? WINJAS_COLS.length : XPRESS_COLS.length;
+            return Array(count).fill(true);
+        }
+
+        function setColumnVisibility(table, vis) {
+            const key = table + '_columns_visibility';
+            localStorage.setItem(key, JSON.stringify(vis));
+        }
+
+        function applyColumnVisibility(table) {
+            const vis = getColumnVisibility(table);
+            const tableId = table === 'winjas' ? 'winjasTable' : 'xpressTable';
+            const tableEl = document.getElementById(tableId);
+            if (!tableEl) return;
+
+            const ths = tableEl.querySelectorAll('thead th');
+            const tbody = tableEl.querySelector('tbody');
+            const rows = tbody ? tbody.querySelectorAll('tr') : [];
+
+            ths.forEach((th, idx) => {
+                if (idx < vis.length) {
+                    if (!vis[idx]) th.classList.add('col-hidden');
+                    else th.classList.remove('col-hidden');
+                }
+            });
+
+            rows.forEach(row => {
+                const tds = row.querySelectorAll('td');
+                tds.forEach((td, idx) => {
+                    if (idx < vis.length) {
+                        if (!vis[idx]) td.classList.add('col-hidden');
+                        else td.classList.remove('col-hidden');
+                    }
+                });
+            });
+        }
+
+        // ============================================================
+        // DATA LOAD
+        // ============================================================
+        async function loadData() {
+            try {
+                await ensureSheetsExist();
+                const [win, xp] = await Promise.all([
+                    getAllWinjas(),
+                    getAllXpress()
+                ]);
+                winjasData = win;
+                xpressData = xp;
+                return true;
+            } catch (e) {
+                return false;
+            }
+        }
+
+        // ============================================================
+        // RENDER WINJAS
+        // ============================================================
+        function renderWinjasTable(page) {
+            const search = document.getElementById('winjasSearch').value.toLowerCase();
+            const pageSize = parseInt(document.getElementById('winjasPageSize').value);
+
+            let filtered = winjasData.filter(r => {
+                if (!search) return true;
+                return Object.values(r).some(val => String(val).toLowerCase().includes(search));
+            });
+
+            // Apply sorting
+            if (winjasSort.field) {
+                filtered.sort((a, b) => {
+                    const va = a[winjasSort.field] || '';
+                    const vb = b[winjasSort.field] || '';
+                    if (winjasSort.field === 'returnNumber' || winjasSort.field === 'quantity') {
+                        return winjasSort.asc ? (Number(va) - Number(vb)) : (Number(vb) - Number(va));
+                    }
+                    return winjasSort.asc ? String(va).localeCompare(String(vb)) : String(vb).localeCompare(String(va));
+                });
+            } else {
+                // Default: sort by returnNumber descending (latest first)
+                filtered.sort((a, b) => (b.returnNumber || 0) - (a.returnNumber || 0));
+            }
+
+            const totalItems = filtered.length;
+            const totalPages = Math.ceil(totalItems / pageSize) || 1;
+            if (page < 1) page = 1;
+            if (page > totalPages) page = totalPages;
+            currentWinjasPage = page;
+
+            const start = (page - 1) * pageSize;
+            const end = Math.min(start + pageSize, totalItems);
+            const pageData = filtered.slice(start, end);
+
+            const tbody = document.getElementById('winjasTableBody');
+            document.getElementById('winjasCount').textContent = totalItems;
+            document.getElementById('winjasCountTab').textContent = totalItems;
+
+            if (pageData.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="17" class="empty-state"><i class="fas fa-inbox"></i><p>لا توجد مرتجعات</p></td></tr>';
+                document.getElementById('winjasPageInfo').textContent = `صفحة ${page} من ${totalPages}`;
+                document.getElementById('winjasPrev').disabled = page <= 1;
+                document.getElementById('winjasNext').disabled = page >= totalPages;
+                applyColumnVisibility('winjas');
+                return;
+            }
+
+            let html = '';
+            let rowNum = start + 1;
+            for (const r of pageData) {
+                html += `
+                    <tr>
+                        <td data-col="0">${rowNum}</td>
+                        <td data-col="1">${r.name || '-'}</td>
+                        <td data-col="2">${r.phone || '-'}</td>
+                        <td data-col="3">${r.governorate || '-'}</td>
+                        <td data-col="4">${r.factory || '-'}</td>
+                        <td data-col="5">${r.supplierCode || '-'}</td>
+                        <td data-col="6">${r.sparkleCode || '-'}</td>
+                        <td data-col="7">${r.description || '-'}</td>
+                        <td data-col="8">${r.size || '-'}</td>
+                        <td data-col="9">${r.quantity || 0}</td>
+                        <td data-col="10">${r.price || '-'}</td>
+                        <td data-col="11">${r.shippingCode || '-'}</td>
+                        <td data-col="12">${r.orderCode || '-'}</td>
+                        <td data-col="13">${r.note || '-'}</td>
+                        <td data-col="14">${formatDateTime(r.customerDate)}</td>
+                        <td data-col="15">${r.arrivalDate ? new Date(r.arrivalDate).toLocaleDateString('ar-EG') : '-'}</td>
+                        <td data-col="16">${r.returnNumber || '-'}</td>
+                    </tr>
+                `;
+                rowNum++;
+            }
+            tbody.innerHTML = html;
+
+            document.getElementById('winjasPageInfo').textContent = `صفحة ${page} من ${totalPages}`;
+            document.getElementById('winjasPrev').disabled = page <= 1;
+            document.getElementById('winjasNext').disabled = page >= totalPages;
+
+            applyColumnVisibility('winjas');
+            updateSortIndicators('winjas');
+        }
+
+        // ============================================================
+        // RENDER XPRESS
+        // ============================================================
+        function renderXpressTable(page) {
+            const search = document.getElementById('xpressSearch').value.toLowerCase();
+            const pageSize = parseInt(document.getElementById('xpressPageSize').value);
+
+            let filtered = xpressData.filter(r => {
+                if (!search) return true;
+                return Object.values(r).some(val => String(val).toLowerCase().includes(search));
+            });
+
+            if (xpressSort.field) {
+                filtered.sort((a, b) => {
+                    const va = a[xpressSort.field] || '';
+                    const vb = b[xpressSort.field] || '';
+                    if (xpressSort.field === 'returnNumber' || xpressSort.field === 'quantity') {
+                        return xpressSort.asc ? (Number(va) - Number(vb)) : (Number(vb) - Number(va));
+                    }
+                    return xpressSort.asc ? String(va).localeCompare(String(vb)) : String(vb).localeCompare(String(va));
+                });
+            } else {
+                filtered.sort((a, b) => (b.returnNumber || 0) - (a.returnNumber || 0));
+            }
+
+            const totalItems = filtered.length;
+            const totalPages = Math.ceil(totalItems / pageSize) || 1;
+            if (page < 1) page = 1;
+            if (page > totalPages) page = totalPages;
+            currentXpressPage = page;
+
+            const start = (page - 1) * pageSize;
+            const end = Math.min(start + pageSize, totalItems);
+            const pageData = filtered.slice(start, end);
+
+            const tbody = document.getElementById('xpressTableBody');
+            document.getElementById('xpressCount').textContent = totalItems;
+            document.getElementById('xpressCountTab').textContent = totalItems;
+
+            if (pageData.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="18" class="empty-state"><i class="fas fa-inbox"></i><p>لا توجد مرتجعات</p></td></tr>';
+                document.getElementById('xpressPageInfo').textContent = `صفحة ${page} من ${totalPages}`;
+                document.getElementById('xpressPrev').disabled = page <= 1;
+                document.getElementById('xpressNext').disabled = page >= totalPages;
+                applyColumnVisibility('xpress');
+                return;
+            }
+
+            let html = '';
+            let rowNum = start + 1;
+            for (const r of pageData) {
+                html += `
+                    <tr>
+                        <td data-col="0">${rowNum}</td>
+                        <td data-col="1">${r.name || '-'}</td>
+                        <td data-col="2">${r.phone || '-'}</td>
+                        <td data-col="3">${r.governorate || '-'}</td>
+                        <td data-col="4">${r.factory || '-'}</td>
+                        <td data-col="5">${r.supplierCode || '-'}</td>
+                        <td data-col="6">${r.sparkleCode || '-'}</td>
+                        <td data-col="7">${r.description || '-'}</td>
+                        <td data-col="8">${r.size || '-'}</td>
+                        <td data-col="9">${r.quantity || 0}</td>
+                        <td data-col="10">${r.price || '-'}</td>
+                        <td data-col="11">${r.shippingCode || '-'}</td>
+                        <td data-col="12">${r.orderCode || '-'}</td>
+                        <td data-col="13">${r.shippingDate ? new Date(r.shippingDate).toLocaleDateString('ar-EG') : '-'}</td>
+                        <td data-col="14">${r.note2 || '-'}</td>
+                        <td data-col="15">${formatDateTime(r.customerDate)}</td>
+                        <td data-col="16">${r.arrivalDate ? new Date(r.arrivalDate).toLocaleDateString('ar-EG') : '-'}</td>
+                        <td data-col="17">${r.returnNumber || '-'}</td>
+                    </tr>
+                `;
+                rowNum++;
+            }
+            tbody.innerHTML = html;
+
+            document.getElementById('xpressPageInfo').textContent = `صفحة ${page} من ${totalPages}`;
+            document.getElementById('xpressPrev').disabled = page <= 1;
+            document.getElementById('xpressNext').disabled = page >= totalPages;
+
+            applyColumnVisibility('xpress');
+            updateSortIndicators('xpress');
+        }
+
+        // ============================================================
+        // SORTING
+        // ============================================================
+        function updateSortIndicators(table) {
+            const sort = table === 'winjas' ? winjasSort : xpressSort;
+            const tableId = table === 'winjas' ? 'winjasTable' : 'xpressTable';
+            const ths = document.querySelectorAll(`#${tableId} thead th`);
+
+            ths.forEach(th => {
+                th.classList.remove('sorted');
+                const icon = th.querySelector('.sort-icon');
+                if (icon) icon.textContent = '';
+            });
+
+            if (sort.field) {
+                const cols = table === 'winjas' ? WINJAS_COLS : XPRESS_COLS;
+                const idx = cols.indexOf(sort.field);
+                if (idx !== -1) {
+                    const th = ths[idx];
+                    if (th) {
+                        th.classList.add('sorted');
+                        const icon = th.querySelector('.sort-icon');
+                        if (icon) icon.textContent = sort.asc ? '▲' : '▼';
+                    }
+                }
+            }
+        }
+
+        function sortTable(table, field) {
+            const sort = table === 'winjas' ? winjasSort : xpressSort;
+            if (sort.field === field) {
+                sort.asc = !sort.asc;
+            } else {
+                sort.field = field;
+                sort.asc = true;
+            }
+            if (table === 'winjas') renderWinjasTable(1);
+            else renderXpressTable(1);
+        }
+
+        // ============================================================
+        // TABS
+        // ============================================================
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+
+            document.getElementById(tabId).classList.add('active');
+            document.querySelector(`.tab-btn[data-tab="${tabId}"]`).classList.add('active');
+
+            if (tabId === 'tab-winjas') renderWinjasTable(currentWinjasPage);
+            else if (tabId === 'tab-xpress') renderXpressTable(currentXpressPage);
+        }
+
+        // ============================================================
+        // EXPORT
+        // ============================================================
+        function exportTab(table) {
+            const data = table === 'winjas' ? winjasData : xpressData;
+            if (data.length === 0) {
+                showToast('لا توجد بيانات للتصدير', 'warning');
+                return;
+            }
+
+            const cols = table === 'winjas' ? WINJAS_COLS : XPRESS_COLS;
+            const header = cols.map(c => c === '#' ? '#' : c);
+            const rows = [header];
+
+            data.forEach((r, idx) => {
+                const row = [
+                    idx + 1,
+                    r.name || '',
+                    r.phone || '',
+                    r.governorate || '',
+                    r.factory || '',
+                    r.supplierCode || '',
+                    r.sparkleCode || '',
+                    r.description || '',
+                    r.size || '',
+                    r.quantity || 0,
+                    r.price || '',
+                    r.shippingCode || '',
+                    r.orderCode || '',
+                    r.note || r.shippingDate || '',
+                    formatDateTime(r.customerDate),
+                    r.arrivalDate ? new Date(r.arrivalDate).toLocaleDateString('ar-EG') : '',
+                    r.returnNumber || ''
+                ];
+                rows.push(row);
+            });
+
+            downloadXLSX(rows, `${table}_مرتجعات.xlsx`);
+        }
+
+        function openExportModal() {
+            document.getElementById('exportDateFrom').value = getToday();
+            document.getElementById('exportDateTo').value = getToday();
+            document.getElementById('exportModal').classList.add('open');
+        }
+
+        function closeExportModal() {
+            document.getElementById('exportModal').classList.remove('open');
+        }
+
+        function exportWithDate() {
+            const company = document.getElementById('exportCompany').value;
+            const fromDate = document.getElementById('exportDateFrom').value;
+            const toDate = document.getElementById('exportDateTo').value;
+
+            if (!fromDate || !toDate) {
+                showToast('الرجاء تحديد التاريخين', 'warning');
+                return;
+            }
+
+            const from = new Date(fromDate);
+            const to = new Date(toDate);
+            to.setHours(23, 59, 59, 999);
+
+            let data = [];
+            if (company === 'all' || company === 'winjas') {
+                data = data.concat(winjasData.filter(r => {
+                    const d = r.customerDate || r.createdAt || '';
+                    if (d) {
+                        const dateObj = new Date(d);
+                        return dateObj >= from && dateObj <= to;
+                    }
+                    return false;
+                }).map(r => ({ ...r, _company: 'وينجز' })));
+            }
+            if (company === 'all' || company === 'xpress') {
+                data = data.concat(xpressData.filter(r => {
+                    const d = r.customerDate || r.createdAt || '';
+                    if (d) {
+                        const dateObj = new Date(d);
+                        return dateObj >= from && dateObj <= to;
+                    }
+                    return false;
+                }).map(r => ({ ...r, _company: 'شيركس' })));
+            }
+
+            if (data.length === 0) {
+                showToast('لا توجد بيانات في النطاق المحدد', 'warning');
+                return;
+            }
+
+            const header = ['#', 'الاسم', 'رقم الموبيل', 'المحافظة', 'مصنع', 'كود المورد', 'كود اسباركل',
+                'الوصف', 'المقاس', 'عدد القطع', 'السعر', 'كود الشحن', 'كود الأوردر',
+                'الملحوظة/تاريخ الشحن', 'تاريخ العميله', 'تاريخ الوصول', 'رقم المرتجع', 'الشركة'
+            ];
+            const rows = [header];
+
+            data.forEach((r, idx) => {
+                rows.push([
+                    idx + 1,
+                    r.name || '',
+                    r.phone || '',
+                    r.governorate || '',
+                    r.factory || '',
+                    r.supplierCode || '',
+                    r.sparkleCode || '',
+                    r.description || '',
+                    r.size || '',
+                    r.quantity || 0,
+                    r.price || '',
+                    r.shippingCode || '',
+                    r.orderCode || '',
+                    r.note || r.shippingDate || '',
+                    formatDateTime(r.customerDate),
+                    r.arrivalDate ? new Date(r.arrivalDate).toLocaleDateString('ar-EG') : '',
+                    r.returnNumber || '',
+                    r._company || ''
+                ]);
+            });
+
+            downloadXLSX(rows, `مرتجعات_${fromDate}_إلى_${toDate}.xlsx`);
+            closeExportModal();
+        }
+
+        function downloadXLSX(data, filename) {
+            const wb = XLSX.utils.book_new();
+            const ws = XLSX.utils.aoa_to_sheet(data);
+            ws['!cols'] = data[0].map((_, i) => ({ wch: Math.max(15, (data[1] && data[1][i] ? String(data[1][i]).length : 12) + 4) }));
+            XLSX.utils.book_append_sheet(wb, ws, 'Returns');
+            XLSX.writeFile(wb, filename);
+            showToast('✅ تم التصدير بنجاح');
+        }
+
+        // ============================================================
+        // COLUMN VISIBILITY
+        // ============================================================
+        let colVisTarget = 'winjas';
+
+        function openColumnVisibility(table) {
+            colVisTarget = table;
+            const vis = getColumnVisibility(table);
+            const labels = table === 'winjas' ? WINJAS_COLS : XPRESS_COLS;
+
+            const list = document.getElementById('colVisList');
+            let html = '';
+            vis.forEach((checked, idx) => {
+                if (idx < labels.length) {
+                    html += `
+                        <label>
+                            <input type="checkbox" ${checked ? 'checked' : ''} data-idx="${idx}" />
+                            ${labels[idx]}
+                        </label>
+                    `;
+                }
+            });
+            list.innerHTML = html;
+            document.getElementById('colVisModal').classList.add('open');
+        }
+
+        function closeColVisModal() {
+            document.getElementById('colVisModal').classList.remove('open');
+        }
+
+        function applyColVis() {
+            const list = document.getElementById('colVisList');
+            const checkboxes = list.querySelectorAll('input[type="checkbox"]');
+            const vis = Array.from(checkboxes).map(cb => cb.checked);
+            setColumnVisibility(colVisTarget, vis);
+            closeColVisModal();
+            if (colVisTarget === 'winjas') renderWinjasTable(currentWinjasPage);
+            else renderXpressTable(currentXpressPage);
+        }
+
+        // ============================================================
+        // REFRESH
+        // ============================================================
+        async function refreshData() {
+            await loadData();
+            renderWinjasTable(currentWinjasPage);
+            renderXpressTable(currentXpressPage);
+            showToast('✅ تم تحديث البيانات');
+        }
+
+        // ============================================================
+        // INIT
+        // ============================================================
+        let currentAdmin = null;
+
+        async function init() {
+            currentAdmin = loadLayout();
+
+            await loadData();
+
+            renderWinjasTable(1);
+            renderXpressTable(1);
+
+            // Add sort click handlers
+            document.querySelectorAll('#winjasTable thead th').forEach((th, idx) => {
+                th.addEventListener('click', () => {
+                    const field = WINJAS_COLS[idx];
+                    if (field && field !== '#') sortTable('winjas', field);
+                });
+            });
+            document.querySelectorAll('#xpressTable thead th').forEach((th, idx) => {
+                th.addEventListener('click', () => {
+                    const field = XPRESS_COLS[idx];
+                    if (field && field !== '#') sortTable('xpress', field);
+                });
+            });
+
+            // Modal close events
+            document.getElementById('exportModal').addEventListener('click', function(e) {
+                if (e.target === this) closeExportModal();
+            });
+            document.getElementById('colVisModal').addEventListener('click', function(e) {
+                if (e.target === this) closeColVisModal();
+            });
+
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    closeExportModal();
+                    closeColVisModal();
+                }
+            });
+        }
+
+        // ============================================================
+        // EXPOSE FUNCTIONS
+        // ============================================================
+        window.toggleSidebar = toggleSidebar;
+        window.switchTab = switchTab;
+        window.renderWinjasTable = renderWinjasTable;
+        window.renderXpressTable = renderXpressTable;
+        window.sortTable = sortTable;
+        window.openColumnVisibility = openColumnVisibility;
+        window.closeColVisModal = closeColVisModal;
+        window.applyColVis = applyColVis;
+        window.openExportModal = openExportModal;
+        window.closeExportModal = closeExportModal;
+        window.exportTab = exportTab;
+        window.exportWithDate = exportWithDate;
+        window.refreshData = refreshData;
+        window.showToast = showToast;
+
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+
+</body>
+</html>
