@@ -27,7 +27,7 @@ const SIDEBAR_MENU = [
     { id: 'sizes', icon: 'fa-ruler', label: 'المقاسات', page: 'sizes.html' },
     { id: 'employees', icon: 'fa-users', label: 'الموظفين', page: 'employees.html' },
     { id: 'branchOrders', icon: 'fa-store', label: 'أوردرات الفروع', page: 'branch-orders.html' } ,
-    { id: 'allretrun', icon: 'fa-rotate-left', label: 'جميع المرتجعات', page: 'allretrun.html' } ,
+    { id: 'allReturn', icon: 'fa-rotate-left', label: 'جميع المرتجعات', page: 'allretrun.html' } ,
     { id: 'reports', icon: 'fa-chart-bar', label: 'التقارير', page: 'reports.html' },
     { id: 'adminAccount', icon: 'fa-solid fa-gear', label: 'اداره حساب الادمن', page: 'admin-account.html' }
 ];
