@@ -1588,7 +1588,8 @@
                             qty: row.qty || 0,
                             unitPrice: row.unitPrice || 0,
                             total: row.total || 0,
-                            image: row.image || ''
+                            image: row.image || '',
+                            productId: row.productId || ''  // ← إضافة productId في الخفاء
                         })),
                         createdAt: firebase.database.ServerValue.TIMESTAMP,
                         createdBy: 'مستخدم'
@@ -1795,7 +1796,8 @@
                         images: Utils.unique(images),
                         mainImage: mainImage,
                         variants: jsonData.variants || [],
-                        dataSource: 'JSON'
+                        dataSource: 'JSON',
+                        productId: jsonData.id || ''  // ← استخراج productId من JSON
                     };
                 },
                 parseFromHTML(html) {
@@ -1817,7 +1819,8 @@
                         images: image ? [image] : [],
                         mainImage: image || '',
                         variants: [],
-                        dataSource: 'HTML'
+                        dataSource: 'HTML',
+                        productId: ''  // ← HTML fallback بدون productId
                     };
                 }
             };
@@ -1845,7 +1848,8 @@
                                 unitPrice: p,
                                 total: seriesQty * p,
                                 image: product.mainImage || (product.images && product.images.length ?
-                                    product.images[0] : '')
+                                    product.images[0] : ''),
+                                productId: product.productId || ''  // ← إضافة productId في الخفاء لكل صف
                             });
                         });
                     } else {
@@ -1862,7 +1866,8 @@
                                     unitPrice: product.price,
                                     total: seriesQty * product.price,
                                     image: product.mainImage || (product.images && product
-                                        .images.length ? product.images[0] : '')
+                                        .images.length ? product.images[0] : ''),
+                                    productId: product.productId || ''  // ← إضافة productId
                                 });
                             });
                         });
@@ -2137,7 +2142,8 @@
                             mainImage: cached.mainImage || cached.image || (cached.images && cached.images
                                 .length ? cached.images[0] : ''),
                             variants: Array.isArray(cached.variants) ? cached.variants : [],
-                            dataSource: cached.dataSource || 'JSON'
+                            dataSource: cached.dataSource || 'JSON',
+                            productId: cached.productId || ''  // ← تحميل productId من الكاش
                         };
                         this.showPreview(this._lastProduct);
                         console.log('✅ Cached product loaded:', this._lastProduct.name);
@@ -2215,7 +2221,6 @@
                     this.elements.exportInvoicePreviewBtn.addEventListener('click', () => {
                         if (this._previewInvoiceIndex >= 0 && this._oldInvoices[this._previewInvoiceIndex]) {
                             const inv = this._oldInvoices[this._previewInvoiceIndex];
-                            // Use the export dialog for old invoice
                             this.openExportOldInvoice(inv);
                         }
                     });
@@ -2255,6 +2260,7 @@
                         try {
                             jsonData = await ShopifyFetcher.fetchProduct(url);
                             product = ProductParser.parse(jsonData);
+                            console.log('🔍 Extracted productId:', product.productId);  // ← تسجيل في الخفاء
                         } catch (e) {
                             const html = await ShopifyFetcher.fetchProductHTML(url);
                             product = ProductParser.parseFromHTML(html);
