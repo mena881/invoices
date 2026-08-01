@@ -51,20 +51,21 @@ function logout() {
 // AUTHENTICATION CHECK (نفس الوظيفة)
 // ============================================================
 function checkAuth() {
-    const user = localStorage.getItem('currentUser');
+    const user = localStorage.getItem("currentUser");
+
     if (!user) {
-        window.location.href = 'index.html';
+        window.location.href = "index.html";
         return null;
     }
+
     const userData = JSON.parse(user);
-    if (userData.role !== 'admin') {
-        window.location.href = 'user-dashboard.html';
-        return null;
-    }
+
     return {
-        userId: userData.userId || 'admin',
-        username: userData.username || 'admin',
-        fullName: userData.fullName || 'مدير النظام'
+        userId: userData.userId,
+        username: userData.username,
+        fullName: userData.fullName || userData.username,
+        role: userData.role,
+        permissions: userData.permissions || {}
     };
 }
 
