@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes" />
-  <title>السماح بالتحضير · Preparation Permission</title>
+  <title>Allow Preparation · السماح بالتحضير</title>
 
   <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
@@ -13,9 +13,12 @@
   <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
   <!-- Google Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet" />
 
   <style>
+    /* =========================================================
+       RESET & BASE (موحد مع صفحة Create Order)
+       ========================================================= */
     * {
       margin: 0;
       padding: 0;
@@ -46,6 +49,9 @@
       border-radius: 12px;
     }
 
+    /* =========================================================
+       HEADER (موحد مع Create Order)
+       ========================================================= */
     .header {
       background: #0b1b2f;
       color: #fff;
@@ -82,7 +88,7 @@
     }
 
     .header h1 i {
-      color: #f5a623;
+      color: #6c8cff;
       font-size: 1.4rem;
     }
 
@@ -91,6 +97,19 @@
       align-items: center;
       gap: 12px;
       flex-wrap: wrap;
+    }
+
+    .status-badge {
+      font-size: 12px;
+      font-weight: 500;
+      padding: 6px 16px;
+      border-radius: 40px;
+      background: #E8F5E9;
+      color: #16A34A;
+      border: 1px solid #C8E6C9;
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
 
     .btn-ghost-header {
@@ -114,24 +133,17 @@
       transform: scale(1.02);
     }
 
-    .status-badge {
-      font-size: 12px;
-      font-weight: 500;
-      padding: 6px 16px;
-      border-radius: 40px;
-      background: #E8F5E9;
-      color: #16A34A;
-      border: 1px solid #C8E6C9;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
+    /* =========================================================
+       CONTAINER
+       ========================================================= */
     .container {
       max-width: 1280px;
       margin: 0 auto;
     }
 
+    /* =========================================================
+       CARDS (موحد مع Create Order)
+       ========================================================= */
     .card {
       background: #ffffff;
       border-radius: 20px;
@@ -146,6 +158,9 @@
       box-shadow: 0 8px 28px rgba(0, 20, 40, 0.08);
     }
 
+    /* =========================================================
+       BUTTONS (موحد مع Create Order)
+       ========================================================= */
     .btn {
       padding: 10px 24px;
       border: none;
@@ -163,6 +178,7 @@
     .btn:hover {
       transform: scale(1.02);
     }
+
     .btn:active {
       transform: scale(0.97);
     }
@@ -173,6 +189,40 @@
     }
     .btn-primary:hover {
       background: #5a77e0;
+    }
+
+    .btn-success {
+      background: #3dbb7a;
+      color: #fff;
+    }
+    .btn-success:hover {
+      background: #2ea36a;
+    }
+
+    .btn-warning {
+      background: #f5a623;
+      color: #fff;
+    }
+    .btn-warning:hover {
+      background: #d98e1a;
+    }
+
+    .btn-danger {
+      background: #e14c4c;
+      color: #fff;
+    }
+    .btn-danger:hover {
+      background: #c03939;
+    }
+
+    .btn-secondary {
+      background: transparent;
+      border: 1.5px solid #e6edf5;
+      color: #0b1b2f;
+    }
+    .btn-secondary:hover {
+      background: #f0f4fe;
+      border-color: #6c8cff;
     }
 
     .btn-gold {
@@ -186,29 +236,19 @@
       box-shadow: 0 8px 25px rgba(245, 158, 11, 0.45);
     }
 
-    .btn-secondary {
-      background: transparent;
-      border: 1.5px solid #e6edf5;
-      color: #0b1b2f;
-    }
-    .btn-secondary:hover {
-      background: #f0f4fe;
-      border-color: #6c8cff;
-    }
-
-    .btn-success {
-      background: #3dbb7a;
-      color: #fff;
-    }
-    .btn-success:hover {
-      background: #2ea36a;
-    }
-
     .btn-sm {
       padding: 6px 16px;
       font-size: 0.75rem;
     }
 
+    .btn-lg {
+      padding: 14px 36px;
+      font-size: 16px;
+    }
+
+    /* =========================================================
+       FILTER SECTION
+       ========================================================= */
     .filter-section {
       display: flex;
       gap: 12px;
@@ -253,6 +293,13 @@
       box-shadow: 0 0 0 4px rgba(108, 140, 255, 0.08);
     }
 
+    .filter-section .search-input::placeholder {
+      color: #6d7b93;
+    }
+
+    /* =========================================================
+       INVOICE LIST
+       ========================================================= */
     .invoice-list-header {
       display: flex;
       justify-content: space-between;
@@ -268,7 +315,7 @@
     }
 
     .invoice-list-header h4 i {
-      color: #f5a623;
+      color: #6c8cff;
     }
 
     .invoice-list-header .count {
@@ -302,14 +349,20 @@
 
     .invoice-item:hover {
       box-shadow: 0 8px 28px rgba(0, 20, 40, 0.08);
-      border-color: #f5a62340;
+      border-color: #6c8cff40;
       transform: translateY(-2px);
     }
 
     .invoice-item.selected {
-      border-color: #f5a623;
-      background: #fffbf0;
-      box-shadow: 0 0 0 4px rgba(245, 166, 35, 0.08);
+      border-color: #6c8cff;
+      background: #f8faff;
+      box-shadow: 0 0 0 4px rgba(108, 140, 255, 0.08);
+    }
+
+    .invoice-item.disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      pointer-events: none;
     }
 
     .invoice-item .info {
@@ -324,7 +377,7 @@
     }
 
     .invoice-item .info .branch i {
-      color: #f5a623;
+      color: #6c8cff;
       margin-left: 6px;
     }
 
@@ -337,6 +390,20 @@
       margin-top: 4px;
     }
 
+    .invoice-item .info .meta i {
+      margin-left: 4px;
+    }
+
+    .invoice-item .stats {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    /* =========================================================
+       BADGES
+       ========================================================= */
     .badge {
       font-size: 11px;
       font-weight: 600;
@@ -345,14 +412,19 @@
       text-transform: uppercase;
     }
 
-    .badge.prepared {
-      background: #E8F5E9;
-      color: #16A34A;
-    }
-
     .badge.pending {
       background: #FEF3C7;
       color: #92400E;
+    }
+
+    .badge.preparing {
+      background: #DBEAFE;
+      color: #1E40AF;
+    }
+
+    .badge.prepared {
+      background: #E8F5E9;
+      color: #16A34A;
     }
 
     .badge.partial {
@@ -365,6 +437,19 @@
       color: #374151;
     }
 
+    .closed-badge {
+      background: #D1D5DB;
+      color: #374151;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 4px 14px;
+      border-radius: 40px;
+      text-transform: uppercase;
+    }
+
+    /* =========================================================
+       PREVIEW CARD
+       ========================================================= */
     .preview-card {
       display: none;
       animation: fadeSlide 0.3s ease;
@@ -389,7 +474,7 @@
     }
 
     .preview-header .title i {
-      color: #f5a623;
+      color: #6c8cff;
       margin-left: 8px;
     }
 
@@ -398,6 +483,29 @@
       color: #6d7b93;
     }
 
+    .preview-header .meta i {
+      margin-left: 4px;
+    }
+
+    .preview-header .badge {
+      margin-right: auto;
+    }
+
+    /* =========================================================
+       ACCORDION CONTROLS
+       ========================================================= */
+    .accordion-controls {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+      padding: 8px 0;
+      border-bottom: 1px solid #e6edf5;
+    }
+
+    /* =========================================================
+       PRODUCT CARDS (موحد مع Create Order)
+       ========================================================= */
     .product-card {
       background: #ffffff;
       border-radius: 20px;
@@ -410,7 +518,7 @@
 
     .product-card:hover {
       box-shadow: 0 8px 28px rgba(0, 20, 40, 0.08);
-      border-color: #f5a62340;
+      border-color: #6c8cff40;
     }
 
     .product-card-header {
@@ -424,7 +532,7 @@
     }
 
     .product-card-header:hover {
-      background: #fffbf0;
+      background: #f8faff;
     }
 
     .product-card-header .thumb {
@@ -434,6 +542,12 @@
       object-fit: cover;
       border: 1px solid #e6edf5;
       flex-shrink: 0;
+      transition: all 0.2s;
+      cursor: pointer;
+    }
+
+    .product-card-header .thumb:hover {
+      transform: scale(1.05);
     }
 
     .product-card-header .meta {
@@ -460,8 +574,22 @@
 
     .product-card-header .meta .price {
       font-weight: 600;
-      color: #f5a623;
+      color: #6c8cff;
       font-size: 14px;
+    }
+
+    .product-card-header .meta .status-badge {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 12px;
+      border-radius: 40px;
+      background: #FEF3C7;
+      color: #92400E;
+    }
+
+    .product-card-header .meta .status-badge.done {
+      background: #E8F5E9;
+      color: #16A34A;
     }
 
     .product-card-header .chevron {
@@ -485,6 +613,9 @@
       display: block;
     }
 
+    /* =========================================================
+       COLOR ACCORDION (موحد مع Create Order)
+       ========================================================= */
     .color-accordion {
       border-top: 1px solid #e6edf5;
       padding-top: 12px;
@@ -508,7 +639,7 @@
     }
 
     .color-header:hover {
-      color: #f5a623;
+      color: #6c8cff;
     }
 
     .color-header .chevron-sm {
@@ -548,11 +679,6 @@
       padding: 6px 0;
       font-size: 14px;
       flex-wrap: wrap;
-      border-bottom: 1px solid #f6f8fc;
-    }
-
-    .size-row:last-child {
-      border-bottom: none;
     }
 
     .size-row .size-label {
@@ -564,64 +690,131 @@
     .size-row .qty-control {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 4px;
     }
 
-    .size-row .qty-control input {
-      width: 60px;
-      padding: 6px 8px;
-      border: 1.5px solid #e6edf5;
-      border-radius: 12px;
-      text-align: center;
-      font-size: 14px;
+    .size-row .qty-control button {
+      width: 30px;
+      height: 30px;
+      border: 1px solid #e6edf5;
+      border-radius: 10px;
+      background: #ffffff;
+      cursor: pointer;
+      font-size: 16px;
       font-weight: 600;
-      font-family: 'Inter', sans-serif;
-      color: #0b1b2f;
-      background: #fafcff;
       transition: all 0.2s;
-      outline: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      touch-action: manipulation;
+      color: #0b1b2f;
     }
 
-    .size-row .qty-control input:focus {
-      border-color: #f5a623;
-      box-shadow: 0 0 0 4px rgba(245, 166, 35, 0.08);
-    }
-
-    .size-row .qty-control input:disabled {
+    .size-row .qty-control button:hover {
       background: #f0f4fe;
-      color: #6d7b93;
-      cursor: not-allowed;
+      border-color: #6c8cff;
     }
 
-    .size-row .qty-control .max-label {
+    .size-row .qty-control button:active {
+      transform: scale(0.92);
+    }
+
+    .size-row .qty-control .qty-val {
+      min-width: 32px;
+      text-align: center;
+      font-weight: 600;
+      font-size: 15px;
+      color: #0b1b2f;
+    }
+
+    .size-row .qty-control .qty-val.allowed {
+      color: #6c8cff;
+    }
+
+    .size-row .qty-control .qty-val.partial {
+      color: #f5a623;
+    }
+
+    .size-row .qty-control .qty-val.pending {
+      color: #e14c4c;
+    }
+
+    /* =========================================================
+       STATISTICS (موحد مع Create Order)
+       ========================================================= */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .stat-card {
+      background: #ffffff;
+      border-radius: 20px;
+      padding: 18px 20px;
+      box-shadow: 0 2px 12px rgba(0, 20, 40, 0.04);
+      border: 1px solid rgba(0, 0, 0, 0.02);
+      transition: all 0.2s;
+      text-align: center;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 28px rgba(0, 20, 40, 0.08);
+    }
+
+    .stat-card .stat-label {
       font-size: 12px;
       color: #6d7b93;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
     }
 
-    .size-row .qty-control .max-label span {
+    .stat-card .stat-label i {
+      margin-left: 4px;
+    }
+
+    .stat-card .stat-value {
+      font-size: 28px;
       font-weight: 700;
       color: #0b1b2f;
+      margin-top: 4px;
     }
 
-    .empty-state {
-      text-align: center;
-      padding: 48px 20px;
-      color: #6d7b93;
+    .stat-card .stat-value.green {
+      color: #3dbb7a;
     }
-
-    .empty-state i {
-      font-size: 2.8rem;
+    .stat-card .stat-value.primary {
+      color: #6c8cff;
+    }
+    .stat-card .stat-value.orange {
       color: #f5a623;
-      opacity: 0.4;
-      margin-bottom: 12px;
+    }
+    .stat-card .stat-value.purple {
+      color: #7C3AED;
     }
 
-    .empty-state h3 {
-      font-size: 20px;
-      color: #0b1b2f;
-      margin-bottom: 8px;
+    @media (max-width: 768px) {
+      .stats-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+      }
+      .stat-card .stat-value {
+        font-size: 22px;
+      }
     }
 
+    @media (max-width: 480px) {
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* =========================================================
+       STICKY BOTTOM (موحد مع Create Order)
+       ========================================================= */
     .sticky-bottom {
       position: fixed;
       bottom: 0;
@@ -656,7 +849,7 @@
     }
 
     .sticky-bottom .summary .item i {
-      color: #f5a623;
+      color: #6c8cff;
     }
 
     .sticky-bottom .summary .item strong {
@@ -670,6 +863,254 @@
       flex-wrap: wrap;
     }
 
+    @media (max-width: 768px) {
+      .sticky-bottom {
+        flex-direction: column;
+        align-items: stretch;
+        padding: 12px 16px;
+      }
+      .sticky-bottom .summary {
+        justify-content: center;
+      }
+      .sticky-bottom .actions {
+        justify-content: center;
+      }
+    }
+
+    /* =========================================================
+       DIALOG / MODAL (موحد مع Create Order)
+       ========================================================= */
+    .dialog-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(11, 27, 47, 0.5);
+      backdrop-filter: blur(6px);
+      z-index: 9999;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      animation: fadeIn 0.25s ease;
+    }
+
+    .dialog-overlay.show {
+      display: flex;
+    }
+
+    .dialog-box {
+      background: #ffffff;
+      border-radius: 24px;
+      padding: 32px;
+      max-width: 520px;
+      width: 100%;
+      box-shadow: 0 24px 64px rgba(0, 20, 40, 0.2);
+      animation: slideUp 0.3s ease;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+
+    .dialog-box h3 {
+      font-size: 20px;
+      font-weight: 700;
+      color: #0b1b2f;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .dialog-box h3 i {
+      color: #6c8cff;
+    }
+
+    .dialog-box .subtitle {
+      color: #4e5e77;
+      margin-bottom: 16px;
+      font-size: 14px;
+    }
+
+    .dialog-box .dialog-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+      margin-top: 16px;
+      flex-wrap: wrap;
+    }
+
+    .dialog-box .product-list {
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
+    .dialog-product-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 12px;
+      border-bottom: 1px solid #e6edf5;
+    }
+
+    .dialog-product-item:last-child {
+      border-bottom: none;
+    }
+
+    .dialog-product-item img {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      object-fit: cover;
+      border: 1px solid #e6edf5;
+    }
+
+    .dialog-product-item .info {
+      flex: 1;
+    }
+
+    .dialog-product-item .info .name {
+      font-weight: 500;
+      font-size: 14px;
+      color: #0b1b2f;
+    }
+
+    .dialog-product-item .info .details {
+      font-size: 12px;
+      color: #6d7b93;
+    }
+
+    .dialog-product-item .qty-info {
+      font-weight: 600;
+      font-size: 14px;
+      min-width: 60px;
+      text-align: center;
+    }
+
+    .dialog-product-item .qty-info.done {
+      color: #3dbb7a;
+    }
+    .dialog-product-item .qty-info.partial {
+      color: #f5a623;
+    }
+    .dialog-product-item .qty-info.remaining {
+      color: #e14c4c;
+    }
+
+    .dialog-info-box {
+      background: #FEF3C7;
+      padding: 12px 16px;
+      border-radius: 12px;
+      margin-bottom: 16px;
+      border: 1px solid #FCD34D;
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+      font-size: 14px;
+    }
+
+    .dialog-info-box .item {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .dialog-info-box .item strong {
+      font-weight: 700;
+    }
+    .dialog-info-box .item .green {
+      color: #3dbb7a;
+    }
+    .dialog-info-box .item .danger {
+      color: #e14c4c;
+    }
+
+    .dialog-confirm-box {
+      background: #E8F5E9;
+      padding: 12px 16px;
+      border-radius: 12px;
+      margin: 12px 0;
+      border: 1px solid #86EFAC;
+    }
+
+    .dialog-confirm-box p {
+      font-size: 13px;
+      color: #166534;
+      margin-bottom: 0;
+    }
+
+    /* =========================================================
+       EMPTY STATE
+       ========================================================= */
+    .empty-state {
+      text-align: center;
+      padding: 48px 20px;
+      color: #6d7b93;
+    }
+
+    .empty-state i {
+      font-size: 2.8rem;
+      color: #6c8cff;
+      opacity: 0.4;
+      margin-bottom: 12px;
+    }
+
+    .empty-state h3 {
+      font-size: 20px;
+      color: #0b1b2f;
+      margin-bottom: 8px;
+    }
+
+    .empty-state p {
+      font-size: 0.95rem;
+    }
+
+    /* =========================================================
+       PROGRESS BAR
+       ========================================================= */
+    .progress-container {
+      min-width: 80px;
+    }
+
+    .progress-container .label {
+      font-size: 12px;
+      color: #6d7b93;
+    }
+
+    .progress-container .value {
+      font-weight: 700;
+      font-size: 14px;
+      color: #0b1b2f;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 6px;
+      background: #e6edf5;
+      border-radius: 10px;
+      overflow: hidden;
+      margin: 4px 0;
+    }
+
+    .progress-bar .fill {
+      height: 100%;
+      border-radius: 10px;
+      background: #3dbb7a;
+      transition: width 0.5s ease;
+    }
+
+    .progress-bar .fill.warning {
+      background: #f5a623;
+    }
+
+    .progress-bar .fill.danger {
+      background: #e14c4c;
+    }
+
+    /* =========================================================
+       TOAST / ALERT (موحد مع Create Order)
+       ========================================================= */
     .toast-alert {
       position: fixed;
       bottom: 90px;
@@ -686,6 +1127,62 @@
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
     }
 
+    /* =========================================================
+       IMAGE MODAL
+       ========================================================= */
+    .image-modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(8px);
+      z-index: 99999;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      cursor: pointer;
+    }
+
+    .image-modal-overlay.show {
+      display: flex;
+    }
+
+    .image-modal-overlay img {
+      max-width: 95%;
+      max-height: 85vh;
+      border-radius: 16px;
+      object-fit: contain;
+    }
+
+    .image-modal-overlay .close-btn {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      background: rgba(255, 255, 255, 0.15);
+      border: none;
+      color: #fff;
+      font-size: 24px;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .image-modal-overlay .close-btn:hover {
+      background: rgba(255, 255, 255, 0.25);
+      transform: scale(1.05);
+    }
+
+    /* =========================================================
+       ANIMATIONS
+       ========================================================= */
     @keyframes fadeSlide {
       from {
         opacity: 0;
@@ -697,6 +1194,29 @@
       }
     }
 
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* =========================================================
+       RESPONSIVE
+       ========================================================= */
     @media (max-width: 768px) {
       body {
         padding: 16px 12px 110px;
@@ -704,8 +1224,19 @@
       .header h1 {
         font-size: 1rem;
       }
+      .product-card-header {
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .product-card-header .meta {
+        width: 100%;
+      }
       .card {
         padding: 16px;
+      }
+      .sticky-bottom .summary {
+        flex-wrap: wrap;
+        gap: 8px;
       }
       .filter-section {
         flex-direction: column;
@@ -719,27 +1250,91 @@
         flex-direction: column;
         align-items: stretch;
       }
-      .sticky-bottom {
+      .invoice-item .stats {
+        justify-content: flex-start;
+      }
+      .preview-header {
         flex-direction: column;
         align-items: stretch;
       }
-      .sticky-bottom .summary {
+      .preview-header .badge {
+        margin-right: 0;
+        align-self: flex-start;
+      }
+      .accordion-controls {
         justify-content: center;
       }
-      .sticky-bottom .actions {
-        justify-content: center;
+      .dialog-box {
+        padding: 24px 20px;
+      }
+      .dialog-info-box {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 4px;
       }
     }
 
+    @media (max-width: 480px) {
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+      .stat-card .stat-value {
+        font-size: 20px;
+      }
+      .size-row {
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+      .toast-alert {
+        bottom: 80px;
+        font-size: 12px;
+        padding: 10px 16px;
+        max-width: 95vw;
+      }
+    }
+
+    /* =========================================================
+       HIDDEN UTILITY
+       ========================================================= */
     .hidden {
       display: none !important;
+    }
+    .mt-8 {
+      margin-top: 8px;
+    }
+    .mb-8 {
+      margin-bottom: 8px;
+    }
+    .flex {
+      display: flex;
+    }
+    .flex-wrap {
+      flex-wrap: wrap;
+    }
+    .items-center {
+      align-items: center;
+    }
+    .justify-between {
+      justify-content: space-between;
+    }
+    .gap-8 {
+      gap: 8px;
+    }
+    .text-center {
+      text-align: center;
+    }
+    .text-muted {
+      color: #6d7b93;
     }
   </style>
 </head>
 <body>
 
+  <!-- =========================================================
+  HEADER (موحد مع Create Order)
+  ========================================================= -->
   <header class="header">
-    <h1><i class="fas fa-user-check"></i> السماح بالتحضير · Preparation Permission</h1>
+    <h1><i class="fas fa-check-circle"></i> Allow Preparation · السماح بالتحضير</h1>
     <div class="header-actions">
       <button class="btn-ghost-header" id="refreshBtn">
         <i class="fas fa-sync-alt"></i> تحديث
@@ -750,16 +1345,21 @@
     </div>
   </header>
 
+  <!-- =========================================================
+  CONTAINER
+  ========================================================= -->
   <div class="container">
 
     <!-- FILTERS -->
     <section class="card">
       <div class="filter-section">
         <select id="invoiceFilter">
-          <option value="all">جميع الفواتير</option>
-          <option value="prepared">محضرة</option>
-          <option value="pending">غير محضرة</option>
-          <option value="partial">تحضير جزئي</option>
+          <option value="all"><i class="fas fa-list"></i> جميع الفواتير</option>
+          <option value="pending"><i class="fas fa-clock"></i> غير مسموح</option>
+          <option value="preparing"><i class="fas fa-spinner"></i> قيد السماح</option>
+          <option value="prepared"><i class="fas fa-check-circle"></i> مسموح بالكامل</option>
+          <option value="partial"><i class="fas fa-exclamation-triangle"></i> سماح جزئي</option>
+          <option value="closed"><i class="fas fa-lock"></i> مقفلة</option>
         </select>
         <input type="text" class="search-input" id="searchInput" placeholder="🔍 بحث عن فرع أو منتج..." />
       </div>
@@ -768,14 +1368,14 @@
     <!-- INVOICE LIST -->
     <section class="card">
       <div class="invoice-list-header">
-        <h4><i class="fas fa-file-invoice"></i> الفواتير المغلقة</h4>
+        <h4><i class="fas fa-file-invoice"></i> الفواتير</h4>
         <span class="count" id="invoicesCount">0 فاتورة</span>
       </div>
       <div class="invoice-list" id="invoiceList">
         <div class="empty-state" id="emptyInvoiceList">
           <i class="fas fa-inbox"></i>
-          <h3>لا توجد فواتير مغلقة</h3>
-          <p>قم بتقفيل الفواتير من صفحة التحضير أولاً</p>
+          <h3>لا توجد فواتير</h3>
+          <p>انتظر حتى يتم تقفيل الفواتير من صفحة إنشاء الأوردرات</p>
         </div>
       </div>
     </section>
@@ -784,55 +1384,134 @@
     <section class="card preview-card" id="previewSection">
       <div class="preview-header">
         <div>
-          <div class="title" id="previewTitle"><i class="fas fa-user-check"></i> السماح بالتحضير</div>
+          <div class="title" id="previewTitle"><i class="fas fa-receipt"></i> تفاصيل الفاتورة</div>
           <div class="meta" id="previewMeta"><i class="fas fa-store"></i> الفرع: — | <i class="fas fa-calendar-alt"></i> التاريخ: —</div>
         </div>
-        <span class="badge prepared" id="previewStatus">✅ محضرة</span>
+        <span class="badge" id="previewStatus">⏳ قيد السماح</span>
+      </div>
+
+      <!-- ACCORDION CONTROLS -->
+      <div class="accordion-controls">
+        <button class="btn btn-secondary btn-sm" id="expandAllColorsBtn">
+          <i class="fas fa-chevron-down"></i> فتح كل الألوان
+        </button>
+        <button class="btn btn-secondary btn-sm" id="collapseAllColorsBtn">
+          <i class="fas fa-chevron-left"></i> غلق كل الألوان
+        </button>
+        <button class="btn btn-secondary btn-sm" id="expandAllProductsBtn">
+          <i class="fas fa-chevron-down"></i> فتح كل المنتجات
+        </button>
+        <button class="btn btn-secondary btn-sm" id="collapseAllProductsBtn">
+          <i class="fas fa-chevron-left"></i> غلق كل المنتجات
+        </button>
       </div>
 
       <div id="previewContainer">
         <div class="empty-state">
           <i class="fas fa-hand-pointer"></i>
           <h3>اختر فاتورة</h3>
-          <p>اضغط على أي فاتورة لتحديد الكميات المسموح بتحضيرها</p>
+          <p>اضغط على أي فاتورة لعرض تفاصيلها</p>
         </div>
       </div>
-
       <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:16px;flex-wrap:wrap;">
         <button class="btn btn-secondary" id="closePreviewBtn">
           <i class="fas fa-times"></i> إغلاق
         </button>
-        <button class="btn btn-gold btn-lg" id="savePermissionBtn">
-          <i class="fas fa-save"></i> حفظ السماح بالتحضير
+        <button class="btn btn-gold btn-lg" id="closePreparationBtn">
+          <i class="fas fa-lock"></i> تقفيل السماح
         </button>
       </div>
     </section>
 
-    <!-- STICKY BOTTOM -->
+    <!-- STATISTICS (موحد مع Create Order) -->
+    <section class="stats-grid" id="statsGrid">
+      <div class="stat-card">
+        <div class="stat-label"><i class="fas fa-file-invoice"></i> إجمالي الفواتير</div>
+        <div class="stat-value primary" id="statTotalInvoices">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label"><i class="fas fa-clock"></i> غير مسموح</div>
+        <div class="stat-value orange" id="statPending">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label"><i class="fas fa-spinner"></i> قيد السماح</div>
+        <div class="stat-value purple" id="statPreparing">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label"><i class="fas fa-check-circle"></i> مسموح ✅</div>
+        <div class="stat-value green" id="statPrepared">0</div>
+      </div>
+    </section>
+
+    <!-- STICKY BOTTOM (موحد مع Create Order) -->
     <div class="sticky-bottom" id="stickyBottom">
       <div class="summary">
-        <span class="item"><i class="fas fa-file-invoice"></i> الفاتورة: <strong id="bottomInvoice">—</strong></span>
-        <span class="item"><i class="fas fa-cubes"></i> إجمالي القطع: <strong id="bottomTotal">0</strong></span>
-        <span class="item"><i class="fas fa-check-circle" style="color:#f5a623;"></i> المسموح: <strong id="bottomAllowed">0</strong></span>
+        <span class="item"><i class="fas fa-boxes"></i> المنتجات: <strong id="bottomProducts">0</strong></span>
+        <span class="item"><i class="fas fa-cubes"></i> القطع: <strong id="bottomPieces">0</strong></span>
+        <span class="item"><i class="fas fa-check-circle" style="color:#6c8cff;"></i> المسموح: <strong id="bottomAllowed">0</strong></span>
+        <span class="item" id="bottomProgress" style="display:flex;align-items:center;gap:8px;">
+          <span style="font-size:12px;color:#6d7b93;">التقدم:</span>
+          <span style="font-weight:700;color:#0b1b2f;" id="bottomPercent">0%</span>
+        </span>
       </div>
       <div class="actions">
-        <button class="btn btn-gold" id="savePermissionStickyBtn">
-          <i class="fas fa-save"></i> حفظ السماح بالتحضير
+        <button class="btn btn-gold" id="closePreparationStickyBtn">
+          <i class="fas fa-lock"></i> تقفيل السماح
         </button>
+      </div>
+    </div>
+
+    <!-- CLOSE PREPARATION DIALOG (موحد مع Create Order) -->
+    <div class="dialog-overlay" id="closeDialog">
+      <div class="dialog-box">
+        <h3><i class="fas fa-lock" style="color:#f5a623;"></i> تقفيل السماح</h3>
+        <p class="subtitle">سيتم تقفيل الفاتورة بالكميات المسموح بها حالياً. الكميات غير المسموح بها ستبقى 0.</p>
+
+        <div class="dialog-info-box">
+          <span class="item"><i class="fas fa-cubes"></i> إجمالي القطع: <strong id="closeTotalPieces">0</strong></span>
+          <span class="item"><i class="fas fa-check-circle" style="color:#6c8cff;"></i> المسموح: <strong class="green" id="closeAllowedPieces">0</strong></span>
+          <span class="item"><i class="fas fa-hourglass-half" style="color:#e14c4c;"></i> المتبقية: <strong class="danger" id="closeRemainingPieces">0</strong></span>
+        </div>
+
+        <div class="product-list" id="closeProductList"></div>
+
+        <div class="dialog-confirm-box">
+          <p><i class="fas fa-check-circle" style="color:#6c8cff;"></i> ✅ سيتم تحديث حالة الفاتورة إلى "prepared" بعد التأكيد</p>
+        </div>
+
+        <div class="dialog-actions">
+          <button class="btn btn-secondary" id="closeDialogCancel"><i class="fas fa-times"></i> إلغاء</button>
+          <button class="btn btn-gold" id="closeDialogConfirm"><i class="fas fa-lock"></i> تأكيد تقفيل السماح</button>
+        </div>
       </div>
     </div>
 
   </div>
 
+  <!-- =========================================================
+  IMAGE MODAL
+  ========================================================= -->
+  <div class="image-modal-overlay" id="imageModal" onclick="closeModal()">
+    <button class="close-btn" onclick="event.stopPropagation();closeModal();"><i class="fas fa-times"></i></button>
+    <img id="modalImage" src="" alt="Product" onclick="event.stopPropagation();" />
+  </div>
+
+  <!-- =========================================================
+  JAVASCRIPT
+  ========================================================= -->
   <script>
     (function() {
       'use strict';
 
+      // ================================================================
+      //  STORAGE VERSION
+      // ================================================================
       const STORAGE_VERSION = 2;
       const STORAGE_VERSION_KEY = 'shopify_storage_version';
 
       const currentVersion = localStorage.getItem(STORAGE_VERSION_KEY);
       if (currentVersion !== String(STORAGE_VERSION)) {
+        console.log('🔄 Storage version mismatch. Clearing all data...');
         const keysToRemove = [];
         for (let i = 0; i < localStorage.length; i++) {
           const key = localStorage.key(i);
@@ -842,8 +1521,36 @@
         }
         keysToRemove.forEach(key => localStorage.removeItem(key));
         localStorage.setItem(STORAGE_VERSION_KEY, String(STORAGE_VERSION));
+        console.log('✅ Storage cleared and version set to', STORAGE_VERSION);
       }
 
+      // ================================================================
+      //  STORAGE
+      // ================================================================
+      const Storage = {
+        get(key, fallback = '') {
+          try {
+            const fullKey = 'shopify_' + key;
+            const v = localStorage.getItem(fullKey);
+            if (v === null) return fallback;
+            try { return JSON.parse(v); } catch { return v; }
+          } catch (e) { return fallback; }
+        },
+        set(key, value) {
+          try {
+            const fullKey = 'shopify_' + key;
+            const v = (typeof value === 'object') ? JSON.stringify(value) : String(value);
+            localStorage.setItem(fullKey, v);
+          } catch (e) {}
+        },
+        remove(key) {
+          try { localStorage.removeItem('shopify_' + key); } catch (e) {}
+        }
+      };
+
+      // ================================================================
+      //  FIREBASE CONFIG
+      // ================================================================
       const firebaseConfig = {
         apiKey: "AIzaSyC7M4JhDl7KGZdrPj78W0nPqQy2I4P4I6I",
         authDomain: "exams-fab0f.firebaseapp.com",
@@ -861,21 +1568,71 @@
         console.log('✅ Firebase ready');
       } catch (e) { console.warn('⚠️ Firebase init error', e); }
 
+      // ================================================================
+      //  UTILITIES
+      // ================================================================
       const Utils = {
         cleanText(t) { return t ? t.replace(/\s+/g, ' ').trim() : ''; },
+        formatCurrency(v) { return v ? Number(v).toLocaleString('en-EG') : '0'; },
         escapeHtml(text) { const d = document.createElement('div');
           d.textContent = text; return d.innerHTML; },
+        unique(a) { return [...new Set(a.filter(Boolean))]; },
+        sortSizes(arr) {
+          const order = ['XXXS', 'XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL', 'XXXXL'];
+          const std = [],
+            num = [],
+            other = [];
+          arr.forEach(s => {
+            const u = s.toUpperCase().trim();
+            if (order.includes(u)) std.push(u);
+            else if (/^\d+XL$/.test(u) || /^\d+X$/.test(u)) num.push(u);
+            else if (u) other.push(u);
+          });
+          std.sort((a, b) => order.indexOf(a) - order.indexOf(b));
+          num.sort((a, b) => parseInt(a) - parseInt(b));
+          other.sort();
+          return [...std, ...num, ...other];
+        },
         calculateTotalPieces(items) { let t = 0;
           items.forEach(r => { t += r.qty || 0; }); return t; },
-        calculatePrepared(items) { let t = 0;
-          items.forEach(r => { t += r.preparedQty || 0; }); return t; },
-        calculateAllowed(items) { let t = 0;
-          items.forEach(r => { t += r.allowedQty || 0; }); return t; },
+        calculateTotalValue(items) { let t = 0;
+          items.forEach(r => { t += r.total || 0; }); return t; },
+        calculateAllowed(items) {
+          let allowed = 0;
+          items.forEach(r => { allowed += r.allowedQty || 0; });
+          return allowed;
+        },
+        calculateRemaining(items) {
+          let remaining = 0;
+          items.forEach(r => { remaining += (r.qty || 0) - (r.allowedQty || 0); });
+          return remaining;
+        },
+        isFullyAllowed(items) {
+          if (!items || !items.length) return false;
+          return items.every(r => (r.allowedQty || 0) >= (r.qty || 0));
+        },
+        isPartiallyAllowed(items) {
+          if (!items || !items.length) return false;
+          const hasAllowed = items.some(r => (r.allowedQty || 0) > 0);
+          const hasUnallowed = items.some(r => (r.allowedQty || 0) < (r.qty || 0));
+          return hasAllowed && hasUnallowed;
+        },
+        getProgress(items) {
+          if (!items || !items.length) return 0;
+          let total = 0,
+            allowed = 0;
+          items.forEach(r => { total += r.qty || 0;
+            allowed += r.allowedQty || 0; });
+          return total === 0 ? 0 : Math.round((allowed / total) * 100);
+        },
         isInvoiceClosed(invoice) {
           return invoice && (invoice.status === 'prepared' || invoice.isClosed === true);
         }
       };
 
+      // ================================================================
+      //  UI CONTROLLER
+      // ================================================================
       const UI = {
         elements: {
           invoiceList: document.getElementById('invoiceList'),
@@ -890,21 +1647,40 @@
           previewStatus: document.getElementById('previewStatus'),
           previewContainer: document.getElementById('previewContainer'),
           closePreviewBtn: document.getElementById('closePreviewBtn'),
-          savePermissionBtn: document.getElementById('savePermissionBtn'),
-          savePermissionStickyBtn: document.getElementById('savePermissionStickyBtn'),
+          closePreparationBtn: document.getElementById('closePreparationBtn'),
+          closePreparationStickyBtn: document.getElementById('closePreparationStickyBtn'),
           storeStatus: document.getElementById('storeStatus'),
-          bottomInvoice: document.getElementById('bottomInvoice'),
-          bottomTotal: document.getElementById('bottomTotal'),
+          statTotalInvoices: document.getElementById('statTotalInvoices'),
+          statPending: document.getElementById('statPending'),
+          statPreparing: document.getElementById('statPreparing'),
+          statPrepared: document.getElementById('statPrepared'),
+          bottomProducts: document.getElementById('bottomProducts'),
+          bottomPieces: document.getElementById('bottomPieces'),
           bottomAllowed: document.getElementById('bottomAllowed'),
+          bottomPercent: document.getElementById('bottomPercent'),
+          closeDialog: document.getElementById('closeDialog'),
+          closeProductList: document.getElementById('closeProductList'),
+          closeTotalPieces: document.getElementById('closeTotalPieces'),
+          closeAllowedPieces: document.getElementById('closeAllowedPieces'),
+          closeRemainingPieces: document.getElementById('closeRemainingPieces'),
+          closeDialogCancel: document.getElementById('closeDialogCancel'),
+          closeDialogConfirm: document.getElementById('closeDialogConfirm'),
+          imageModal: document.getElementById('imageModal'),
+          modalImage: document.getElementById('modalImage'),
+          expandAllColorsBtn: document.getElementById('expandAllColorsBtn'),
+          collapseAllColorsBtn: document.getElementById('collapseAllColorsBtn'),
+          expandAllProductsBtn: document.getElementById('expandAllProductsBtn'),
+          collapseAllProductsBtn: document.getElementById('collapseAllProductsBtn'),
         },
         _invoices: [],
         _filteredInvoices: [],
         _selectedInvoice: null,
         _selectedInvoiceId: null,
-        _permissionValues: {},
+        _productCardStates: {},
 
+        // ===== INIT =====
         init() {
-          console.log('🚀 Initializing Permission UI...');
+          console.log('🚀 Initializing Allow Preparation UI...');
           this.loadInvoices();
 
           this.elements.refreshBtn.addEventListener('click', () => this.loadInvoices());
@@ -912,10 +1688,71 @@
           this.elements.searchInput.addEventListener('input', () => this.renderInvoiceList());
           this.elements.closePreviewBtn.addEventListener('click', () => this.closePreview());
 
-          this.elements.savePermissionBtn.addEventListener('click', () => this.savePermissions());
-          this.elements.savePermissionStickyBtn.addEventListener('click', () => this.savePermissions());
+          this.elements.closePreparationBtn.addEventListener('click', () => this.openCloseDialog());
+          this.elements.closePreparationStickyBtn.addEventListener('click', () => this.openCloseDialog());
+
+          this.elements.closeDialogCancel.addEventListener('click', () => this.closeCloseDialog());
+          this.elements.closeDialogConfirm.addEventListener('click', () => this.confirmClosePreparation());
+          this.elements.closeDialog.addEventListener('click', (e) => {
+            if (e.target === this.elements.closeDialog) this.closeCloseDialog();
+          });
+
+          this.elements.expandAllColorsBtn.addEventListener('click', () => this.expandAllColors(true));
+          this.elements.collapseAllColorsBtn.addEventListener('click', () => this.expandAllColors(false));
+          this.elements.expandAllProductsBtn.addEventListener('click', () => this.expandAllProducts(true));
+          this.elements.collapseAllProductsBtn.addEventListener('click', () => this.expandAllProducts(false));
+
+          this.elements.imageModal.addEventListener('click', (e) => {
+            if (e.target === this.elements.imageModal) this.closeModal();
+          });
+
+          this.loadFromURL();
         },
 
+        // ===== IMAGE MODAL =====
+        openModal(imgSrc) {
+          if (!imgSrc) return;
+          this.elements.modalImage.src = imgSrc;
+          this.elements.imageModal.classList.add('show');
+        },
+
+        closeModal() {
+          this.elements.imageModal.classList.remove('show');
+          this.elements.modalImage.src = '';
+        },
+
+        // ===== ACCORDION CONTROLS =====
+        expandAllColors(open) {
+          for (const key in this._productCardStates) {
+            if (key.includes('_color_')) this._productCardStates[key] = open;
+          }
+          if (this._selectedInvoice) this.renderInvoicePreview(this._selectedInvoice);
+        },
+
+        expandAllProducts(open) {
+          for (const key in this._productCardStates) {
+            if (!key.includes('_color_')) this._productCardStates[key] = open;
+          }
+          if (this._selectedInvoice) this.renderInvoicePreview(this._selectedInvoice);
+        },
+
+        // ===== LOAD FROM URL =====
+        loadFromURL() {
+          const params = new URLSearchParams(window.location.search);
+          const id = params.get('invoice');
+          if (id) {
+            setTimeout(() => {
+              const invoice = this._invoices.find(inv => inv.id === id);
+              if (invoice && !Utils.isInvoiceClosed(invoice)) {
+                this.selectInvoice(invoice.id);
+                this.elements.filter.value = 'all';
+                this.renderInvoiceList();
+              }
+            }, 500);
+          }
+        },
+
+        // ===== LOAD INVOICES =====
         loadInvoices() {
           if (!database) {
             this.showAlert('⚠️ Firebase not ready', 'error');
@@ -935,9 +1772,15 @@
                 const inv = data[key];
                 if (inv.items) {
                   inv.items.forEach(item => {
-                    if (item.preparedQty === undefined) item.preparedQty = 0;
                     if (item.allowedQty === undefined) item.allowedQty = 0;
                   });
+                }
+                if (!inv.status) {
+                  if (inv.isClosed === true) {
+                    inv.status = 'prepared';
+                  } else {
+                    inv.status = 'pending';
+                  }
                 }
                 this._invoices.push({
                   id: key,
@@ -947,13 +1790,14 @@
               }
               this._invoices.sort((a, b) => b.createdAt - a.createdAt);
             }
-            // فقط الفواتير المغلقة
-            this._invoices = this._invoices.filter(inv => Utils.isInvoiceClosed(inv));
             this.renderInvoiceList();
+            this.updateStats();
             this.elements.storeStatus.innerHTML = '<i class="fas fa-circle" style="font-size:8px;"></i> جاهز';
             this.elements.storeStatus.style.background = '#E8F5E9';
             this.elements.storeStatus.style.color = '#16A34A';
-            this.showAlert(`✅ تم تحميل ${this._invoices.length} فاتورة مغلقة`, 'success');
+            this.showAlert(`✅ تم تحميل ${this._invoices.length} فاتورة`, 'success');
+
+            this.loadFromURL();
           }, (error) => {
             console.error('❌ Error loading invoices:', error);
             this.elements.storeStatus.innerHTML = '<i class="fas fa-circle" style="font-size:8px;"></i> خطأ';
@@ -963,20 +1807,51 @@
           });
         },
 
+        // ===== GET INVOICE STATUS =====
         getInvoiceStatus(invoice) {
           if (!invoice || !invoice.items || !invoice.items.length) {
             return invoice && invoice.status === 'prepared' ? 'prepared' : 'pending';
           }
+
           if (invoice.status === 'prepared' || invoice.isClosed === true) {
             return 'prepared';
           }
-          const allPrepared = invoice.items.every(item => (item.preparedQty || 0) >= (item.qty || 0));
-          const anyPrepared = invoice.items.some(item => (item.preparedQty || 0) > 0);
-          if (allPrepared) return 'prepared';
-          if (anyPrepared) return 'partial';
+
+          const allAllowed = invoice.items.every(item => (item.allowedQty || 0) >= (item.qty || 0));
+          const anyAllowed = invoice.items.some(item => (item.allowedQty || 0) > 0);
+
+          if (allAllowed) {
+            return 'prepared';
+          }
+          if (anyAllowed) {
+            return 'partial';
+          }
           return 'pending';
         },
 
+        getStatusText(status) {
+          const map = {
+            pending: '⏳ غير مسموح',
+            partial: '⚠️ سماح جزئي',
+            preparing: '⚡ قيد السماح',
+            prepared: '✅ مسموح بالكامل',
+            closed: '🔒 مقفلة'
+          };
+          return map[status] || status;
+        },
+
+        getStatusIcon(status) {
+          const map = {
+            pending: 'fa-clock',
+            partial: 'fa-exclamation-triangle',
+            preparing: 'fa-spinner',
+            prepared: 'fa-check-circle',
+            closed: 'fa-lock'
+          };
+          return map[status] || 'fa-circle';
+        },
+
+        // ===== RENDER INVOICE LIST =====
         renderInvoiceList() {
           const filter = this.elements.filter.value;
           const search = this.elements.searchInput.value.toLowerCase().trim();
@@ -1002,8 +1877,8 @@
             list.innerHTML = `
               <div class="empty-state">
                 <i class="fas ${this._invoices.length ? 'fa-search' : 'fa-inbox'}"></i>
-                <h3>${this._invoices.length ? 'لا توجد نتائج مطابقة' : 'لا توجد فواتير مغلقة'}</h3>
-                <p>${this._invoices.length ? 'حاول تغيير الفلتر أو البحث' : 'قم بتقفيل الفواتير من صفحة التحضير أولاً'}</p>
+                <h3>${this._invoices.length ? 'لا توجد نتائج مطابقة' : 'لا توجد فواتير'}</h3>
+                <p>${this._invoices.length ? 'حاول تغيير الفلتر أو البحث' : 'انتظر حتى يتم تقفيل الفواتير من صفحة إنشاء الأوردرات'}</p>
               </div>
             `;
             this.elements.invoicesCount.textContent = `${filtered.length} فاتورة`;
@@ -1019,20 +1894,34 @@
               hour: '2-digit',
               minute: '2-digit'
             });
+            const progress = Utils.getProgress(inv.items);
             const isSelected = this._selectedInvoiceId === inv.id;
 
             html += `
-              <div class="invoice-item ${isSelected ? 'selected' : ''}" onclick="window.UI.selectInvoice('${inv.id}')">
+              <div class="invoice-item ${isSelected ? 'selected' : ''} ${isClosed ? 'disabled' : ''}" 
+                   onclick="${isClosed ? '' : `window.UI.selectInvoice('${inv.id}')`}">
                 <div class="info">
                   <div class="branch"><i class="fas fa-store"></i> ${Utils.escapeHtml(inv.branch || 'Branch not set')}</div>
                   <div class="meta">
                     <span><i class="fas fa-calendar-alt"></i> ${dateStr}</span>
                     <span><i class="fas fa-boxes"></i> ${inv.items ? inv.items.length : 0} منتج</span>
-                    <span><i class="fas fa-cubes"></i> ${Utils.calculateTotalPieces(inv.items)} قطعة</span>
+                    <span><i class="fas fa-cubes"></i> ${inv.totalPieces || Utils.calculateTotalPieces(inv.items)} قطعة</span>
+                    <span><i class="fas fa-money-bill-wave"></i> ${Utils.formatCurrency(inv.totalValue || Utils.calculateTotalValue(inv.items))} LE</span>
                   </div>
                 </div>
-                <div>
-                  <span class="badge ${status}">${status === 'prepared' ? '✅ محضرة' : status === 'partial' ? '⚠️ جزئي' : '⏳ معلقة'}</span>
+                <div class="stats">
+                  ${isClosed ? `
+                    <span class="closed-badge"><i class="fas fa-lock"></i> مقفلة</span>
+                  ` : `
+                    <div class="progress-container">
+                      <div class="label">التقدم</div>
+                      <div class="value">${progress}%</div>
+                      <div class="progress-bar">
+                        <div class="fill ${progress < 50 ? 'danger' : progress < 100 ? 'warning' : ''}" style="width:${progress}%;"></div>
+                      </div>
+                    </div>
+                  `}
+                  <span class="badge ${status}"><i class="fas ${this.getStatusIcon(status)}"></i> ${this.getStatusText(status)}</span>
                 </div>
               </div>
             `;
@@ -1042,6 +1931,7 @@
           this.elements.invoicesCount.textContent = `${filtered.length} فاتورة`;
         },
 
+        // ===== SELECT INVOICE =====
         selectInvoice(invoiceId) {
           const invoice = this._invoices.find(inv => inv.id === invoiceId);
           if (!invoice) {
@@ -1049,27 +1939,33 @@
             return;
           }
 
-          this._selectedInvoice = invoice;
-          this._selectedInvoiceId = invoiceId;
-          this._permissionValues = {};
-
-          // Initialize permission values from existing allowedQty
-          if (invoice.items) {
-            invoice.items.forEach(item => {
-              const key = this.getItemKey(item);
-              this._permissionValues[key] = item.allowedQty || 0;
-            });
+          if (Utils.isInvoiceClosed(invoice)) {
+            this.showAlert('🔒 هذه الفاتورة مقفلة ولا يمكن تعديلها', 'info');
+            this._selectedInvoice = invoice;
+            this._selectedInvoiceId = invoiceId;
+            this._productCardStates = {};
+            this.renderInvoicePreview(invoice);
+            this.renderInvoiceList();
+            this.updateStats();
+            const url = new URL(window.location);
+            url.searchParams.set('invoice', invoiceId);
+            window.history.pushState({}, '', url);
+            return;
           }
 
+          this._selectedInvoice = invoice;
+          this._selectedInvoiceId = invoiceId;
+          this._productCardStates = {};
           this.renderInvoicePreview(invoice);
           this.renderInvoiceList();
-          this.updateBottomBar(invoice);
+          this.updateStats();
+
+          const url = new URL(window.location);
+          url.searchParams.set('invoice', invoiceId);
+          window.history.pushState({}, '', url);
         },
 
-        getItemKey(item) {
-          return `${item.sku || 'Unknown'}|${item.color || 'No Color'}|${item.size || 'No Size'}`;
-        },
-
+        // ===== RENDER INVOICE PREVIEW =====
         renderInvoicePreview(invoice) {
           const container = this.elements.previewContainer;
           this.elements.previewSection.classList.add('show');
@@ -1080,14 +1976,42 @@
             hour: '2-digit',
             minute: '2-digit'
           });
+          const status = this.getInvoiceStatus(invoice);
+          const progress = Utils.getProgress(invoice.items);
+          const isClosed = Utils.isInvoiceClosed(invoice);
 
-          this.elements.previewTitle.innerHTML = `<i class="fas fa-user-check"></i> السماح بالتحضير · ${Utils.escapeHtml(branch)}`;
+          this.elements.previewTitle.innerHTML = `<i class="fas fa-receipt"></i> ${Utils.escapeHtml(branch)}`;
           this.elements.previewMeta.innerHTML = `
             <i class="fas fa-calendar-alt"></i> ${dateStr} | 
-            <i class="fas fa-cubes"></i> ${Utils.calculateTotalPieces(invoice.items)} قطعة
+            <i class="fas fa-cubes"></i> ${invoice.totalPieces || Utils.calculateTotalPieces(invoice.items)} قطعة | 
+            <i class="fas fa-money-bill-wave"></i> ${Utils.formatCurrency(invoice.totalValue || Utils.calculateTotalValue(invoice.items))} LE
           `;
-          this.elements.previewStatus.textContent = '✅ محضرة';
-          this.elements.previewStatus.className = 'badge prepared';
+          this.elements.previewStatus.textContent = isClosed ? '🔒 مقفلة' : this.getStatusText(status);
+          this.elements.previewStatus.className = `badge ${isClosed ? 'closed' : status}`;
+
+          if (isClosed) {
+            container.innerHTML = `
+              <div style="background:#f8faff;padding:24px;border-radius:16px;text-align:center;border:2px solid #e6edf5;">
+                <div style="font-size:48px;margin-bottom:12px;"><i class="fas fa-lock" style="color:#6d7b93;"></i></div>
+                <h3 style="color:#0b1b2f;">هذه الفاتورة مقفلة</h3>
+                <p style="color:#6d7b93;margin-top:8px;">لا يمكن تعديل الكميات بعد التقفيل</p>
+                <div style="margin-top:12px;font-size:14px;color:#0b1b2f;">
+                  تم السماح بـ ${Utils.calculateAllowed(invoice.items)} من ${Utils.calculateTotalPieces(invoice.items)} قطعة
+                </div>
+                <div style="margin-top:8px;font-size:13px;color:#6d7b93;">
+                  الحالة: ${invoice.status || 'prepared'}
+                </div>
+              </div>
+            `;
+            this.updateBottomBar(invoice);
+
+            this.elements.closePreparationBtn.style.display = 'none';
+            this.elements.closePreparationStickyBtn.style.display = 'none';
+            return;
+          }
+
+          this.elements.closePreparationBtn.style.display = 'inline-flex';
+          this.elements.closePreparationStickyBtn.style.display = 'inline-flex';
 
           if (!invoice.items || !invoice.items.length) {
             container.innerHTML = `
@@ -1100,7 +2024,9 @@
             return;
           }
 
-          // Group by SKU
+          // ============================================================
+          // تجميع المنتجات حسب الـ SKU مع الاحتفاظ بالعناصر الفريدة
+          // ============================================================
           const groups = {};
           invoice.items.forEach(item => {
             const sku = item.sku || 'Unknown';
@@ -1117,9 +2043,9 @@
               color: item.color || 'No Color',
               size: item.size || 'No Size',
               qty: item.qty || 0,
-              preparedQty: item.preparedQty || 0,
+              total: item.total || 0,
               allowedQty: item.allowedQty || 0,
-              uniqueKey: this.getItemKey(item)
+              uniqueKey: `${sku}|${item.color || 'No Color'}|${item.size || 'No Size'}`
             });
           });
 
@@ -1127,30 +2053,35 @@
           let productIdx = 0;
           for (const sku in groups) {
             const g = groups[sku];
-            const productId = 'permission_prod_' + productIdx;
-            const isOpen = true;
+            const productId = 'preview_prod_' + productIdx;
+            if (this._productCardStates[productId] === undefined) {
+              this._productCardStates[productId] = true;
+            }
+            const isOpen = this._productCardStates[productId];
 
             let totalQty = 0,
               totalAllowed = 0;
             g.items.forEach(item => {
               totalQty += item.qty || 0;
-              totalAllowed += this._permissionValues[item.uniqueKey] || 0;
+              totalAllowed += item.allowedQty || 0;
             });
+            const prodProgress = totalQty === 0 ? 0 : Math.round((totalAllowed / totalQty) * 100);
+            const isDone = prodProgress === 100;
 
             html += `
-              <div class="product-card">
-                <div class="product-card-header">
-                  <img class="thumb" src="${g.image || ''}" alt="${g.name}" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2260%22 height=%2260%22/%3E'" />
+              <div class="product-card" data-product-id="${productId}">
+                <div class="product-card-header" onclick="window.UI.toggleProductPreview('${productId}')">
+                  <img class="thumb" src="${g.image || ''}" alt="${g.name}" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2260%22 height=%2260%22/%3E'" onclick="event.stopPropagation();window.UI.openModal('${g.image || ''}')" />
                   <div class="meta">
                     <span class="name">${Utils.escapeHtml(g.name)}</span>
                     <span class="sku">SKU: ${Utils.escapeHtml(g.sku)}</span>
-                    <span class="price">${g.unitPrice} LE</span>
-                    <span style="font-size:12px;color:#6d7b93;">المسموح: ${totalAllowed}/${totalQty}</span>
+                    <span class="price">${Utils.formatCurrency(g.unitPrice)} LE</span>
+                    <span class="status-badge ${isDone ? 'done' : ''}">${prodProgress}%</span>
                   </div>
-                  <span class="chevron open"><i class="fas fa-chevron-down"></i></span>
+                  <span class="chevron ${isOpen ? 'open' : ''}"><i class="fas fa-chevron-down"></i></span>
                 </div>
-                <div class="product-card-body open">
-                  ${this.renderPermissionColors(g, productId)}
+                <div class="product-card-body ${isOpen ? 'open' : ''}">
+                  ${this.renderPreviewColors(g, productId)}
                 </div>
               </div>
             `;
@@ -1158,9 +2089,12 @@
           }
 
           container.innerHTML = html;
+          this.updateBottomBar(invoice);
         },
 
-        renderPermissionColors(g, productId) {
+        // ===== RENDER PREVIEW COLORS =====
+        renderPreviewColors(g, productId) {
+          let html = '';
           const colorMap = {};
           g.items.forEach(item => {
             const color = item.color;
@@ -1170,42 +2104,39 @@
             colorMap[color].push(item);
           });
 
-          let html = '';
           let colorIdx = 0;
           for (const color in colorMap) {
             const colorItems = colorMap[color];
             const colorId = productId + '_color_' + colorIdx;
-            const isColorOpen = true;
+            if (this._productCardStates[colorId] === undefined) {
+              this._productCardStates[colorId] = true;
+            }
+            const isColorOpen = this._productCardStates[colorId];
 
-            let totalQty = 0,
-              totalAllowed = 0;
-            colorItems.forEach(item => {
-              totalQty += item.qty || 0;
-              totalAllowed += this._permissionValues[item.uniqueKey] || 0;
-            });
+            const totalQty = colorItems.reduce((sum, item) => sum + item.qty, 0);
+            const totalAllowed = colorItems.reduce((sum, item) => sum + (item.allowedQty || 0), 0);
+            const colorProgress = totalQty === 0 ? 0 : Math.round((totalAllowed / totalQty) * 100);
 
             html += `
               <div class="color-accordion">
-                <div class="color-header">
-                  <span class="chevron-sm open"><i class="fas fa-chevron-down"></i></span>
-                  <span><i class="fas fa-palette" style="color:#f5a623;"></i> ${Utils.escapeHtml(color)}</span>
-                  <span class="color-total">${totalAllowed}/${totalQty}</span>
+                <div class="color-header" onclick="window.UI.toggleColorPreview('${colorId}')">
+                  <span class="chevron-sm ${isColorOpen ? 'open' : ''}"><i class="fas fa-chevron-down"></i></span>
+                  <span><i class="fas fa-palette" style="color:#6c8cff;"></i> ${Utils.escapeHtml(color)}</span>
+                  <span class="color-total">${totalAllowed}/${totalQty} (${colorProgress}%)</span>
                 </div>
-                <div class="color-sizes open">
+                <div class="color-sizes ${isColorOpen ? 'open' : ''}">
                   ${colorItems.map((item) => {
-                    const currentVal = this._permissionValues[item.uniqueKey] || 0;
-                    const maxVal = item.qty || 0;
+                    const isAllowed = (item.allowedQty || 0) >= (item.qty || 0);
+                    const isPartial = (item.allowedQty || 0) > 0 && (item.allowedQty || 0) < (item.qty || 0);
+                    const statusClass = isAllowed ? 'allowed' : isPartial ? 'partial' : 'pending';
+                    const uniqueKey = item.uniqueKey;
                     return `
                       <div class="size-row">
                         <span class="size-label">${Utils.escapeHtml(item.size)}</span>
                         <div class="qty-control">
-                          <input type="number" 
-                                 min="0" 
-                                 max="${maxVal}" 
-                                 value="${currentVal}"
-                                 data-key="${item.uniqueKey}"
-                                 onchange="window.UI.updatePermissionValue(this)" />
-                          <span class="max-label">من <span>${maxVal}</span></span>
+                          <button onclick="window.UI.changeAllowedQty('${uniqueKey}', -1)"><i class="fas fa-minus"></i></button>
+                          <span class="qty-val ${statusClass}">${item.allowedQty || 0}/${item.qty || 0}</span>
+                          <button onclick="window.UI.changeAllowedQty('${uniqueKey}', 1)"><i class="fas fa-plus"></i></button>
                         </div>
                       </div>
                     `;
@@ -1218,90 +2149,219 @@
           return html;
         },
 
-        updatePermissionValue(input) {
-          const key = input.dataset.key;
-          let val = parseInt(input.value) || 0;
-          const max = parseInt(input.max) || 0;
-          val = Math.max(0, Math.min(max, val));
-          this._permissionValues[key] = val;
-          input.value = val;
+        // ===== TOGGLE PRODUCT =====
+        toggleProductPreview(productId) {
+          const state = this._productCardStates[productId];
+          this._productCardStates[productId] = state === false ? true : false;
+          if (this._selectedInvoice) this.renderInvoicePreview(this._selectedInvoice);
+        },
 
-          // Update totals in UI
-          if (this._selectedInvoice) {
-            this.updateBottomBar(this._selectedInvoice);
-            // Update the preview totals
+        // ===== TOGGLE COLOR =====
+        toggleColorPreview(colorId) {
+          const state = this._productCardStates[colorId];
+          this._productCardStates[colorId] = state === false ? true : false;
+          if (this._selectedInvoice) this.renderInvoicePreview(this._selectedInvoice);
+        },
+
+        // ===== CHANGE ALLOWED QTY =====
+        changeAllowedQty(uniqueKey, delta) {
+          if (!this._selectedInvoice || !this._selectedInvoice.items) return;
+
+          if (Utils.isInvoiceClosed(this._selectedInvoice)) {
+            this.showAlert('⚠️ لا يمكن تعديل كميات فاتورة مقفلة', 'error');
+            return;
+          }
+
+          const item = this._selectedInvoice.items.find(it => {
+            const sku = it.sku || 'Unknown';
+            const color = it.color || 'No Color';
+            const size = it.size || 'No Size';
+            return `${sku}|${color}|${size}` === uniqueKey;
+          });
+
+          if (!item) {
+            console.warn('⚠️ العنصر غير موجود:', uniqueKey);
+            return;
+          }
+
+          const current = item.allowedQty || 0;
+          const max = item.qty || 0;
+          const newQty = Math.max(0, Math.min(max, current + delta));
+
+          if (newQty !== current) {
+            item.allowedQty = newQty;
+
+            this._selectedInvoice.totalPieces = Utils.calculateTotalPieces(this._selectedInvoice.items);
+            this._selectedInvoice.totalValue = Utils.calculateTotalValue(this._selectedInvoice.items);
+
+            this.saveInvoiceToFirebase(this._selectedInvoice);
             this.renderInvoicePreview(this._selectedInvoice);
+            this.renderInvoiceList();
+            this.updateStats();
           }
         },
 
-        updateBottomBar(invoice) {
-          if (!invoice) return;
-          const total = Utils.calculateTotalPieces(invoice.items);
-          let allowed = 0;
-          if (invoice.items) {
-            invoice.items.forEach(item => {
-              const key = this.getItemKey(item);
-              allowed += this._permissionValues[key] || 0;
+        // ===== SAVE INVOICE TO FIREBASE =====
+        saveInvoiceToFirebase(invoice) {
+          if (!database) return;
+          const ref = database.ref('invoices/' + invoice.id);
+          const { id, ...data } = invoice;
+          if (data.items) {
+            data.items.forEach(item => {
+              if (item.allowedQty === undefined) item.allowedQty = 0;
             });
           }
-          this.elements.bottomInvoice.textContent = invoice.branch || '—';
-          this.elements.bottomTotal.textContent = total;
-          this.elements.bottomAllowed.textContent = allowed;
+          ref.update(data, (error) => {
+            if (error) console.error('❌ Save error:', error);
+            else console.log('✅ Invoice updated');
+          });
         },
 
-        savePermissions() {
+        // ===== OPEN CLOSE DIALOG =====
+        openCloseDialog() {
           if (!this._selectedInvoice) {
             this.showAlert('⚠️ اختر فاتورة أولاً', 'error');
             return;
           }
 
           const invoice = this._selectedInvoice;
-          let hasChanges = false;
 
-          if (invoice.items) {
-            invoice.items.forEach(item => {
-              const key = this.getItemKey(item);
-              const newVal = this._permissionValues[key] || 0;
-              if (item.allowedQty !== newVal) {
-                item.allowedQty = newVal;
-                hasChanges = true;
-              }
-            });
-          }
-
-          if (!hasChanges) {
-            this.showAlert('ℹ️ لا توجد تغييرات لحفظها', 'info');
+          if (Utils.isInvoiceClosed(invoice)) {
+            this.showAlert('🔒 هذه الفاتورة مقفلة بالفعل', 'info');
             return;
           }
 
-          // Save to Firebase
-          if (database) {
-            const ref = database.ref('invoices/' + invoice.id);
-            const { id, ...data } = invoice;
-            ref.update(data, (error) => {
-              if (error) {
-                console.error('❌ Save error:', error);
-                this.showAlert('❌ فشل حفظ السماح بالتحضير', 'error');
-              } else {
-                console.log('✅ Permission saved');
-                this.showAlert('✅ تم حفظ السماح بالتحضير بنجاح!', 'success');
-                this.renderInvoiceList();
-                this.updateBottomBar(invoice);
+          const totalPieces = Utils.calculateTotalPieces(invoice.items);
+          const allowedPieces = Utils.calculateAllowed(invoice.items);
+          const remainingPieces = Utils.calculateRemaining(invoice.items);
+
+          this.elements.closeTotalPieces.textContent = totalPieces;
+          this.elements.closeAllowedPieces.textContent = allowedPieces;
+          this.elements.closeRemainingPieces.textContent = remainingPieces;
+
+          const list = this.elements.closeProductList;
+          let html = '';
+
+          if (invoice.items && invoice.items.length) {
+            const productMap = {};
+            invoice.items.forEach(item => {
+              const key = (item.name || 'Unknown') + '|' + (item.sku || '');
+              if (!productMap[key]) {
+                productMap[key] = {
+                  name: item.name || 'Unknown',
+                  sku: item.sku || '',
+                  totalQty: 0,
+                  allowedQty: 0,
+                  remainingQty: 0,
+                  image: item.image || ''
+                };
               }
+              productMap[key].totalQty += item.qty || 0;
+              productMap[key].allowedQty += item.allowedQty || 0;
+              productMap[key].remainingQty += (item.qty || 0) - (item.allowedQty || 0);
             });
-          } else {
-            this.showAlert('⚠️ Firebase غير متاح', 'error');
+
+            for (const key in productMap) {
+              const p = productMap[key];
+              const isDone = p.allowedQty >= p.totalQty;
+              const hasRemaining = p.remainingQty > 0;
+
+              html += `
+                <div class="dialog-product-item">
+                  <img src="${p.image || ''}" alt="${p.name}" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2240%22 height=%2240%22/%3E'" />
+                  <div class="info">
+                    <div class="name">${Utils.escapeHtml(p.name)}</div>
+                    <div class="details">SKU: ${Utils.escapeHtml(p.sku)}</div>
+                  </div>
+                  <div class="qty-info ${isDone ? 'done' : hasRemaining ? 'partial' : ''}">
+                    <i class="fas ${isDone ? 'fa-check-circle' : hasRemaining ? 'fa-exclamation-triangle' : 'fa-circle'}"></i>
+                    ${p.allowedQty} / ${p.totalQty}
+                    ${hasRemaining ? `⏳ ${p.remainingQty}` : ''}
+                  </div>
+                </div>
+              `;
+            }
           }
+
+          list.innerHTML = html;
+          this.elements.closeDialog.classList.add('show');
         },
 
+        // ===== CLOSE CLOSE DIALOG =====
+        closeCloseDialog() {
+          this.elements.closeDialog.classList.remove('show');
+        },
+
+        // ===== CONFIRM CLOSE PREPARATION =====
+        confirmClosePreparation() {
+          if (!this._selectedInvoice) return;
+
+          const invoice = this._selectedInvoice;
+
+          invoice.isClosed = true;
+          invoice.status = 'prepared';
+          invoice.totalPieces = Utils.calculateTotalPieces(invoice.items);
+          invoice.totalValue = Utils.calculateTotalValue(invoice.items);
+
+          this.saveInvoiceToFirebase(invoice);
+          this.closeCloseDialog();
+
+          this.renderInvoicePreview(invoice);
+          this.renderInvoiceList();
+          this.updateStats();
+
+          this.showAlert(`✅ تم تقفيل السماح بنجاح! الحالة: prepared`, 'success');
+        },
+
+        // ===== CLOSE PREVIEW =====
         closePreview() {
           this.elements.previewSection.classList.remove('show');
           this._selectedInvoice = null;
           this._selectedInvoiceId = null;
-          this._permissionValues = {};
+          this._productCardStates = {};
+          const url = new URL(window.location);
+          url.searchParams.delete('invoice');
+          window.history.pushState({}, '', url);
           this.renderInvoiceList();
+          this.updateStats();
         },
 
+        // ===== UPDATE STATS =====
+        updateStats() {
+          const total = this._invoices.length;
+          let pending = 0,
+            preparing = 0,
+            prepared = 0;
+
+          this._invoices.forEach(inv => {
+            const status = this.getInvoiceStatus(inv);
+            if (status === 'pending') pending++;
+            else if (status === 'partial' || status === 'preparing') preparing++;
+            else if (status === 'prepared' || status === 'closed') prepared++;
+          });
+
+          this.elements.statTotalInvoices.textContent = total;
+          this.elements.statPending.textContent = pending;
+          this.elements.statPreparing.textContent = preparing;
+          this.elements.statPrepared.textContent = prepared;
+        },
+
+        // ===== UPDATE BOTTOM BAR =====
+        updateBottomBar(invoice) {
+          if (!invoice) return;
+          const items = invoice.items || [];
+          const totalPieces = Utils.calculateTotalPieces(items);
+          const allowedPieces = Utils.calculateAllowed(items);
+          const products = new Set(items.map(r => r.name + '|' + r.sku)).size;
+          const progress = totalPieces === 0 ? 0 : Math.round((allowedPieces / totalPieces) * 100);
+
+          this.elements.bottomProducts.textContent = products;
+          this.elements.bottomPieces.textContent = totalPieces;
+          this.elements.bottomAllowed.textContent = allowedPieces;
+          this.elements.bottomPercent.textContent = progress + '%';
+        },
+
+        // ===== SHOW ALERT =====
         showAlert(msg, type = 'info') {
           const existing = document.querySelector('.toast-alert');
           if (existing) existing.remove();
@@ -1325,8 +2385,14 @@
         }
       };
 
+      // ===== GLOBAL EXPOSURE =====
       window.UI = UI;
+      window.openModal = function(img) { if (window.UI) window.UI.openModal(img); };
+      window.closeModal = function() { if (window.UI) window.UI.closeModal(); };
 
+      // ================================================================
+      //  BOOT
+      // ================================================================
       document.addEventListener('DOMContentLoaded', () => {
         UI.init();
       });
