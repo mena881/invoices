@@ -437,6 +437,11 @@
       color: #374151;
     }
 
+    .badge.allowed {
+      background: #DBEAFE;
+      color: #1E40AF;
+    }
+
     .closed-badge {
       background: #D1D5DB;
       color: #374151;
@@ -737,6 +742,14 @@
 
     .size-row .qty-control .qty-val.pending {
       color: #e14c4c;
+    }
+
+    .size-row .allowed-label {
+      font-size: 11px;
+      color: #6d7b93;
+      background: #f0f4fe;
+      padding: 2px 10px;
+      border-radius: 30px;
     }
 
     /* =========================================================
@@ -1354,12 +1367,11 @@
     <section class="card">
       <div class="filter-section">
         <select id="invoiceFilter">
-          <option value="all"><i class="fas fa-list"></i> جميع الفواتير المسموح بها</option>
+          <option value="all"><i class="fas fa-list"></i> جميع الفواتير</option>
           <option value="pending"><i class="fas fa-clock"></i> غير محضرة</option>
           <option value="preparing"><i class="fas fa-spinner"></i> قيد التحضير</option>
           <option value="prepared"><i class="fas fa-check-circle"></i> محضرة</option>
           <option value="partial"><i class="fas fa-exclamation-triangle"></i> تحضير جزئي</option>
-          <option value="closed"><i class="fas fa-lock"></i> مقفلة</option>
         </select>
         <input type="text" class="search-input" id="searchInput" placeholder="🔍 بحث عن فرع أو منتج..." />
       </div>
@@ -1375,7 +1387,7 @@
         <div class="empty-state" id="emptyInvoiceList">
           <i class="fas fa-inbox"></i>
           <h3>لا توجد فواتير مسموح بها</h3>
-          <p>انتظر حتى يتم السماح بالتحضير من صفحة السماح</p>
+          <p>انتظر حتى يتم السماح بالتحضير من صفحة إنشاء الأوردرات</p>
         </div>
       </div>
     </section>
@@ -1387,7 +1399,7 @@
           <div class="title" id="previewTitle"><i class="fas fa-receipt"></i> تفاصيل الفاتورة</div>
           <div class="meta" id="previewMeta"><i class="fas fa-store"></i> الفرع: — | <i class="fas fa-calendar-alt"></i> التاريخ: —</div>
         </div>
-        <span class="badge" id="previewStatus">⏳ جارٍ التحضير</span>
+        <span class="badge allowed" id="previewStatus">✅ مسموح بالتحضير</span>
       </div>
 
       <!-- ACCORDION CONTROLS -->
@@ -1476,7 +1488,7 @@
         <div class="product-list" id="closeProductList"></div>
 
         <div class="dialog-confirm-box">
-         <p><i class="fas fa-check-circle" style="color:#3dbb7a;"></i> ✅ سيتم تحديث حالة الفاتورة إلى "allowed" بعد التأكيد</p>
+          <p><i class="fas fa-check-circle" style="color:#3dbb7a;"></i> ✅ سيتم تحديث حالة الفاتورة إلى "prepared" بعد التأكيد</p>
         </div>
 
         <div class="dialog-actions">
@@ -1628,13 +1640,9 @@
         isInvoiceClosed(invoice) {
           return invoice && (invoice.status === 'prepared' || invoice.isClosed === true);
         },
-        // دالة للتحقق من أن الفاتورة مسموح بها (تحتوي على allowedQty)
+        // التحقق من أن الفاتورة مسموح بها
         isInvoiceAllowed(invoice) {
-          if (!invoice || !invoice.items || !invoice.items.length) return false;
-          // الفاتورة مسموح بها إذا كان status = 'allowed' أو isClosed = true
-          if (invoice.status === 'allowed' || invoice.isClosed === true) return true;
-          // أو إذا كان أي عنصر يحتوي على allowedQty > 0
-          return invoice.items.some(item => (item.allowedQty || 0) > 0);
+          return invoice && invoice.status === 'allowed';
         }
       };
 
@@ -1688,7 +1696,7 @@
 
         // ===== INIT =====
         init() {
-          console.log('🚀 Initializing Preparation UI (only allowed invoices)...');
+          console.log('🚀 Initializing Preparation UI...');
           this.loadInvoices();
 
           this.elements.refreshBtn.addEventListener('click', () => this.loadInvoices());
@@ -1751,7 +1759,7 @@
           if (id) {
             setTimeout(() => {
               const invoice = this._invoices.find(inv => inv.id === id);
-              if (invoice && !Utils.isInvoiceClosed(invoice) && Utils.isInvoiceAllowed(invoice)) {
+              if (invoice && Utils.isInvoiceAllowed(invoice) && !Utils.isInvoiceClosed(invoice)) {
                 this.selectInvoice(invoice.id);
                 this.elements.filter.value = 'all';
                 this.renderInvoiceList();
@@ -1778,18 +1786,13 @@
             if (data) {
               for (const key in data) {
                 const inv = data[key];
+                // 🔥 فقط الفواتير التي حالتها "allowed"
+                if (inv.status !== 'allowed') continue;
+                
                 if (inv.items) {
                   inv.items.forEach(item => {
                     if (item.preparedQty === undefined) item.preparedQty = 0;
-                    if (item.allowedQty === undefined) item.allowedQty = 0;
                   });
-                }
-                if (!inv.status) {
-                  if (inv.isClosed === true) {
-                    inv.status = 'prepared';
-                  } else {
-                    inv.status = 'pending';
-                  }
                 }
                 this._invoices.push({
                   id: key,
@@ -1799,10 +1802,6 @@
               }
               this._invoices.sort((a, b) => b.createdAt - a.createdAt);
             }
-            
-            // تصفية الفواتير: عرض فقط الفواتير المسموح بها (allowed)
-            this._invoices = this._invoices.filter(inv => Utils.isInvoiceAllowed(inv));
-            
             this.renderInvoiceList();
             this.updateStats();
             this.elements.storeStatus.innerHTML = '<i class="fas fa-circle" style="font-size:8px;"></i> جاهز';
@@ -1823,10 +1822,10 @@
         // ===== GET INVOICE STATUS =====
         getInvoiceStatus(invoice) {
           if (!invoice || !invoice.items || !invoice.items.length) {
-            return invoice && invoice.status === 'prepared' ? 'prepared' : 'pending';
+            return 'pending';
           }
 
-          if (invoice.status === 'prepared' || invoice.isClosed === true) {
+          if (invoice.isClosed === true || invoice.status === 'prepared') {
             return 'prepared';
           }
 
@@ -1848,7 +1847,7 @@
             partial: '⚠️ تحضير جزئي',
             preparing: '⚡ قيد التحضير',
             prepared: '✅ محضرة',
-            closed: '🔒 مقفلة'
+            allowed: '✅ مسموح بالتحضير'
           };
           return map[status] || status;
         },
@@ -1859,7 +1858,7 @@
             partial: 'fa-exclamation-triangle',
             preparing: 'fa-spinner',
             prepared: 'fa-check-circle',
-            closed: 'fa-lock'
+            allowed: 'fa-check'
           };
           return map[status] || 'fa-circle';
         },
@@ -1891,7 +1890,7 @@
               <div class="empty-state">
                 <i class="fas ${this._invoices.length ? 'fa-search' : 'fa-inbox'}"></i>
                 <h3>${this._invoices.length ? 'لا توجد نتائج مطابقة' : 'لا توجد فواتير مسموح بها'}</h3>
-                <p>${this._invoices.length ? 'حاول تغيير الفلتر أو البحث' : 'انتظر حتى يتم السماح بالتحضير من صفحة السماح'}</p>
+                <p>${this._invoices.length ? 'حاول تغيير الفلتر أو البحث' : 'انتظر حتى يتم السماح بالتحضير من صفحة إنشاء الأوردرات'}</p>
               </div>
             `;
             this.elements.invoicesCount.textContent = `${filtered.length} فاتورة`;
@@ -1920,7 +1919,6 @@
                     <span><i class="fas fa-boxes"></i> ${inv.items ? inv.items.length : 0} منتج</span>
                     <span><i class="fas fa-cubes"></i> ${inv.totalPieces || Utils.calculateTotalPieces(inv.items)} قطعة</span>
                     <span><i class="fas fa-money-bill-wave"></i> ${Utils.formatCurrency(inv.totalValue || Utils.calculateTotalValue(inv.items))} LE</span>
-                    <span><i class="fas fa-check-circle" style="color:#6c8cff;"></i> مسموح: ${Utils.calculateAllowed(inv.items)} قطعة</span>
                   </div>
                 </div>
                 <div class="stats">
@@ -1935,7 +1933,8 @@
                       </div>
                     </div>
                   `}
-                  <span class="badge ${status}"><i class="fas ${this.getStatusIcon(status)}"></i> ${this.getStatusText(status)}</span>
+                  <span class="badge ${isClosed ? 'closed' : status}"><i class="fas ${this.getStatusIcon(isClosed ? 'closed' : status)}"></i> ${this.getStatusText(isClosed ? 'closed' : status)}</span>
+                  <span class="badge allowed"><i class="fas fa-check"></i> مسموح</span>
                 </div>
               </div>
             `;
@@ -1945,18 +1944,16 @@
           this.elements.invoicesCount.textContent = `${filtered.length} فاتورة`;
         },
 
-        // دالة مساعدة لحساب الكمية المسموح بها
-        calculateAllowed(items) {
-          let allowed = 0;
-          items.forEach(r => { allowed += r.allowedQty || 0; });
-          return allowed;
-        },
-
         // ===== SELECT INVOICE =====
         selectInvoice(invoiceId) {
           const invoice = this._invoices.find(inv => inv.id === invoiceId);
           if (!invoice) {
             this.showAlert('⚠️ الفاتورة غير موجودة', 'error');
+            return;
+          }
+
+          if (!Utils.isInvoiceAllowed(invoice)) {
+            this.showAlert('⚠️ هذه الفاتورة غير مسموح بالتحضير', 'error');
             return;
           }
 
@@ -2005,11 +2002,10 @@
           this.elements.previewMeta.innerHTML = `
             <i class="fas fa-calendar-alt"></i> ${dateStr} | 
             <i class="fas fa-cubes"></i> ${invoice.totalPieces || Utils.calculateTotalPieces(invoice.items)} قطعة | 
-            <i class="fas fa-money-bill-wave"></i> ${Utils.formatCurrency(invoice.totalValue || Utils.calculateTotalValue(invoice.items))} LE |
-            <i class="fas fa-check-circle" style="color:#6c8cff;"></i> مسموح: ${this.calculateAllowed(invoice.items)} قطعة
+            <i class="fas fa-money-bill-wave"></i> ${Utils.formatCurrency(invoice.totalValue || Utils.calculateTotalValue(invoice.items))} LE
           `;
-          this.elements.previewStatus.textContent = isClosed ? '🔒 مقفلة' : this.getStatusText(status);
-          this.elements.previewStatus.className = `badge ${isClosed ? 'closed' : status}`;
+          this.elements.previewStatus.textContent = isClosed ? '🔒 مقفلة' : '✅ مسموح بالتحضير';
+          this.elements.previewStatus.className = `badge ${isClosed ? 'closed' : 'allowed'}`;
 
           if (isClosed) {
             container.innerHTML = `
@@ -2047,7 +2043,7 @@
           }
 
           // ============================================================
-          // تجميع المنتجات حسب الـ SKU مع الاحتفاظ بالعناصر الفريدة
+          // 🔥 تجميع المنتجات حسب SKU مع الاحتفاظ بالكمية المسموحة
           // ============================================================
           const groups = {};
           invoice.items.forEach(item => {
@@ -2065,9 +2061,9 @@
               color: item.color || 'No Color',
               size: item.size || 'No Size',
               qty: item.qty || 0,
+              allowedQty: item.allowedQty !== undefined ? item.allowedQty : (item.qty || 0), // 🔥 الكمية المسموحة
               total: item.total || 0,
               preparedQty: item.preparedQty || 0,
-              allowedQty: item.allowedQty || 0,
               uniqueKey: `${sku}|${item.color || 'No Color'}|${item.size || 'No Size'}`
             });
           });
@@ -2083,16 +2079,13 @@
             const isOpen = this._productCardStates[productId];
 
             let totalQty = 0,
-              totalPrepared = 0,
-              totalAllowed = 0;
+              totalPrepared = 0;
             g.items.forEach(item => {
               totalQty += item.qty || 0;
               totalPrepared += item.preparedQty || 0;
-              totalAllowed += item.allowedQty || 0;
             });
             const prodProgress = totalQty === 0 ? 0 : Math.round((totalPrepared / totalQty) * 100);
             const isDone = prodProgress === 100;
-            const allowedPercent = totalQty === 0 ? 0 : Math.round((totalAllowed / totalQty) * 100);
 
             html += `
               <div class="product-card" data-product-id="${productId}">
@@ -2103,9 +2096,6 @@
                     <span class="sku">SKU: ${Utils.escapeHtml(g.sku)}</span>
                     <span class="price">${Utils.formatCurrency(g.unitPrice)} LE</span>
                     <span class="status-badge ${isDone ? 'done' : ''}">${prodProgress}%</span>
-                    <span style="font-size:11px;color:#6c8cff;background:#DBEAFE;padding:2px 10px;border-radius:30px;">
-                      <i class="fas fa-check-circle"></i> مسموح: ${allowedPercent}%
-                    </span>
                   </div>
                   <span class="chevron ${isOpen ? 'open' : ''}"><i class="fas fa-chevron-down"></i></span>
                 </div>
@@ -2144,7 +2134,6 @@
 
             const totalQty = colorItems.reduce((sum, item) => sum + item.qty, 0);
             const totalPrepared = colorItems.reduce((sum, item) => sum + (item.preparedQty || 0), 0);
-            const totalAllowed = colorItems.reduce((sum, item) => sum + (item.allowedQty || 0), 0);
             const colorProgress = totalQty === 0 ? 0 : Math.round((totalPrepared / totalQty) * 100);
 
             html += `
@@ -2153,9 +2142,6 @@
                   <span class="chevron-sm ${isColorOpen ? 'open' : ''}"><i class="fas fa-chevron-down"></i></span>
                   <span><i class="fas fa-palette" style="color:#6c8cff;"></i> ${Utils.escapeHtml(color)}</span>
                   <span class="color-total">${totalPrepared}/${totalQty} (${colorProgress}%)</span>
-                  <span style="font-size:11px;color:#6c8cff;background:#DBEAFE;padding:2px 10px;border-radius:30px;">
-                    <i class="fas fa-check-circle"></i> مسموح: ${totalAllowed}
-                  </span>
                 </div>
                 <div class="color-sizes ${isColorOpen ? 'open' : ''}">
                   ${colorItems.map((item) => {
@@ -2163,6 +2149,8 @@
                     const isPartial = (item.preparedQty || 0) > 0 && (item.preparedQty || 0) < (item.qty || 0);
                     const statusClass = isPrepared ? 'prepared' : isPartial ? 'partial' : 'pending';
                     const uniqueKey = item.uniqueKey;
+                    const allowedQty = item.allowedQty !== undefined ? item.allowedQty : item.qty;
+                    // 🔥 عرض الكمية المسموحة
                     return `
                       <div class="size-row">
                         <span class="size-label">${Utils.escapeHtml(item.size)}</span>
@@ -2171,9 +2159,7 @@
                           <span class="qty-val ${statusClass}">${item.preparedQty || 0}/${item.qty || 0}</span>
                           <button onclick="window.UI.changePrepareQty('${uniqueKey}', 1)"><i class="fas fa-plus"></i></button>
                         </div>
-                        <span style="font-size:12px;color:#6c8cff;background:#DBEAFE;padding:2px 10px;border-radius:30px;">
-                          <i class="fas fa-check-circle"></i> مسموح: ${item.allowedQty || 0}
-                        </span>
+                        <span class="allowed-label">مسموح: ${allowedQty}</span>
                       </div>
                     `;
                   }).join('')}
@@ -2199,7 +2185,7 @@
           if (this._selectedInvoice) this.renderInvoicePreview(this._selectedInvoice);
         },
 
-        // ===== CHANGE PREPARE QTY =====
+        // ===== CHANGE PREPARE QTY (مع احترام الكمية المسموحة) =====
         changePrepareQty(uniqueKey, delta) {
           if (!this._selectedInvoice || !this._selectedInvoice.items) return;
 
@@ -2220,10 +2206,10 @@
             return;
           }
 
-          // الحد الأقصى هو الكمية المسموح بها (allowedQty) وليس الكمية الإجمالية
           const current = item.preparedQty || 0;
-          const max = item.allowedQty || 0;
-          const newQty = Math.max(0, Math.min(max, current + delta));
+          // 🔥 الحد الأقصى هو الكمية المسموحة وليس الكمية الكلية
+          const maxAllowed = item.allowedQty !== undefined ? item.allowedQty : (item.qty || 0);
+          const newQty = Math.max(0, Math.min(maxAllowed, current + delta));
 
           if (newQty !== current) {
             item.preparedQty = newQty;
@@ -2246,7 +2232,6 @@
           if (data.items) {
             data.items.forEach(item => {
               if (item.preparedQty === undefined) item.preparedQty = 0;
-              if (item.allowedQty === undefined) item.allowedQty = 0;
             });
           }
           ref.update(data, (error) => {
@@ -2337,7 +2322,7 @@
           const invoice = this._selectedInvoice;
 
           invoice.isClosed = true;
-          invoice.status = 'allowed';
+          invoice.status = 'prepared';
           invoice.totalPieces = Utils.calculateTotalPieces(invoice.items);
           invoice.totalValue = Utils.calculateTotalValue(invoice.items);
 
@@ -2348,7 +2333,7 @@
           this.renderInvoiceList();
           this.updateStats();
 
-          this.showAlert(`✅ تم تقفيل التحضير بنجاح! الحالة: allowed`, 'success');
+          this.showAlert(`✅ تم تقفيل التحضير بنجاح! الحالة: prepared`, 'success');
         },
 
         // ===== CLOSE PREVIEW =====
@@ -2375,7 +2360,7 @@
             const status = this.getInvoiceStatus(inv);
             if (status === 'pending') pending++;
             else if (status === 'partial' || status === 'preparing') preparing++;
-            else if (status === 'prepared' || status === 'closed') prepared++;
+            else if (status === 'prepared') prepared++;
           });
 
           this.elements.statTotalInvoices.textContent = total;
@@ -2390,13 +2375,12 @@
           const items = invoice.items || [];
           const totalPieces = Utils.calculateTotalPieces(items);
           const preparedPieces = Utils.calculatePrepared(items);
-          const allowedPieces = this.calculateAllowed(items);
           const products = new Set(items.map(r => r.name + '|' + r.sku)).size;
           const progress = totalPieces === 0 ? 0 : Math.round((preparedPieces / totalPieces) * 100);
 
           this.elements.bottomProducts.textContent = products;
           this.elements.bottomPieces.textContent = totalPieces;
-          this.elements.bottomPrepared.textContent = preparedPieces + ' (من ' + allowedPieces + ' مسموح)';
+          this.elements.bottomPrepared.textContent = preparedPieces;
           this.elements.bottomPercent.textContent = progress + '%';
         },
 
