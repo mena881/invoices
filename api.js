@@ -23,7 +23,7 @@ async function callGoogleSheetsAPI(params) {
         }
         return json;
     } catch (e) {
-        // Silent fail - no console logs
+        // Silent fail
         throw e;
     }
 }
@@ -32,76 +32,72 @@ async function callGoogleSheetsAPI(params) {
 // EXPOSED API FUNCTIONS (as per the specification)
 // ============================================================
 
-// 1. Get list of sheets
 async function getSheets() {
     const res = await callGoogleSheetsAPI({ action: "getSheets" });
-    return res.data; // array of sheet names
+    return res.data;
 }
 
-// 2. Read entire sheet
 async function readSheet(sheetName) {
     const res = await callGoogleSheetsAPI({ action: "read", sheet: sheetName });
-    return res.data; // 2D array
+    return res.data;
 }
 
-// 3. Read specific range
 async function readRange(sheetName, range) {
     const res = await callGoogleSheetsAPI({ action: "readRange", sheet: sheetName, range });
     return res.data;
 }
 
-// 4. Write to a single cell
 async function writeCell(sheetName, row, col, value) {
     const res = await callGoogleSheetsAPI({ action: "write", sheet: sheetName, row, col, value });
     return res.data;
 }
 
-// 5. Write a range (2D array)
 async function writeRange(sheetName, range, values) {
     const res = await callGoogleSheetsAPI({ action: "writeRange", sheet: sheetName, range, values });
     return res.data;
 }
 
-// 6. Append a row (array of values)
 async function appendRow(sheetName, data) {
     const res = await callGoogleSheetsAPI({ action: "appendRow", sheet: sheetName, data });
     return res.data;
 }
 
-// 7. Update a row (replace entire row at given index)
 async function updateRow(sheetName, row, data) {
     const res = await callGoogleSheetsAPI({ action: "updateRow", sheet: sheetName, row, data });
     return res.data;
 }
 
-// 8. Delete a row
 async function deleteRow(sheetName, row) {
     const res = await callGoogleSheetsAPI({ action: "deleteRow", sheet: sheetName, row });
     return res.data;
 }
 
-// 9. Create a new sheet
+async function deleteRowsBatch(sheetName, rowsToDelete) {
+    // Delete rows from bottom to top to preserve indices
+    const sorted = [...rowsToDelete].sort((a, b) => b - a);
+    for (const row of sorted) {
+        await deleteRow(sheetName, row);
+    }
+}
+
 async function createSheet(name) {
     const res = await callGoogleSheetsAPI({ action: "createSheet", name });
     return res.data;
 }
 
-// 10. Delete a sheet
 async function deleteSheet(name) {
     const res = await callGoogleSheetsAPI({ action: "deleteSheet", name });
     return res.data;
 }
 
-// 11. Rename a sheet
 async function renameSheet(oldName, newName) {
     const res = await callGoogleSheetsAPI({ action: "renameSheet", oldName, newName });
     return res.data;
 }
 
-// 12. Find a value in a sheet
 async function findInSheet(sheetName, value) {
     const res = await callGoogleSheetsAPI({ action: "find", sheet: sheetName, value });
-    return res.data; // array of { row, col, value }
+    return res.data;
 }
 
 // ============================================================
@@ -141,7 +137,6 @@ async function readSheetObjects(sheetName) {
     return rows.map(row => {
         const obj = {};
         headers.forEach((h, i) => { obj[h] = row[i] !== undefined ? row[i] : ""; });
-        // Convert delivered to boolean for RequiredOrders
         if (sheetName === SHEETS.REQUIRED) {
             obj.delivered = obj.delivered === "TRUE" || obj.delivered === "true" || obj.delivered === true;
         }
@@ -168,9 +163,11 @@ async function writeSheetObjects(sheetName, objects) {
     const newRowCount = rows.length;
     if (currentRowCount > newRowCount) {
         // Delete extra rows from the bottom (1-indexed)
+        const rowsToDelete = [];
         for (let i = currentRowCount; i > newRowCount; i--) {
-            await deleteRow(sheetName, i);
+            rowsToDelete.push(i);
         }
+        await deleteRowsBatch(sheetName, rowsToDelete);
     }
 }
 
@@ -182,14 +179,12 @@ async function ensureSheetsExist() {
     for (const sheet of Object.values(SHEETS)) {
         if (!existing.includes(sheet)) {
             await createSheet(sheet);
-            // Write headers
             const headers = HEADERS[sheet];
             if (headers) {
                 await writeRange(sheet, "A1", [headers]);
             }
         }
     }
-    // Ensure metadata has initial values
     const meta = await readSheetObjects(SHEETS.METADATA);
     if (meta.length === 0) {
         await writeSheetObjects(SHEETS.METADATA, [
@@ -251,6 +246,7 @@ window.api = {
     appendRow,
     updateRow,
     deleteRow,
+    deleteRowsBatch,
     createSheet,
     deleteSheet,
     renameSheet,
