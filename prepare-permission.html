@@ -432,6 +432,11 @@
       color: #C62828;
     }
 
+    .badge.allowed {
+      background: #DBEAFE;
+      color: #1E40AF;
+    }
+
     .badge.closed {
       background: #D1D5DB;
       color: #374151;
@@ -1357,7 +1362,7 @@
           <option value="all"><i class="fas fa-list"></i> جميع الفواتير</option>
           <option value="pending"><i class="fas fa-clock"></i> غير مسموح</option>
           <option value="preparing"><i class="fas fa-spinner"></i> قيد السماح</option>
-          <option value="prepared"><i class="fas fa-check-circle"></i> مسموح بالكامل</option>
+          <option value="allowed"><i class="fas fa-check-circle"></i> مسموح بالكامل</option>
           <option value="partial"><i class="fas fa-exclamation-triangle"></i> سماح جزئي</option>
           <option value="closed"><i class="fas fa-lock"></i> مقفلة</option>
         </select>
@@ -1439,7 +1444,7 @@
       </div>
       <div class="stat-card">
         <div class="stat-label"><i class="fas fa-check-circle"></i> مسموح ✅</div>
-        <div class="stat-value green" id="statPrepared">0</div>
+        <div class="stat-value green" id="statAllowed">0</div>
       </div>
     </section>
 
@@ -1476,7 +1481,7 @@
         <div class="product-list" id="closeProductList"></div>
 
         <div class="dialog-confirm-box">
-          <p><i class="fas fa-check-circle" style="color:#6c8cff;"></i> ✅ سيتم تحديث حالة الفاتورة إلى "prepared" بعد التأكيد</p>
+          <p><i class="fas fa-check-circle" style="color:#6c8cff;"></i> ✅ سيتم تحديث حالة الفاتورة إلى "allowed" بعد التأكيد</p>
         </div>
 
         <div class="dialog-actions">
@@ -1626,7 +1631,7 @@
           return total === 0 ? 0 : Math.round((allowed / total) * 100);
         },
         isInvoiceClosed(invoice) {
-          return invoice && (invoice.status === 'prepared' || invoice.isClosed === true);
+          return invoice && (invoice.status === 'allowed' || invoice.isClosed === true);
         }
       };
 
@@ -1653,7 +1658,7 @@
           statTotalInvoices: document.getElementById('statTotalInvoices'),
           statPending: document.getElementById('statPending'),
           statPreparing: document.getElementById('statPreparing'),
-          statPrepared: document.getElementById('statPrepared'),
+          statAllowed: document.getElementById('statAllowed'),
           bottomProducts: document.getElementById('bottomProducts'),
           bottomPieces: document.getElementById('bottomPieces'),
           bottomAllowed: document.getElementById('bottomAllowed'),
@@ -1777,7 +1782,7 @@
                 }
                 if (!inv.status) {
                   if (inv.isClosed === true) {
-                    inv.status = 'prepared';
+                    inv.status = 'allowed';
                   } else {
                     inv.status = 'pending';
                   }
@@ -1810,18 +1815,18 @@
         // ===== GET INVOICE STATUS =====
         getInvoiceStatus(invoice) {
           if (!invoice || !invoice.items || !invoice.items.length) {
-            return invoice && invoice.status === 'prepared' ? 'prepared' : 'pending';
+            return invoice && invoice.status === 'allowed' ? 'allowed' : 'pending';
           }
 
-          if (invoice.status === 'prepared' || invoice.isClosed === true) {
-            return 'prepared';
+          if (invoice.status === 'allowed' || invoice.isClosed === true) {
+            return 'allowed';
           }
 
           const allAllowed = invoice.items.every(item => (item.allowedQty || 0) >= (item.qty || 0));
           const anyAllowed = invoice.items.some(item => (item.allowedQty || 0) > 0);
 
           if (allAllowed) {
-            return 'prepared';
+            return 'allowed';
           }
           if (anyAllowed) {
             return 'partial';
@@ -1834,7 +1839,7 @@
             pending: '⏳ غير مسموح',
             partial: '⚠️ سماح جزئي',
             preparing: '⚡ قيد السماح',
-            prepared: '✅ مسموح بالكامل',
+            allowed: '✅ مسموح بالكامل',
             closed: '🔒 مقفلة'
           };
           return map[status] || status;
@@ -1845,7 +1850,7 @@
             pending: 'fa-clock',
             partial: 'fa-exclamation-triangle',
             preparing: 'fa-spinner',
-            prepared: 'fa-check-circle',
+            allowed: 'fa-check-circle',
             closed: 'fa-lock'
           };
           return map[status] || 'fa-circle';
@@ -1999,7 +2004,7 @@
                   تم السماح بـ ${Utils.calculateAllowed(invoice.items)} من ${Utils.calculateTotalPieces(invoice.items)} قطعة
                 </div>
                 <div style="margin-top:8px;font-size:13px;color:#6d7b93;">
-                  الحالة: ${invoice.status || 'prepared'}
+                  الحالة: ${invoice.status || 'allowed'}
                 </div>
               </div>
             `;
@@ -2299,7 +2304,7 @@
           const invoice = this._selectedInvoice;
 
           invoice.isClosed = true;
-          invoice.status = 'prepared';
+          invoice.status = 'allowed';
           invoice.totalPieces = Utils.calculateTotalPieces(invoice.items);
           invoice.totalValue = Utils.calculateTotalValue(invoice.items);
 
@@ -2310,7 +2315,7 @@
           this.renderInvoiceList();
           this.updateStats();
 
-          this.showAlert(`✅ تم تقفيل السماح بنجاح! الحالة: prepared`, 'success');
+          this.showAlert(`✅ تم تقفيل السماح بنجاح! الحالة: allowed`, 'success');
         },
 
         // ===== CLOSE PREVIEW =====
@@ -2331,19 +2336,19 @@
           const total = this._invoices.length;
           let pending = 0,
             preparing = 0,
-            prepared = 0;
+            allowed = 0;
 
           this._invoices.forEach(inv => {
             const status = this.getInvoiceStatus(inv);
             if (status === 'pending') pending++;
             else if (status === 'partial' || status === 'preparing') preparing++;
-            else if (status === 'prepared' || status === 'closed') prepared++;
+            else if (status === 'allowed' || status === 'closed') allowed++;
           });
 
           this.elements.statTotalInvoices.textContent = total;
           this.elements.statPending.textContent = pending;
           this.elements.statPreparing.textContent = preparing;
-          this.elements.statPrepared.textContent = prepared;
+          this.elements.statAllowed.textContent = allowed;
         },
 
         // ===== UPDATE BOTTOM BAR =====
