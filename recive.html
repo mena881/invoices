@@ -18,10 +18,40 @@
   <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
 
+  <!-- تضمين ملف usermenu.js -->
+  <script src="usermenu.js"></script>
+
   <style>
     /* =========================================================
        RESET & BASE (موحد مع باقي الصفحات)
        ========================================================= */
+    :root {
+      --primary: #4f46e5;
+      --primary-light: #818cf8;
+      --primary-dark: #3730a3;
+      --secondary: #7c3aed;
+      --success: #10b981;
+      --success-light: #d1fae5;
+      --warning: #f59e0b;
+      --warning-light: #fef3c7;
+      --danger: #ef4444;
+      --danger-light: #fee2e2;
+      --info: #3b82f6;
+      --info-light: #dbeafe;
+      --dark: #0f172a;
+      --dark-secondary: #1e293b;
+      --light: #f8fafc;
+      --gray: #64748b;
+      --gray-light: #e2e8f0;
+      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06);
+      --shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+      --shadow-lg: 0 10px 40px rgba(0, 0, 0, 0.12);
+      --radius: 16px;
+      --radius-sm: 10px;
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      --sticky-height: 70px;
+    }
+
     * {
       margin: 0;
       padding: 0;
@@ -29,14 +59,11 @@
     }
 
     body {
-      font-family: 'Inter', 'Tajawal', sans-serif;
-      background: #f6f8fc;
+      font-family: 'Inter', 'Cairo', 'Segoe UI', sans-serif;
+      background: #f1f5f9;
       min-height: 100vh;
-      font-size: 15px;
-      color: #0b1b2f;
-      line-height: 1.5;
-      -webkit-font-smoothing: antialiased;
-      padding: 24px 20px 100px;
+      overflow-x: hidden;
+      padding-bottom: var(--sticky-height);
     }
 
     ::-webkit-scrollbar {
@@ -44,55 +71,177 @@
       height: 6px;
     }
     ::-webkit-scrollbar-track {
-      background: #e6edf5;
-      border-radius: 12px;
+      background: #e2e8f0;
     }
     ::-webkit-scrollbar-thumb {
-      background: #6c8cff;
+      background: var(--primary);
+      border-radius: 10px;
+    }
+
+    /* ========== SIDEBAR ========== */
+    .sidebar {
+      position: fixed;
+      right: 0;
+      top: 0;
+      width: 280px;
+      height: 100%;
+      background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
+      color: white;
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: 1000;
+      overflow-y: auto;
+      box-shadow: -5px 0 30px rgba(0, 0, 0, 0.15);
+      transform: translateX(0);
+    }
+
+    .sidebar.hidden {
+      transform: translateX(100%);
+    }
+
+    .sidebar-header {
+      padding: 30px 20px 20px;
+      text-align: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      margin-bottom: 15px;
+    }
+
+    .sidebar-header .logo-icon {
+      font-size: 40px;
+      background: linear-gradient(135deg, var(--primary-light), var(--secondary));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .sidebar-header h2 {
+      font-size: 22px;
+      font-weight: 700;
+      margin-top: 8px;
+      background: linear-gradient(135deg, var(--primary-light), var(--secondary));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .sidebar-header p {
+      font-size: 12px;
+      opacity: 0.5;
+      margin-top: 4px;
+    }
+
+    .sidebar-menu {
+      list-style: none;
+      padding: 0 12px;
+    }
+
+    .sidebar-menu li {
+      padding: 12px 16px;
+      margin-bottom: 4px;
+      cursor: pointer;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      gap: 14px;
       border-radius: 12px;
+      font-weight: 500;
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    .sidebar-menu li i {
+      width: 22px;
+      font-size: 16px;
+    }
+    .sidebar-menu li:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: white;
+      transform: translateX(-4px);
+    }
+    .sidebar-menu li.active {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white;
+      box-shadow: 0 4px 15px rgba(79, 70, 229, 0.4);
+    }
+
+    .logout-btn {
+      margin: 20px 15px 30px;
+      padding: 12px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: rgba(255, 255, 255, 0.7);
+      border-radius: 12px;
+      cursor: pointer;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      transition: var(--transition);
+      width: calc(100% - 30px);
+    }
+    .logout-btn:hover {
+      background: var(--danger);
+      border-color: var(--danger);
+      color: white;
+    }
+
+    /* ========== MAIN CONTENT ========== */
+    .main-content {
+      margin-right: 280px;
+      padding: 20px 25px;
+      transition: margin-right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      min-height: 100vh;
+      position: relative;
+    }
+    .main-content.sidebar-hidden {
+      margin-right: 0;
     }
 
     /* =========================================================
        HEADER (موحد مع باقي الصفحات)
        ========================================================= */
     .header {
-      background: #0b1b2f;
-      color: #fff;
-      padding: 14px 32px;
+      background: white;
+      padding: 16px 24px;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 25px;
       display: flex;
       justify-content: space-between;
       align-items: center;
       flex-wrap: wrap;
-      gap: 16px;
-      box-shadow: 0 4px 24px rgba(0, 20, 40, 0.12);
-      position: sticky;
-      top: 0;
-      z-index: 120;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-      border-radius: 20px 20px 0 0;
-      margin: -24px -20px 24px;
-      padding: 14px 32px;
+      gap: 12px;
+      border: 1px solid rgba(0, 0, 0, 0.04);
     }
 
-    @media (max-width: 768px) {
-      .header {
-        margin: -16px -16px 16px;
-        padding: 12px 16px;
-        border-radius: 16px 16px 0 0;
-      }
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .menu-toggle {
+      background: var(--dark-secondary);
+      border: none;
+      color: white;
+      font-size: 18px;
+      cursor: pointer;
+      padding: 10px 14px;
+      border-radius: 12px;
+      transition: var(--transition);
+    }
+    .menu-toggle:hover {
+      background: var(--primary);
     }
 
     .header h1 {
-      font-size: 1.25rem;
+      font-size: 22px;
+      color: var(--dark-secondary);
       font-weight: 700;
-      display: flex;
-      align-items: center;
-      gap: 12px;
     }
-
     .header h1 i {
-      color: #6c8cff;
-      font-size: 1.4rem;
+      color: var(--primary);
+      margin-left: 10px;
     }
 
     .header-actions {
@@ -102,130 +251,138 @@
       flex-wrap: wrap;
     }
 
-    .status-badge {
-      font-size: 12px;
-      font-weight: 500;
-      padding: 6px 16px;
-      border-radius: 40px;
-      background: #E8F5E9;
-      color: #16A34A;
-      border: 1px solid #C8E6C9;
+    .user-info {
       display: flex;
       align-items: center;
+      gap: 12px;
+      background: var(--light);
+      padding: 6px 16px 6px 20px;
+      border-radius: 40px;
+      border: 1px solid var(--gray-light);
+    }
+    .user-info i {
+      font-size: 22px;
+      color: var(--primary);
+    }
+    .user-info span {
+      font-weight: 600;
+      color: var(--dark-secondary);
+      font-size: 14px;
+    }
+
+    .status-badge {
+      padding: 4px 14px;
+      border-radius: 30px;
+      font-size: 12px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
       gap: 6px;
+      background: var(--success-light);
+      color: var(--success);
     }
 
     .btn-ghost-header {
-      background: rgba(255, 255, 255, 0.08);
-      border: 1px solid rgba(255, 255, 255, 0.06);
-      padding: 6px 18px;
-      border-radius: 30px;
-      color: #fff;
+      background: var(--light);
+      border: 1px solid var(--gray-light);
+      padding: 8px 16px;
+      border-radius: 40px;
       cursor: pointer;
-      font-family: 'Inter', sans-serif;
-      font-weight: 500;
-      font-size: 0.8rem;
-      transition: all 0.2s;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--dark-secondary);
+      transition: var(--transition);
       display: inline-flex;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
     }
-
     .btn-ghost-header:hover {
-      background: rgba(255, 255, 255, 0.15);
-      transform: scale(1.02);
-    }
-
-    /* =========================================================
-       CONTAINER
-       ========================================================= */
-    .container {
-      max-width: 1280px;
-      margin: 0 auto;
+      border-color: var(--primary);
+      color: var(--primary);
+      background: var(--info-light);
     }
 
     /* =========================================================
        CARDS (موحد مع باقي الصفحات)
        ========================================================= */
     .card {
-      background: #ffffff;
-      border-radius: 20px;
-      box-shadow: 0 2px 12px rgba(0, 20, 40, 0.04);
-      border: 1px solid rgba(0, 0, 0, 0.02);
+      background: white;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-sm);
+      border: 1px solid rgba(0, 0, 0, 0.04);
       transition: all 0.2s;
-      padding: 24px;
-      margin-bottom: 24px;
+      padding: 22px 24px;
+      margin-bottom: 25px;
     }
 
     .card:hover {
-      box-shadow: 0 8px 28px rgba(0, 20, 40, 0.08);
+      box-shadow: var(--shadow);
     }
 
     /* =========================================================
        BUTTONS (موحد مع باقي الصفحات)
        ========================================================= */
     .btn {
-      padding: 10px 24px;
+      padding: 10px 22px;
       border: none;
       border-radius: 40px;
       cursor: pointer;
-      font-size: 0.85rem;
+      font-size: 14px;
       font-weight: 600;
-      font-family: 'Inter', sans-serif;
-      transition: all 0.2s;
+      transition: var(--transition);
       display: inline-flex;
       align-items: center;
       gap: 8px;
-    }
-
-    .btn:hover {
-      transform: scale(1.02);
-    }
-
-    .btn:active {
-      transform: scale(0.97);
+      text-decoration: none;
+      font-family: inherit;
     }
 
     .btn-primary {
-      background: #6c8cff;
-      color: #fff;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white;
     }
     .btn-primary:hover {
-      background: #5a77e0;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(79, 70, 229, 0.4);
     }
 
     .btn-success {
-      background: #3dbb7a;
-      color: #fff;
+      background: var(--success);
+      color: white;
     }
     .btn-success:hover {
-      background: #2ea36a;
-    }
-
-    .btn-warning {
-      background: #f5a623;
-      color: #fff;
-    }
-    .btn-warning:hover {
-      background: #d98e1a;
+      background: #059669;
+      transform: translateY(-2px);
     }
 
     .btn-danger {
-      background: #e14c4c;
-      color: #fff;
+      background: var(--danger);
+      color: white;
     }
     .btn-danger:hover {
-      background: #c03939;
+      background: #dc2626;
+      transform: translateY(-2px);
+    }
+
+    .btn-warning {
+      background: var(--warning);
+      color: white;
+    }
+    .btn-warning:hover {
+      background: #d97706;
+      transform: translateY(-2px);
     }
 
     .btn-secondary {
-      background: transparent;
-      border: 1.5px solid #e6edf5;
-      color: #0b1b2f;
+      background: var(--light);
+      border: 1px solid var(--gray-light);
+      color: var(--dark-secondary);
+      border-radius: 40px;
     }
     .btn-secondary:hover {
-      background: #f0f4fe;
-      border-color: #6c8cff;
+      border-color: var(--primary);
+      color: var(--primary);
+      background: var(--info-light);
     }
 
     .btn-teal {
@@ -241,7 +398,8 @@
 
     .btn-sm {
       padding: 6px 16px;
-      font-size: 0.75rem;
+      font-size: 12px;
+      border-radius: 40px;
     }
 
     .btn:disabled {
@@ -262,43 +420,43 @@
 
     .filter-section select {
       padding: 10px 16px;
-      border: 1.5px solid #e6edf5;
-      border-radius: 16px;
+      border: 2px solid var(--gray-light);
+      border-radius: var(--radius-sm);
       font-size: 14px;
-      background: #fafcff;
+      background: white;
       min-width: 200px;
       outline: none;
-      transition: all 0.2s;
-      font-family: 'Inter', sans-serif;
-      color: #0b1b2f;
+      transition: var(--transition);
+      font-family: inherit;
+      color: var(--dark-secondary);
     }
 
     .filter-section select:focus {
-      border-color: #6c8cff;
-      box-shadow: 0 0 0 4px rgba(108, 140, 255, 0.08);
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
     }
 
     .filter-section .search-input {
       padding: 10px 16px;
-      border: 1.5px solid #e6edf5;
-      border-radius: 16px;
+      border: 2px solid var(--gray-light);
+      border-radius: var(--radius-sm);
       font-size: 14px;
-      background: #fafcff;
+      background: white;
       flex: 1;
       min-width: 150px;
       outline: none;
-      transition: all 0.2s;
-      font-family: 'Inter', sans-serif;
-      color: #0b1b2f;
+      transition: var(--transition);
+      font-family: inherit;
+      color: var(--dark-secondary);
     }
 
     .filter-section .search-input:focus {
-      border-color: #6c8cff;
-      box-shadow: 0 0 0 4px rgba(108, 140, 255, 0.08);
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
     }
 
     .filter-section .search-input::placeholder {
-      color: #6d7b93;
+      color: var(--gray);
     }
 
     /* =========================================================
@@ -315,17 +473,17 @@
     .invoice-list-header h4 {
       font-size: 18px;
       font-weight: 700;
-      color: #0b1b2f;
+      color: var(--dark-secondary);
     }
 
     .invoice-list-header h4 i {
-      color: #6c8cff;
+      color: var(--primary);
     }
 
     .invoice-list-header .count {
       font-size: 13px;
-      color: #6d7b93;
-      background: #f0f4fe;
+      color: var(--gray);
+      background: var(--light);
       padding: 4px 16px;
       border-radius: 30px;
     }
@@ -337,30 +495,30 @@
     }
 
     .invoice-item {
-      background: #ffffff;
-      border-radius: 20px;
-      border: 1px solid rgba(0, 0, 0, 0.02);
+      background: white;
+      border-radius: var(--radius);
+      border: 1px solid var(--gray-light);
       padding: 16px 20px;
-      transition: all 0.2s;
+      transition: var(--transition);
       display: flex;
       justify-content: space-between;
       align-items: center;
       flex-wrap: wrap;
       gap: 12px;
       cursor: pointer;
-      box-shadow: 0 2px 10px rgba(0, 20, 40, 0.04);
+      box-shadow: var(--shadow-sm);
     }
 
     .invoice-item:hover {
-      box-shadow: 0 8px 28px rgba(0, 20, 40, 0.08);
-      border-color: #6c8cff40;
+      box-shadow: var(--shadow);
+      border-color: var(--primary-light);
       transform: translateY(-2px);
     }
 
     .invoice-item.selected {
-      border-color: #6c8cff;
-      background: #f8faff;
-      box-shadow: 0 0 0 4px rgba(108, 140, 255, 0.08);
+      border-color: var(--primary);
+      background: var(--light);
+      box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.08);
     }
 
     .invoice-item .info {
@@ -371,17 +529,17 @@
     .invoice-item .info .branch {
       font-weight: 600;
       font-size: 16px;
-      color: #0b1b2f;
+      color: var(--dark-secondary);
     }
 
     .invoice-item .info .branch i {
-      color: #6c8cff;
+      color: var(--primary);
       margin-left: 6px;
     }
 
     .invoice-item .info .meta {
       font-size: 13px;
-      color: #6d7b93;
+      color: var(--gray);
       display: flex;
       gap: 12px;
       flex-wrap: wrap;
@@ -411,13 +569,13 @@
     }
 
     .badge.pending {
-      background: #FEF3C7;
+      background: var(--warning-light);
       color: #92400E;
     }
 
     .badge.received {
-      background: #E8F5E9;
-      color: #16A34A;
+      background: var(--success-light);
+      color: var(--success);
     }
 
     .badge.partial {
@@ -426,18 +584,46 @@
     }
 
     .badge.shortage {
-      background: #FEE2E2;
-      color: #DC2626;
+      background: var(--danger-light);
+      color: var(--danger);
     }
 
     .badge.prepared {
-      background: #DBEAFE;
+      background: var(--info-light);
       color: #1E40AF;
     }
 
     .badge.closed {
       background: #E5E7EB;
       color: #4B5563;
+    }
+
+    .badge-sm {
+      font-size: 10px;
+      font-weight: 600;
+      padding: 2px 10px;
+      border-radius: 30px;
+      text-transform: uppercase;
+    }
+
+    .badge-sm.received {
+      background: var(--success-light);
+      color: var(--success);
+    }
+
+    .badge-sm.shortage {
+      background: var(--danger-light);
+      color: var(--danger);
+    }
+
+    .badge-sm.partial {
+      background: #FCE4EC;
+      color: #C62828;
+    }
+
+    .badge-sm.pending {
+      background: var(--warning-light);
+      color: #92400E;
     }
 
     /* =========================================================
@@ -463,17 +649,17 @@
     .preview-header .title {
       font-size: 18px;
       font-weight: 700;
-      color: #0b1b2f;
+      color: var(--dark-secondary);
     }
 
     .preview-header .title i {
-      color: #6c8cff;
+      color: var(--primary);
       margin-left: 8px;
     }
 
     .preview-header .meta {
       font-size: 13px;
-      color: #6d7b93;
+      color: var(--gray);
     }
 
     .preview-header .meta i {
@@ -493,25 +679,25 @@
       flex-wrap: wrap;
       margin-bottom: 12px;
       padding: 8px 0;
-      border-bottom: 1px solid #e6edf5;
+      border-bottom: 1px solid var(--gray-light);
     }
 
     /* =========================================================
        PRODUCT CARDS (موحد مع باقي الصفحات)
        ========================================================= */
     .product-card {
-      background: #ffffff;
-      border-radius: 20px;
-      border: 1px solid rgba(0, 0, 0, 0.02);
+      background: white;
+      border-radius: var(--radius);
+      border: 1px solid var(--gray-light);
       overflow: hidden;
-      transition: all 0.2s;
+      transition: var(--transition);
       margin-bottom: 12px;
-      box-shadow: 0 2px 10px rgba(0, 20, 40, 0.04);
+      box-shadow: var(--shadow-sm);
     }
 
     .product-card:hover {
-      box-shadow: 0 8px 28px rgba(0, 20, 40, 0.08);
-      border-color: #6c8cff40;
+      box-shadow: var(--shadow);
+      border-color: var(--primary-light);
     }
 
     .product-card-header {
@@ -521,21 +707,21 @@
       padding: 16px 20px;
       cursor: pointer;
       user-select: none;
-      transition: all 0.2s;
+      transition: var(--transition);
     }
 
     .product-card-header:hover {
-      background: #f8faff;
+      background: var(--light);
     }
 
     .product-card-header .thumb {
       width: 60px;
       height: 60px;
-      border-radius: 14px;
+      border-radius: var(--radius-sm);
       object-fit: cover;
-      border: 1px solid #e6edf5;
+      border: 1px solid var(--gray-light);
       flex-shrink: 0;
-      transition: all 0.2s;
+      transition: var(--transition);
       cursor: pointer;
     }
 
@@ -554,20 +740,20 @@
     .product-card-header .meta .name {
       font-weight: 600;
       font-size: 15px;
-      color: #0b1b2f;
+      color: var(--dark-secondary);
     }
 
     .product-card-header .meta .sku {
       font-size: 12px;
-      color: #6d7b93;
-      background: #f0f4fe;
+      color: var(--gray);
+      background: var(--light);
       padding: 2px 12px;
       border-radius: 30px;
     }
 
     .product-card-header .meta .price {
       font-weight: 600;
-      color: #6c8cff;
+      color: var(--primary);
       font-size: 14px;
     }
 
@@ -579,8 +765,8 @@
     }
 
     .product-card-header .meta .status-badge.done {
-      background: #E8F5E9;
-      color: #16A34A;
+      background: var(--success-light);
+      color: var(--success);
     }
 
     .product-card-header .meta .status-badge.partial {
@@ -589,19 +775,19 @@
     }
 
     .product-card-header .meta .status-badge.shortage {
-      background: #FEE2E2;
-      color: #DC2626;
+      background: var(--danger-light);
+      color: var(--danger);
     }
 
     .product-card-header .meta .status-badge.pending {
-      background: #FEF3C7;
+      background: var(--warning-light);
       color: #92400E;
     }
 
     .product-card-header .chevron {
       margin-right: auto;
       font-size: 18px;
-      color: #6d7b93;
+      color: var(--gray);
       transition: transform 0.3s ease;
     }
 
@@ -619,11 +805,21 @@
       display: block;
     }
 
+    .product-card-footer {
+      padding: 12px 20px 16px;
+      border-top: 1px solid var(--gray-light);
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      flex-wrap: wrap;
+      background: var(--light);
+    }
+
     /* =========================================================
        COLOR ACCORDION (موحد مع باقي الصفحات)
        ========================================================= */
     .color-accordion {
-      border-top: 1px solid #e6edf5;
+      border-top: 1px solid var(--gray-light);
       padding-top: 12px;
       margin-top: 4px;
     }
@@ -640,17 +836,17 @@
       padding: 8px 0;
       cursor: pointer;
       user-select: none;
-      transition: all 0.2s;
+      transition: var(--transition);
       font-weight: 500;
     }
 
     .color-header:hover {
-      color: #6c8cff;
+      color: var(--primary);
     }
 
     .color-header .chevron-sm {
       font-size: 14px;
-      color: #6d7b93;
+      color: var(--gray);
       transition: transform 0.3s ease;
     }
 
@@ -660,11 +856,31 @@
 
     .color-header .color-total {
       font-size: 12px;
-      color: #6d7b93;
+      color: var(--gray);
       margin-right: auto;
-      background: #f0f4fe;
+      background: var(--light);
       padding: 2px 14px;
       border-radius: 30px;
+    }
+
+    .color-header .shortage-highlight {
+      background: var(--danger-light);
+      border: 1px solid #FCA5A5;
+      border-radius: 8px;
+      padding: 2px 8px;
+      color: var(--danger);
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .no-prepare {
+      background: var(--danger-light);
+      border: 1px solid #FCA5A5;
+      border-radius: 8px;
+      padding: 2px 8px;
+      color: var(--danger);
+      font-size: 11px;
+      font-weight: 600;
     }
 
     .color-sizes {
@@ -690,7 +906,7 @@
     .size-row .size-label {
       min-width: 40px;
       font-weight: 500;
-      color: #0b1b2f;
+      color: var(--dark-secondary);
     }
 
     .size-row .qty-control {
@@ -702,23 +918,24 @@
     .size-row .qty-control button {
       width: 30px;
       height: 30px;
-      border: 1px solid #e6edf5;
-      border-radius: 10px;
-      background: #ffffff;
+      border: 1px solid var(--gray-light);
+      border-radius: 40px;
+      background: white;
       cursor: pointer;
       font-size: 16px;
       font-weight: 600;
-      transition: all 0.2s;
+      transition: var(--transition);
       display: flex;
       align-items: center;
       justify-content: center;
       touch-action: manipulation;
-      color: #0b1b2f;
+      color: var(--dark-secondary);
     }
 
     .size-row .qty-control button:hover:not(:disabled) {
-      background: #f0f4fe;
-      border-color: #6c8cff;
+      background: var(--light);
+      border-color: var(--primary);
+      color: var(--primary);
     }
 
     .size-row .qty-control button:active:not(:disabled) {
@@ -735,39 +952,29 @@
       text-align: center;
       font-weight: 600;
       font-size: 15px;
-      color: #0b1b2f;
+      color: var(--dark-secondary);
       padding: 0 4px;
     }
 
     .size-row .qty-control .qty-val.received {
-      color: #3dbb7a;
+      color: var(--success);
     }
 
     .size-row .qty-control .qty-val.partial {
-      color: #f5a623;
+      color: var(--warning);
     }
 
     .size-row .qty-control .qty-val.shortage {
-      color: #e14c4c;
+      color: var(--danger);
     }
 
     .size-row .qty-control .qty-val.pending {
-      color: #6d7b93;
+      color: var(--gray);
     }
 
     .size-row .qty-control .qty-val.zero {
-      color: #e14c4c;
+      color: var(--danger);
       font-weight: 700;
-    }
-
-    .product-card-footer {
-      padding: 12px 20px 16px;
-      border-top: 1px solid #e6edf5;
-      display: flex;
-      justify-content: flex-end;
-      gap: 8px;
-      flex-wrap: wrap;
-      background: #fafcff;
     }
 
     /* =========================================================
@@ -777,27 +984,27 @@
       display: grid;
       grid-template-columns: repeat(4, 1fr);
       gap: 16px;
-      margin-bottom: 24px;
+      margin-bottom: 25px;
     }
 
     .stat-card {
-      background: #ffffff;
-      border-radius: 20px;
+      background: white;
+      border-radius: var(--radius);
       padding: 18px 20px;
-      box-shadow: 0 2px 12px rgba(0, 20, 40, 0.04);
-      border: 1px solid rgba(0, 0, 0, 0.02);
-      transition: all 0.2s;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid rgba(0, 0, 0, 0.04);
+      transition: var(--transition);
       text-align: center;
     }
 
     .stat-card:hover {
       transform: translateY(-3px);
-      box-shadow: 0 8px 28px rgba(0, 20, 40, 0.08);
+      box-shadow: var(--shadow);
     }
 
     .stat-card .stat-label {
       font-size: 12px;
-      color: #6d7b93;
+      color: var(--gray);
       font-weight: 500;
       text-transform: uppercase;
       letter-spacing: 0.3px;
@@ -810,21 +1017,21 @@
     .stat-card .stat-value {
       font-size: 28px;
       font-weight: 700;
-      color: #0b1b2f;
+      color: var(--dark-secondary);
       margin-top: 4px;
     }
 
     .stat-card .stat-value.green {
-      color: #3dbb7a;
+      color: var(--success);
     }
     .stat-card .stat-value.primary {
-      color: #6c8cff;
+      color: var(--primary);
     }
     .stat-card .stat-value.orange {
-      color: #f5a623;
+      color: var(--warning);
     }
     .stat-card .stat-value.red {
-      color: #e14c4c;
+      color: var(--danger);
     }
 
     @media (max-width: 768px) {
@@ -846,23 +1053,38 @@
     /* =========================================================
        STICKY BOTTOM (موحد مع باقي الصفحات)
        ========================================================= */
-    .sticky-bottom {
+    .sticky-bottom-wrapper {
       position: fixed;
       bottom: 0;
       left: 0;
       right: 0;
-      background: #ffffff;
-      border-top: 1px solid #e6edf5;
+      z-index: 100;
+      padding: 0 25px;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .sticky-bottom-wrapper.sidebar-hidden {
+      padding-right: 25px;
+    }
+
+    .sticky-bottom-wrapper:not(.sidebar-hidden) {
+      padding-right: 305px;
+    }
+
+    .sticky-bottom {
+      background: white;
+      border-top: 1px solid var(--gray-light);
       padding: 12px 24px;
-      box-shadow: 0 -10px 30px rgba(0, 20, 40, 0.05);
+      box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.05);
       display: flex;
       justify-content: space-between;
       align-items: center;
       flex-wrap: wrap;
       gap: 12px;
-      z-index: 100;
       backdrop-filter: blur(12px);
       background: rgba(255, 255, 255, 0.95);
+      border-radius: var(--radius) var(--radius) 0 0;
+      max-width: 100%;
     }
 
     .sticky-bottom .summary {
@@ -876,16 +1098,16 @@
       display: flex;
       align-items: center;
       gap: 6px;
-      color: #4e5e77;
+      color: var(--gray);
     }
 
     .sticky-bottom .summary .item i {
-      color: #6c8cff;
+      color: var(--primary);
     }
 
     .sticky-bottom .summary .item strong {
       font-weight: 700;
-      color: #0b1b2f;
+      color: var(--dark-secondary);
     }
 
     .sticky-bottom .actions {
@@ -895,16 +1117,27 @@
     }
 
     @media (max-width: 768px) {
+      .sticky-bottom-wrapper {
+        padding: 0 15px !important;
+      }
       .sticky-bottom {
         flex-direction: column;
         align-items: stretch;
         padding: 12px 16px;
+        border-radius: var(--radius-sm) var(--radius-sm) 0 0;
       }
       .sticky-bottom .summary {
         justify-content: center;
       }
       .sticky-bottom .actions {
         justify-content: center;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .sticky-bottom .summary {
+        gap: 12px;
+        font-size: 12px;
       }
     }
 
@@ -927,17 +1160,17 @@
     .old-orders-header h4 {
       font-size: 18px;
       font-weight: 700;
-      color: #0b1b2f;
+      color: var(--dark-secondary);
     }
 
     .old-orders-header h4 i {
-      color: #6c8cff;
+      color: var(--primary);
     }
 
     .old-orders-header .count {
       font-size: 13px;
-      color: #6d7b93;
-      background: #f0f4fe;
+      color: var(--gray);
+      background: var(--light);
       padding: 4px 16px;
       border-radius: 30px;
     }
@@ -951,8 +1184,8 @@
     .old-orders-list {
       max-height: 500px;
       overflow-y: auto;
-      border-radius: 16px;
-      border: 1px solid #e6edf5;
+      border-radius: var(--radius);
+      border: 1px solid var(--gray-light);
     }
 
     .old-order-item {
@@ -960,13 +1193,13 @@
       align-items: center;
       gap: 12px;
       padding: 12px 16px;
-      border-bottom: 1px solid #e6edf5;
+      border-bottom: 1px solid var(--gray-light);
       flex-wrap: wrap;
       transition: background 0.2s;
     }
 
     .old-order-item:hover {
-      background: #f8faff;
+      background: var(--light);
     }
 
     .old-order-item:last-child {
@@ -976,25 +1209,25 @@
     .old-order-item .order-number {
       font-weight: 700;
       min-width: 30px;
-      color: #6c8cff;
+      color: var(--primary);
       font-size: 13px;
     }
 
     .old-order-item .order-branch {
       min-width: 80px;
       font-weight: 600;
-      color: #0b1b2f;
+      color: var(--dark-secondary);
       font-size: 14px;
     }
 
     .old-order-item .order-branch i {
-      color: #6c8cff;
+      color: var(--primary);
       margin-left: 4px;
     }
 
     .old-order-item .order-date {
       font-size: 12px;
-      color: #6d7b93;
+      color: var(--gray);
       min-width: 120px;
     }
 
@@ -1005,48 +1238,48 @@
     .old-order-item .order-pieces {
       font-weight: 600;
       min-width: 60px;
-      color: #0b1b2f;
+      color: var(--dark-secondary);
       font-size: 13px;
     }
 
     .old-order-item .order-pieces i {
-      color: #6c8cff;
+      color: var(--primary);
       margin-left: 4px;
     }
 
     .old-order-item .order-received {
       font-weight: 600;
       min-width: 60px;
-      color: #3dbb7a;
+      color: var(--success);
       font-size: 13px;
     }
 
     .old-order-item .order-received i {
-      color: #3dbb7a;
+      color: var(--success);
       margin-left: 4px;
     }
 
     .old-order-item .order-shortage {
       font-weight: 600;
       min-width: 60px;
-      color: #e14c4c;
+      color: var(--danger);
       font-size: 13px;
     }
 
     .old-order-item .order-shortage i {
-      color: #e14c4c;
+      color: var(--danger);
       margin-left: 4px;
     }
 
     .old-order-item .order-value {
       font-weight: 600;
-      color: #6c8cff;
+      color: var(--primary);
       min-width: 80px;
       font-size: 14px;
     }
 
     .old-order-item .order-value i {
-      color: #6c8cff;
+      color: var(--primary);
       margin-left: 4px;
     }
 
@@ -1056,7 +1289,7 @@
 
     .old-order-item .order-details {
       font-size: 12px;
-      color: #6d7b93;
+      color: var(--gray);
       flex: 2;
       min-width: 100px;
     }
@@ -1070,34 +1303,6 @@
       gap: 6px;
     }
 
-    .old-order-item .badge-sm {
-      font-size: 10px;
-      font-weight: 600;
-      padding: 2px 10px;
-      border-radius: 30px;
-      text-transform: uppercase;
-    }
-
-    .badge-sm.received {
-      background: #E8F5E9;
-      color: #16A34A;
-    }
-
-    .badge-sm.shortage {
-      background: #FEE2E2;
-      color: #DC2626;
-    }
-
-    .badge-sm.partial {
-      background: #FCE4EC;
-      color: #C62828;
-    }
-
-    .badge-sm.pending {
-      background: #FEF3C7;
-      color: #92400E;
-    }
-
     /* =========================================================
        DIALOG / MODAL (موحد مع باقي الصفحات)
        ========================================================= */
@@ -1108,35 +1313,48 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(11, 27, 47, 0.5);
-      backdrop-filter: blur(6px);
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(8px);
       z-index: 9999;
       justify-content: center;
       align-items: center;
       padding: 20px;
-      animation: fadeIn 0.25s ease;
+      animation: modalFadeIn 0.3s ease;
+      cursor: pointer;
     }
 
     .dialog-overlay.show {
       display: flex;
     }
 
+    @keyframes modalFadeIn {
+      from {
+        opacity: 0;
+        transform: scale(0.95);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
     .dialog-box {
-      background: #ffffff;
+      background: white;
+      padding: 30px 35px;
       border-radius: 24px;
-      padding: 32px;
       max-width: 600px;
       width: 100%;
-      box-shadow: 0 24px 64px rgba(0, 20, 40, 0.2);
-      animation: slideUp 0.3s ease;
+      box-shadow: var(--shadow-lg);
+      cursor: default;
       max-height: 80vh;
       overflow-y: auto;
+      position: relative;
     }
 
     .dialog-box h3 {
       font-size: 20px;
       font-weight: 700;
-      color: #0b1b2f;
+      color: var(--dark-secondary);
       display: flex;
       align-items: center;
       gap: 10px;
@@ -1144,11 +1362,11 @@
     }
 
     .dialog-box h3 i {
-      color: #6c8cff;
+      color: var(--primary);
     }
 
     .dialog-box .subtitle {
-      color: #4e5e77;
+      color: var(--gray);
       margin-bottom: 16px;
       font-size: 14px;
     }
@@ -1171,7 +1389,7 @@
       align-items: center;
       gap: 12px;
       padding: 10px 12px;
-      border-bottom: 1px solid #e6edf5;
+      border-bottom: 1px solid var(--gray-light);
     }
 
     .dialog-product-item:last-child {
@@ -1181,9 +1399,9 @@
     .dialog-product-item img {
       width: 40px;
       height: 40px;
-      border-radius: 10px;
+      border-radius: var(--radius-sm);
       object-fit: cover;
-      border: 1px solid #e6edf5;
+      border: 1px solid var(--gray-light);
     }
 
     .dialog-product-item .info {
@@ -1193,12 +1411,12 @@
     .dialog-product-item .info .name {
       font-weight: 500;
       font-size: 14px;
-      color: #0b1b2f;
+      color: var(--dark-secondary);
     }
 
     .dialog-product-item .info .details {
       font-size: 12px;
-      color: #6d7b93;
+      color: var(--gray);
     }
 
     .dialog-product-item .qty-info {
@@ -1209,13 +1427,13 @@
     }
 
     .dialog-product-item .qty-info.done {
-      color: #3dbb7a;
+      color: var(--success);
     }
     .dialog-product-item .qty-info.partial {
-      color: #f5a623;
+      color: var(--warning);
     }
     .dialog-product-item .qty-info.shortage {
-      color: #e14c4c;
+      color: var(--danger);
     }
 
     /* =========================================================
@@ -1226,66 +1444,63 @@
       align-items: center;
       gap: 12px;
       padding: 8px 0;
-      border-bottom: 1px solid #e6edf5;
+      border-bottom: 1px solid var(--gray-light);
       flex-wrap: wrap;
     }
 
     .shortage-item .label {
       font-weight: 500;
       min-width: 60px;
-      color: #0b1b2f;
+      color: var(--dark-secondary);
     }
 
     .shortage-item input {
       width: 60px;
       padding: 4px 8px;
-      border: 1.5px solid #e6edf5;
+      border: 2px solid var(--gray-light);
       border-radius: 8px;
       text-align: center;
       font-size: 14px;
       outline: none;
-      transition: all 0.2s;
-      font-family: 'Inter', sans-serif;
+      transition: var(--transition);
+      font-family: inherit;
     }
 
     .shortage-item input:focus {
-      border-color: #6c8cff;
-      box-shadow: 0 0 0 3px rgba(108, 140, 255, 0.08);
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
     }
 
     .shortage-item input.shortage-input {
-      border-color: #e14c4c;
+      border-color: var(--danger);
     }
 
     .shortage-item input.shortage-input:focus {
-      border-color: #e14c4c;
+      border-color: var(--danger);
       box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.08);
     }
 
     .shortage-item .qty-display {
       font-weight: 600;
-      color: #6d7b93;
+      color: var(--gray);
       font-size: 13px;
     }
 
-    .shortage-highlight {
-      background: #FEF2F2;
-      border: 1px solid #FCA5A5;
-      border-radius: 8px;
-      padding: 4px 8px;
-      color: #e14c4c;
-      font-size: 12px;
-      font-weight: 600;
+    .modal-close-btn {
+      position: absolute;
+      top: 15px;
+      left: 20px;
+      background: none;
+      border: none;
+      font-size: 24px;
+      color: var(--gray);
+      cursor: pointer;
+      transition: var(--transition);
     }
 
-    .no-prepare {
-      background: #FEE2E2;
-      border: 1px solid #FCA5A5;
-      border-radius: 8px;
-      padding: 4px 8px;
-      color: #e14c4c;
-      font-size: 12px;
-      font-weight: 600;
+    .modal-close-btn:hover {
+      color: var(--danger);
+      transform: rotate(90deg);
     }
 
     /* =========================================================
@@ -1297,19 +1512,19 @@
 
     .progress-container .label {
       font-size: 12px;
-      color: #6d7b93;
+      color: var(--gray);
     }
 
     .progress-container .value {
       font-weight: 700;
       font-size: 14px;
-      color: #0b1b2f;
+      color: var(--dark-secondary);
     }
 
     .progress-bar {
       width: 100%;
       height: 6px;
-      background: #e6edf5;
+      background: var(--gray-light);
       border-radius: 10px;
       overflow: hidden;
       margin: 4px 0;
@@ -1318,16 +1533,16 @@
     .progress-bar .fill {
       height: 100%;
       border-radius: 10px;
-      background: #3dbb7a;
+      background: var(--success);
       transition: width 0.5s ease;
     }
 
     .progress-bar .fill.warning {
-      background: #f5a623;
+      background: var(--warning);
     }
 
     .progress-bar .fill.danger {
-      background: #e14c4c;
+      background: var(--danger);
     }
 
     /* =========================================================
@@ -1336,19 +1551,19 @@
     .empty-state {
       text-align: center;
       padding: 48px 20px;
-      color: #6d7b93;
+      color: var(--gray);
     }
 
     .empty-state i {
       font-size: 2.8rem;
-      color: #6c8cff;
+      color: var(--primary);
       opacity: 0.4;
       margin-bottom: 12px;
     }
 
     .empty-state h3 {
       font-size: 20px;
-      color: #0b1b2f;
+      color: var(--dark-secondary);
       margin-bottom: 8px;
     }
 
@@ -1365,14 +1580,14 @@
       left: 50%;
       transform: translateX(-50%);
       padding: 12px 24px;
-      border-radius: 16px;
+      border-radius: var(--radius-sm);
       font-weight: 500;
       font-size: 14px;
       z-index: 9999;
       animation: fadeSlide 0.3s ease;
       max-width: 90vw;
       text-align: center;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      box-shadow: var(--shadow-lg);
     }
 
     /* =========================================================
@@ -1401,7 +1616,7 @@
     .image-modal-overlay img {
       max-width: 95%;
       max-height: 85vh;
-      border-radius: 16px;
+      border-radius: var(--radius-sm);
       object-fit: contain;
     }
 
@@ -1417,7 +1632,7 @@
       height: 44px;
       border-radius: 50%;
       cursor: pointer;
-      transition: all 0.2s;
+      transition: var(--transition);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -1465,34 +1680,33 @@
     /* =========================================================
        RESPONSIVE
        ========================================================= */
+    @media (max-width: 992px) {
+      .main-content {
+        margin-right: 0;
+      }
+      .sidebar {
+        transform: translateX(100%);
+      }
+      .sidebar.visible {
+        transform: translateX(0);
+      }
+      .sidebar.hidden {
+        transform: translateX(100%);
+      }
+      .sticky-bottom-wrapper:not(.sidebar-hidden) {
+        padding-right: 15px !important;
+      }
+    }
+
     @media (max-width: 768px) {
-      body {
-        padding: 16px 12px 110px;
+      .main-content {
+        padding: 16px 15px;
       }
       .header h1 {
-        font-size: 1rem;
-      }
-      .product-card-header {
-        flex-wrap: wrap;
-        gap: 8px;
-      }
-      .product-card-header .meta {
-        width: 100%;
+        font-size: 17px;
       }
       .card {
         padding: 16px;
-      }
-      .sticky-bottom .summary {
-        flex-wrap: wrap;
-        gap: 8px;
-      }
-      .filter-section {
-        flex-direction: column;
-        width: 100%;
-      }
-      .filter-section select,
-      .filter-section .search-input {
-        width: 100%;
       }
       .invoice-item {
         flex-direction: column;
@@ -1557,6 +1771,14 @@
       .old-orders-header .actions {
         justify-content: flex-start;
       }
+      .filter-section {
+        flex-direction: column;
+        width: 100%;
+      }
+      .filter-section select,
+      .filter-section .search-input {
+        width: 100%;
+      }
       .dialog-box {
         padding: 24px 20px;
       }
@@ -1568,6 +1790,19 @@
       }
       .shortage-item .qty-display {
         font-size: 12px;
+      }
+      .product-card-header {
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .product-card-header .meta {
+        width: 100%;
+      }
+      .toast-alert {
+        bottom: 80px;
+        font-size: 12px;
+        padding: 10px 16px;
+        max-width: 95vw;
       }
     }
 
@@ -1582,19 +1817,13 @@
         flex-wrap: wrap;
         gap: 6px;
       }
-      .toast-alert {
-        bottom: 80px;
-        font-size: 12px;
-        padding: 10px 16px;
-        max-width: 95vw;
-      }
       .old-order-item .order-details {
         font-size: 11px;
       }
     }
 
     /* =========================================================
-       HIDDEN UTILITY
+       UTILITIES
        ========================================================= */
     .hidden {
       display: none !important;
@@ -1624,166 +1853,184 @@
       text-align: center;
     }
     .text-muted {
-      color: #6d7b93;
+      color: var(--gray);
     }
   </style>
 </head>
 <body>
 
-  <!-- =========================================================
-  HEADER (موحد مع باقي الصفحات)
-  ========================================================= -->
-  <header class="header">
-    <h1><i class="fas fa-boxes"></i> Order Receiving · استلام الأوردرات</h1>
-    <div class="header-actions">
-      <button class="btn-ghost-header" id="refreshBtn">
-        <i class="fas fa-sync-alt"></i> تحديث
-      </button>
-      <button class="btn-ghost-header" id="showOldOrdersBtn">
-        <i class="fas fa-history"></i> الفواتير المستلمة
-      </button>
-      <span class="status-badge" id="storeStatus">
-        <i class="fas fa-circle" style="font-size:8px;"></i> جاهز
-      </span>
+  <!-- ===== SIDEBAR ===== -->
+  <div class="sidebar" id="sidebar"></div>
+
+  <!-- ===== MAIN CONTENT ===== -->
+  <div class="main-content" id="mainContent">
+
+    <!-- =========================================================
+    HEADER (موحد مع باقي الصفحات)
+    ========================================================= -->
+    <div class="header">
+      <div class="header-left">
+        <button class="menu-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+        <h1><i class="fas fa-boxes"></i> استلام الأوردرات</h1>
+      </div>
+      <div class="header-actions">
+        <button class="btn-ghost-header" id="refreshBtn">
+          <i class="fas fa-sync-alt"></i> تحديث
+        </button>
+        <button class="btn-ghost-header" id="showOldOrdersBtn">
+          <i class="fas fa-history"></i> الفواتير المستلمة
+        </button>
+        <div class="user-info">
+          <i class="fas fa-user-circle"></i>
+          <span id="currentAdminName">مرحباً، مدير النظام</span>
+        </div>
+        <span class="status-badge" id="storeStatus">
+          <i class="fas fa-circle" style="font-size:8px;"></i> جاهز
+        </span>
+      </div>
     </div>
-  </header>
 
-  <!-- =========================================================
-  CONTAINER
-  ========================================================= -->
-  <div class="container">
+    <!-- =========================================================
+    CONTAINER
+    ========================================================= -->
+    <div class="container">
 
-    <!-- FILTERS -->
-    <section class="card">
-      <div class="filter-section">
-        <select id="invoiceFilter">
-          <option value="all"><i class="fas fa-list"></i> جميع الفواتير الجاهزة</option>
-          <option value="pending"><i class="fas fa-clock"></i> غير مستلمة</option>
-          <option value="partial"><i class="fas fa-exclamation-triangle"></i> استلام جزئي</option>
-          <option value="received"><i class="fas fa-check-circle"></i> مستلمة</option>
-          <option value="shortage"><i class="fas fa-exclamation-circle"></i> يوجد نقص</option>
-        </select>
-        <input type="text" class="search-input" id="searchInput" placeholder="🔍 بحث عن فرع أو منتج..." />
-        <button class="btn btn-teal" id="loadSelectedBtn">
-          <i class="fas fa-download"></i> تحميل الفاتورة
-        </button>
-      </div>
-    </section>
-
-    <!-- INVOICE LIST -->
-    <section class="card">
-      <div class="invoice-list-header">
-        <h4><i class="fas fa-file-invoice"></i> الفواتير الجاهزة للاستلام</h4>
-        <span class="count" id="invoicesCount">0 فاتورة</span>
-      </div>
-      <div class="invoice-list" id="invoiceList">
-        <div class="empty-state" id="emptyInvoiceList">
-          <i class="fas fa-inbox"></i>
-          <h3>لا توجد فواتير جاهزة</h3>
-          <p>جميع الفواتير التي حالتها "prepared" تظهر هنا</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- INVOICE PREVIEW -->
-    <section class="card preview-card" id="previewSection">
-      <div class="preview-header">
-        <div>
-          <div class="title" id="previewTitle"><i class="fas fa-receipt"></i> تفاصيل الفاتورة</div>
-          <div class="meta" id="previewMeta"><i class="fas fa-store"></i> الفرع: — | <i class="fas fa-calendar-alt"></i> التاريخ: —</div>
-        </div>
-        <span class="badge" id="previewStatus">⏳ جارٍ الاستلام</span>
-      </div>
-
-      <!-- ACCORDION CONTROLS -->
-      <div class="accordion-controls">
-        <button class="btn btn-secondary btn-sm" id="expandAllColorsBtn">
-          <i class="fas fa-chevron-down"></i> فتح كل الألوان
-        </button>
-        <button class="btn btn-secondary btn-sm" id="collapseAllColorsBtn">
-          <i class="fas fa-chevron-left"></i> غلق كل الألوان
-        </button>
-        <button class="btn btn-secondary btn-sm" id="expandAllProductsBtn">
-          <i class="fas fa-chevron-down"></i> فتح كل المنتجات
-        </button>
-        <button class="btn btn-secondary btn-sm" id="collapseAllProductsBtn">
-          <i class="fas fa-chevron-left"></i> غلق كل المنتجات
-        </button>
-      </div>
-
-      <div id="previewContainer">
-        <div class="empty-state">
-          <i class="fas fa-hand-pointer"></i>
-          <h3>اختر فاتورة</h3>
-          <p>اضغط على أي فاتورة لعرض تفاصيلها</p>
-        </div>
-      </div>
-      <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:16px;flex-wrap:wrap;">
-        <button class="btn btn-secondary" id="closePreviewBtn">
-          <i class="fas fa-times"></i> إغلاق
-        </button>
-        <button class="btn btn-warning" id="shortageBtn">
-          <i class="fas fa-exclamation-circle"></i> تسجيل نقص
-        </button>
-        <button class="btn btn-success" id="completeReceiveBtn">
-          <i class="fas fa-check-double"></i> تأكيد الاستلام الكامل
-        </button>
-      </div>
-    </section>
-
-    <!-- STATISTICS (موحد مع باقي الصفحات) -->
-    <section class="stats-grid" id="statsGrid">
-      <div class="stat-card">
-        <div class="stat-label"><i class="fas fa-file-invoice"></i> إجمالي الفواتير الجاهزة</div>
-        <div class="stat-value primary" id="statTotalInvoices">0</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label"><i class="fas fa-clock"></i> غير مستلمة</div>
-        <div class="stat-value orange" id="statPending">0</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label"><i class="fas fa-check-circle"></i> تم الاستلام ✅</div>
-        <div class="stat-value green" id="statReceived">0</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label"><i class="fas fa-exclamation-circle"></i> يوجد نقص</div>
-        <div class="stat-value red" id="statShortage">0</div>
-      </div>
-    </section>
-
-    <!-- OLD RECEIVED INVOICES -->
-    <section class="card old-orders-section" id="oldOrdersSection" style="display:none;">
-      <div class="old-orders-header">
-        <div>
-          <h4><i class="fas fa-history"></i> الفواتير المستلمة سابقاً</h4>
-          <span class="count" id="oldOrdersCount">0 فاتورة</span>
-        </div>
-        <div class="actions">
-          <button class="btn btn-secondary btn-sm" id="refreshOldOrdersBtn">
-            <i class="fas fa-sync-alt"></i> تحديث
-          </button>
-          <button class="btn btn-primary btn-sm" id="exportOldOrdersBtn">
-            <i class="fas fa-file-excel"></i> تصدير الكل
+      <!-- FILTERS -->
+      <section class="card">
+        <div class="filter-section">
+          <select id="invoiceFilter">
+            <option value="all"><i class="fas fa-list"></i> جميع الفواتير الجاهزة</option>
+            <option value="pending"><i class="fas fa-clock"></i> غير مستلمة</option>
+            <option value="partial"><i class="fas fa-exclamation-triangle"></i> استلام جزئي</option>
+            <option value="received"><i class="fas fa-check-circle"></i> مستلمة</option>
+            <option value="shortage"><i class="fas fa-exclamation-circle"></i> يوجد نقص</option>
+          </select>
+          <input type="text" class="search-input" id="searchInput" placeholder="🔍 بحث عن فرع أو منتج..." />
+          <button class="btn btn-teal" id="loadSelectedBtn">
+            <i class="fas fa-download"></i> تحميل الفاتورة
           </button>
         </div>
-      </div>
-      <div class="old-orders-list" id="oldOrdersList">
-        <div class="empty-state" style="padding:20px;">
-          <i class="fas fa-spinner fa-spin" style="font-size:1.5rem;"></i>
-          <p style="margin-top:8px;">جاري التحميل...</p>
-        </div>
-      </div>
-    </section>
+      </section>
 
-    <!-- STICKY BOTTOM (موحد مع باقي الصفحات) -->
+      <!-- INVOICE LIST -->
+      <section class="card">
+        <div class="invoice-list-header">
+          <h4><i class="fas fa-file-invoice"></i> الفواتير الجاهزة للاستلام</h4>
+          <span class="count" id="invoicesCount">0 فاتورة</span>
+        </div>
+        <div class="invoice-list" id="invoiceList">
+          <div class="empty-state" id="emptyInvoiceList">
+            <i class="fas fa-inbox"></i>
+            <h3>لا توجد فواتير جاهزة</h3>
+            <p>جميع الفواتير التي حالتها "prepared" تظهر هنا</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- INVOICE PREVIEW -->
+      <section class="card preview-card" id="previewSection">
+        <div class="preview-header">
+          <div>
+            <div class="title" id="previewTitle"><i class="fas fa-receipt"></i> تفاصيل الفاتورة</div>
+            <div class="meta" id="previewMeta"><i class="fas fa-store"></i> الفرع: — | <i class="fas fa-calendar-alt"></i> التاريخ: —</div>
+          </div>
+          <span class="badge" id="previewStatus">⏳ جارٍ الاستلام</span>
+        </div>
+
+        <!-- ACCORDION CONTROLS -->
+        <div class="accordion-controls">
+          <button class="btn btn-secondary btn-sm" id="expandAllColorsBtn">
+            <i class="fas fa-chevron-down"></i> فتح كل الألوان
+          </button>
+          <button class="btn btn-secondary btn-sm" id="collapseAllColorsBtn">
+            <i class="fas fa-chevron-left"></i> غلق كل الألوان
+          </button>
+          <button class="btn btn-secondary btn-sm" id="expandAllProductsBtn">
+            <i class="fas fa-chevron-down"></i> فتح كل المنتجات
+          </button>
+          <button class="btn btn-secondary btn-sm" id="collapseAllProductsBtn">
+            <i class="fas fa-chevron-left"></i> غلق كل المنتجات
+          </button>
+        </div>
+
+        <div id="previewContainer">
+          <div class="empty-state">
+            <i class="fas fa-hand-pointer"></i>
+            <h3>اختر فاتورة</h3>
+            <p>اضغط على أي فاتورة لعرض تفاصيلها</p>
+          </div>
+        </div>
+        <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:16px;flex-wrap:wrap;">
+          <button class="btn btn-secondary" id="closePreviewBtn">
+            <i class="fas fa-times"></i> إغلاق
+          </button>
+          <button class="btn btn-warning" id="shortageBtn">
+            <i class="fas fa-exclamation-circle"></i> تسجيل نقص
+          </button>
+          <button class="btn btn-success" id="completeReceiveBtn">
+            <i class="fas fa-check-double"></i> تأكيد الاستلام الكامل
+          </button>
+        </div>
+      </section>
+
+      <!-- STATISTICS (موحد مع باقي الصفحات) -->
+      <section class="stats-grid" id="statsGrid">
+        <div class="stat-card">
+          <div class="stat-label"><i class="fas fa-file-invoice"></i> إجمالي الفواتير الجاهزة</div>
+          <div class="stat-value primary" id="statTotalInvoices">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label"><i class="fas fa-clock"></i> غير مستلمة</div>
+          <div class="stat-value orange" id="statPending">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label"><i class="fas fa-check-circle"></i> تم الاستلام ✅</div>
+          <div class="stat-value green" id="statReceived">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label"><i class="fas fa-exclamation-circle"></i> يوجد نقص</div>
+          <div class="stat-value red" id="statShortage">0</div>
+        </div>
+      </section>
+
+      <!-- OLD RECEIVED INVOICES -->
+      <section class="card old-orders-section" id="oldOrdersSection" style="display:none;">
+        <div class="old-orders-header">
+          <div>
+            <h4><i class="fas fa-history"></i> الفواتير المستلمة سابقاً</h4>
+            <span class="count" id="oldOrdersCount">0 فاتورة</span>
+          </div>
+          <div class="actions">
+            <button class="btn btn-secondary btn-sm" id="refreshOldOrdersBtn">
+              <i class="fas fa-sync-alt"></i> تحديث
+            </button>
+            <button class="btn btn-primary btn-sm" id="exportOldOrdersBtn">
+              <i class="fas fa-file-excel"></i> تصدير الكل
+            </button>
+          </div>
+        </div>
+        <div class="old-orders-list" id="oldOrdersList">
+          <div class="empty-state" style="padding:20px;">
+            <i class="fas fa-spinner fa-spin" style="font-size:1.5rem;"></i>
+            <p style="margin-top:8px;">جاري التحميل...</p>
+          </div>
+        </div>
+      </section>
+
+    </div>
+
+  </div>
+
+  <!-- ===== STICKY BOTTOM (خارج main-content) ===== -->
+  <div class="sticky-bottom-wrapper" id="stickyWrapper">
     <div class="sticky-bottom" id="stickyBottom">
       <div class="summary">
         <span class="item"><i class="fas fa-boxes"></i> المنتجات: <strong id="bottomProducts">0</strong></span>
         <span class="item"><i class="fas fa-cubes"></i> القطع: <strong id="bottomPieces">0</strong></span>
-        <span class="item"><i class="fas fa-check-circle" style="color:#3dbb7a;"></i> المستلمة: <strong id="bottomReceived">0</strong></span>
+        <span class="item"><i class="fas fa-check-circle" style="color:var(--success);"></i> المستلمة: <strong id="bottomReceived">0</strong></span>
         <span class="item" id="bottomProgress" style="display:flex;align-items:center;gap:8px;">
-          <span style="font-size:12px;color:#6d7b93;">التقدم:</span>
-          <span style="font-weight:700;color:#0b1b2f;" id="bottomPercent">0%</span>
+          <span style="font-size:12px;color:var(--gray);">التقدم:</span>
+          <span style="font-weight:700;color:var(--dark-secondary);" id="bottomPercent">0%</span>
         </span>
       </div>
       <div class="actions">
@@ -1792,56 +2039,60 @@
         </button>
       </div>
     </div>
-
-    <!-- SHORTAGE DIALOG -->
-    <div class="dialog-overlay" id="shortageDialog">
-      <div class="dialog-box">
-        <h3><i class="fas fa-exclamation-circle" style="color:#e14c4c;"></i> تسجيل النقص</h3>
-        <p class="subtitle">حدد الكميات الناقصة لكل منتج ومقاس ولون</p>
-        <div id="shortageProductList"></div>
-        <div class="dialog-actions">
-          <button class="btn btn-secondary" id="shortageDialogCancel"><i class="fas fa-times"></i> إلغاء</button>
-          <button class="btn btn-danger" id="shortageDialogConfirm"><i class="fas fa-exclamation-circle"></i> تأكيد النقص</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- RECEIVE DIALOG (for individual product) -->
-    <div class="dialog-overlay" id="receiveDialog">
-      <div class="dialog-box">
-        <h3><i class="fas fa-download" style="color:#0d9488;"></i> استلام المنتج</h3>
-        <p class="subtitle" id="receiveProductName">اسم المنتج</p>
-        <div id="receiveProductDetails"></div>
-        <div class="dialog-actions">
-          <button class="btn btn-secondary" id="receiveDialogCancel"><i class="fas fa-times"></i> إلغاء</button>
-          <button class="btn btn-teal" id="receiveDialogConfirm"><i class="fas fa-save"></i> حفظ الاستلام</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- VIEW OLD INVOICE DIALOG -->
-    <div class="dialog-overlay" id="viewOldInvoiceDialog">
-      <div class="dialog-box" style="max-width:700px;">
-        <h3><i class="fas fa-receipt" style="color:#6c8cff;"></i> تفاصيل الفاتورة المستلمة</h3>
-        <p class="subtitle" id="viewOldInvoiceMeta">الفرع: — | التاريخ: —</p>
-        <div id="viewOldInvoiceContainer">
-          <div class="empty-state" style="padding:20px;">
-            <i class="fas fa-spinner fa-spin"></i>
-            <p>جاري التحميل...</p>
-          </div>
-        </div>
-        <div class="dialog-actions">
-          <button class="btn btn-secondary" id="viewOldInvoiceClose"><i class="fas fa-times"></i> إغلاق</button>
-          <button class="btn btn-primary" id="viewOldInvoiceExport"><i class="fas fa-file-excel"></i> تصدير</button>
-        </div>
-      </div>
-    </div>
-
   </div>
 
   <!-- =========================================================
-  IMAGE MODAL
+  DIALOGS / MODALS
   ========================================================= -->
+
+  <!-- SHORTAGE DIALOG -->
+  <div class="dialog-overlay" id="shortageDialog">
+    <div class="dialog-box">
+      <button class="modal-close-btn" onclick="window.UI.closeShortageDialog()"><i class="fas fa-times"></i></button>
+      <h3><i class="fas fa-exclamation-circle" style="color:var(--danger);"></i> تسجيل النقص</h3>
+      <p class="subtitle">حدد الكميات الناقصة لكل منتج ومقاس ولون</p>
+      <div id="shortageProductList"></div>
+      <div class="dialog-actions">
+        <button class="btn btn-secondary" id="shortageDialogCancel"><i class="fas fa-times"></i> إلغاء</button>
+        <button class="btn btn-danger" id="shortageDialogConfirm"><i class="fas fa-exclamation-circle"></i> تأكيد النقص</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- RECEIVE DIALOG (for individual product) -->
+  <div class="dialog-overlay" id="receiveDialog">
+    <div class="dialog-box">
+      <button class="modal-close-btn" onclick="window.UI.closeReceiveDialog()"><i class="fas fa-times"></i></button>
+      <h3><i class="fas fa-download" style="color:#0d9488;"></i> استلام المنتج</h3>
+      <p class="subtitle" id="receiveProductName">اسم المنتج</p>
+      <div id="receiveProductDetails"></div>
+      <div class="dialog-actions">
+        <button class="btn btn-secondary" id="receiveDialogCancel"><i class="fas fa-times"></i> إلغاء</button>
+        <button class="btn btn-teal" id="receiveDialogConfirm"><i class="fas fa-save"></i> حفظ الاستلام</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- VIEW OLD INVOICE DIALOG -->
+  <div class="dialog-overlay" id="viewOldInvoiceDialog">
+    <div class="dialog-box" style="max-width:700px;">
+      <button class="modal-close-btn" onclick="window.UI.closeViewOldInvoice()"><i class="fas fa-times"></i></button>
+      <h3><i class="fas fa-receipt" style="color:var(--primary);"></i> تفاصيل الفاتورة المستلمة</h3>
+      <p class="subtitle" id="viewOldInvoiceMeta">الفرع: — | التاريخ: —</p>
+      <div id="viewOldInvoiceContainer">
+        <div class="empty-state" style="padding:20px;">
+          <i class="fas fa-spinner fa-spin"></i>
+          <p>جاري التحميل...</p>
+        </div>
+      </div>
+      <div class="dialog-actions">
+        <button class="btn btn-secondary" id="viewOldInvoiceClose"><i class="fas fa-times"></i> إغلاق</button>
+        <button class="btn btn-primary" id="viewOldInvoiceExport"><i class="fas fa-file-excel"></i> تصدير</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- IMAGE MODAL -->
   <div class="image-modal-overlay" id="imageModal" onclick="closeModal()">
     <button class="close-btn" onclick="event.stopPropagation();closeModal();"><i class="fas fa-times"></i></button>
     <img id="modalImage" src="" alt="Product" onclick="event.stopPropagation();" />
@@ -2076,6 +2327,7 @@
           viewOldInvoiceContainer: document.getElementById('viewOldInvoiceContainer'),
           viewOldInvoiceClose: document.getElementById('viewOldInvoiceClose'),
           viewOldInvoiceExport: document.getElementById('viewOldInvoiceExport'),
+          stickyWrapper: document.getElementById('stickyWrapper'),
         },
         _invoices: [],
         _filteredInvoices: [],
@@ -2087,12 +2339,22 @@
         _isClosing: false,
         _oldInvoices: [],
         _viewingOldInvoice: null,
+        _currentUser: 'مستخدم غير معروف',
 
         // ===== INIT =====
         init() {
           console.log('🚀 Initializing Receiving UI...');
+
+          // Get current user name from localStorage
+          this._currentUser = Storage.get('userName', 'مستخدم غير معروف');
+          const userNameEl = document.getElementById('currentAdminName');
+          if (userNameEl) {
+            userNameEl.textContent = `مرحباً، ${this._currentUser}`;
+          }
+
           this.loadInvoices();
           this.loadOldInvoices();
+          this.updateStickyPosition();
 
           // Event listeners
           this.elements.refreshBtn.addEventListener('click', () => this.loadInvoices());
@@ -2142,6 +2404,34 @@
           });
 
           this.loadFromURL();
+
+          // Load sidebar from usermenu.js
+          if (typeof loadLayout === 'function') {
+            loadLayout();
+          }
+        },
+
+        updateStickyPosition() {
+          const sidebar = document.getElementById('sidebar');
+          const wrapper = this.elements.stickyWrapper;
+          if (!wrapper || !sidebar) return;
+
+          const isHidden = sidebar.classList.contains('hidden');
+          const isMobile = window.innerWidth <= 992;
+
+          if (isMobile) {
+            wrapper.classList.add('sidebar-hidden');
+            wrapper.style.paddingRight = '15px';
+            wrapper.style.paddingLeft = '15px';
+          } else if (isHidden) {
+            wrapper.classList.add('sidebar-hidden');
+            wrapper.style.paddingRight = '25px';
+            wrapper.style.paddingLeft = '25px';
+          } else {
+            wrapper.classList.remove('sidebar-hidden');
+            wrapper.style.paddingRight = '305px';
+            wrapper.style.paddingLeft = '25px';
+          }
         },
 
         // ===== IMAGE MODAL =====
@@ -2195,8 +2485,8 @@
           }
 
           this.elements.storeStatus.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري التحميل...';
-          this.elements.storeStatus.style.background = '#FEF3C7';
-          this.elements.storeStatus.style.color = '#92400E';
+          this.elements.storeStatus.style.background = 'var(--warning-light)';
+          this.elements.storeStatus.style.color = 'var(--warning)';
 
           const oneMonthAgo = Date.now() - (30 * 24 * 60 * 60 * 1000);
           database.ref('invoices').orderByChild('createdAt').startAt(oneMonthAgo).once('value', (snapshot) => {
@@ -2205,6 +2495,7 @@
             if (data) {
               for (const key in data) {
                 const inv = data[key];
+                // Only show invoices with status 'prepared'
                 if (inv.status === 'prepared') {
                   if (inv.items) {
                     inv.items.forEach(item => {
@@ -2224,14 +2515,14 @@
             this.renderInvoiceList();
             this.updateStats();
             this.elements.storeStatus.innerHTML = '<i class="fas fa-circle" style="font-size:8px;"></i> جاهز';
-            this.elements.storeStatus.style.background = '#E8F5E9';
-            this.elements.storeStatus.style.color = '#16A34A';
+            this.elements.storeStatus.style.background = 'var(--success-light)';
+            this.elements.storeStatus.style.color = 'var(--success)';
             this.showAlert(`✅ تم تحميل ${this._invoices.length} فاتورة جاهزة`, 'success');
           }, (error) => {
             console.error('❌ Error loading invoices:', error);
             this.elements.storeStatus.innerHTML = '<i class="fas fa-circle" style="font-size:8px;"></i> خطأ';
-            this.elements.storeStatus.style.background = '#FEE2E2';
-            this.elements.storeStatus.style.color = '#DC2626';
+            this.elements.storeStatus.style.background = 'var(--danger-light)';
+            this.elements.storeStatus.style.color = 'var(--danger)';
             this.showAlert('❌ فشل تحميل الفواتير', 'error');
           });
         },
@@ -2383,7 +2674,7 @@
           this.elements.previewStatus.className = `badge ${status}`;
 
           if (shortage > 0) {
-            this.elements.previewMeta.textContent += ` | <i class="fas fa-exclamation-circle" style="color:#e14c4c;"></i> نقص: ${shortage} قطعة`;
+            this.elements.previewMeta.textContent += ` | <i class="fas fa-exclamation-circle" style="color:var(--danger);"></i> نقص: ${shortage} قطعة`;
           }
 
           if (!invoice.items || !invoice.items.length) {
@@ -2494,7 +2785,7 @@
               <div class="color-accordion">
                 <div class="color-header" onclick="window.UI.toggleColorPreview('${colorId}')">
                   <span class="chevron-sm ${isColorOpen ? 'open' : ''}"><i class="fas fa-chevron-down"></i></span>
-                  <span><i class="fas fa-palette" style="color:#6c8cff;"></i> ${Utils.escapeHtml(color)}</span>
+                  <span><i class="fas fa-palette" style="color:var(--primary);"></i> ${Utils.escapeHtml(color)}</span>
                   <span class="color-total">${totalReceived}/${totalPrepared} (${colorProgress}%)</span>
                   ${hasShortage ? '<span class="shortage-highlight"><i class="fas fa-exclamation-circle"></i> نقص</span>' : ''}
                 </div>
@@ -2644,9 +2935,9 @@
 
           for (const color in colorMap) {
             detailsHtml += `
-              <div style="padding:8px 0;border-bottom:1px solid #e6edf5;">
-                <div style="font-weight:600;margin-bottom:4px;color:#0b1b2f;">
-                  <i class="fas fa-palette" style="color:#6c8cff;"></i> ${Utils.escapeHtml(color)}
+              <div style="padding:8px 0;border-bottom:1px solid var(--gray-light);">
+                <div style="font-weight:600;margin-bottom:4px;color:var(--dark-secondary);">
+                  <i class="fas fa-palette" style="color:var(--primary);"></i> ${Utils.escapeHtml(color)}
                 </div>
             `;
             const sorted = colorMap[color].sort((a, b) => {
@@ -2665,9 +2956,9 @@
               
               detailsHtml += `
                 <div style="display:flex;align-items:center;gap:12px;padding:4px 0;font-size:14px;flex-wrap:wrap;">
-                  <span style="min-width:50px;font-weight:500;color:#0b1b2f;">${Utils.escapeHtml(item.size || 'No Size')}</span>
-                  <span style="color:#6d7b93;"><i class="fas fa-cube"></i> المتاح: ${prepared}</span>
-                  <span style="color:${isReceived ? '#3dbb7a' : '#f5a623'};">
+                  <span style="min-width:50px;font-weight:500;color:var(--dark-secondary);">${Utils.escapeHtml(item.size || 'No Size')}</span>
+                  <span style="color:var(--gray);"><i class="fas fa-cube"></i> المتاح: ${prepared}</span>
+                  <span style="color:${isReceived ? 'var(--success)' : 'var(--warning)'};">
                     <i class="fas ${isReceived ? 'fa-check-circle' : 'fa-clock'}"></i> المستلم: ${received}
                   </span>
                   ${!canReceive ? '<span class="no-prepare"><i class="fas fa-ban"></i> غير متاح</span>' : ''}
@@ -2797,12 +3088,12 @@
             });
 
             html += `
-              <div style="padding:12px 0;border-bottom:2px solid #e6edf5;">
+              <div style="padding:12px 0;border-bottom:2px solid var(--gray-light);">
                 <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">
-                  <img src="${p.image || ''}" style="width:40px;height:40px;border-radius:10px;object-fit:cover;border:1px solid #e6edf5;" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2240%22 height=%2240%22/%3E'" />
+                  <img src="${p.image || ''}" style="width:40px;height:40px;border-radius:10px;object-fit:cover;border:1px solid var(--gray-light);" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2240%22 height=%2240%22/%3E'" />
                   <div>
-                    <div style="font-weight:600;font-size:15px;color:#0b1b2f;">${Utils.escapeHtml(p.name)}</div>
-                    <div style="font-size:12px;color:#6d7b93;">SKU: ${Utils.escapeHtml(p.sku)}</div>
+                    <div style="font-weight:600;font-size:15px;color:var(--dark-secondary);">${Utils.escapeHtml(p.name)}</div>
+                    <div style="font-size:12px;color:var(--gray);">SKU: ${Utils.escapeHtml(p.sku)}</div>
                   </div>
                 </div>
             `;
@@ -2810,8 +3101,8 @@
             for (const color in colorMap) {
               html += `
                 <div style="padding:4px 0 4px 20px;">
-                  <div style="font-weight:500;font-size:13px;color:#6d7b93;">
-                    <i class="fas fa-palette" style="color:#6c8cff;"></i> ${Utils.escapeHtml(color)}
+                  <div style="font-weight:500;font-size:13px;color:var(--gray);">
+                    <i class="fas fa-palette" style="color:var(--primary);"></i> ${Utils.escapeHtml(color)}
                   </div>
               `;
               const sorted = colorMap[color].sort((a, b) => {
@@ -2833,8 +3124,8 @@
                   <div class="shortage-item">
                     <span class="label">${Utils.escapeHtml(item.size || 'No Size')}</span>
                     <span class="qty-display"><i class="fas fa-cube"></i> المتاح: ${prepared}</span>
-                    <span class="qty-display"><i class="fas fa-check-circle" style="color:#3dbb7a;"></i> المستلم: ${currentReceived}</span>
-                    <span style="font-weight:600;color:${shortage > 0 ? '#e14c4c' : '#3dbb7a'};">
+                    <span class="qty-display"><i class="fas fa-check-circle" style="color:var(--success);"></i> المستلم: ${currentReceived}</span>
+                    <span style="font-weight:600;color:${shortage > 0 ? 'var(--danger)' : 'var(--success)'};">
                       ${shortage > 0 ? '<i class="fas fa-exclamation-circle"></i> النقص: ' + shortage : '<i class="fas fa-check-circle"></i> مكتمل'}
                     </span>
                     ${shortage > 0 ? `
@@ -2916,7 +3207,7 @@
           if (!database) {
             this.elements.oldOrdersList.innerHTML = `
               <div class="empty-state" style="padding:20px;">
-                <i class="fas fa-exclamation-circle" style="color:#e14c4c;"></i>
+                <i class="fas fa-exclamation-circle" style="color:var(--danger);"></i>
                 <p>⚠️ Firebase غير جاهز</p>
               </div>
             `;
@@ -2959,7 +3250,7 @@
             console.error('❌ Error loading old invoices:', error);
             this.elements.oldOrdersList.innerHTML = `
               <div class="empty-state" style="padding:20px;">
-                <i class="fas fa-exclamation-circle" style="color:#e14c4c;"></i>
+                <i class="fas fa-exclamation-circle" style="color:var(--danger);"></i>
                 <p>❌ فشل تحميل الفواتير المستلمة</p>
               </div>
             `;
@@ -2973,7 +3264,7 @@
           if (!invoices || !invoices.length) {
             list.innerHTML = `
               <div class="empty-state" style="padding:20px;">
-                <i class="fas fa-history" style="color:#6d7b93;"></i>
+                <i class="fas fa-history" style="color:var(--gray);"></i>
                 <h3 style="font-size:16px;">لا توجد فواتير مستلمة سابقاً</h3>
                 <p style="font-size:13px;">سيتم ظهور الفواتير التي تم استلامها هنا</p>
               </div>
@@ -3099,14 +3390,14 @@
             const isDone = totalPrepared > 0 && totalReceived >= totalPrepared;
 
             html += `
-              <div style="padding:8px 0;border-bottom:1px solid #e6edf5;">
+              <div style="padding:8px 0;border-bottom:1px solid var(--gray-light);">
                 <div style="display:flex;align-items:center;gap:12px;margin-bottom:4px;">
-                  <img src="${g.image || ''}" style="width:40px;height:40px;border-radius:8px;object-fit:cover;border:1px solid #e6edf5;" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2240%22 height=%2240%22/%3E'" />
+                  <img src="${g.image || ''}" style="width:40px;height:40px;border-radius:8px;object-fit:cover;border:1px solid var(--gray-light);" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2240%22 height=%2240%22/%3E'" />
                   <div style="flex:1;">
-                    <div style="font-weight:600;font-size:14px;color:#0b1b2f;">${Utils.escapeHtml(g.name)}</div>
-                    <div style="font-size:12px;color:#6d7b93;">SKU: ${Utils.escapeHtml(g.sku)}</div>
+                    <div style="font-weight:600;font-size:14px;color:var(--dark-secondary);">${Utils.escapeHtml(g.name)}</div>
+                    <div style="font-size:12px;color:var(--gray);">SKU: ${Utils.escapeHtml(g.sku)}</div>
                   </div>
-                  <span style="font-size:13px;font-weight:600;color:${isDone ? '#3dbb7a' : '#e14c4c'};">
+                  <span style="font-size:13px;font-weight:600;color:${isDone ? 'var(--success)' : 'var(--danger)'};">
                     ${totalReceived}/${totalPrepared} (${Math.round((totalReceived/totalPrepared)*100)||0}%)
                   </span>
                 </div>
@@ -3115,16 +3406,16 @@
             for (const color in g.colors) {
               html += `
                 <div style="padding:4px 0 4px 20px;">
-                  <div style="font-size:12px;font-weight:500;color:#6d7b93;">
-                    <i class="fas fa-palette" style="color:#6c8cff;"></i> ${Utils.escapeHtml(color)}
+                  <div style="font-size:12px;font-weight:500;color:var(--gray);">
+                    <i class="fas fa-palette" style="color:var(--primary);"></i> ${Utils.escapeHtml(color)}
                   </div>
               `;
               g.colors[color].forEach(s => {
                 const isComplete = s.preparedQty > 0 && s.receivedQty >= s.preparedQty;
                 html += `
                   <div style="display:flex;gap:12px;padding:2px 0;font-size:13px;flex-wrap:wrap;">
-                    <span style="font-weight:500;min-width:40px;color:#0b1b2f;">${Utils.escapeHtml(s.size)}</span>
-                    <span style="color:${isComplete ? '#3dbb7a' : '#e14c4c'};">
+                    <span style="font-weight:500;min-width:40px;color:var(--dark-secondary);">${Utils.escapeHtml(s.size)}</span>
+                    <span style="color:${isComplete ? 'var(--success)' : 'var(--danger)'};">
                       <i class="fas ${isComplete ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i>
                       ${s.receivedQty}/${s.preparedQty}
                     </span>
@@ -3311,7 +3602,7 @@
           this.elements.bottomPercent.textContent = progress + '%';
           
           if (shortage > 0) {
-            this.elements.bottomPercent.textContent += ` <i class="fas fa-exclamation-circle" style="color:#e14c4c;"></i> نقص: ${shortage}`;
+            this.elements.bottomPercent.textContent += ` <i class="fas fa-exclamation-circle" style="color:var(--danger);"></i> نقص: ${shortage}`;
           }
         },
 
@@ -3322,17 +3613,17 @@
           const div = document.createElement('div');
           div.className = 'toast-alert';
           const colors = {
-            error: { bg: '#FEE2E2', color: '#DC2626', border: '#FCA5A5' },
-            success: { bg: '#E8F5E9', color: '#16A34A', border: '#86EFAC' },
-            info: { bg: '#E1ECF9', color: '#1E3A5F', border: '#93C5FD' },
-            warning: { bg: '#FEF3C7', color: '#92400E', border: '#FCD34D' }
+            error: { bg: 'var(--danger-light)', color: 'var(--danger)', border: 'var(--danger)' },
+            success: { bg: 'var(--success-light)', color: 'var(--success)', border: 'var(--success)' },
+            info: { bg: 'var(--info-light)', color: 'var(--info)', border: 'var(--info)' },
+            warning: { bg: 'var(--warning-light)', color: '#92400E', border: '#FCD34D' }
           };
           const c = colors[type] || colors.info;
           div.style.cssText = `
             background:${c.bg};color:${c.color};border:1px solid ${c.border};
-            padding:12px 24px;border-radius:16px;font-weight:500;font-size:14px;
+            padding:12px 24px;border-radius:var(--radius-sm);font-weight:500;font-size:14px;
             z-index:9999;animation:fadeSlide 0.3s ease;
-            max-width:90vw;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,0.1);
+            max-width:90vw;text-align:center;box-shadow:var(--shadow-lg);
           `;
           div.textContent = msg;
           document.body.appendChild(div);
@@ -3344,6 +3635,71 @@
       window.UI = UI;
       window.openModal = function(img) { if (window.UI) window.UI.openModal(img); };
       window.closeModal = function() { if (window.UI) window.UI.closeModal(); };
+
+      // ===== TOGGLE SIDEBAR =====
+      function toggleSidebar() {
+        const sidebar = document.getElementById('sidebar');
+        const mainContent = document.getElementById('mainContent');
+
+        if (window.innerWidth > 992) {
+          sidebar.classList.toggle('hidden');
+          mainContent.classList.toggle('sidebar-hidden');
+        } else {
+          sidebar.classList.toggle('hidden');
+          sidebar.classList.toggle('visible');
+          mainContent.classList.toggle('sidebar-hidden');
+        }
+
+        if (window.UI) {
+          window.UI.updateStickyPosition();
+        }
+      }
+      window.toggleSidebar = toggleSidebar;
+
+      // Close sidebar on outside click (mobile)
+      document.addEventListener('click', function(event) {
+        const sidebar = document.getElementById('sidebar');
+        const menuToggle = document.querySelector('.menu-toggle');
+        const mainContent = document.getElementById('mainContent');
+
+        if (window.innerWidth <= 992) {
+          const isSidebarVisible = sidebar.classList.contains('visible') && !sidebar.classList.contains('hidden');
+
+          if (isSidebarVisible) {
+            const isClickInsideSidebar = sidebar.contains(event.target);
+            const isClickOnMenuToggle = menuToggle && menuToggle.contains(event.target);
+
+            if (!isClickInsideSidebar && !isClickOnMenuToggle) {
+              sidebar.classList.add('hidden');
+              sidebar.classList.remove('visible');
+              mainContent.classList.remove('sidebar-hidden');
+              if (window.UI) {
+                window.UI.updateStickyPosition();
+              }
+            }
+          }
+        }
+      });
+
+      // Handle window resize
+      window.addEventListener('resize', function() {
+        const sidebar = document.getElementById('sidebar');
+        const mainContent = document.getElementById('mainContent');
+
+        if (window.innerWidth > 992) {
+          sidebar.classList.remove('hidden');
+          sidebar.classList.remove('visible');
+          mainContent.classList.remove('sidebar-hidden');
+        } else {
+          sidebar.classList.add('hidden');
+          sidebar.classList.remove('visible');
+          mainContent.classList.add('sidebar-hidden');
+        }
+
+        if (window.UI) {
+          window.UI.updateStickyPosition();
+        }
+      });
 
       // ================================================================
       //  BOOT

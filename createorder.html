@@ -48,6 +48,7 @@
             --radius: 16px;
             --radius-sm: 10px;
             --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --sticky-height: 70px;
         }
 
         * {
@@ -61,6 +62,7 @@
             background: #f1f5f9;
             min-height: 100vh;
             overflow-x: hidden;
+            padding-bottom: var(--sticky-height);
         }
 
         ::-webkit-scrollbar {
@@ -188,6 +190,7 @@
             padding: 20px 25px;
             transition: margin-right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             min-height: 100vh;
+            position: relative;
         }
         .main-content.sidebar-hidden {
             margin-right: 0;
@@ -932,11 +935,25 @@
         }
 
         /* ========== STICKY BOTTOM ========== */
-        .sticky-bottom {
+        .sticky-bottom-wrapper {
             position: fixed;
             bottom: 0;
             left: 0;
             right: 0;
+            z-index: 100;
+            padding: 0 25px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .sticky-bottom-wrapper.sidebar-hidden {
+            padding-right: 25px;
+        }
+
+        .sticky-bottom-wrapper:not(.sidebar-hidden) {
+            padding-right: 305px;
+        }
+
+        .sticky-bottom {
             background: white;
             border-top: 1px solid var(--gray-light);
             padding: 12px 24px;
@@ -946,9 +963,10 @@
             align-items: center;
             flex-wrap: wrap;
             gap: 12px;
-            z-index: 100;
             backdrop-filter: blur(12px);
             background: rgba(255, 255, 255, 0.95);
+            border-radius: var(--radius) var(--radius) 0 0;
+            max-width: 100%;
         }
 
         .sticky-bottom .summary {
@@ -977,16 +995,27 @@
         }
 
         @media (max-width: 768px) {
+            .sticky-bottom-wrapper {
+                padding: 0 15px !important;
+            }
             .sticky-bottom {
                 flex-direction: column;
                 align-items: stretch;
                 padding: 12px 16px;
+                border-radius: var(--radius-sm) var(--radius-sm) 0 0;
             }
             .sticky-bottom .summary {
                 justify-content: center;
             }
             .sticky-bottom .actions {
                 justify-content: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .sticky-bottom .summary {
+                gap: 12px;
+                font-size: 12px;
             }
         }
 
@@ -1322,6 +1351,9 @@
             .sidebar.hidden {
                 transform: translateX(100%);
             }
+            .sticky-bottom-wrapper:not(.sidebar-hidden) {
+                padding-right: 15px !important;
+            }
         }
 
         @media (max-width: 768px) {
@@ -1333,10 +1365,6 @@
             }
             .card {
                 padding: 16px;
-            }
-            .sticky-bottom .summary {
-                flex-wrap: wrap;
-                gap: 8px;
             }
             .invoice-header-actions {
                 flex-direction: column;
@@ -1520,7 +1548,10 @@
 
         </div>
 
-        <!-- ===== STICKY BOTTOM ===== -->
+    </div>
+
+    <!-- ===== STICKY BOTTOM (خارج main-content) ===== -->
+    <div class="sticky-bottom-wrapper" id="stickyWrapper">
         <div class="sticky-bottom" id="stickyBottom">
             <div class="summary">
                 <span class="item"><i class="fas fa-boxes"></i> القطع: <strong id="bottomPieces">0</strong></span>
@@ -1533,79 +1564,78 @@
                 </button>
             </div>
         </div>
+    </div>
 
-        <!-- ===== EXPORT DIALOG ===== -->
-        <div class="dialog-overlay" id="exportDialog">
-            <div class="dialog-box">
-                <button class="modal-close-btn" onclick="window.UI.closeExportDialog()"><i class="fas fa-times"></i></button>
-                <h3><i class="fas fa-file-excel" style="color:var(--success);"></i> تصدير الفاتورة</h3>
-                <p>اختر صيغة التصدير المناسبة</p>
-                <div class="options">
-                    <label>
-                        <input type="radio" name="exportFormat" value="detail" checked />
-                        <i class="fas fa-list"></i> تفصيل (جميع المقاسات والألوان)
-                    </label>
-                    <label>
-                        <input type="radio" name="exportFormat" value="summary" />
-                        <i class="fas fa-chart-simple"></i> ملخص (حسب المنتج)
-                    </label>
-                    <label>
-                        <input type="radio" name="exportFormat" value="colorSummary" />
-                        <i class="fas fa-palette"></i> ملخص بالألوان
-                    </label>
-                    <label>
-                        <input type="radio" name="exportFormat" value="system" />
-                        <i class="fas fa-cogs"></i> Excel for System (موديل كامل)
-                    </label>
-                </div>
-                <div class="dialog-actions">
-                    <button class="btn btn-secondary" id="dialogCancel"><i class="fas fa-times"></i> إلغاء</button>
-                    <button class="btn btn-primary" id="dialogExport">
-                        <i class="fas fa-file-excel"></i> تصدير XLSX
-                    </button>
-                </div>
+    <!-- ===== EXPORT DIALOG ===== -->
+    <div class="dialog-overlay" id="exportDialog">
+        <div class="dialog-box">
+            <button class="modal-close-btn" onclick="window.UI.closeExportDialog()"><i class="fas fa-times"></i></button>
+            <h3><i class="fas fa-file-excel" style="color:var(--success);"></i> تصدير الفاتورة</h3>
+            <p>اختر صيغة التصدير المناسبة</p>
+            <div class="options">
+                <label>
+                    <input type="radio" name="exportFormat" value="detail" checked />
+                    <i class="fas fa-list"></i> تفصيل (جميع المقاسات والألوان)
+                </label>
+                <label>
+                    <input type="radio" name="exportFormat" value="summary" />
+                    <i class="fas fa-chart-simple"></i> ملخص (حسب المنتج)
+                </label>
+                <label>
+                    <input type="radio" name="exportFormat" value="colorSummary" />
+                    <i class="fas fa-palette"></i> ملخص بالألوان
+                </label>
+                <label>
+                    <input type="radio" name="exportFormat" value="system" />
+                    <i class="fas fa-cogs"></i> Excel for System (موديل كامل)
+                </label>
+            </div>
+            <div class="dialog-actions">
+                <button class="btn btn-secondary" id="dialogCancel"><i class="fas fa-times"></i> إلغاء</button>
+                <button class="btn btn-primary" id="dialogExport">
+                    <i class="fas fa-file-excel"></i> تصدير XLSX
+                </button>
             </div>
         </div>
+    </div>
 
-        <!-- ===== DUPLICATE DIALOG ===== -->
-        <div class="dialog-overlay" id="duplicateDialog">
-            <div class="dialog-box">
-                <button class="modal-close-btn" onclick="window.UI.closeDuplicateDialog()"><i class="fas fa-times"></i></button>
-                <h3><i class="fas fa-exclamation-triangle" style="color:var(--warning);"></i> منتج مكرر</h3>
-                <p>هذا المنتج موجود بالفعل في الطلبية. ماذا تريد أن تفعل؟</p>
-                <div class="duplicate-product-preview" id="duplicatePreview">
-                    <img id="dupImg" src="" alt="Product" />
-                    <div class="info">
-                        <div class="name" id="dupName">اسم المنتج</div>
-                        <div class="details" id="dupDetails">SKU: — | الكمية الحالية: 0</div>
-                    </div>
-                </div>
-                <div class="dialog-actions">
-                    <button class="btn btn-secondary" id="dupCancel"><i class="fas fa-times"></i> إلغاء</button>
-                    <button class="btn btn-warning" id="dupAddQty"><i class="fas fa-plus"></i> إضافة الكمية</button>
+    <!-- ===== DUPLICATE DIALOG ===== -->
+    <div class="dialog-overlay" id="duplicateDialog">
+        <div class="dialog-box">
+            <button class="modal-close-btn" onclick="window.UI.closeDuplicateDialog()"><i class="fas fa-times"></i></button>
+            <h3><i class="fas fa-exclamation-triangle" style="color:var(--warning);"></i> منتج مكرر</h3>
+            <p>هذا المنتج موجود بالفعل في الطلبية. ماذا تريد أن تفعل؟</p>
+            <div class="duplicate-product-preview" id="duplicatePreview">
+                <img id="dupImg" src="" alt="Product" />
+                <div class="info">
+                    <div class="name" id="dupName">اسم المنتج</div>
+                    <div class="details" id="dupDetails">SKU: — | الكمية الحالية: 0</div>
                 </div>
             </div>
-        </div>
-
-        <!-- ===== INVOICE PREVIEW DIALOG ===== -->
-        <div class="dialog-overlay" id="invoicePreviewDialog">
-            <div class="dialog-box" style="max-width: 700px;">
-                <button class="modal-close-btn" onclick="document.getElementById('invoicePreviewDialog').classList.remove('show')"><i class="fas fa-times"></i></button>
-                <h3><i class="fas fa-file-invoice" style="color:var(--primary);"></i> تفاصيل الفاتورة</h3>
-                <div id="invoicePreviewContent"></div>
-                <div class="dialog-actions">
-                    <button class="btn btn-secondary" id="closeInvoicePreview"><i class="fas fa-times"></i> إغلاق</button>
-                    <button class="btn btn-primary" id="exportInvoicePreviewBtn"><i class="fas fa-file-excel"></i> تصدير هذه الفاتورة</button>
-                </div>
+            <div class="dialog-actions">
+                <button class="btn btn-secondary" id="dupCancel"><i class="fas fa-times"></i> إلغاء</button>
+                <button class="btn btn-warning" id="dupAddQty"><i class="fas fa-plus"></i> إضافة الكمية</button>
             </div>
         </div>
+    </div>
 
-        <!-- ===== IMAGE MODAL ===== -->
-        <div class="image-modal-overlay" id="imageModal" onclick="closeModal()">
-            <button class="close-btn" onclick="event.stopPropagation();closeModal();"><i class="fas fa-times"></i></button>
-            <img id="modalImage" src="" alt="Product" onclick="event.stopPropagation();" />
+    <!-- ===== INVOICE PREVIEW DIALOG ===== -->
+    <div class="dialog-overlay" id="invoicePreviewDialog">
+        <div class="dialog-box" style="max-width: 700px;">
+            <button class="modal-close-btn" onclick="document.getElementById('invoicePreviewDialog').classList.remove('show')"><i class="fas fa-times"></i></button>
+            <h3><i class="fas fa-file-invoice" style="color:var(--primary);"></i> تفاصيل الفاتورة</h3>
+            <div id="invoicePreviewContent"></div>
+            <div class="dialog-actions">
+                <button class="btn btn-secondary" id="closeInvoicePreview"><i class="fas fa-times"></i> إغلاق</button>
+                <button class="btn btn-primary" id="exportInvoicePreviewBtn"><i class="fas fa-file-excel"></i> تصدير هذه الفاتورة</button>
+            </div>
         </div>
+    </div>
 
+    <!-- ===== IMAGE MODAL ===== -->
+    <div class="image-modal-overlay" id="imageModal" onclick="closeModal()">
+        <button class="close-btn" onclick="event.stopPropagation();closeModal();"><i class="fas fa-times"></i></button>
+        <img id="modalImage" src="" alt="Product" onclick="event.stopPropagation();" />
     </div>
 
     <script>
@@ -2349,6 +2379,7 @@
                     invoicePreviewContent: document.getElementById('invoicePreviewContent'),
                     closeInvoicePreview: document.getElementById('closeInvoicePreview'),
                     exportInvoicePreviewBtn: document.getElementById('exportInvoicePreviewBtn'),
+                    stickyWrapper: document.getElementById('stickyWrapper'),
                 },
                 _lastProduct: null,
                 _lastProductUrl: '',
@@ -2419,6 +2450,9 @@
 
                     this.loadOldInvoices();
                     Utils.cleanOldInvoices();
+
+                    // Update sticky wrapper padding based on sidebar state
+                    this.updateStickyPosition();
 
                     this.elements.branch.addEventListener('change', () => {
                         Storage.set('branch', this.elements.branch.value);
@@ -2510,6 +2544,30 @@
                     // Load sidebar and user info from usermenu.js
                     if (typeof loadLayout === 'function') {
                         loadLayout();
+                    }
+                },
+
+                updateStickyPosition() {
+                    const sidebar = document.getElementById('sidebar');
+                    const wrapper = this.elements.stickyWrapper;
+                    if (!wrapper || !sidebar) return;
+
+                    const isHidden = sidebar.classList.contains('hidden');
+                    const isMobile = window.innerWidth <= 992;
+
+                    if (isMobile) {
+                        wrapper.classList.add('sidebar-hidden');
+                        wrapper.classList.remove('sidebar-hidden');
+                        wrapper.style.paddingRight = '15px';
+                        wrapper.style.paddingLeft = '15px';
+                    } else if (isHidden) {
+                        wrapper.classList.add('sidebar-hidden');
+                        wrapper.style.paddingRight = '25px';
+                        wrapper.style.paddingLeft = '25px';
+                    } else {
+                        wrapper.classList.remove('sidebar-hidden');
+                        wrapper.style.paddingRight = '305px';
+                        wrapper.style.paddingLeft = '25px';
                     }
                 },
 
@@ -3229,6 +3287,11 @@
                     sidebar.classList.toggle('visible');
                     mainContent.classList.toggle('sidebar-hidden');
                 }
+
+                // Update sticky wrapper position
+                if (window.UI) {
+                    window.UI.updateStickyPosition();
+                }
             }
             window.toggleSidebar = toggleSidebar;
 
@@ -3250,6 +3313,9 @@
                             sidebar.classList.add('hidden');
                             sidebar.classList.remove('visible');
                             mainContent.classList.remove('sidebar-hidden');
+                            if (window.UI) {
+                                window.UI.updateStickyPosition();
+                            }
                         }
                     }
                 }
@@ -3268,6 +3334,10 @@
                     sidebar.classList.add('hidden');
                     sidebar.classList.remove('visible');
                     mainContent.classList.add('sidebar-hidden');
+                }
+
+                if (window.UI) {
+                    window.UI.updateStickyPosition();
                 }
             });
 

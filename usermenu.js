@@ -6,7 +6,7 @@ const SIDEBAR_MENU = [
     { id: 'preparePermission', icon: 'fa-check-circle', label: 'السماح بالتحضير', page: 'prepare-permission.html' },
     { id: 'prepare', icon: 'fa-utensils', label: 'تحضير الأوردرات', page: 'prepare.html' },
     { id: 'receive', icon: 'fa-boxes', label: 'استلام الأوردرات', page: 'recive.html' },
-    { id: 'employees', icon: 'fa-users', label: 'الموظفين', page: 'employees.html' }
+    { id: 'newprodout', icon: 'fa-users', label: 'استلام بضاعه جديده', page: 'user-dashboard.html' }
 ];
 
 // ============================================================
