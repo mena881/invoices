@@ -1720,13 +1720,15 @@
         isAllowClosed(invoice) {
           return invoice && invoice.allowIsClosed === true;
         },
-        // ===== دالة توليد روابط المنتج =====
+        // ===== دالة توليد روابط المنتج باستخدام productId و storeName =====
         getProductLinks(product) {
           const storeName = 'sparkle-pjs'; // غيّر حسب اسم متجرك
           const productId = product.id || '';
           const productTitle = product.name || '';
           
-          const productUrl = `https://admin.shopify.com/store/${storeName}/products/${productId}`;
+          // رابط المنتج مع ?link_source=search
+          const productUrl = `https://admin.shopify.com/store/${storeName}/products/${productId}?link_source=search`;
+          // رابط البحث عن الطلبات
           const ordersUrl = `https://admin.shopify.com/store/${storeName}/orders?query=${encodeURIComponent(productTitle)}`;
           
           return { productUrl, ordersUrl };
@@ -2210,7 +2212,7 @@
             const prodProgress = totalQty === 0 ? 0 : Math.round((totalAllowed / totalQty) * 100);
             const isDone = prodProgress === 100;
 
-            // ===== توليد روابط المنتج =====
+            // ===== توليد روابط المنتج باستخدام productId =====
             const links = Utils.getProductLinks({
               id: g.id,
               name: g.name
