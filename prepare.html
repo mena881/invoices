@@ -1476,7 +1476,7 @@
         <div class="product-list" id="closeProductList"></div>
 
         <div class="dialog-confirm-box">
-          <p><i class="fas fa-check-circle" style="color:#3dbb7a;"></i> ✅ سيتم تحديث حالة الفاتورة إلى "prepared" بعد التأكيد</p>
+         <p><i class="fas fa-check-circle" style="color:#3dbb7a;"></i> ✅ سيتم تحديث حالة الفاتورة إلى "allowed" بعد التأكيد</p>
         </div>
 
         <div class="dialog-actions">
@@ -2337,7 +2337,7 @@
           const invoice = this._selectedInvoice;
 
           invoice.isClosed = true;
-          invoice.status = 'prepared';
+          invoice.status = 'allowed';
           invoice.totalPieces = Utils.calculateTotalPieces(invoice.items);
           invoice.totalValue = Utils.calculateTotalValue(invoice.items);
 
@@ -2348,7 +2348,7 @@
           this.renderInvoiceList();
           this.updateStats();
 
-          this.showAlert(`✅ تم تقفيل التحضير بنجاح! الحالة: prepared`, 'success');
+          this.showAlert(`✅ تم تقفيل التحضير بنجاح! الحالة: allowed`, 'success');
         },
 
         // ===== CLOSE PREVIEW =====
