@@ -1642,7 +1642,7 @@
         },
         // التحقق من أن الفاتورة مسموح بها
         isInvoiceAllowed(invoice) {
-          return invoice && invoice.status === 'allowed';
+          return invoice && invoice.status === 'allow_closed';
         }
       };
 
@@ -1787,7 +1787,7 @@
               for (const key in data) {
                 const inv = data[key];
                 // 🔥 فقط الفواتير التي حالتها "allowed"
-                if (inv.status !== 'allowed') continue;
+                if (inv.status !== 'allow_closed') continue;
                 
                 if (inv.items) {
                   inv.items.forEach(item => {
@@ -1847,7 +1847,7 @@
             partial: '⚠️ تحضير جزئي',
             preparing: '⚡ قيد التحضير',
             prepared: '✅ محضرة',
-            allowed: '✅ مسموح بالتحضير'
+            allow_closed: '✅ مسموح بالتحضير'
           };
           return map[status] || status;
         },
@@ -1858,7 +1858,7 @@
             partial: 'fa-exclamation-triangle',
             preparing: 'fa-spinner',
             prepared: 'fa-check-circle',
-            allowed: 'fa-check'
+            allow_closed: 'fa-check'
           };
           return map[status] || 'fa-circle';
         },
@@ -2005,7 +2005,7 @@
             <i class="fas fa-money-bill-wave"></i> ${Utils.formatCurrency(invoice.totalValue || Utils.calculateTotalValue(invoice.items))} LE
           `;
           this.elements.previewStatus.textContent = isClosed ? '🔒 مقفلة' : '✅ مسموح بالتحضير';
-          this.elements.previewStatus.className = `badge ${isClosed ? 'closed' : 'allowed'}`;
+          this.elements.previewStatus.className = `badge ${isClosed ? 'closed' : 'allow_closed'}`;
 
           if (isClosed) {
             container.innerHTML = `
