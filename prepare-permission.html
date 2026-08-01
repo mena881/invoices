@@ -17,7 +17,7 @@
 
   <style>
     /* =========================================================
-       RESET & BASE (موحد مع Create Order)
+       RESET & BASE (موحد مع صفحة Create Order)
        ========================================================= */
     * {
       margin: 0;
@@ -247,81 +247,72 @@
     }
 
     /* =========================================================
-       SHOPIFY LINK BUTTONS
+       PRODUCT ACTION BUTTONS (جديد)
        ========================================================= */
-    .shopify-links {
+    .product-actions {
       display: flex;
-      gap: 6px;
+      gap: 8px;
       align-items: center;
-      flex-wrap: wrap;
+      margin-right: auto;
+      flex-shrink: 0;
     }
 
-    .shopify-links .link-btn {
+    .btn-action {
+      padding: 6px 14px;
+      border: none;
+      border-radius: 30px;
+      cursor: pointer;
+      font-size: 0.7rem;
+      font-weight: 600;
+      font-family: 'Inter', sans-serif;
+      transition: all 0.2s;
       display: inline-flex;
       align-items: center;
-      gap: 4px;
-      padding: 4px 12px;
-      border-radius: 30px;
-      font-size: 11px;
-      font-weight: 600;
+      gap: 6px;
+      color: #fff;
       text-decoration: none;
-      transition: all 0.2s;
-      border: 1px solid transparent;
-      cursor: pointer;
-      font-family: 'Inter', sans-serif;
+      white-space: nowrap;
     }
 
-    .shopify-links .link-btn:hover {
-      transform: scale(1.04);
+    .btn-action:hover {
+      transform: scale(1.05);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     }
 
-    .shopify-links .link-btn:active {
-      transform: scale(0.96);
+    .btn-action:active {
+      transform: scale(0.95);
     }
 
-    .shopify-links .link-btn.orders {
-      background: #E8F5E9;
-      color: #16A34A;
-      border-color: #86EFAC;
+    .btn-action.btn-orders {
+      background: #6c8cff;
     }
 
-    .shopify-links .link-btn.orders:hover {
-      background: #D1FAE5;
-      border-color: #3dbb7a;
+    .btn-action.btn-orders:hover {
+      background: #5a77e0;
     }
 
-    .shopify-links .link-btn.orders i {
-      color: #16A34A;
+    .btn-action.btn-product {
+      background: #3dbb7a;
     }
 
-    .shopify-links .link-btn.product {
-      background: #DBEAFE;
-      color: #1E40AF;
-      border-color: #93C5FD;
+    .btn-action.btn-product:hover {
+      background: #2ea36a;
     }
 
-    .shopify-links .link-btn.product:hover {
-      background: #BFDBFE;
-      border-color: #6c8cff;
+    .btn-action i {
+      font-size: 0.8rem;
     }
 
-    .shopify-links .link-btn.product i {
-      color: #1E40AF;
-    }
-
-    .shopify-links .link-btn .badge-text {
-      font-size: 9px;
-      opacity: 0.7;
-      font-weight: 400;
-    }
-
-    @media (max-width: 480px) {
-      .shopify-links .link-btn {
-        font-size: 10px;
-        padding: 3px 8px;
+    @media (max-width: 600px) {
+      .product-actions {
+        width: 100%;
+        justify-content: flex-start;
+        margin-right: 0;
+        margin-top: 6px;
       }
-      .shopify-links .link-btn .badge-text {
-        display: none;
+      .btn-action {
+        font-size: 0.65rem;
+        padding: 4px 10px;
       }
     }
 
@@ -678,18 +669,12 @@
       color: #16A34A;
     }
 
-    .product-card-header .product-actions {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      flex-wrap: wrap;
-      margin-right: auto;
-    }
-
     .product-card-header .chevron {
+      margin-right: auto;
       font-size: 18px;
       color: #6d7b93;
       transition: transform 0.3s ease;
+      flex-shrink: 0;
     }
 
     .product-card-header .chevron.open {
@@ -1324,11 +1309,6 @@
       .product-card-header .meta {
         width: 100%;
       }
-      .product-card-header .product-actions {
-        margin-right: 0;
-        width: 100%;
-        justify-content: flex-start;
-      }
       .card {
         padding: 16px;
       }
@@ -1740,20 +1720,16 @@
         isAllowClosed(invoice) {
           return invoice && invoice.allowIsClosed === true;
         },
-
-        // ===== SHOPIFY LINK HELPERS =====
-        getStoreName() {
-          // يمكنك تغيير هذا حسب اسم المتجر الخاص بك
-          return 'sparkle-pjs';
-        },
-        getProductUrl(productId) {
-          const store = this.getStoreName();
-          return `https://admin.shopify.com/store/${store}/products/${productId}?link_source=search`;
-        },
-        getOrdersSearchUrl(productTitle) {
-          const store = this.getStoreName();
-          const encoded = encodeURIComponent(productTitle);
-          return `https://admin.shopify.com/store/${store}/orders?savedViewId=951743873327&query=${encoded}`;
+        // ===== دالة توليد روابط المنتج =====
+        getProductLinks(product) {
+          const storeName = 'sparkle-pjs'; // غيّر حسب اسم متجرك
+          const productId = product.id || '';
+          const productTitle = product.name || '';
+          
+          const productUrl = `https://admin.shopify.com/store/${storeName}/products/${productId}`;
+          const ordersUrl = `https://admin.shopify.com/store/${storeName}/orders?query=${encodeURIComponent(productTitle)}`;
+          
+          return { productUrl, ordersUrl };
         }
       };
 
@@ -2170,7 +2146,6 @@
               </div>
             `;
             this.updateBottomBar(invoice);
-
             this.elements.closePreparationBtn.style.display = 'none';
             this.elements.closePreparationStickyBtn.style.display = 'none';
             return;
@@ -2202,7 +2177,7 @@
                 name: item.name || 'Unknown',
                 unitPrice: item.unitPrice || 0,
                 image: item.image || '',
-                productId: item.productId || null, // نأخذ productId من البيانات
+                id: item.productId || item.id || '',
                 items: []
               };
             }
@@ -2235,9 +2210,11 @@
             const prodProgress = totalQty === 0 ? 0 : Math.round((totalAllowed / totalQty) * 100);
             const isDone = prodProgress === 100;
 
-            // بناء روابط Shopify
-            const productUrl = g.productId ? Utils.getProductUrl(g.productId) : '#';
-            const ordersUrl = g.name ? Utils.getOrdersSearchUrl(g.name) : '#';
+            // ===== توليد روابط المنتج =====
+            const links = Utils.getProductLinks({
+              id: g.id,
+              name: g.name
+            });
 
             html += `
               <div class="product-card" data-product-id="${productId}">
@@ -2250,16 +2227,12 @@
                     <span class="status-badge ${isDone ? 'done' : ''}">${prodProgress}%</span>
                   </div>
                   <div class="product-actions">
-                    <!-- زر فتح البحث في Shopify (أخضر) -->
-                    <a href="${ordersUrl}" target="_blank" class="link-btn orders" title="فتح البحث في الطلبات">
-                      <i class="fas fa-search"></i> بحث
-                      <span class="badge-text">Orders</span>
-                    </a>
-                    <!-- زر فتح المنتج في Admin (أزرق) -->
-                    <a href="${productUrl}" target="_blank" class="link-btn product" title="فتح المنتج في Admin">
-                      <i class="fas fa-box"></i> منتج
-                      <span class="badge-text">Admin</span>
-                    </a>
+                    <button class="btn-action btn-orders" onclick="event.stopPropagation();window.open('${links.ordersUrl}', '_blank')">
+                      <i class="fas fa-search"></i> فتح الطلبات
+                    </button>
+                    <button class="btn-action btn-product" onclick="event.stopPropagation();window.open('${links.productUrl}', '_blank')">
+                      <i class="fas fa-box"></i> فتح المنتج
+                    </button>
                   </div>
                   <span class="chevron ${isOpen ? 'open' : ''}"><i class="fas fa-chevron-down"></i></span>
                 </div>
