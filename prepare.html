@@ -2112,64 +2112,73 @@
         },
 
         // ===== RENDER PREVIEW COLORS =====
-        renderPreviewColors(g, productId) {
-          let html = '';
-          const colorMap = {};
-          g.items.forEach(item => {
-            const color = item.color;
-            if (!colorMap[color]) {
-              colorMap[color] = [];
-            }
-            colorMap[color].push(item);
-          });
+renderPreviewColors(g, productId) {
+  let html = '';
+  const colorMap = {};
+  g.items.forEach(item => {
+    const color = item.color;
+    if (!colorMap[color]) {
+      colorMap[color] = [];
+    }
+    colorMap[color].push(item);
+  });
 
-          let colorIdx = 0;
-          for (const color in colorMap) {
-            const colorItems = colorMap[color];
-            const colorId = productId + '_color_' + colorIdx;
-            if (this._productCardStates[colorId] === undefined) {
-              this._productCardStates[colorId] = true;
-            }
-            const isColorOpen = this._productCardStates[colorId];
+  let colorIdx = 0;
+  for (const color in colorMap) {
+    const colorItems = colorMap[color];
+    
+    // 🔥 تصفية العناصر اللي الكمية المسموحة فيها 0 أو الكمية الكلية 0
+    const filteredItems = colorItems.filter(item => {
+      const allowedQty = item.allowedQty !== undefined ? item.allowedQty : (item.qty || 0);
+      return allowedQty > 0 && (item.qty || 0) > 0;
+    });
 
-            const totalQty = colorItems.reduce((sum, item) => sum + item.qty, 0);
-            const totalPrepared = colorItems.reduce((sum, item) => sum + (item.preparedQty || 0), 0);
-            const colorProgress = totalQty === 0 ? 0 : Math.round((totalPrepared / totalQty) * 100);
+    // لو مفيش عناصر بعد التصفية، نتخطى هذا اللون
+    if (filteredItems.length === 0) continue;
 
-            html += `
-              <div class="color-accordion">
-                <div class="color-header" onclick="window.UI.toggleColorPreview('${colorId}')">
-                  <span class="chevron-sm ${isColorOpen ? 'open' : ''}"><i class="fas fa-chevron-down"></i></span>
-                  <span><i class="fas fa-palette" style="color:#6c8cff;"></i> ${Utils.escapeHtml(color)}</span>
-                  <span class="color-total">${totalPrepared}/${totalQty} (${colorProgress}%)</span>
+    const colorId = productId + '_color_' + colorIdx;
+    if (this._productCardStates[colorId] === undefined) {
+      this._productCardStates[colorId] = true;
+    }
+    const isColorOpen = this._productCardStates[colorId];
+
+    const totalQty = filteredItems.reduce((sum, item) => sum + item.qty, 0);
+    const totalPrepared = filteredItems.reduce((sum, item) => sum + (item.preparedQty || 0), 0);
+    const colorProgress = totalQty === 0 ? 0 : Math.round((totalPrepared / totalQty) * 100);
+
+    html += `
+      <div class="color-accordion">
+        <div class="color-header" onclick="window.UI.toggleColorPreview('${colorId}')">
+          <span class="chevron-sm ${isColorOpen ? 'open' : ''}"><i class="fas fa-chevron-down"></i></span>
+          <span><i class="fas fa-palette" style="color:#6c8cff;"></i> ${Utils.escapeHtml(color)}</span>
+          <span class="color-total">${totalPrepared}/${totalQty} (${colorProgress}%)</span>
+        </div>
+        <div class="color-sizes ${isColorOpen ? 'open' : ''}">
+          ${filteredItems.map((item) => {
+            const isPrepared = (item.preparedQty || 0) >= (item.qty || 0);
+            const isPartial = (item.preparedQty || 0) > 0 && (item.preparedQty || 0) < (item.qty || 0);
+            const statusClass = isPrepared ? 'prepared' : isPartial ? 'partial' : 'pending';
+            const uniqueKey = item.uniqueKey;
+            const allowedQty = item.allowedQty !== undefined ? item.allowedQty : item.qty;
+            return `
+              <div class="size-row">
+                <span class="size-label">${Utils.escapeHtml(item.size)}</span>
+                <div class="qty-control">
+                  <button onclick="window.UI.changePrepareQty('${uniqueKey}', -1)"><i class="fas fa-minus"></i></button>
+                  <span class="qty-val ${statusClass}">${item.preparedQty || 0}/${item.qty || 0}</span>
+                  <button onclick="window.UI.changePrepareQty('${uniqueKey}', 1)"><i class="fas fa-plus"></i></button>
                 </div>
-                <div class="color-sizes ${isColorOpen ? 'open' : ''}">
-                  ${colorItems.map((item) => {
-                    const isPrepared = (item.preparedQty || 0) >= (item.qty || 0);
-                    const isPartial = (item.preparedQty || 0) > 0 && (item.preparedQty || 0) < (item.qty || 0);
-                    const statusClass = isPrepared ? 'prepared' : isPartial ? 'partial' : 'pending';
-                    const uniqueKey = item.uniqueKey;
-                    const allowedQty = item.allowedQty !== undefined ? item.allowedQty : item.qty;
-                    // 🔥 عرض الكمية المسموحة
-                    return `
-                      <div class="size-row">
-                        <span class="size-label">${Utils.escapeHtml(item.size)}</span>
-                        <div class="qty-control">
-                          <button onclick="window.UI.changePrepareQty('${uniqueKey}', -1)"><i class="fas fa-minus"></i></button>
-                          <span class="qty-val ${statusClass}">${item.preparedQty || 0}/${item.qty || 0}</span>
-                          <button onclick="window.UI.changePrepareQty('${uniqueKey}', 1)"><i class="fas fa-plus"></i></button>
-                        </div>
-                        <span class="allowed-label">مسموح: ${allowedQty}</span>
-                      </div>
-                    `;
-                  }).join('')}
-                </div>
+                <span class="allowed-label">مسموح: ${allowedQty}</span>
               </div>
             `;
-            colorIdx++;
-          }
-          return html;
-        },
+          }).join('')}
+        </div>
+      </div>
+    `;
+    colorIdx++;
+  }
+  return html;
+},
 
         // ===== TOGGLE PRODUCT =====
         toggleProductPreview(productId) {
