@@ -17,7 +17,7 @@
 
   <style>
     /* =========================================================
-       RESET & BASE (موحد مع صفحة Create Order)
+       RESET & BASE (موحد مع Create Order)
        ========================================================= */
     * {
       margin: 0;
@@ -244,6 +244,85 @@
     .btn-lg {
       padding: 14px 36px;
       font-size: 16px;
+    }
+
+    /* =========================================================
+       SHOPIFY LINK BUTTONS
+       ========================================================= */
+    .shopify-links {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .shopify-links .link-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 12px;
+      border-radius: 30px;
+      font-size: 11px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.2s;
+      border: 1px solid transparent;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .shopify-links .link-btn:hover {
+      transform: scale(1.04);
+    }
+
+    .shopify-links .link-btn:active {
+      transform: scale(0.96);
+    }
+
+    .shopify-links .link-btn.orders {
+      background: #E8F5E9;
+      color: #16A34A;
+      border-color: #86EFAC;
+    }
+
+    .shopify-links .link-btn.orders:hover {
+      background: #D1FAE5;
+      border-color: #3dbb7a;
+    }
+
+    .shopify-links .link-btn.orders i {
+      color: #16A34A;
+    }
+
+    .shopify-links .link-btn.product {
+      background: #DBEAFE;
+      color: #1E40AF;
+      border-color: #93C5FD;
+    }
+
+    .shopify-links .link-btn.product:hover {
+      background: #BFDBFE;
+      border-color: #6c8cff;
+    }
+
+    .shopify-links .link-btn.product i {
+      color: #1E40AF;
+    }
+
+    .shopify-links .link-btn .badge-text {
+      font-size: 9px;
+      opacity: 0.7;
+      font-weight: 400;
+    }
+
+    @media (max-width: 480px) {
+      .shopify-links .link-btn {
+        font-size: 10px;
+        padding: 3px 8px;
+      }
+      .shopify-links .link-btn .badge-text {
+        display: none;
+      }
     }
 
     /* =========================================================
@@ -534,6 +613,7 @@
       cursor: pointer;
       user-select: none;
       transition: all 0.2s;
+      flex-wrap: wrap;
     }
 
     .product-card-header:hover {
@@ -561,6 +641,7 @@
       flex-wrap: wrap;
       align-items: center;
       gap: 6px 18px;
+      min-width: 120px;
     }
 
     .product-card-header .meta .name {
@@ -597,8 +678,15 @@
       color: #16A34A;
     }
 
-    .product-card-header .chevron {
+    .product-card-header .product-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
       margin-right: auto;
+    }
+
+    .product-card-header .chevron {
       font-size: 18px;
       color: #6d7b93;
       transition: transform 0.3s ease;
@@ -1236,6 +1324,11 @@
       .product-card-header .meta {
         width: 100%;
       }
+      .product-card-header .product-actions {
+        margin-right: 0;
+        width: 100%;
+        justify-content: flex-start;
+      }
       .card {
         padding: 16px;
       }
@@ -1644,9 +1737,23 @@
             allowed += r.allowedQty || 0; });
           return total === 0 ? 0 : Math.round((allowed / total) * 100);
         },
-        // التحقق من إغلاق السماح باستخدام allowIsClosed
         isAllowClosed(invoice) {
           return invoice && invoice.allowIsClosed === true;
+        },
+
+        // ===== SHOPIFY LINK HELPERS =====
+        getStoreName() {
+          // يمكنك تغيير هذا حسب اسم المتجر الخاص بك
+          return 'sparkle-pjs';
+        },
+        getProductUrl(productId) {
+          const store = this.getStoreName();
+          return `https://admin.shopify.com/store/${store}/products/${productId}?link_source=search`;
+        },
+        getOrdersSearchUrl(productTitle) {
+          const store = this.getStoreName();
+          const encoded = encodeURIComponent(productTitle);
+          return `https://admin.shopify.com/store/${store}/orders?savedViewId=951743873327&query=${encoded}`;
         }
       };
 
@@ -1797,9 +1904,7 @@
                   });
                 }
                 
-                // تهيئة allowIsClosed إذا لم تكن موجودة
                 if (inv.allowIsClosed === undefined) {
-                  // إذا كانت isClosed موجودة قديماً، ننقلها إلى allowIsClosed
                   if (inv.isClosed === true) {
                     inv.allowIsClosed = true;
                   } else {
@@ -1807,7 +1912,6 @@
                   }
                 }
                 
-                // تهيئة status
                 if (!inv.status) {
                   if (inv.allowIsClosed === true) {
                     inv.status = 'allow_closed';
@@ -1844,14 +1948,12 @@
         // ===== GET INVOICE STATUS =====
         getInvoiceStatus(invoice) {
           if (!invoice || !invoice.items || !invoice.items.length) {
-            // التحقق من allowIsClosed أولاً
             if (invoice && invoice.allowIsClosed === true) {
               return 'allow_closed';
             }
             return invoice && invoice.status === 'allow_closed' ? 'allow_closed' : 'pending';
           }
 
-          // التحقق من allowIsClosed أولاً
           if (invoice.allowIsClosed === true) {
             return 'allow_closed';
           }
@@ -2032,7 +2134,6 @@
           this.elements.previewStatus.textContent = isClosed ? '🔒 مقفلة السماح' : this.getStatusText(status);
           this.elements.previewStatus.className = `badge ${isClosed ? 'closed' : status}`;
 
-          // إخفاء أزرار التحكم في الأكورديون إذا كانت الفاتورة مقفلة
           if (isClosed) {
             this.elements.accordionControls.style.display = 'none';
           } else {
@@ -2101,6 +2202,7 @@
                 name: item.name || 'Unknown',
                 unitPrice: item.unitPrice || 0,
                 image: item.image || '',
+                productId: item.productId || null, // نأخذ productId من البيانات
                 items: []
               };
             }
@@ -2133,6 +2235,10 @@
             const prodProgress = totalQty === 0 ? 0 : Math.round((totalAllowed / totalQty) * 100);
             const isDone = prodProgress === 100;
 
+            // بناء روابط Shopify
+            const productUrl = g.productId ? Utils.getProductUrl(g.productId) : '#';
+            const ordersUrl = g.name ? Utils.getOrdersSearchUrl(g.name) : '#';
+
             html += `
               <div class="product-card" data-product-id="${productId}">
                 <div class="product-card-header" onclick="window.UI.toggleProductPreview('${productId}')">
@@ -2142,6 +2248,18 @@
                     <span class="sku">SKU: ${Utils.escapeHtml(g.sku)}</span>
                     <span class="price">${Utils.formatCurrency(g.unitPrice)} LE</span>
                     <span class="status-badge ${isDone ? 'done' : ''}">${prodProgress}%</span>
+                  </div>
+                  <div class="product-actions">
+                    <!-- زر فتح البحث في Shopify (أخضر) -->
+                    <a href="${ordersUrl}" target="_blank" class="link-btn orders" title="فتح البحث في الطلبات">
+                      <i class="fas fa-search"></i> بحث
+                      <span class="badge-text">Orders</span>
+                    </a>
+                    <!-- زر فتح المنتج في Admin (أزرق) -->
+                    <a href="${productUrl}" target="_blank" class="link-btn product" title="فتح المنتج في Admin">
+                      <i class="fas fa-box"></i> منتج
+                      <span class="badge-text">Admin</span>
+                    </a>
                   </div>
                   <span class="chevron ${isOpen ? 'open' : ''}"><i class="fas fa-chevron-down"></i></span>
                 </div>
@@ -2232,7 +2350,6 @@
         changeAllowedQty(uniqueKey, delta) {
           if (!this._selectedInvoice || !this._selectedInvoice.items) return;
 
-          // التحقق من allowIsClosed
           if (this._selectedInvoice.allowIsClosed === true) {
             this.showAlert('⚠️ لا يمكن تعديل كميات فاتورة مقفلة السماح', 'error');
             return;
@@ -2292,7 +2409,6 @@
 
           const invoice = this._selectedInvoice;
 
-          // التحقق من allowIsClosed
           if (invoice.allowIsClosed === true) {
             this.showAlert('🔒 هذه الفاتورة مقفلة السماح بالفعل', 'info');
             return;
@@ -2365,7 +2481,6 @@
 
           const invoice = this._selectedInvoice;
 
-          // استخدام allowIsClosed بدلاً من isClosed
           invoice.allowIsClosed = true;
           invoice.status = 'allow_closed';
           invoice.totalPieces = Utils.calculateTotalPieces(invoice.items);
