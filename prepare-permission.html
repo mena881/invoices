@@ -1331,6 +1331,20 @@
     .text-muted {
       color: #6d7b93;
     }
+
+    /* =========================================================
+       ALLOW CLOSED BADGE
+       ========================================================= */
+    .allow-closed-badge {
+      background: #E8F5E9;
+      color: #16A34A;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 4px 14px;
+      border-radius: 40px;
+      text-transform: uppercase;
+      border: 1px solid #86EFAC;
+    }
   </style>
 </head>
 <body>
@@ -1364,7 +1378,7 @@
           <option value="preparing"><i class="fas fa-spinner"></i> قيد السماح</option>
           <option value="allowed"><i class="fas fa-check-circle"></i> مسموح بالكامل</option>
           <option value="partial"><i class="fas fa-exclamation-triangle"></i> سماح جزئي</option>
-          <option value="closed"><i class="fas fa-lock"></i> مقفلة</option>
+          <option value="allow_closed"><i class="fas fa-lock"></i> مقفلة السماح</option>
         </select>
         <input type="text" class="search-input" id="searchInput" placeholder="🔍 بحث عن فرع أو منتج..." />
       </div>
@@ -1396,7 +1410,7 @@
       </div>
 
       <!-- ACCORDION CONTROLS -->
-      <div class="accordion-controls">
+      <div class="accordion-controls" id="accordionControls">
         <button class="btn btn-secondary btn-sm" id="expandAllColorsBtn">
           <i class="fas fa-chevron-down"></i> فتح كل الألوان
         </button>
@@ -1443,7 +1457,7 @@
         <div class="stat-value purple" id="statPreparing">0</div>
       </div>
       <div class="stat-card">
-        <div class="stat-label"><i class="fas fa-check-circle"></i> مسموح ✅</div>
+        <div class="stat-label"><i class="fas fa-lock"></i> مقفلة السماح ✅</div>
         <div class="stat-value green" id="statAllowed">0</div>
       </div>
     </section>
@@ -1481,7 +1495,7 @@
         <div class="product-list" id="closeProductList"></div>
 
         <div class="dialog-confirm-box">
-          <p><i class="fas fa-check-circle" style="color:#6c8cff;"></i> ✅ سيتم تحديث حالة الفاتورة إلى "allowed" بعد التأكيد</p>
+          <p><i class="fas fa-check-circle" style="color:#6c8cff;"></i> ✅ سيتم تحديث حالة الفاتورة إلى "allow_closed" بعد التأكيد</p>
         </div>
 
         <div class="dialog-actions">
@@ -1630,8 +1644,9 @@
             allowed += r.allowedQty || 0; });
           return total === 0 ? 0 : Math.round((allowed / total) * 100);
         },
-        isInvoiceClosed(invoice) {
-          return invoice && (invoice.status === 'allowed' || invoice.isClosed === true);
+        // التحقق من إغلاق السماح باستخدام allowIsClosed
+        isAllowClosed(invoice) {
+          return invoice && invoice.allowIsClosed === true;
         }
       };
 
@@ -1676,6 +1691,7 @@
           collapseAllColorsBtn: document.getElementById('collapseAllColorsBtn'),
           expandAllProductsBtn: document.getElementById('expandAllProductsBtn'),
           collapseAllProductsBtn: document.getElementById('collapseAllProductsBtn'),
+          accordionControls: document.getElementById('accordionControls'),
         },
         _invoices: [],
         _filteredInvoices: [],
@@ -1748,7 +1764,7 @@
           if (id) {
             setTimeout(() => {
               const invoice = this._invoices.find(inv => inv.id === id);
-              if (invoice && !Utils.isInvoiceClosed(invoice)) {
+              if (invoice && !Utils.isAllowClosed(invoice)) {
                 this.selectInvoice(invoice.id);
                 this.elements.filter.value = 'all';
                 this.renderInvoiceList();
@@ -1780,13 +1796,26 @@
                     if (item.allowedQty === undefined) item.allowedQty = 0;
                   });
                 }
-                if (!inv.status) {
+                
+                // تهيئة allowIsClosed إذا لم تكن موجودة
+                if (inv.allowIsClosed === undefined) {
+                  // إذا كانت isClosed موجودة قديماً، ننقلها إلى allowIsClosed
                   if (inv.isClosed === true) {
-                    inv.status = 'allowed';
+                    inv.allowIsClosed = true;
+                  } else {
+                    inv.allowIsClosed = false;
+                  }
+                }
+                
+                // تهيئة status
+                if (!inv.status) {
+                  if (inv.allowIsClosed === true) {
+                    inv.status = 'allow_closed';
                   } else {
                     inv.status = 'pending';
                   }
                 }
+                
                 this._invoices.push({
                   id: key,
                   ...inv,
@@ -1815,11 +1844,20 @@
         // ===== GET INVOICE STATUS =====
         getInvoiceStatus(invoice) {
           if (!invoice || !invoice.items || !invoice.items.length) {
-            return invoice && invoice.status === 'allowed' ? 'allowed' : 'pending';
+            // التحقق من allowIsClosed أولاً
+            if (invoice && invoice.allowIsClosed === true) {
+              return 'allow_closed';
+            }
+            return invoice && invoice.status === 'allow_closed' ? 'allow_closed' : 'pending';
           }
 
-          if (invoice.status === 'allowed' || invoice.isClosed === true) {
-            return 'allowed';
+          // التحقق من allowIsClosed أولاً
+          if (invoice.allowIsClosed === true) {
+            return 'allow_closed';
+          }
+
+          if (invoice.status === 'allow_closed') {
+            return 'allow_closed';
           }
 
           const allAllowed = invoice.items.every(item => (item.allowedQty || 0) >= (item.qty || 0));
@@ -1840,7 +1878,7 @@
             partial: '⚠️ سماح جزئي',
             preparing: '⚡ قيد السماح',
             allowed: '✅ مسموح بالكامل',
-            closed: '🔒 مقفلة'
+            allow_closed: '🔒 مقفلة السماح'
           };
           return map[status] || status;
         },
@@ -1851,7 +1889,7 @@
             partial: 'fa-exclamation-triangle',
             preparing: 'fa-spinner',
             allowed: 'fa-check-circle',
-            closed: 'fa-lock'
+            allow_closed: 'fa-lock'
           };
           return map[status] || 'fa-circle';
         },
@@ -1893,7 +1931,7 @@
           let html = '';
           filtered.forEach((inv) => {
             const status = this.getInvoiceStatus(inv);
-            const isClosed = Utils.isInvoiceClosed(inv);
+            const isClosed = Utils.isAllowClosed(inv);
             const date = new Date(inv.createdAt);
             const dateStr = date.toLocaleDateString('ar-EG') + ' ' + date.toLocaleTimeString('ar-EG', {
               hour: '2-digit',
@@ -1916,7 +1954,7 @@
                 </div>
                 <div class="stats">
                   ${isClosed ? `
-                    <span class="closed-badge"><i class="fas fa-lock"></i> مقفلة</span>
+                    <span class="allow-closed-badge"><i class="fas fa-lock"></i> مقفلة السماح</span>
                   ` : `
                     <div class="progress-container">
                       <div class="label">التقدم</div>
@@ -1944,8 +1982,8 @@
             return;
           }
 
-          if (Utils.isInvoiceClosed(invoice)) {
-            this.showAlert('🔒 هذه الفاتورة مقفلة ولا يمكن تعديلها', 'info');
+          if (Utils.isAllowClosed(invoice)) {
+            this.showAlert('🔒 هذه الفاتورة مقفلة السماح ولا يمكن تعديلها', 'info');
             this._selectedInvoice = invoice;
             this._selectedInvoiceId = invoiceId;
             this._productCardStates = {};
@@ -1983,7 +2021,7 @@
           });
           const status = this.getInvoiceStatus(invoice);
           const progress = Utils.getProgress(invoice.items);
-          const isClosed = Utils.isInvoiceClosed(invoice);
+          const isClosed = Utils.isAllowClosed(invoice);
 
           this.elements.previewTitle.innerHTML = `<i class="fas fa-receipt"></i> ${Utils.escapeHtml(branch)}`;
           this.elements.previewMeta.innerHTML = `
@@ -1991,20 +2029,42 @@
             <i class="fas fa-cubes"></i> ${invoice.totalPieces || Utils.calculateTotalPieces(invoice.items)} قطعة | 
             <i class="fas fa-money-bill-wave"></i> ${Utils.formatCurrency(invoice.totalValue || Utils.calculateTotalValue(invoice.items))} LE
           `;
-          this.elements.previewStatus.textContent = isClosed ? '🔒 مقفلة' : this.getStatusText(status);
+          this.elements.previewStatus.textContent = isClosed ? '🔒 مقفلة السماح' : this.getStatusText(status);
           this.elements.previewStatus.className = `badge ${isClosed ? 'closed' : status}`;
+
+          // إخفاء أزرار التحكم في الأكورديون إذا كانت الفاتورة مقفلة
+          if (isClosed) {
+            this.elements.accordionControls.style.display = 'none';
+          } else {
+            this.elements.accordionControls.style.display = 'flex';
+          }
 
           if (isClosed) {
             container.innerHTML = `
-              <div style="background:#f8faff;padding:24px;border-radius:16px;text-align:center;border:2px solid #e6edf5;">
-                <div style="font-size:48px;margin-bottom:12px;"><i class="fas fa-lock" style="color:#6d7b93;"></i></div>
-                <h3 style="color:#0b1b2f;">هذه الفاتورة مقفلة</h3>
-                <p style="color:#6d7b93;margin-top:8px;">لا يمكن تعديل الكميات بعد التقفيل</p>
-                <div style="margin-top:12px;font-size:14px;color:#0b1b2f;">
-                  تم السماح بـ ${Utils.calculateAllowed(invoice.items)} من ${Utils.calculateTotalPieces(invoice.items)} قطعة
+              <div style="background:#f8faff;padding:24px;border-radius:16px;text-align:center;border:2px solid #86EFAC;">
+                <div style="font-size:48px;margin-bottom:12px;"><i class="fas fa-lock" style="color:#16A34A;"></i></div>
+                <h3 style="color:#0b1b2f;">🔒 تم تقفيل السماح</h3>
+                <p style="color:#6d7b93;margin-top:8px;font-size:16px;">
+                  هذه الفاتورة مقفلة لعملية السماح ولا يمكن تعديل الكميات
+                </p>
+                <div style="margin-top:16px;padding:16px;background:#ffffff;border-radius:12px;border:1px solid #e6edf5;">
+                  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;max-width:400px;margin:0 auto;">
+                    <div>
+                      <div style="font-size:12px;color:#6d7b93;">إجمالي القطع</div>
+                      <div style="font-size:24px;font-weight:700;color:#0b1b2f;">${Utils.calculateTotalPieces(invoice.items)}</div>
+                    </div>
+                    <div>
+                      <div style="font-size:12px;color:#6d7b93;">المسموح</div>
+                      <div style="font-size:24px;font-weight:700;color:#16A34A;">${Utils.calculateAllowed(invoice.items)}</div>
+                    </div>
+                    <div>
+                      <div style="font-size:12px;color:#6d7b93;">نسبة السماح</div>
+                      <div style="font-size:24px;font-weight:700;color:#6c8cff;">${progress}%</div>
+                    </div>
+                  </div>
                 </div>
-                <div style="margin-top:8px;font-size:13px;color:#6d7b93;">
-                  الحالة: ${invoice.status || 'allowed'}
+                <div style="margin-top:12px;font-size:13px;color:#6d7b93;">
+                  <i class="fas fa-clock"></i> تم التقفيل في: ${new Date().toLocaleString('ar-EG')}
                 </div>
               </div>
             `;
@@ -2172,8 +2232,9 @@
         changeAllowedQty(uniqueKey, delta) {
           if (!this._selectedInvoice || !this._selectedInvoice.items) return;
 
-          if (Utils.isInvoiceClosed(this._selectedInvoice)) {
-            this.showAlert('⚠️ لا يمكن تعديل كميات فاتورة مقفلة', 'error');
+          // التحقق من allowIsClosed
+          if (this._selectedInvoice.allowIsClosed === true) {
+            this.showAlert('⚠️ لا يمكن تعديل كميات فاتورة مقفلة السماح', 'error');
             return;
           }
 
@@ -2231,8 +2292,9 @@
 
           const invoice = this._selectedInvoice;
 
-          if (Utils.isInvoiceClosed(invoice)) {
-            this.showAlert('🔒 هذه الفاتورة مقفلة بالفعل', 'info');
+          // التحقق من allowIsClosed
+          if (invoice.allowIsClosed === true) {
+            this.showAlert('🔒 هذه الفاتورة مقفلة السماح بالفعل', 'info');
             return;
           }
 
@@ -2303,8 +2365,9 @@
 
           const invoice = this._selectedInvoice;
 
-          invoice.isClosed = true;
-          invoice.status = 'allowed';
+          // استخدام allowIsClosed بدلاً من isClosed
+          invoice.allowIsClosed = true;
+          invoice.status = 'allow_closed';
           invoice.totalPieces = Utils.calculateTotalPieces(invoice.items);
           invoice.totalValue = Utils.calculateTotalValue(invoice.items);
 
@@ -2315,7 +2378,7 @@
           this.renderInvoiceList();
           this.updateStats();
 
-          this.showAlert(`✅ تم تقفيل السماح بنجاح! الحالة: allowed`, 'success');
+          this.showAlert(`✅ تم تقفيل السماح بنجاح!`, 'success');
         },
 
         // ===== CLOSE PREVIEW =====
@@ -2342,7 +2405,7 @@
             const status = this.getInvoiceStatus(inv);
             if (status === 'pending') pending++;
             else if (status === 'partial' || status === 'preparing') preparing++;
-            else if (status === 'allowed' || status === 'closed') allowed++;
+            else if (status === 'allow_closed' || status === 'allowed') allowed++;
           });
 
           this.elements.statTotalInvoices.textContent = total;
