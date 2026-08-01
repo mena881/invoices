@@ -1,817 +1,561 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>جميع المرتجعات - نظام إدارة المرتجعات</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>نظام إدارة المرتجعات المتقدم</title>
 
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
-
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="api.js"></script>
 
     <style>
-        :root {
-            --primary: #4f46e5;
-            --primary-light: #818cf8;
-            --primary-dark: #3730a3;
-            --secondary: #7c3aed;
-            --success: #10b981;
-            --success-light: #d1fae5;
-            --warning: #f59e0b;
-            --warning-light: #fef3c7;
-            --danger: #ef4444;
-            --danger-light: #fee2e2;
-            --info: #3b82f6;
-            --info-light: #dbeafe;
-            --dark: #0f172a;
-            --dark-secondary: #1e293b;
-            --light: #f8fafc;
-            --gray: #64748b;
-            --gray-light: #e2e8f0;
-            --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
-            --shadow: 0 4px 20px rgba(0,0,0,0.08);
-            --shadow-lg: 0 10px 40px rgba(0,0,0,0.12);
-            --radius: 16px;
-            --radius-sm: 10px;
-            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
+        /* ===== RESET & BASE ===== */
         * { margin: 0; padding: 0; box-sizing: border-box; }
-
-        body {
-            font-family: 'Cairo', 'Segoe UI', sans-serif;
-            background: #f1f5f9;
-            overflow-x: hidden;
-        }
-
+        body { font-family: 'Cairo', sans-serif; background: #f0f4f9; direction: rtl; padding: 20px 20px 140px 20px; min-height: 100vh; }
         ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: #e2e8f0; }
-        ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 10px; }
+        ::-webkit-scrollbar-track { background: #e8ecf1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: #4f46e5; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #3730a3; }
+        .app-container { max-width: 1600px; margin: 0 auto; }
 
-        .sidebar {
-            position: fixed;
-            right: 0;
-            top: 0;
-            width: 280px;
-            height: 100%;
-            background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
-            color: white;
-            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            z-index: 1000;
-            overflow-y: auto;
-            box-shadow: -5px 0 30px rgba(0,0,0,0.15);
-            transform: translateX(0);
-        }
+        /* ===== TOAST ===== */
+        .toast-container { position: fixed; bottom: 30px; left: 30px; z-index: 99999; display: flex; flex-direction: column; gap: 10px; direction: rtl; }
+        .toast { padding: 14px 24px; border-radius: 14px; color: #fff; font-weight: 700; font-size: 14px; box-shadow: 0 8px 30px rgba(0,0,0,0.15); animation: slideUp 0.3s ease; display: flex; align-items: center; gap: 10px; min-width: 200px; }
+        .toast.success { background: #10b981; }
+        .toast.error { background: #ef4444; }
+        .toast.info { background: #3b82f6; }
+        .toast.warning { background: #f59e0b; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-        .sidebar.hidden { transform: translateX(100%); }
+        /* ===== HEADER ===== */
+        .main-header { background: linear-gradient(135deg, #0f172a, #1e293b); border-radius: 20px; padding: 16px 28px; margin-bottom: 22px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; box-shadow: 0 8px 30px rgba(15,23,42,0.25); }
+        .main-header h1 { color: #fff; font-size: 22px; font-weight: 800; display: flex; align-items: center; gap: 10px; }
+        .main-header h1 i { color: #818cf8; font-size: 26px; }
+        .header-actions { display: flex; gap: 10px; flex-wrap: wrap; }
 
-        .sidebar-header {
-            padding: 30px 20px 20px;
-            text-align: center;
-            border-bottom: 1px solid rgba(255,255,255,0.08);
-            margin-bottom: 15px;
-        }
+        .btn { padding: 8px 18px; border: none; border-radius: 10px; cursor: pointer; font-size: 13px; font-weight: 700; transition: all 0.3s ease; display: inline-flex; align-items: center; gap: 6px; font-family: 'Cairo', sans-serif; text-decoration: none; }
+        .btn-primary { background: linear-gradient(135deg, #4f46e5, #7c3aed); color: #fff; box-shadow: 0 4px 15px rgba(79,70,229,0.3); }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(79,70,229,0.4); }
+        .btn-success { background: #10b981; color: #fff; box-shadow: 0 4px 15px rgba(16,185,129,0.3); }
+        .btn-success:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(16,185,129,0.4); }
+        .btn-danger { background: #ef4444; color: #fff; box-shadow: 0 4px 15px rgba(239,68,68,0.3); }
+        .btn-danger:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(239,68,68,0.4); }
+        .btn-warning { background: #f59e0b; color: #fff; box-shadow: 0 4px 15px rgba(245,158,11,0.3); }
+        .btn-warning:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(245,158,11,0.4); }
+        .btn-outline { background: transparent; border: 2px solid rgba(255,255,255,0.2); color: #fff; }
+        .btn-outline:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.4); }
+        .btn-sm { padding: 3px 10px; border: none; border-radius: 6px; cursor: pointer; font-size: 11px; font-weight: 600; transition: all 0.2s; font-family: 'Cairo', sans-serif; display: inline-flex; align-items: center; gap: 4px; }
+        .btn-sm.btn-edit { background: #dbeafe; color: #1e40af; }
+        .btn-sm.btn-edit:hover { background: #bfdbfe; }
+        .btn-sm.btn-delete { background: #fee2e2; color: #991b1b; }
+        .btn-sm.btn-delete:hover { background: #fecaca; }
+        .btn-sm.btn-save { background: #d1fae5; color: #065f46; }
+        .btn-sm.btn-save:hover { background: #a7f3d0; }
+        .btn-sm.btn-cancel { background: #f1f5f9; color: #64748b; }
+        .btn-sm.btn-cancel:hover { background: #e2e8f0; }
 
-        .sidebar-header .logo-icon {
-            font-size: 40px;
-            background: linear-gradient(135deg, var(--primary-light), var(--secondary));
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-        }
+        .btn-plus { display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; border-radius: 50%; border: 2px solid #4f46e5; background: #fff; color: #4f46e5; cursor: pointer; font-size: 14px; font-weight: 700; transition: all 0.25s ease; font-family: 'Cairo', sans-serif; box-shadow: 0 2px 8px rgba(79,70,229,0.15); }
+        .btn-plus:hover { background: #4f46e5; color: #fff; transform: scale(1.1); box-shadow: 0 4px 16px rgba(79,70,229,0.3); }
 
-        .sidebar-header h2 {
-            font-size: 22px;
-            font-weight: 700;
-            margin-top: 8px;
-            background: linear-gradient(135deg, var(--primary-light), var(--secondary));
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-        }
-
-        .sidebar-header p {
-            font-size: 12px;
-            opacity: 0.5;
-            margin-top: 4px;
-        }
-
-        .sidebar-menu {
-            list-style: none;
-            padding: 0 12px;
-        }
-
-        .sidebar-menu li {
-            padding: 12px 16px;
-            margin-bottom: 4px;
-            cursor: pointer;
-            transition: var(--transition);
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            border-radius: 12px;
-            font-weight: 500;
-            font-size: 14px;
-            color: rgba(255,255,255,0.7);
-        }
-
-        .sidebar-menu li i { width: 22px; font-size: 16px; }
-        .sidebar-menu li:hover { 
-            background: rgba(255,255,255,0.08); 
-            color: white;
-            transform: translateX(-4px);
-        }
-        .sidebar-menu li.active { 
-            background: linear-gradient(135deg, var(--primary), var(--secondary)); 
-            color: white;
-            box-shadow: 0 4px 15px rgba(79,70,229,0.4);
-        }
-
-        .logout-btn {
-            margin: 20px 15px 30px;
-            padding: 12px;
-            background: rgba(255,255,255,0.06);
-            border: 1px solid rgba(255,255,255,0.08);
-            color: rgba(255,255,255,0.7);
-            border-radius: 12px;
-            cursor: pointer;
-            font-size: 14px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            transition: var(--transition);
-            width: calc(100% - 30px);
-        }
-        .logout-btn:hover { 
-            background: var(--danger); 
-            border-color: var(--danger);
-            color: white;
-        }
-
-        .main-content {
-            margin-right: 280px;
-            padding: 20px 25px;
-            transition: margin-right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            min-height: 100vh;
-        }
-        .main-content.sidebar-hidden { margin-right: 0; }
-
-        .header {
-            background: white;
-            padding: 16px 24px;
-            border-radius: var(--radius);
-            box-shadow: var(--shadow-sm);
-            margin-bottom: 25px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 12px;
-            border: 1px solid rgba(0,0,0,0.04);
-        }
-
-        .header-left {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .menu-toggle {
-            background: var(--dark-secondary);
-            border: none;
-            color: white;
-            font-size: 18px;
-            cursor: pointer;
-            padding: 10px 14px;
-            border-radius: 12px;
-            transition: var(--transition);
-        }
-        .menu-toggle:hover { background: var(--primary); }
-
-        .header h1 {
-            font-size: 22px;
-            color: var(--dark-secondary);
-            font-weight: 700;
-        }
-        .header h1 i { color: var(--primary); margin-left: 10px; }
-
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            background: var(--light);
-            padding: 6px 16px 6px 20px;
-            border-radius: 40px;
-            border: 1px solid var(--gray-light);
-        }
-        .user-info i { font-size: 22px; color: var(--primary); }
-        .user-info span { font-weight: 600; color: var(--dark-secondary); font-size: 14px; }
+        .btn-column-toggle { padding: 4px 12px; border: 2px solid #e2e8f0; border-radius: 8px; background: #fff; cursor: pointer; font-size: 12px; font-weight: 600; color: #64748b; transition: all 0.2s; font-family: 'Cairo', sans-serif; display: inline-flex; align-items: center; gap: 4px; }
+        .btn-column-toggle:hover { border-color: #4f46e5; color: #4f46e5; background: #f8fafc; }
 
         /* ===== TABS ===== */
-        .tabs-container {
-            display: flex;
-            gap: 4px;
-            background: #fff;
-            border-radius: 14px;
-            padding: 5px;
-            margin-bottom: 20px;
-            box-shadow: var(--shadow-sm);
-            border: 1px solid #e8ecf1;
-            flex-wrap: wrap;
-        }
-        .tab-btn {
-            padding: 10px 22px;
-            border: none;
-            background: transparent;
-            border-radius: 10px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 700;
-            color: var(--gray);
-            transition: var(--transition);
-            font-family: 'Cairo', sans-serif;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .tab-btn:hover { background: var(--light); color: var(--dark-secondary); }
-        .tab-btn.active {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: #fff;
-            box-shadow: 0 4px 15px rgba(79,70,229,0.3);
-        }
+        .tabs-container { display: flex; gap: 4px; background: #fff; border-radius: 14px; padding: 5px; margin-bottom: 20px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); border: 1px solid #e8ecf1; flex-wrap: wrap; }
+        .tab-btn { padding: 10px 22px; border: none; background: transparent; border-radius: 10px; cursor: pointer; font-size: 14px; font-weight: 700; color: #64748b; transition: all 0.3s; font-family: 'Cairo', sans-serif; display: flex; align-items: center; gap: 6px; }
+        .tab-btn:hover { background: #f1f5f9; color: #1e293b; }
+        .tab-btn.active { background: linear-gradient(135deg, #4f46e5, #7c3aed); color: #fff; box-shadow: 0 4px 15px rgba(79,70,229,0.3); }
         .tab-btn i { font-size: 15px; }
         .tab-content { display: none; animation: fadeIn 0.3s ease; }
         .tab-content.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 
-        .table-container {
-            background: white;
-            border-radius: var(--radius);
-            padding: 22px 24px;
-            overflow-x: auto;
-            margin-bottom: 25px;
-            box-shadow: var(--shadow-sm);
-            border: 1px solid rgba(0,0,0,0.04);
-        }
+        .sub-tabs { display: flex; gap: 4px; background: #f1f5f9; padding: 4px; border-radius: 10px; margin-bottom: 14px; }
+        .sub-tabs .sub-tab { padding: 6px 16px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 12px; font-family: 'Cairo', sans-serif; transition: all 0.3s; color: #64748b; background: transparent; }
+        .sub-tabs .sub-tab.active { background: #fff; color: #0f172a; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+        .sub-tabs .sub-tab:hover:not(.active) { color: #0f172a; }
+        .sub-content { display: none; }
+        .sub-content.active { display: block; }
 
-        .table-container .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 15px;
-            margin-bottom: 20px;
-        }
+        /* ===== TABLES ===== */
+        .table-wrapper { background: #fff; border-radius: 16px; padding: 16px 18px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); border: 1px solid #e8ecf1; overflow-x: auto; margin-top: 14px; position: relative; }
+        .table-header-bar { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 12px; }
+        .table-header-bar h3 { font-size: 16px; font-weight: 700; color: #0f172a; display: flex; align-items: center; gap: 6px; }
+        .table-header-bar h3 i { color: #4f46e5; }
+        .count-badge { font-size: 12px; background: #e8ecf1; padding: 3px 14px; border-radius: 30px; color: #64748b; font-weight: 600; }
 
-        .table-container h3 {
-            font-size: 18px;
-            color: var(--dark-secondary);
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .table-container h3 i { color: var(--primary); }
-        .count-badge {
-            font-size: 12px;
-            background: var(--gray-light);
-            padding: 3px 14px;
-            border-radius: 30px;
-            color: var(--gray);
-            font-weight: 600;
-        }
+        .table-controls { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 10px; justify-content: flex-end; }
+        .table-controls .pagination { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+        .table-controls .pagination select { padding: 4px 8px; border: 2px solid #e2e8f0; border-radius: 6px; font-family: 'Cairo', sans-serif; font-size: 12px; background: #fff; }
+        .table-controls .pagination .page-info { font-size: 13px; color: #64748b; }
+        .table-controls .pagination button { padding: 4px 10px; border: none; border-radius: 6px; background: #f1f5f9; color: #1e293b; cursor: pointer; font-size: 12px; font-weight: 600; transition: background 0.2s; }
+        .table-controls .pagination button:hover:not(:disabled) { background: #e2e8f0; }
+        .table-controls .pagination button:disabled { opacity: 0.4; cursor: not-allowed; }
 
-        .table-controls {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            align-items: center;
-            margin-bottom: 14px;
-            justify-content: space-between;
-        }
-        .table-controls .controls-left {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            align-items: center;
-        }
-        .table-controls .controls-right {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            align-items: center;
-        }
+        .table-controls .search-box { flex: 1; min-width: 200px; display: flex; gap: 6px; align-items: center; }
+        .table-controls .search-box input { flex: 1; padding: 6px 12px; border: 2px solid #e2e8f0; border-radius: 8px; font-family: 'Cairo', sans-serif; font-size: 13px; transition: border-color 0.3s; }
+        .table-controls .search-box input:focus { outline: none; border-color: #4f46e5; }
 
-        .search-box {
-            display: flex;
-            gap: 6px;
-            align-items: center;
-            background: var(--light);
-            border-radius: var(--radius-sm);
-            padding: 4px 12px 4px 4px;
-            border: 2px solid var(--gray-light);
-            transition: var(--transition);
-        }
-        .search-box:focus-within {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 4px rgba(79,70,229,0.08);
-        }
-        .search-box input {
-            padding: 6px 8px;
-            border: none;
-            background: transparent;
-            font-size: 13px;
-            font-family: inherit;
-            min-width: 160px;
-            outline: none;
-            color: var(--dark-secondary);
-        }
-        .search-box button {
-            background: none;
-            border: none;
-            color: var(--gray);
-            cursor: pointer;
-            font-size: 14px;
-            padding: 4px 6px;
-        }
-        .search-box button:hover { color: var(--primary); }
+        .data-table { width: 100%; border-collapse: collapse; font-size: 12px; min-width: 900px; }
+        .data-table thead { background: #f1f5f9; border-radius: 10px; }
+        .data-table th { padding: 10px 6px; text-align: center; font-weight: 700; color: #0f172a; font-size: 11px; text-transform: uppercase; letter-spacing: 0.2px; border-bottom: 2px solid #e2e8f0; white-space: nowrap; position: sticky; top: 0; background: #f1f5f9; z-index: 5; }
+        .data-table td { padding: 6px 6px; text-align: center; border-bottom: 1px solid #f1f5f9; color: #1e293b; font-size: 12px; max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; vertical-align: middle; }
+        .data-table tbody tr:hover { background: #f8fafc; }
+        .cell-editable { cursor: pointer; position: relative; padding-right: 18px; }
+        .cell-editable .edit-icon { position: absolute; right: 2px; top: 50%; transform: translateY(-50%); color: #94a3b8; font-size: 10px; opacity: 0; transition: opacity 0.2s; }
+        .cell-editable:hover .edit-icon { opacity: 1; }
+        .cell-editable .edit-icon:hover { color: #4f46e5; }
+        .cell-editing input, .cell-editing select { width: 100%; min-width: 50px; padding: 3px 6px; border: 2px solid #4f46e5; border-radius: 4px; font-family: 'Cairo', sans-serif; font-size: 12px; background: #fff; outline: none; box-shadow: 0 0 0 3px rgba(79,70,229,0.12); }
+        .cell-editing .edit-actions { display: inline-flex; gap: 3px; margin-right: 4px; }
 
-        .pagination {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            flex-wrap: wrap;
-        }
-        .pagination select {
-            padding: 5px 10px;
-            border: 2px solid var(--gray-light);
-            border-radius: 6px;
-            font-family: 'Cairo', sans-serif;
-            font-size: 12px;
-            background: white;
-            cursor: pointer;
-        }
-        .pagination .page-info {
-            font-size: 13px;
-            color: var(--gray);
-            font-weight: 600;
-        }
-        .pagination button {
-            padding: 5px 12px;
-            border: none;
-            border-radius: 6px;
-            background: var(--light);
-            color: var(--dark-secondary);
-            cursor: pointer;
-            font-size: 13px;
-            font-weight: 600;
-            transition: var(--transition);
-        }
-        .pagination button:hover:not(:disabled) { background: var(--gray-light); }
-        .pagination button:disabled { opacity: 0.4; cursor: not-allowed; }
-
-        .btn {
-            padding: 8px 18px;
-            border: none;
-            border-radius: var(--radius-sm);
-            cursor: pointer;
-            font-size: 13px;
-            font-weight: 600;
-            transition: var(--transition);
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            font-family: 'Cairo', sans-serif;
-            text-decoration: none;
-        }
-        .btn-primary { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: #fff; box-shadow: 0 4px 15px rgba(79,70,229,0.3); }
-        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(79,70,229,0.4); }
-        .btn-success { background: var(--success); color: #fff; box-shadow: 0 4px 15px rgba(16,185,129,0.3); }
-        .btn-success:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(16,185,129,0.4); }
-        .btn-warning { background: var(--warning); color: #fff; box-shadow: 0 4px 15px rgba(245,158,11,0.3); }
-        .btn-warning:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(245,158,11,0.4); }
-        .btn-outline { background: transparent; border: 2px solid var(--gray-light); color: var(--dark-secondary); }
-        .btn-outline:hover { border-color: var(--primary); color: var(--primary); }
-        .btn-sm { padding: 5px 12px; font-size: 11px; border-radius: 6px; }
-
-        .btn-column-toggle {
-            padding: 5px 14px;
-            border: 2px solid var(--gray-light);
-            border-radius: 8px;
-            background: #fff;
-            cursor: pointer;
-            font-size: 12px;
-            font-weight: 600;
-            color: var(--gray);
-            transition: var(--transition);
-            font-family: 'Cairo', sans-serif;
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-        }
-        .btn-column-toggle:hover { border-color: var(--primary); color: var(--primary); background: var(--light); }
-
-        .data-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 12px;
-            min-width: 800px;
-        }
-        .data-table thead { background: var(--light); border-radius: 10px; }
-        .data-table th {
-            padding: 10px 8px;
-            text-align: center;
-            font-weight: 700;
-            color: var(--dark-secondary);
-            font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: 0.2px;
-            border-bottom: 2px solid var(--gray-light);
-            white-space: nowrap;
-            position: sticky;
-            top: 0;
-            background: var(--light);
-            z-index: 5;
-            cursor: pointer;
-            user-select: none;
-        }
-        .data-table th:hover { color: var(--primary); }
-        .data-table th .sort-icon {
-            font-size: 10px;
-            margin-right: 4px;
-            opacity: 0.5;
-        }
-        .data-table th.sorted .sort-icon { opacity: 1; color: var(--primary); }
-        .data-table td {
-            padding: 8px 8px;
-            text-align: center;
-            border-bottom: 1px solid var(--gray-light);
-            color: var(--dark-secondary);
-            font-size: 12px;
-            max-width: 120px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            vertical-align: middle;
-        }
-        .data-table tbody tr:hover { background: var(--light); }
-        .data-table .company-badge {
-            padding: 2px 10px;
-            border-radius: 20px;
-            font-size: 10px;
-            font-weight: 700;
-        }
-        .data-table .company-badge.winjas { background: #dbeafe; color: #1e40af; }
-        .data-table .company-badge.xpress { background: #fef3c7; color: #92400e; }
+        .empty-state { text-align: center; padding: 30px 16px; color: #94a3b8; }
+        .empty-state i { font-size: 36px; margin-bottom: 8px; opacity: 0.4; }
+        .empty-state p { font-size: 14px; }
 
         .col-hidden { display: none !important; }
 
-        .empty-state {
-            text-align: center;
-            padding: 40px 16px;
-            color: var(--gray);
-        }
-        .empty-state i { font-size: 40px; margin-bottom: 12px; opacity: 0.4; }
-        .empty-state p { font-size: 14px; }
+        /* ===== STICKY INPUT ===== */
+        .sticky-input-area { position: fixed; bottom: 0; left: 0; right: 0; z-index: 9998; background: rgba(255,255,255,0.96); backdrop-filter: blur(10px); border-top: 2px solid #e8ecf1; box-shadow: 0 -6px 24px rgba(0,0,0,0.06); padding: 8px 20px 10px; display: none; grid-template-columns: 1fr 1fr; gap: 14px; transition: all 0.3s; max-height: 120px; }
+        .sticky-input-area.visible { display: grid; }
+        .sticky-input-area .input-card { background: #fafbfc; border-radius: 10px; padding: 6px 12px 8px; border: 1px solid #e8ecf1; transition: border-color 0.3s; display: flex; flex-direction: column; }
+        .sticky-input-area .input-card:focus-within { border-color: #4f46e5; box-shadow: 0 0 0 3px rgba(79,70,229,0.06); }
+        .sticky-input-area .input-card .card-label { font-size: 10px; font-weight: 700; color: #64748b; display: flex; align-items: center; gap: 4px; margin-bottom: 2px; }
+        .sticky-input-area .input-card .card-label i { color: #4f46e5; font-size: 12px; }
+        .sticky-input-area .input-card .card-label .badge-sticky { font-size: 9px; background: #e8ecf1; padding: 0 8px; border-radius: 20px; color: #64748b; font-weight: 600; }
+        .sticky-input-area .input-card textarea { width: 100%; min-height: 38px; max-height: 56px; padding: 4px 10px; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 12px; font-family: 'Cairo', sans-serif; resize: none; transition: border-color 0.3s; background: #fff; color: #1e293b; direction: ltr; text-align: left; line-height: 1.5; flex: 1; }
+        .sticky-input-area .input-card textarea:focus { outline: none; border-color: #4f46e5; box-shadow: 0 0 0 3px rgba(79,70,229,0.06); }
+        .sticky-input-area .input-card textarea::placeholder { color: #94a3b8; font-family: 'Cairo', sans-serif; direction: rtl; text-align: right; font-size: 11px; }
+        .sticky-input-area .input-card .input-status { font-size: 10px; color: #94a3b8; margin-top: 1px; text-align: left; direction: ltr; min-height: 16px; }
+        .sticky-input-area .input-card .input-status .ok { color: #10b981; }
+        .sticky-input-area .input-card .input-status .err { color: #ef4444; }
+
+        @media (max-width: 820px) { .sticky-input-area { grid-template-columns: 1fr; padding: 6px 12px 8px; max-height: 180px; } .sticky-input-area .input-card textarea { min-height: 32px; max-height: 48px; } body { padding-bottom: 190px; } }
+        @media (max-width: 480px) { .sticky-input-area .input-card { padding: 4px 8px 6px; } .sticky-input-area .input-card textarea { font-size: 11px; min-height: 28px; } body { padding-bottom: 200px; } }
+
+        /* ===== REQUIRED ORDERS ===== */
+        .required-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+        @media (max-width: 860px) { .required-grid { grid-template-columns: 1fr; } }
+        .required-panel { background: #fff; border-radius: 16px; padding: 18px 22px; border: 1px solid #e8ecf1; box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
+        .required-panel h4 { font-size: 16px; font-weight: 700; color: #0f172a; margin-bottom: 14px; display: flex; align-items: center; gap: 6px; }
+        .required-panel h4 i { color: #f59e0b; }
+        .required-panel .input-group { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+        .required-panel .input-group input { flex: 1; min-width: 100px; padding: 8px 12px; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 13px; font-family: 'Cairo', sans-serif; }
+        .required-panel .input-group input:focus { outline: none; border-color: #f59e0b; }
+        .required-list { max-height: 350px; overflow-y: auto; }
+        .required-list .req-item { display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-radius: 10px; background: #f8fafc; margin-bottom: 4px; transition: background 0.2s; border-right: 3px solid transparent; }
+        .required-list .req-item:hover { background: #f1f5f9; }
+        .required-list .req-item.delivered { border-right-color: #10b981; opacity: 0.7; }
+        .required-list .req-item .req-info { flex: 1; display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center; }
+        .required-list .req-item .req-info .code { font-weight: 700; color: #0f172a; font-size: 13px; }
+        .required-list .req-item .req-info .name { color: #475569; font-size: 13px; }
+        .required-list .req-item .req-info .status-text { font-size: 11px; color: #94a3b8; }
+        .required-list .req-item .req-check { width: 18px; height: 18px; accent-color: #4f46e5; cursor: pointer; }
+        .required-list .req-item .req-del { color: #94a3b8; cursor: pointer; transition: color 0.2s; font-size: 14px; }
+        .required-list .req-item .req-del:hover { color: #ef4444; }
 
         /* ===== MODALS ===== */
-        .modal-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.55);
-            backdrop-filter: blur(6px);
-            z-index: 99999;
-            justify-content: center;
-            align-items: center;
-            animation: fadeIn 0.25s ease;
-        }
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.55); backdrop-filter: blur(6px); z-index: 99999; justify-content: center; align-items: center; animation: fadeIn 0.25s ease; }
         .modal-overlay.open { display: flex; }
-        .modal-box {
-            background: #fff;
-            border-radius: 20px;
-            padding: 26px 30px;
-            max-width: 640px;
-            width: 95%;
-            max-height: 85vh;
-            overflow-y: auto;
-            box-shadow: 0 25px 60px rgba(0,0,0,0.3);
-            animation: slideUp 0.3s ease;
-        }
+        .modal-box { background: #fff; border-radius: 20px; padding: 26px 30px; max-width: 640px; width: 95%; max-height: 85vh; overflow-y: auto; box-shadow: 0 25px 60px rgba(0,0,0,0.3); animation: slideUp 0.3s ease; }
         @keyframes slideUp { from { opacity: 0; transform: translateY(24px) scale(0.97); } to { opacity: 1; transform: translateY(0) scale(1); } }
-        .modal-box h3 {
-            font-size: 18px;
-            font-weight: 700;
-            color: var(--dark-secondary);
-            margin-bottom: 16px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .modal-box h3 i { color: var(--primary); }
-        .modal-close {
-            float: left;
-            background: none;
-            border: none;
-            font-size: 22px;
-            color: var(--gray);
-            cursor: pointer;
-            transition: var(--transition);
-        }
-        .modal-close:hover { color: var(--danger); transform: rotate(90deg); }
+        .modal-box h3 { font-size: 18px; font-weight: 700; color: #0f172a; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+        .modal-box h3 i { color: #4f46e5; }
+        .modal-close { float: left; background: none; border: none; font-size: 22px; color: #94a3b8; cursor: pointer; transition: all 0.3s; }
+        .modal-close:hover { color: #ef4444; transform: rotate(90deg); }
         .modal-box .form-group { margin-bottom: 14px; }
-        .modal-box .form-group label {
-            display: block;
-            font-weight: 600;
-            font-size: 13px;
-            color: var(--dark-secondary);
-            margin-bottom: 4px;
-        }
-        .modal-box .form-group input, .modal-box .form-group select {
-            width: 100%;
-            padding: 8px 12px;
-            border: 2px solid var(--gray-light);
-            border-radius: 8px;
-            font-size: 13px;
-            font-family: 'Cairo', sans-serif;
-            transition: var(--transition);
-            background: #fff;
-        }
-        .modal-box .form-group input:focus, .modal-box .form-group select:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(79,70,229,0.1);
-        }
-        .modal-box .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .modal-box .modal-actions {
-            display: flex;
-            gap: 10px;
-            justify-content: flex-end;
-            margin-top: 18px;
-            flex-wrap: wrap;
-        }
+        .modal-box .form-group label { display: block; font-weight: 600; font-size: 13px; color: #0f172a; margin-bottom: 4px; }
+        .modal-box .form-group input, .modal-box .form-group select { width: 100%; padding: 8px 12px; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 13px; font-family: 'Cairo', sans-serif; transition: all 0.3s; background: #fff; }
+        .modal-box .form-group input:focus, .modal-box .form-group select:focus { outline: none; border-color: #4f46e5; box-shadow: 0 0 0 3px rgba(79,70,229,0.1); }
+        .modal-box .form-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+        .modal-box .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 18px; flex-wrap: wrap; }
         @media (max-width: 768px) { .modal-box .form-row { grid-template-columns: 1fr; } .modal-box { padding: 18px; } }
 
-        .col-vis-modal .col-check-list {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 8px 20px;
-            margin: 12px 0;
-        }
-        .col-vis-modal .col-check-list label {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 13px;
-            color: var(--dark-secondary);
-            cursor: pointer;
-        }
-        .col-vis-modal .col-check-list input[type="checkbox"] {
-            width: 16px;
-            height: 16px;
-            accent-color: var(--primary);
-            cursor: pointer;
-        }
+        .required-popup .popup-content { text-align: center; padding: 6px 0; }
+        .required-popup .popup-content .big-icon { font-size: 46px; color: #f59e0b; margin-bottom: 8px; }
+        .required-popup .popup-content .popup-order { font-size: 20px; font-weight: 800; color: #0f172a; margin-bottom: 2px; }
+        .required-popup .popup-content .popup-person { font-size: 16px; color: #475569; margin-bottom: 12px; }
+        .required-popup .popup-content .popup-check { display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 15px; font-weight: 600; color: #0f172a; }
+        .required-popup .popup-content .popup-check input[type="checkbox"] { width: 20px; height: 20px; accent-color: #10b981; cursor: pointer; }
 
-        .toast-container {
-            position: fixed;
-            bottom: 30px;
-            left: 30px;
-            z-index: 99999;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            direction: rtl;
-        }
-        .toast {
-            padding: 14px 24px;
-            border-radius: 14px;
-            color: #fff;
-            font-weight: 700;
-            font-size: 14px;
-            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
-            animation: slideUp 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            min-width: 200px;
-        }
-        .toast.success { background: var(--success); }
-        .toast.error { background: var(--danger); }
-        .toast.info { background: var(--info); }
-        .toast.warning { background: var(--warning); }
+        .already-received-popup .popup-content { text-align: center; padding: 6px 0; }
+        .already-received-popup .popup-content .big-icon { font-size: 46px; color: #3b82f6; margin-bottom: 8px; }
+        .already-received-popup .popup-content .popup-order { font-size: 20px; font-weight: 800; color: #0f172a; margin-bottom: 4px; }
+        .already-received-popup .popup-content .popup-details { font-size: 15px; color: #475569; margin-bottom: 4px; }
+        .already-received-popup .popup-content .popup-details span { font-weight: 700; color: #0f172a; }
+        .already-received-popup .popup-content .popup-actions { margin-top: 18px; display: flex; gap: 12px; justify-content: center; }
 
-        @media (max-width: 992px) {
-            .main-content { margin-right: 0; }
-            .sidebar { transform: translateX(100%); }
-            .sidebar.visible { transform: translateX(0); }
-            .sidebar.hidden { transform: translateX(100%); }
-        }
-        @media (max-width: 768px) {
-            .header h1 { font-size: 17px; }
-            .table-controls { flex-direction: column; align-items: stretch; }
-            .search-box input { min-width: 120px; }
-            .data-table { min-width: 650px; }
-            .modal-box { padding: 18px; }
-            .col-vis-modal .col-check-list { grid-template-columns: 1fr; }
-        }
-        @media (max-width: 480px) {
-            .main-content { padding: 12px; }
-            .header { padding: 12px 16px; }
-            .table-container { padding: 14px 16px; }
-            .data-table { min-width: 500px; font-size: 11px; }
-            .data-table th, .data-table td { padding: 4px 4px; }
-        }
+        .delete-modal .popup-content { text-align: center; padding: 6px 0; }
+        .delete-modal .popup-content .big-icon { font-size: 46px; color: #ef4444; margin-bottom: 8px; }
+        .delete-modal .popup-content .popup-msg { font-size: 16px; color: #475569; margin-bottom: 6px; }
+        .delete-modal .popup-content .popup-sub { font-size: 13px; color: #94a3b8; margin-bottom: 16px; }
+        .delete-modal .popup-content .popup-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+
+        .confirm-add-popup .popup-content { text-align: center; padding: 6px 0; }
+        .confirm-add-popup .popup-content .big-icon { font-size: 46px; color: #4f46e5; margin-bottom: 8px; }
+        .confirm-add-popup .popup-content .popup-msg { font-size: 16px; color: #475569; margin-bottom: 6px; }
+        .confirm-add-popup .popup-content .popup-sub { font-size: 13px; color: #64748b; margin-bottom: 16px; }
+
+        .col-vis-modal .col-check-list { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 20px; margin: 12px 0; }
+        .col-vis-modal .col-check-list label { display: flex; align-items: center; gap: 6px; font-size: 13px; color: #0f172a; cursor: pointer; }
+        .col-vis-modal .col-check-list input[type="checkbox"] { width: 16px; height: 16px; accent-color: #4f46e5; cursor: pointer; }
+
+        .action-buttons { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 14px; }
+        .flex-center { display: flex; align-items: center; justify-content: center; }
+        .gap-6 { gap: 6px; }
+        .mt-8 { margin-top: 8px; }
+        .mb-8 { margin-bottom: 8px; }
+        .text-muted { color: #94a3b8; font-size: 12px; }
+        .fw-700 { font-weight: 700; }
+
+        .close-history { font-size: 12px; color: #64748b; background: #f1f5f9; padding: 4px 14px; border-radius: 30px; display: inline-block; }
+
+        .td-plus-cell { width: 36px; min-width: 36px; max-width: 36px; padding: 2px 4px !important; vertical-align: middle; text-align: center; }
+        .td-plus-cell .btn-plus { width: 22px; height: 22px; font-size: 13px; }
+
+        @media (max-width: 768px) { body { padding: 12px 12px 160px 12px; } .main-header { padding: 14px 16px; flex-direction: column; align-items: stretch; } .main-header h1 { font-size: 18px; } .header-actions { justify-content: center; } .tab-btn { padding: 8px 14px; font-size: 12px; } .data-table { font-size: 11px; min-width: 750px; } .data-table th, .data-table td { padding: 4px 4px; } .td-plus-cell { width: 28px; min-width: 28px; max-width: 28px; } .td-plus-cell .btn-plus { width: 18px; height: 18px; font-size: 10px; } .col-vis-modal .col-check-list { grid-template-columns: 1fr; } }
+        @media (max-width: 480px) { .main-header h1 { font-size: 16px; } .tab-btn { font-size: 11px; padding: 6px 10px; } .data-table { min-width: 600px; } }
     </style>
 </head>
 <body>
 
-    <div class="sidebar" id="sidebar"></div>
+<div class="app-container">
 
-    <div class="main-content" id="mainContent">
-        <div class="header">
-            <div class="header-left">
-                <button class="menu-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
-                <h1><i class="fas fa-archive"></i> جميع المرتجعات</h1>
-            </div>
-            <div class="user-info">
-                <i class="fas fa-user-circle"></i>
-                <span id="currentAdminName">مرحباً، مدير النظام</span>
-            </div>
-        </div>
-
-        <!-- Tabs -->
-        <div class="tabs-container">
-            <button class="tab-btn active" data-tab="tab-winjas" onclick="switchTab('tab-winjas')">
-                <i class="fas fa-truck"></i> وينجز <span class="count-badge" id="winjasCountTab">0</span>
+    <!-- ===== HEADER ===== -->
+    <header class="main-header">
+        <h1><i class="fas fa-boxes"></i> نظام إدارة المرتجعات</h1>
+        <div class="header-actions">
+            <button class="btn btn-success" onclick="exportAllReturns()">
+                <i class="fas fa-file-excel"></i> تصدير جميع المرتجعات
             </button>
-            <button class="tab-btn" data-tab="tab-xpress" onclick="switchTab('tab-xpress')">
-                <i class="fas fa-bolt"></i> شيركس <span class="count-badge" id="xpressCountTab">0</span>
+            <button class="btn btn-warning" onclick="openExportModal()">
+                <i class="fas fa-filter"></i> تصدير بتاريخ
+            </button>
+            <button class="btn btn-primary" onclick="refreshData()">
+                <i class="fas fa-sync"></i> تحديث
             </button>
         </div>
+    </header>
 
-        <!-- TAB: Winjas Returns -->
-        <div class="tab-content active" id="tab-winjas">
-            <div class="table-container">
-                <div class="section-header">
-                    <h3><i class="fas fa-truck"></i> مرتجعات وينجز</h3>
-                    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
-                        <span class="count-badge" id="winjasCount">0</span>
-                        <button class="btn btn-success btn-sm" onclick="exportTab('winjas')">
-                            <i class="fas fa-file-excel"></i> تصدير
-                        </button>
-                        <button class="btn-column-toggle" onclick="openColumnVisibility('winjas')">
-                            <i class="fas fa-eye"></i> أعمدة
-                        </button>
-                    </div>
+    <!-- ===== TABS ===== -->
+    <div class="tabs-container">
+        <button class="tab-btn active" data-tab="tab-shipping" onclick="switchTab('tab-shipping')">
+            <i class="fas fa-truck"></i> وينجز
+        </button>
+        <button class="tab-btn" data-tab="tab-xpress" onclick="switchTab('tab-xpress')">
+            <i class="fas fa-bolt"></i> شيركس
+        </button>
+        <button class="tab-btn" data-tab="tab-codes" onclick="switchTab('tab-codes')">
+            <i class="fas fa-barcode"></i> الأكواد والمصانع
+        </button>
+        <button class="tab-btn" data-tab="tab-required" onclick="switchTab('tab-required')">
+            <i class="fas fa-exclamation-triangle"></i> الأوردرات المطلوبة
+        </button>
+        <button class="tab-btn" data-tab="tab-all-returns" onclick="switchTab('tab-all-returns')">
+            <i class="fas fa-archive"></i> جميع المرتجعات
+        </button>
+    </div>
+
+    <!-- ========================================================== -->
+    <!-- TAB: WINJAS -->
+    <!-- ========================================================== -->
+    <div class="tab-content active" id="tab-shipping">
+        <div class="table-wrapper">
+            <div class="table-header-bar">
+                <h3><i class="fas fa-list"></i> بيانات وينجز</h3>
+                <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+                    <span class="count-badge" id="winjasCount">0</span>
+                    <button class="btn-column-toggle" onclick="openColumnVisibility('winjas')">
+                        <i class="fas fa-eye"></i> إظهار/إخفاء الأعمدة
+                    </button>
                 </div>
+            </div>
+            <div class="table-controls">
+                <div class="pagination">
+                    <button onclick="renderWinjasTable(currentWinjasPage-1)" id="winjasPrev" disabled><i class="fas fa-chevron-right"></i></button>
+                    <span class="page-info" id="winjasPageInfo">صفحة 1</span>
+                    <button onclick="renderWinjasTable(currentWinjasPage+1)" id="winjasNext"><i class="fas fa-chevron-left"></i></button>
+                </div>
+            </div>
+            <div style="overflow-x:auto;">
+                <table class="data-table" id="winjasTable">
+                    <thead>
+                        <tr>
+                            <th data-col="0">#</th>
+                            <th data-col="1">الاسم</th>
+                            <th data-col="2">رقم الموبيل</th>
+                            <th data-col="3">المحافظة</th>
+                            <th data-col="4">مصنع</th>
+                            <th data-col="5">كود المورد</th>
+                            <th data-col="6">كود اسباركل</th>
+                            <th data-col="7">الوصف</th>
+                            <th data-col="8">المقاس</th>
+                            <th data-col="9">عدد القطع</th>
+                            <th data-col="10">السعر</th>
+                            <th data-col="11">كود الشحن</th>
+                            <th data-col="12">كود الأوردر</th>
+                            <th data-col="13">الملحوظة</th>
+                            <th data-col="14">تاريخ العميله</th>
+                            <th data-col="15">تاريخ الوصول</th>
+                            <th data-col="16" style="width:36px;min-width:36px;">+</th>
+                            <th data-col="17">إجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody id="winjasTableBody">
+                        <tr><td colspan="18" class="empty-state"><i class="fas fa-inbox"></i><p>لا توجد بيانات</p></td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 
+    <!-- ========================================================== -->
+    <!-- TAB: XPRESS -->
+    <!-- ========================================================== -->
+    <div class="tab-content" id="tab-xpress">
+        <div class="table-wrapper">
+            <div class="table-header-bar">
+                <h3><i class="fas fa-list"></i> بيانات شيركس</h3>
+                <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+                    <span class="count-badge" id="xpressCount">0</span>
+                    <button class="btn-column-toggle" onclick="openColumnVisibility('xpress')">
+                        <i class="fas fa-eye"></i> إظهار/إخفاء الأعمدة
+                    </button>
+                </div>
+            </div>
+            <div class="table-controls">
+                <div class="pagination">
+                    <button onclick="renderXpressTable(currentXpressPage-1)" id="xpressPrev" disabled><i class="fas fa-chevron-right"></i></button>
+                    <span class="page-info" id="xpressPageInfo">صفحة 1</span>
+                    <button onclick="renderXpressTable(currentXpressPage+1)" id="xpressNext"><i class="fas fa-chevron-left"></i></button>
+                </div>
+            </div>
+            <div style="overflow-x:auto;">
+                <table class="data-table" id="xpressTable">
+                    <thead>
+                        <tr>
+                            <th data-col="0">#</th>
+                            <th data-col="1">الاسم</th>
+                            <th data-col="2">رقم الموبيل</th>
+                            <th data-col="3">المحافظة</th>
+                            <th data-col="4">مصنع</th>
+                            <th data-col="5">كود المورد</th>
+                            <th data-col="6">كود اسباركل</th>
+                            <th data-col="7">الوصف</th>
+                            <th data-col="8">المقاس</th>
+                            <th data-col="9">عدد القطع</th>
+                            <th data-col="10">السعر</th>
+                            <th data-col="11">كود الشحن</th>
+                            <th data-col="12">كود الأوردر</th>
+                            <th data-col="13">تاريخ الشحن</th>
+                            <th data-col="14">الملحوظة2</th>
+                            <th data-col="15">تاريخ العميله</th>
+                            <th data-col="16">تاريخ الوصول</th>
+                            <th data-col="17" style="width:36px;min-width:36px;">+</th>
+                            <th data-col="18">إجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody id="xpressTableBody">
+                        <tr><td colspan="19" class="empty-state"><i class="fas fa-inbox"></i><p>لا توجد بيانات</p></td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================================== -->
+    <!-- TAB: CODES -->
+    <!-- ========================================================== -->
+    <div class="tab-content" id="tab-codes">
+        <div class="table-wrapper">
+            <div class="table-header-bar">
+                <h3><i class="fas fa-barcode"></i> الأكواد والمصانع</h3>
+                <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                    <button class="btn btn-success" style="padding:5px 14px;border:none;border-radius:8px;cursor:pointer;font-weight:600;font-size:12px;font-family:'Cairo',sans-serif;" onclick="addCodeRow()">
+                        <i class="fas fa-plus"></i> إضافة كود
+                    </button>
+                    <button class="btn btn-warning" style="padding:5px 14px;border:none;border-radius:8px;cursor:pointer;font-weight:600;font-size:12px;font-family:'Cairo',sans-serif;" onclick="checkDuplicateCodes()">
+                        <i class="fas fa-search"></i> فحص المكررات
+                    </button>
+                </div>
+            </div>
+            <div style="overflow-x:auto;">
+                <table class="data-table" id="codesTable">
+                    <thead>
+                        <tr>
+                            <th>المصنع</th>
+                            <th>الكود</th>
+                            <th>اسم القطعة</th>
+                            <th>إجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody id="codesTableBody">
+                        <tr><td colspan="4" class="empty-state"><i class="fas fa-inbox"></i><p>لا توجد أكواد</p></td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================================== -->
+    <!-- TAB: REQUIRED ORDERS -->
+    <!-- ========================================================== -->
+    <div class="tab-content" id="tab-required">
+        <div class="required-grid">
+            <div class="required-panel">
+                <h4><i class="fas fa-plus-circle"></i> إضافة أوردر مطلوب</h4>
+                <div class="input-group">
+                    <input type="text" id="reqOrderCode" placeholder="كود الأوردر" />
+                    <input type="text" id="reqPersonName" placeholder="اسم الشخص المطلوب" />
+                    <button class="btn btn-warning" onclick="addRequiredOrder()">
+                        <i class="fas fa-plus"></i> إضافة
+                    </button>
+                </div>
+                <button class="btn btn-outline" style="color:#64748b;border-color:#e2e8f0;padding:4px 14px;border-radius:8px;border:1px solid #e2e8f0;background:transparent;cursor:pointer;font-family:'Cairo',sans-serif;font-weight:600;font-size:12px;" onclick="clearAllRequired()">
+                    <i class="fas fa-trash"></i> مسح الكل
+                </button>
+            </div>
+            <div class="required-panel">
+                <h4><i class="fas fa-list"></i> الأوردرات المطلوبة <span class="count-badge" id="requiredCount">0</span></h4>
+                <div class="required-list" id="requiredList"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================================== -->
+    <!-- TAB: ALL RETURNS -->
+    <!-- ========================================================== -->
+    <div class="tab-content" id="tab-all-returns">
+        <div class="action-buttons">
+            <button class="btn btn-primary" onclick="closeDailyReturns()">
+                <i class="fas fa-lock"></i> تقفيل مرتجعات اليوم
+            </button>
+            <button class="btn btn-success" onclick="exportAllReturns()">
+                <i class="fas fa-file-excel"></i> تصدير الكل
+            </button>
+            <button class="btn btn-warning" onclick="openExportModal()">
+                <i class="fas fa-calendar-alt"></i> تصدير بتاريخ
+            </button>
+            <span class="close-history" id="lastCloseInfo">آخر تقفيل: --</span>
+        </div>
+
+        <div class="sub-tabs">
+            <button class="sub-tab active" data-sub="sub-winjas" onclick="switchSubTab('sub-winjas')">
+                <i class="fas fa-truck"></i> وينجز
+            </button>
+            <button class="sub-tab" data-sub="sub-xpress" onclick="switchSubTab('sub-xpress')">
+                <i class="fas fa-bolt"></i> شيركس
+            </button>
+        </div>
+
+        <div class="sub-content active" id="sub-winjas">
+            <div class="table-wrapper">
+                <div class="table-header-bar">
+                    <h3><i class="fas fa-archive"></i> مرتجعات وينجز</h3>
+                    <span class="count-badge" id="allWinjasCount">0</span>
+                </div>
                 <div class="table-controls">
-                    <div class="controls-left">
-                        <div class="search-box">
-                            <input type="text" id="winjasSearch" placeholder="بحث..." oninput="renderWinjasTable(1)">
-                            <button onclick="document.getElementById('winjasSearch').value='';renderWinjasTable(1);">
-                                <i class="fas fa-times"></i>
-                            </button>
-                        </div>
-                        <button class="btn btn-sm btn-outline" onclick="renderWinjasTable(1)">
-                            <i class="fas fa-sync"></i> تحديث
+                    <div class="search-box">
+                        <input type="text" id="allWinjasSearch" placeholder="بحث..." oninput="renderAllWinjasTable(1)" />
+                        <button class="btn-sm" onclick="document.getElementById('allWinjasSearch').value='';renderAllWinjasTable(1);" style="background:#f1f5f9;color:#64748b;">
+                            <i class="fas fa-times"></i>
                         </button>
                     </div>
-                    <div class="controls-right">
-                        <div class="pagination">
-                            <select id="winjasPageSize" onchange="renderWinjasTable(1)">
-                                <option value="20">20</option>
-                                <option value="50" selected>50</option>
-                                <option value="100">100</option>
-                                <option value="500">500</option>
-                                <option value="1000">1000</option>
-                            </select>
-                            <button onclick="renderWinjasTable(currentWinjasPage-1)" id="winjasPrev" disabled>
-                                <i class="fas fa-chevron-right"></i>
-                            </button>
-                            <span class="page-info" id="winjasPageInfo">صفحة 1</span>
-                            <button onclick="renderWinjasTable(currentWinjasPage+1)" id="winjasNext">
-                                <i class="fas fa-chevron-left"></i>
-                            </button>
-                        </div>
+                    <div class="pagination">
+                        <select id="allWinjasPageSize" onchange="renderAllWinjasTable(1)">
+                            <option value="20">20</option>
+                            <option value="50" selected>50</option>
+                            <option value="100">100</option>
+                            <option value="500">500</option>
+                            <option value="1000">1000</option>
+                        </select>
+                        <button onclick="renderAllWinjasTable(currentAllWinjasPage-1)" id="allWinjasPrev" disabled><i class="fas fa-chevron-right"></i></button>
+                        <span class="page-info" id="allWinjasPageInfo">صفحة 1</span>
+                        <button onclick="renderAllWinjasTable(currentAllWinjasPage+1)" id="allWinjasNext"><i class="fas fa-chevron-left"></i></button>
                     </div>
                 </div>
-
                 <div style="overflow-x:auto;">
-                    <table class="data-table" id="winjasTable">
-                        <thead id="winjasTableHead">
+                    <table class="data-table" id="allWinjasTable">
+                        <thead>
                             <tr>
-                                <th data-col="0">#</th>
-                                <th data-col="1">الاسم</th>
-                                <th data-col="2">رقم الموبيل</th>
-                                <th data-col="3">المحافظة</th>
-                                <th data-col="4">مصنع</th>
-                                <th data-col="5">كود المورد</th>
-                                <th data-col="6">كود اسباركل</th>
-                                <th data-col="7">الوصف</th>
-                                <th data-col="8">المقاس</th>
-                                <th data-col="9">عدد القطع</th>
-                                <th data-col="10">السعر</th>
-                                <th data-col="11">كود الشحن</th>
-                                <th data-col="12">كود الأوردر</th>
-                                <th data-col="13">الملحوظة</th>
-                                <th data-col="14">تاريخ العميله</th>
-                                <th data-col="15">تاريخ الوصول</th>
-                                <th data-col="16">رقم المرتجع</th>
+                                <th>#</th>
+                                <th>الاسم</th>
+                                <th>رقم الموبيل</th>
+                                <th>المحافظة</th>
+                                <th>مصنع</th>
+                                <th>كود المورد</th>
+                                <th>كود اسباركل</th>
+                                <th>الوصف</th>
+                                <th>المقاس</th>
+                                <th>عدد القطع</th>
+                                <th>السعر</th>
+                                <th>كود الشحن</th>
+                                <th>كود الأوردر</th>
+                                <th>الملحوظة</th>
+                                <th>تاريخ العميله</th>
+                                <th>تاريخ الوصول</th>
                             </tr>
                         </thead>
-                        <tbody id="winjasTableBody">
-                            <tr><td colspan="17" class="empty-state"><i class="fas fa-inbox"></i><p>لا توجد مرتجعات</p></td></tr>
+                        <tbody id="allWinjasTableBody">
+                            <tr><td colspan="16" class="empty-state"><i class="fas fa-inbox"></i><p>لا توجد مرتجعات</p></td></tr>
                         </tbody>
                     </table>
                 </div>
             </div>
         </div>
 
-        <!-- TAB: Xpress Returns -->
-        <div class="tab-content" id="tab-xpress">
-            <div class="table-container">
-                <div class="section-header">
-                    <h3><i class="fas fa-bolt"></i> مرتجعات شيركس</h3>
-                    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
-                        <span class="count-badge" id="xpressCount">0</span>
-                        <button class="btn btn-success btn-sm" onclick="exportTab('xpress')">
-                            <i class="fas fa-file-excel"></i> تصدير
-                        </button>
-                        <button class="btn-column-toggle" onclick="openColumnVisibility('xpress')">
-                            <i class="fas fa-eye"></i> أعمدة
-                        </button>
-                    </div>
+        <div class="sub-content" id="sub-xpress">
+            <div class="table-wrapper">
+                <div class="table-header-bar">
+                    <h3><i class="fas fa-archive"></i> مرتجعات شيركس</h3>
+                    <span class="count-badge" id="allXpressCount">0</span>
                 </div>
-
                 <div class="table-controls">
-                    <div class="controls-left">
-                        <div class="search-box">
-                            <input type="text" id="xpressSearch" placeholder="بحث..." oninput="renderXpressTable(1)">
-                            <button onclick="document.getElementById('xpressSearch').value='';renderXpressTable(1);">
-                                <i class="fas fa-times"></i>
-                            </button>
-                        </div>
-                        <button class="btn btn-sm btn-outline" onclick="renderXpressTable(1)">
-                            <i class="fas fa-sync"></i> تحديث
+                    <div class="search-box">
+                        <input type="text" id="allXpressSearch" placeholder="بحث..." oninput="renderAllXpressTable(1)" />
+                        <button class="btn-sm" onclick="document.getElementById('allXpressSearch').value='';renderAllXpressTable(1);" style="background:#f1f5f9;color:#64748b;">
+                            <i class="fas fa-times"></i>
                         </button>
                     </div>
-                    <div class="controls-right">
-                        <div class="pagination">
-                            <select id="xpressPageSize" onchange="renderXpressTable(1)">
-                                <option value="20">20</option>
-                                <option value="50" selected>50</option>
-                                <option value="100">100</option>
-                                <option value="500">500</option>
-                                <option value="1000">1000</option>
-                            </select>
-                            <button onclick="renderXpressTable(currentXpressPage-1)" id="xpressPrev" disabled>
-                                <i class="fas fa-chevron-right"></i>
-                            </button>
-                            <span class="page-info" id="xpressPageInfo">صفحة 1</span>
-                            <button onclick="renderXpressTable(currentXpressPage+1)" id="xpressNext">
-                                <i class="fas fa-chevron-left"></i>
-                            </button>
-                        </div>
+                    <div class="pagination">
+                        <select id="allXpressPageSize" onchange="renderAllXpressTable(1)">
+                            <option value="20">20</option>
+                            <option value="50" selected>50</option>
+                            <option value="100">100</option>
+                            <option value="500">500</option>
+                            <option value="1000">1000</option>
+                        </select>
+                        <button onclick="renderAllXpressTable(currentAllXpressPage-1)" id="allXpressPrev" disabled><i class="fas fa-chevron-right"></i></button>
+                        <span class="page-info" id="allXpressPageInfo">صفحة 1</span>
+                        <button onclick="renderAllXpressTable(currentAllXpressPage+1)" id="allXpressNext"><i class="fas fa-chevron-left"></i></button>
                     </div>
                 </div>
-
                 <div style="overflow-x:auto;">
-                    <table class="data-table" id="xpressTable">
-                        <thead id="xpressTableHead">
+                    <table class="data-table" id="allXpressTable">
+                        <thead>
                             <tr>
-                                <th data-col="0">#</th>
-                                <th data-col="1">الاسم</th>
-                                <th data-col="2">رقم الموبيل</th>
-                                <th data-col="3">المحافظة</th>
-                                <th data-col="4">مصنع</th>
-                                <th data-col="5">كود المورد</th>
-                                <th data-col="6">كود اسباركل</th>
-                                <th data-col="7">الوصف</th>
-                                <th data-col="8">المقاس</th>
-                                <th data-col="9">عدد القطع</th>
-                                <th data-col="10">السعر</th>
-                                <th data-col="11">كود الشحن</th>
-                                <th data-col="12">كود الأوردر</th>
-                                <th data-col="13">تاريخ الشحن</th>
-                                <th data-col="14">الملحوظة2</th>
-                                <th data-col="15">تاريخ العميله</th>
-                                <th data-col="16">تاريخ الوصول</th>
-                                <th data-col="17">رقم المرتجع</th>
+                                <th>#</th>
+                                <th>الاسم</th>
+                                <th>رقم الموبيل</th>
+                                <th>المحافظة</th>
+                                <th>مصنع</th>
+                                <th>كود المورد</th>
+                                <th>كود اسباركل</th>
+                                <th>الوصف</th>
+                                <th>المقاس</th>
+                                <th>عدد القطع</th>
+                                <th>السعر</th>
+                                <th>كود الشحن</th>
+                                <th>كود الأوردر</th>
+                                <th>تاريخ الشحن</th>
+                                <th>الملحوظة2</th>
+                                <th>تاريخ العميله</th>
+                                <th>تاريخ الوصول</th>
                             </tr>
                         </thead>
-                        <tbody id="xpressTableBody">
-                            <tr><td colspan="18" class="empty-state"><i class="fas fa-inbox"></i><p>لا توجد مرتجعات</p></td></tr>
+                        <tbody id="allXpressTableBody">
+                            <tr><td colspan="17" class="empty-state"><i class="fas fa-inbox"></i><p>لا توجد مرتجعات</p></td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -819,13 +563,14 @@
         </div>
     </div>
 
+    <!-- ===== MODALS ===== -->
     <!-- Export Modal -->
     <div class="modal-overlay" id="exportModal">
         <div class="modal-box">
             <button class="modal-close" onclick="closeExportModal()"><i class="fas fa-times"></i></button>
             <h3><i class="fas fa-file-export"></i> تصدير المرتجعات</h3>
             <div class="form-group">
-                <label>الشركة</label>
+                <label>شركة الشحن</label>
                 <select id="exportCompany">
                     <option value="all">الكل</option>
                     <option value="winjas">وينجز</option>
@@ -835,16 +580,111 @@
             <div class="form-row">
                 <div class="form-group">
                     <label>من تاريخ</label>
-                    <input type="date" id="exportDateFrom">
+                    <input type="date" id="exportDateFrom" />
                 </div>
                 <div class="form-group">
                     <label>إلى تاريخ</label>
-                    <input type="date" id="exportDateTo">
+                    <input type="date" id="exportDateTo" />
+                </div>
+                <div class="form-group" style="display:flex;align-items:flex-end;">
+                    <button class="btn btn-success" onclick="exportWithDate()" style="width:100%;padding:8px 18px;border:none;border-radius:8px;cursor:pointer;font-size:13px;font-weight:700;font-family:'Cairo',sans-serif;display:flex;align-items:center;gap:6px;justify-content:center;background:linear-gradient(135deg,#10b981,#059669);color:#fff;">
+                        <i class="fas fa-file-excel"></i> تصدير
+                    </button>
                 </div>
             </div>
             <div class="modal-actions">
-                <button class="btn btn-outline" onclick="closeExportModal()">إلغاء</button>
-                <button class="btn btn-success" onclick="exportWithDate()"><i class="fas fa-file-excel"></i> تصدير</button>
+                <button class="btn btn-outline" onclick="closeExportModal()" style="padding:8px 18px;border:2px solid #e2e8f0;border-radius:8px;cursor:pointer;font-size:13px;font-weight:700;font-family:'Cairo',sans-serif;background:transparent;color:#64748b;">إلغاء</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Required Popup -->
+    <div class="modal-overlay" id="requiredPopup">
+        <div class="modal-box required-popup">
+            <button class="modal-close" onclick="closeRequiredPopup()"><i class="fas fa-times"></i></button>
+            <h3><i class="fas fa-exclamation-triangle" style="color:#f59e0b;"></i> تنبيه: أوردر مطلوب</h3>
+            <div class="popup-content">
+                <div class="big-icon"><i class="fas fa-user-clock"></i></div>
+                <div class="popup-order" id="popupOrderCode">---</div>
+                <div class="popup-person" id="popupPersonName">---</div>
+                <div class="popup-check">
+                    <label for="popupDeliveredCheck">تم التسليم للشخص المطلوب</label>
+                    <input type="checkbox" id="popupDeliveredCheck" />
+                </div>
+                <div style="margin-top:16px;display:flex;gap:10px;justify-content:center;">
+                    <button class="btn btn-success" onclick="confirmRequiredDelivery()">
+                        <i class="fas fa-check"></i> تأكيد
+                    </button>
+                    <button class="btn btn-outline" onclick="closeRequiredPopup()" style="border-color:#e2e8f0;color:#64748b;">
+                        <i class="fas fa-times"></i> إغلاق
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Already Received Popup -->
+    <div class="modal-overlay" id="alreadyReceivedPopup">
+        <div class="modal-box already-received-popup">
+            <button class="modal-close" onclick="closeAlreadyReceivedPopup()"><i class="fas fa-times"></i></button>
+            <h3><i class="fas fa-info-circle" style="color:#3b82f6;"></i> تم استلام هذا الأوردر مسبقاً</h3>
+            <div class="popup-content">
+                <div class="big-icon"><i class="fas fa-check-circle"></i></div>
+                <div class="popup-order" id="alreadyOrderCode">---</div>
+                <div class="popup-details" id="alreadyCustomerName">العميل: <span>--</span></div>
+                <div class="popup-details" id="alreadyReceiveDate">تاريخ الاستلام: <span>--</span></div>
+                <div class="popup-details" id="alreadyCompany">شركة الشحن: <span>--</span></div>
+                <div class="popup-actions">
+                    <button class="btn btn-outline" onclick="closeAlreadyReceivedPopup()" style="border-color:#e2e8f0;color:#64748b;">إغلاق</button>
+                    <button class="btn btn-warning" onclick="forceAddRequiredOrder()" id="forceAddBtn">
+                        <i class="fas fa-plus"></i> إضافة مع ذلك
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Modal -->
+    <div class="modal-overlay" id="deleteModal">
+        <div class="modal-box delete-modal">
+            <button class="modal-close" onclick="closeDeleteModal()"><i class="fas fa-times"></i></button>
+            <h3><i class="fas fa-trash" style="color:#ef4444;"></i> حذف الصف</h3>
+            <div class="popup-content">
+                <div class="big-icon"><i class="fas fa-exclamation-circle"></i></div>
+                <div class="popup-msg" id="deleteMsg">اختر نوع الحذف:</div>
+                <div class="popup-sub" id="deleteSub">سيتم حذف القطعة المحددة أو الأوردر بالكامل.</div>
+                <div class="popup-actions">
+                    <button class="btn btn-outline" onclick="closeDeleteModal()" style="border-color:#e2e8f0;color:#64748b;">
+                        <i class="fas fa-times"></i> إلغاء
+                    </button>
+                    <button class="btn btn-danger" onclick="confirmDeleteCustomer()">
+                        <i class="fas fa-user-minus"></i> حذف العميل والقطع
+                    </button>
+                    <button class="btn btn-warning" onclick="confirmDeleteSingleItem()">
+                        <i class="fas fa-cube"></i> حذف القطعة فقط
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirm Add Popup -->
+    <div class="modal-overlay" id="confirmAddPopup">
+        <div class="modal-box confirm-add-popup">
+            <button class="modal-close" onclick="closeConfirmAddPopup()"><i class="fas fa-times"></i></button>
+            <h3><i class="fas fa-plus-circle" style="color:#4f46e5;"></i> تأكيد الإضافة</h3>
+            <div class="popup-content">
+                <div class="big-icon"><i class="fas fa-question-circle"></i></div>
+                <div class="popup-msg" id="confirmAddMsg">هل تريد إضافة هذه القطع إلى آخر أوردر؟</div>
+                <div class="popup-sub" id="confirmAddSub">سيتم إضافة القطع إلى الأوردر المحدد.</div>
+                <div class="popup-actions">
+                    <button class="btn btn-outline" onclick="closeConfirmAddPopup()" style="border-color:#e2e8f0;color:#64748b;">
+                        <i class="fas fa-times"></i> إلغاء
+                    </button>
+                    <button class="btn btn-success" onclick="confirmAddToLastOrder()">
+                        <i class="fas fa-check"></i> تأكيد
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -856,651 +696,1780 @@
             <h3><i class="fas fa-eye"></i> إظهار/إخفاء الأعمدة</h3>
             <div id="colVisList" class="col-check-list"></div>
             <div class="modal-actions">
-                <button class="btn btn-outline" onclick="closeColVisModal()">إلغاء</button>
+                <button class="btn btn-outline" onclick="closeColVisModal()" style="border-color:#e2e8f0;color:#64748b;">إغلاق</button>
                 <button class="btn btn-primary" onclick="applyColVis()">تطبيق</button>
             </div>
+        </div>
+    </div>
+
+    <!-- ===== STICKY INPUT AREA ===== -->
+    <div class="sticky-input-area" id="stickyInputArea">
+        <div class="input-card">
+            <div class="card-label">
+                <i class="fas fa-user"></i> بيانات العميل
+                <span class="badge-sticky" id="stickyCompanyLabel">وينجز</span>
+            </div>
+            <textarea id="stickyShipmentArea" placeholder="مثال:&#10;اسم العميل : محمد أحمد&#10;تليفون العميل : 01012345678&#10;الموقع : القاهرة&#10;الرقم التسلسلي : 12345&#10;الرقم المرجعي : REF-001&#10;تاريخ اخر تعديل : 2026-07-30"></textarea>
+            <div class="input-status" id="shipmentStatus"></div>
+        </div>
+        <div class="input-card">
+            <div class="card-label">
+                <i class="fas fa-cube"></i> بيانات القطع
+                <span class="badge-sticky" id="stickyProductsLabel">وينجز</span>
+            </div>
+            <textarea id="stickyProductsArea" placeholder="مثال:&#10;Image for Product 1&#10;قميص رجالي&#10;SKU&#10;ABC123&#10;×&#10;2&#10;Unit price E£ 150.00"></textarea>
+            <div class="input-status" id="productsStatus"></div>
         </div>
     </div>
 
     <!-- Toast -->
     <div class="toast-container" id="toastContainer"></div>
 
-    <script src="main.js"></script>
+</div>
 
-    <script>
-        // ============================================================
-        // STATE
-        // ============================================================
-        let winjasData = [];
-        let xpressData = [];
-        let currentWinjasPage = 1;
-        let currentXpressPage = 1;
-        let winjasSort = { field: null, asc: true };
-        let xpressSort = { field: null, asc: true };
+<script>
+// ============================================================
+// MAIN APPLICATION SCRIPT (using Google Sheets API)
+// ============================================================
 
-        // Column visibility state
-        const WINJAS_COLS = ['#', 'الاسم', 'رقم الموبيل', 'المحافظة', 'مصنع', 'كود المورد', 'كود اسباركل',
-            'الوصف', 'المقاس', 'عدد القطع', 'السعر', 'كود الشحن', 'كود الأوردر', 'الملحوظة',
-            'تاريخ العميله', 'تاريخ الوصول', 'رقم المرتجع'
-        ];
-        const XPRESS_COLS = ['#', 'الاسم', 'رقم الموبيل', 'المحافظة', 'مصنع', 'كود المورد', 'كود اسباركل',
-            'الوصف', 'المقاس', 'عدد القطع', 'السعر', 'كود الشحن', 'كود الأوردر', 'تاريخ الشحن',
-            'الملحوظة2', 'تاريخ العميله', 'تاريخ الوصول', 'رقم المرتجع'
-        ];
+// Global state (cached data from sheets)
+let winjasData = [];
+let xpressData = [];
+let codesData = [];
+let requiredData = [];
+let allWinjasData = [];
+let allXpressData = [];
 
-        // ============================================================
-        // HELPERS
-        // ============================================================
-        function toggleSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            const mainContent = document.getElementById('mainContent');
-            sidebar.classList.toggle('hidden');
-            sidebar.classList.toggle('visible');
-            mainContent.classList.toggle('sidebar-hidden');
+// Pagination state
+let currentWinjasPage = 1;
+let currentXpressPage = 1;
+let currentAllWinjasPage = 1;
+let currentAllXpressPage = 1;
+const ACTIVE_PAGE_SIZE = 50;
+
+// ============================================================
+// HELPER FUNCTIONS
+// ============================================================
+function genId() { return Date.now().toString(36) + Math.random().toString(36).substr(2, 6); }
+function getNow() { return new Date().toISOString().replace('T', ' ').slice(0, 19); }
+function getToday() { return new Date().toISOString().slice(0, 10); }
+
+function formatDateTime(iso) {
+    if (!iso) return '-';
+    try {
+        const d = new Date(iso);
+        if (isNaN(d)) return '-';
+        const dd = String(d.getDate()).padStart(2, '0');
+        const mm = String(d.getMonth() + 1).padStart(2, '0');
+        const yyyy = d.getFullYear();
+        const hh = String(d.getHours()).padStart(2, '0');
+        const min = String(d.getMinutes()).padStart(2, '0');
+        const ss = String(d.getSeconds()).padStart(2, '0');
+        return dd + '/' + mm + '/' + yyyy + ' ' + hh + ':' + min + ':' + ss;
+    } catch (_) { return '-'; }
+}
+
+function showToast(msg, type = 'success') {
+    const c = document.getElementById('toastContainer');
+    const t = document.createElement('div');
+    t.className = 'toast ' + type;
+    const icon = type === 'success' ? 'fa-check-circle' :
+                 type === 'error' ? 'fa-exclamation-circle' :
+                 type === 'warning' ? 'fa-exclamation-triangle' : 'fa-info-circle';
+    t.innerHTML = `<i class="fas ${icon}"></i> ${msg}`;
+    c.appendChild(t);
+    setTimeout(() => {
+        t.style.opacity = '0';
+        t.style.transform = 'translateY(20px)';
+        setTimeout(() => t.remove(), 400);
+    }, 3000);
+}
+
+function extractVal(text, key) {
+    const pattern = new RegExp(key + '\\s*:?\\s*\\n?\\s*:?\\s*(.+)', 'i');
+    const m = text.match(pattern);
+    return m ? m[1].trim() : '';
+}
+
+function normalizeSize(s) {
+    s = s.toUpperCase();
+    if (s === 'XXL') return '2XL';
+    if (s === 'XXXL') return '3XL';
+    if (s === 'XXXXL') return '4XL';
+    if (s === 'XXXXXL') return '5XL';
+    if (s === 'XXXXXXL') return '6XL';
+    return s;
+}
+
+function extractSize(line) {
+    const m = line.match(/\b(\d?X{1,4}L|XS|S|M|L|XL)\b/i);
+    return m ? normalizeSize(m[1]) : '';
+}
+
+function extractPrice(line) {
+    if (line.includes('Unit price')) {
+        const m = line.match(/E£\s*([\d,\.]+)/);
+        if (m) return m[1].replace(/,/g, '');
+    }
+    return '';
+}
+
+function getFactoryBySKU(sku) {
+    if (!sku) return null;
+    for (const c of codesData) {
+        if (String(c.code).trim() === String(sku).trim()) return c.factory;
+    }
+    return null;
+}
+
+function getProductNameBySKU(sku) {
+    if (!sku) return null;
+    for (const c of codesData) {
+        if (String(c.code).trim() === String(sku).trim()) return c.productName || '';
+    }
+    return null;
+}
+
+function addNewSKU(factory, sku, productName) {
+    if (!sku) return;
+    for (const c of codesData) {
+        if (String(c.code).trim() === String(sku).trim()) {
+            if (factory) c.factory = factory;
+            if (productName) c.productName = productName;
+            saveCodes();
+            return;
         }
+    }
+    codesData.push({ id: genId(), factory: factory || 'NEW_FACTORY', code: sku, productName: productName || '' });
+    saveCodes();
+}
 
-        document.addEventListener('click', function(event) {
-            const sidebar = document.getElementById('sidebar');
-            const menuToggle = document.querySelector('.menu-toggle');
-            const mainContent = document.getElementById('mainContent');
-
-            const isSidebarVisible = sidebar.classList.contains('visible') && !sidebar.classList.contains('hidden');
-
-            if (isSidebarVisible) {
-                const isClickInsideSidebar = sidebar.contains(event.target);
-                const isClickOnMenuToggle = menuToggle && menuToggle.contains(event.target);
-
-                if (!isClickInsideSidebar && !isClickOnMenuToggle) {
-                    sidebar.classList.add('hidden');
-                    sidebar.classList.remove('visible');
-                    mainContent.classList.remove('sidebar-hidden');
-                }
-            }
-        });
-
-        window.addEventListener('resize', function() {
-            const sidebar = document.getElementById('sidebar');
-            const mainContent = document.getElementById('mainContent');
-
-            if (window.innerWidth > 992) {
-                sidebar.classList.remove('hidden');
-                sidebar.classList.remove('visible');
-                mainContent.classList.remove('sidebar-hidden');
-            } else {
-                sidebar.classList.add('hidden');
-                sidebar.classList.remove('visible');
-                mainContent.classList.add('sidebar-hidden');
-            }
-        });
-
-        function showToast(msg, type = 'success') {
-            const c = document.getElementById('toastContainer');
-            const t = document.createElement('div');
-            t.className = 'toast ' + type;
-            const icon = type === 'success' ? 'fa-check-circle' :
-                type === 'error' ? 'fa-exclamation-circle' :
-                type === 'warning' ? 'fa-exclamation-triangle' : 'fa-info-circle';
-            t.innerHTML = `<i class="fas ${icon}"></i> ${msg}`;
-            c.appendChild(t);
-            setTimeout(() => {
-                t.style.opacity = '0';
-                t.style.transform = 'translateY(20px)';
-                setTimeout(() => t.remove(), 400);
-            }, 3000);
+function updateCodeInfo(sku, factory, productName) {
+    if (!sku) return;
+    for (const c of codesData) {
+        if (String(c.code).trim() === String(sku).trim()) {
+            if (factory) c.factory = factory;
+            if (productName) c.productName = productName;
+            saveCodes();
+            return;
         }
+    }
+    codesData.push({ id: genId(), factory: factory || 'NEW_FACTORY', code: sku, productName: productName || '' });
+    saveCodes();
+}
 
-        function formatDateTime(iso) {
-            if (!iso) return '-';
-            try {
-                const d = new Date(iso);
-                if (isNaN(d)) return '-';
-                const dd = String(d.getDate()).padStart(2, '0');
-                const mm = String(d.getMonth() + 1).padStart(2, '0');
-                const yyyy = d.getFullYear();
-                const hh = String(d.getHours()).padStart(2, '0');
-                const min = String(d.getMinutes()).padStart(2, '0');
-                return dd + '/' + mm + '/' + yyyy + ' ' + hh + ':' + min;
-            } catch (_) { return '-'; }
+function isOrderRequired(orderNo) {
+    if (!orderNo) return false;
+    return requiredData.some(o => String(o.orderCode).trim() === String(orderNo).trim() && !o.delivered);
+}
+
+function getRequiredOrder(orderNo) {
+    if (!orderNo) return null;
+    return requiredData.find(o => String(o.orderCode).trim() === String(orderNo).trim() && !o.delivered) || null;
+}
+
+function getGovFromAddress(location) {
+    const govs = ['اسيوط', 'الاسكندريه', 'البحيره', 'الجيزه', 'السويس', 'الشرقيه', 'القاهره',
+        'القليوبيه', 'المنصوره', 'المنوفيه', 'المنيا', 'بني سويف', 'جنوب سيناء',
+        'حلوان', 'دقهلية', 'دمياط', 'كفر الشيخ', 'الغربيه', 'المحله الكبري',
+        'الاسماعيليه', 'بورسعيد', 'الاقصر', 'اسوان', 'سوهاج', 'الغردقه',
+        'مرسي مطروح', 'الفيوم'
+    ];
+    if (!location) return '';
+    const norm = location.toString().toLowerCase()
+        .replace(/أ|إ|آ/g, 'ا').replace(/ة/g, 'ه').replace(/ى/g, 'ي');
+    for (const g of govs) {
+        const ng = g.toString().toLowerCase()
+            .replace(/أ|إ|آ/g, 'ا').replace(/ة/g, 'ه').replace(/ى/g, 'ي');
+        if (norm.includes(ng)) return g;
+    }
+    return '';
+}
+
+function getGroupKey(row) {
+    return (row.orderCode || '') + '|' + (row.name || '') + '|' + (row.phone || '');
+}
+
+function getRowsByGroupKey(arr, key) {
+    return arr.filter(r => getGroupKey(r) === key);
+}
+
+// ============================================================
+// DATA LOAD & SAVE (using the api.js functions)
+// ============================================================
+async function loadAllData() {
+    try {
+        await ensureSheetsExist();
+        const [win, xp, codes, req, allWin, allXp] = await Promise.all([
+            getWinjas(),
+            getXpress(),
+            getCodes(),
+            getRequired(),
+            getAllWinjas(),
+            getAllXpress()
+        ]);
+        winjasData = win;
+        xpressData = xp;
+        codesData = codes;
+        requiredData = req;
+        allWinjasData = allWin;
+        allXpressData = allXp;
+        return true;
+    } catch (e) {
+        // Silent fail - user doesn't need to know about backend
+        return false;
+    }
+}
+
+async function saveWinjas() { await setWinjas(winjasData); }
+async function saveXpress() { await setXpress(xpressData); }
+async function saveCodes() { await setCodes(codesData); }
+async function saveRequired() { await setRequired(requiredData); }
+async function saveAllWinjas() { await setAllWinjas(allWinjasData); }
+async function saveAllXpress() { await setAllXpress(allXpressData); }
+
+async function saveAll() {
+    await Promise.all([
+        saveWinjas(),
+        saveXpress(),
+        saveCodes(),
+        saveRequired(),
+        saveAllWinjas(),
+        saveAllXpress()
+    ]);
+}
+
+// ============================================================
+// RENDER TABLES (using global data)
+// ============================================================
+
+// WINJAS TABLE
+function renderWinjasTable(page) {
+    let data = winjasData.filter(r => !r.isReturn);
+    const totalItems = data.length;
+    const totalPages = Math.ceil(totalItems / ACTIVE_PAGE_SIZE) || 1;
+    if (page < 1) page = 1;
+    if (page > totalPages) page = totalPages;
+    currentWinjasPage = page;
+
+    const start = (page - 1) * ACTIVE_PAGE_SIZE;
+    const end = Math.min(start + ACTIVE_PAGE_SIZE, totalItems);
+    const pageData = data.slice(start, end);
+
+    const tbody = document.getElementById('winjasTableBody');
+    document.getElementById('winjasCount').textContent = totalItems;
+
+    if (pageData.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="18" class="empty-state"><i class="fas fa-inbox"></i><p>لا توجد بيانات</p></td></tr>';
+        applyColumnVisibility('winjas');
+        document.getElementById('winjasPageInfo').textContent = `صفحة ${page} من ${totalPages}`;
+        document.getElementById('winjasPrev').disabled = page <= 1;
+        document.getElementById('winjasNext').disabled = page >= totalPages;
+        return;
+    }
+
+    let html = '';
+    let rowNum = start + 1;
+    const groups = {};
+    for (const r of pageData) {
+        const key = getGroupKey(r);
+        if (!groups[key]) groups[key] = [];
+        groups[key].push(r);
+    }
+    const groupKeys = Object.keys(groups);
+    for (let gi = 0; gi < groupKeys.length; gi++) {
+        const key = groupKeys[gi];
+        const rows = groups[key];
+        for (let i = 0; i < rows.length; i++) {
+            const r = rows[i];
+            const isFirst = i === 0;
+            html += `
+                <tr>
+                    <td data-col="0">${rowNum}</td>
+                    <td data-col="1" class="cell-editable" data-id="${r.id}" data-field="name" onclick="startEdit(this)">${isFirst ? (r.name || '-') : ''}<span class="edit-icon"><i class="fas fa-pen"></i></span></td>
+                    <td data-col="2" class="cell-editable" data-id="${r.id}" data-field="phone" onclick="startEdit(this)">${isFirst ? (r.phone || '-') : ''}<span class="edit-icon"><i class="fas fa-pen"></i></span></td>
+                    <td data-col="3" class="cell-editable" data-id="${r.id}" data-field="governorate" onclick="startEdit(this)">${isFirst ? (r.governorate || '-') : ''}<span class="edit-icon"><i class="fas fa-pen"></i></span></td>
+                    <td data-col="4" class="cell-editable" data-id="${r.id}" data-field="factory" onclick="startEdit(this)">${r.factory || '-'}<span class="edit-icon"><i class="fas fa-pen"></i></span></td>
+                    <td data-col="5" class="cell-editable" data-id="${r.id}" data-field="supplierCode" onclick="startEdit(this)">${r.supplierCode || '-'}<span class="edit-icon"><i class="fas fa-pen"></i></span></td>
+                    <td data-col="6" class="cell-editable" data-id="${r.id}" data-field="sparkleCode" onclick="startEdit(this)">${isFirst ? (r.sparkleCode || '-') : ''}<span class="edit-icon"><i class="fas fa-pen"></i></span></td>
+                    <td data-col="7" class="cell-editable" data-id="${r.id}" data-field="description" onclick="startEdit(this)">${r.description || '-'}<span class="edit-icon"><i class="fas fa-pen"></i></span></td>
+                    <td data-col="8" class="cell-editable" data-id="${r.id}" data-field="size" onclick="startEdit(this)">${r.size || '-'}<span class="edit-icon"><i class="fas fa-pen"></i></span></td>
+                    <td data-col="9" class="cell-editable" data-id="${r.id}" data-field="quantity" onclick="startEdit(this)">${r.quantity || 0}<span class="edit-icon"><i class="fas fa-pen"></i></span></td>
+                    <td data-col="10" class="cell-editable" data-id="${r.id}" data-field="price" onclick="startEdit(this)">${r.price || '-'}<span class="edit-icon"><i class="fas fa-pen"></i></span></td>
+                    <td data-col="11" class="cell-editable" data-id="${r.id}" data-field="shippingCode" onclick="startEdit(this)">${isFirst ? (r.shippingCode || '-') : ''}<span class="edit-icon"><i class="fas fa-pen"></i></span></td>
+                    <td data-col="12" class="cell-editable" data-id="${r.id}" data-field="orderCode" onclick="startEdit(this)">${isFirst ? (r.orderCode || '-') : ''}<span class="edit-icon"><i class="fas fa-pen"></i></span></td>
+                    <td data-col="13" class="cell-editable" data-id="${r.id}" data-field="note" onclick="startEdit(this)">${isFirst ? (r.note || '-') : ''}<span class="edit-icon"><i class="fas fa-pen"></i></span></td>
+                    <td data-col="14">${formatDateTime(r.customerDate)}</td>
+                    <td data-col="15">${r.arrivalDate ? new Date(r.arrivalDate).toLocaleDateString('ar-EG') : '-'}</td>
+                    <td data-col="16" class="td-plus-cell"><button class="btn-plus" onclick="insertRowAfter('winjas','${r.id}')"><i class="fas fa-plus"></i></button></td>
+                    <td data-col="17"><button class="btn-sm btn-delete" onclick="openDeleteModal('winjas','${r.id}')"><i class="fas fa-trash"></i></button></td>
+                </tr>
+            `;
+            rowNum++;
         }
+    }
+    tbody.innerHTML = html;
+    applyColumnVisibility('winjas');
+    document.getElementById('winjasPageInfo').textContent = `صفحة ${page} من ${totalPages}`;
+    document.getElementById('winjasPrev').disabled = page <= 1;
+    document.getElementById('winjasNext').disabled = page >= totalPages;
+}
 
-        function getToday() { return new Date().toISOString().slice(0, 10); }
+// XPRESS TABLE
+function renderXpressTable(page) {
+    let data = xpressData.filter(r => !r.isReturn);
+    const totalItems = data.length;
+    const totalPages = Math.ceil(totalItems / ACTIVE_PAGE_SIZE) || 1;
+    if (page < 1) page = 1;
+    if (page > totalPages) page = totalPages;
+    currentXpressPage = page;
 
-        function getColumnVisibility(table) {
-            const key = table + '_columns_visibility';
-            const stored = localStorage.getItem(key);
-            if (stored) {
-                try {
-                    const parsed = JSON.parse(stored);
-                    const count = table === 'winjas' ? WINJAS_COLS.length : XPRESS_COLS.length;
-                    if (parsed.length === count) return parsed;
-                } catch (_) {}
-            }
-            const count = table === 'winjas' ? WINJAS_COLS.length : XPRESS_COLS.length;
-            return Array(count).fill(true);
+    const start = (page - 1) * ACTIVE_PAGE_SIZE;
+    const end = Math.min(start + ACTIVE_PAGE_SIZE, totalItems);
+    const pageData = data.slice(start, end);
+
+    const tbody = document.getElementById('xpressTableBody');
+    document.getElementById('xpressCount').textContent = totalItems;
+
+    if (pageData.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="19" class="empty-state"><i class="fas fa-inbox"></i><p>لا توجد بيانات</p></td></tr>';
+        applyColumnVisibility('xpress');
+        document.getElementById('xpressPageInfo').textContent = `صفحة ${page} من ${totalPages}`;
+        document.getElementById('xpressPrev').disabled = page <= 1;
+        document.getElementById('xpressNext').disabled = page >= totalPages;
+        return;
+    }
+
+    let html = '';
+    let rowNum = start + 1;
+    const groups = {};
+    for (const r of pageData) {
+        const key = getGroupKey(r);
+        if (!groups[key]) groups[key] = [];
+        groups[key].push(r);
+    }
+    const groupKeys = Object.keys(groups);
+    for (let gi = 0; gi < groupKeys.length; gi++) {
+        const key = groupKeys[gi];
+        const rows = groups[key];
+        for (let i = 0; i < rows.length; i++) {
+            const r = rows[i];
+            const isFirst = i === 0;
+            html += `
+                <tr>
+                    <td data-col="0">${rowNum}</td>
+                    <td data-col="1" class="cell-editable" data-id="${r.id}" data-field="name" onclick="startEdit(this)">${isFirst ? (r.name || '-') : ''}<span class="edit-icon"><i class="fas fa-pen"></i></span></td>
+                    <td data-col="2" class="cell-editable" data-id="${r.id}" data-field="phone" onclick="startEdit(this)">${isFirst ? (r.phone || '-') : ''}<span class="edit-icon"><i class="fas fa-pen"></i></span></td>
+                    <td data-col="3" class="cell-editable" data-id="${r.id}" data-field="governorate" onclick="startEdit(this)">${isFirst ? (r.governorate || '-') : ''}<span class="edit-icon"><i class="fas fa-pen"></i></span></td>
+                    <td data-col="4" class="cell-editable" data-id="${r.id}" data-field="factory" onclick="startEdit(this)">${r.factory || '-'}<span class="edit-icon"><i class="fas fa-pen"></i></span></td>
+                    <td data-col="5" class="cell-editable" data-id="${r.id}" data-field="supplierCode" onclick="startEdit(this)">${r.supplierCode || '-'}<span class="edit-icon"><i class="fas fa-pen"></i></span></td>
+                    <td data-col="6" class="cell-editable" data-id="${r.id}" data-field="sparkleCode" onclick="startEdit(this)">${isFirst ? (r.sparkleCode || '-') : ''}<span class="edit-icon"><i class="fas fa-pen"></i></span></td>
+                    <td data-col="7" class="cell-editable" data-id="${r.id}" data-field="description" onclick="startEdit(this)">${r.description || '-'}<span class="edit-icon"><i class="fas fa-pen"></i></span></td>
+                    <td data-col="8" class="cell-editable" data-id="${r.id}" data-field="size" onclick="startEdit(this)">${r.size || '-'}<span class="edit-icon"><i class="fas fa-pen"></i></span></td>
+                    <td data-col="9" class="cell-editable" data-id="${r.id}" data-field="quantity" onclick="startEdit(this)">${r.quantity || 0}<span class="edit-icon"><i class="fas fa-pen"></i></span></td>
+                    <td data-col="10" class="cell-editable" data-id="${r.id}" data-field="price" onclick="startEdit(this)">${r.price || '-'}<span class="edit-icon"><i class="fas fa-pen"></i></span></td>
+                    <td data-col="11" class="cell-editable" data-id="${r.id}" data-field="shippingCode" onclick="startEdit(this)">${isFirst ? (r.shippingCode || '-') : ''}<span class="edit-icon"><i class="fas fa-pen"></i></span></td>
+                    <td data-col="12" class="cell-editable" data-id="${r.id}" data-field="orderCode" onclick="startEdit(this)">${isFirst ? (r.orderCode || '-') : ''}<span class="edit-icon"><i class="fas fa-pen"></i></span></td>
+                    <td data-col="13" class="cell-editable" data-id="${r.id}" data-field="shippingDate" onclick="startEdit(this)">${isFirst ? (r.shippingDate ? new Date(r.shippingDate).toLocaleDateString('ar-EG') : '-') : ''}<span class="edit-icon"><i class="fas fa-pen"></i></span></td>
+                    <td data-col="14" class="cell-editable" data-id="${r.id}" data-field="note2" onclick="startEdit(this)">${isFirst ? (r.note2 || '-') : ''}<span class="edit-icon"><i class="fas fa-pen"></i></span></td>
+                    <td data-col="15">${formatDateTime(r.customerDate)}</td>
+                    <td data-col="16">${r.arrivalDate ? new Date(r.arrivalDate).toLocaleDateString('ar-EG') : '-'}</td>
+                    <td data-col="17" class="td-plus-cell"><button class="btn-plus" onclick="insertRowAfter('xpress','${r.id}')"><i class="fas fa-plus"></i></button></td>
+                    <td data-col="18"><button class="btn-sm btn-delete" onclick="openDeleteModal('xpress','${r.id}')"><i class="fas fa-trash"></i></button></td>
+                </tr>
+            `;
+            rowNum++;
         }
+    }
+    tbody.innerHTML = html;
+    applyColumnVisibility('xpress');
+    document.getElementById('xpressPageInfo').textContent = `صفحة ${page} من ${totalPages}`;
+    document.getElementById('xpressPrev').disabled = page <= 1;
+    document.getElementById('xpressNext').disabled = page >= totalPages;
+}
 
-        function setColumnVisibility(table, vis) {
-            const key = table + '_columns_visibility';
-            localStorage.setItem(key, JSON.stringify(vis));
+// ===== CODES TABLE =====
+function renderCodesTable() {
+    const tbody = document.getElementById('codesTableBody');
+    if (codesData.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="4" class="empty-state"><i class="fas fa-inbox"></i><p>لا توجد أكواد</p></td></tr>';
+        return;
+    }
+    tbody.innerHTML = codesData.map(c => `
+        <tr>
+            <td class="cell-editable" data-id="${c.id}" data-field="factory" onclick="startEditCode(this)">${c.factory || '-'}<span class="edit-icon"><i class="fas fa-pen"></i></span></td>
+            <td>${c.code || '-'}</td>
+            <td class="cell-editable" data-id="${c.id}" data-field="productName" onclick="startEditCode(this)">${c.productName || '-'}<span class="edit-icon"><i class="fas fa-pen"></i></span></td>
+            <td><button class="btn-sm btn-delete" onclick="deleteCode('${c.id}')"><i class="fas fa-trash"></i></button></td>
+        </tr>
+    `).join('');
+}
+
+// ===== REQUIRED ORDERS =====
+function renderRequiredOrders() {
+    const list = document.getElementById('requiredList');
+    document.getElementById('requiredCount').textContent = requiredData.length;
+    if (requiredData.length === 0) {
+        list.innerHTML = '<div class="text-muted" style="padding:16px;text-align:center;">لا توجد أوردرات مطلوبة</div>';
+        return;
+    }
+    let html = '';
+    for (const o of requiredData) {
+        const cls = o.delivered ? 'req-item delivered' : 'req-item';
+        const statusText = o.delivered ? '✓ تم التسليم' : '⏳ مطلوب';
+        html += `
+            <div class="${cls}">
+                <input type="checkbox" class="req-check" ${o.delivered ? 'checked' : ''} onchange="toggleRequiredDelivery('${o.id}', this.checked)" />
+                <div class="req-info">
+                    <span class="code">${o.orderCode}</span>
+                    <span class="name">${o.personName || '(بدون اسم)'}</span>
+                    <span class="status-text">${statusText}</span>
+                </div>
+                <span class="req-del" onclick="deleteRequired('${o.id}')"><i class="fas fa-times"></i></span>
+            </div>
+        `;
+    }
+    list.innerHTML = html;
+}
+
+// ===== ALL RETURNS (ARCHIVE) =====
+function getFilteredData(data, searchTerm) {
+    if (!searchTerm) return data;
+    const term = searchTerm.toLowerCase();
+    return data.filter(row => Object.values(row).some(val => String(val).toLowerCase().includes(term)));
+}
+
+function renderAllWinjasTable(page) {
+    const search = document.getElementById('allWinjasSearch').value;
+    const pageSize = parseInt(document.getElementById('allWinjasPageSize').value);
+    const filtered = getFilteredData(allWinjasData, search);
+    const totalItems = filtered.length;
+    const totalPages = Math.ceil(totalItems / pageSize) || 1;
+    if (page < 1) page = 1;
+    if (page > totalPages) page = totalPages;
+    currentAllWinjasPage = page;
+
+    const start = (page - 1) * pageSize;
+    const end = Math.min(start + pageSize, totalItems);
+    const pageData = filtered.slice(start, end);
+
+    const tbody = document.getElementById('allWinjasTableBody');
+    document.getElementById('allWinjasCount').textContent = totalItems;
+
+    if (pageData.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="16" class="empty-state"><i class="fas fa-inbox"></i><p>لا توجد مرتجعات</p></td></tr>';
+    } else {
+        let html = '';
+        let rowNum = start + 1;
+        const groups = {};
+        for (const r of pageData) {
+            const key = getGroupKey(r);
+            if (!groups[key]) groups[key] = [];
+            groups[key].push(r);
         }
-
-        function applyColumnVisibility(table) {
-            const vis = getColumnVisibility(table);
-            const tableId = table === 'winjas' ? 'winjasTable' : 'xpressTable';
-            const tableEl = document.getElementById(tableId);
-            if (!tableEl) return;
-
-            const ths = tableEl.querySelectorAll('thead th');
-            const tbody = tableEl.querySelector('tbody');
-            const rows = tbody ? tbody.querySelectorAll('tr') : [];
-
-            ths.forEach((th, idx) => {
-                if (idx < vis.length) {
-                    if (!vis[idx]) th.classList.add('col-hidden');
-                    else th.classList.remove('col-hidden');
-                }
-            });
-
-            rows.forEach(row => {
-                const tds = row.querySelectorAll('td');
-                tds.forEach((td, idx) => {
-                    if (idx < vis.length) {
-                        if (!vis[idx]) td.classList.add('col-hidden');
-                        else td.classList.remove('col-hidden');
-                    }
-                });
-            });
-        }
-
-        // ============================================================
-        // DATA LOAD
-        // ============================================================
-        async function loadData() {
-            try {
-                await ensureSheetsExist();
-                const [win, xp] = await Promise.all([
-                    getAllWinjas(),
-                    getAllXpress()
-                ]);
-                winjasData = win;
-                xpressData = xp;
-                return true;
-            } catch (e) {
-                return false;
-            }
-        }
-
-        // ============================================================
-        // RENDER WINJAS
-        // ============================================================
-        function renderWinjasTable(page) {
-            const search = document.getElementById('winjasSearch').value.toLowerCase();
-            const pageSize = parseInt(document.getElementById('winjasPageSize').value);
-
-            let filtered = winjasData.filter(r => {
-                if (!search) return true;
-                return Object.values(r).some(val => String(val).toLowerCase().includes(search));
-            });
-
-            // Apply sorting
-            if (winjasSort.field) {
-                filtered.sort((a, b) => {
-                    const va = a[winjasSort.field] || '';
-                    const vb = b[winjasSort.field] || '';
-                    if (winjasSort.field === 'returnNumber' || winjasSort.field === 'quantity') {
-                        return winjasSort.asc ? (Number(va) - Number(vb)) : (Number(vb) - Number(va));
-                    }
-                    return winjasSort.asc ? String(va).localeCompare(String(vb)) : String(vb).localeCompare(String(va));
-                });
-            } else {
-                // Default: sort by returnNumber descending (latest first)
-                filtered.sort((a, b) => (b.returnNumber || 0) - (a.returnNumber || 0));
-            }
-
-            const totalItems = filtered.length;
-            const totalPages = Math.ceil(totalItems / pageSize) || 1;
-            if (page < 1) page = 1;
-            if (page > totalPages) page = totalPages;
-            currentWinjasPage = page;
-
-            const start = (page - 1) * pageSize;
-            const end = Math.min(start + pageSize, totalItems);
-            const pageData = filtered.slice(start, end);
-
-            const tbody = document.getElementById('winjasTableBody');
-            document.getElementById('winjasCount').textContent = totalItems;
-            document.getElementById('winjasCountTab').textContent = totalItems;
-
-            if (pageData.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="17" class="empty-state"><i class="fas fa-inbox"></i><p>لا توجد مرتجعات</p></td></tr>';
-                document.getElementById('winjasPageInfo').textContent = `صفحة ${page} من ${totalPages}`;
-                document.getElementById('winjasPrev').disabled = page <= 1;
-                document.getElementById('winjasNext').disabled = page >= totalPages;
-                applyColumnVisibility('winjas');
-                return;
-            }
-
-            let html = '';
-            let rowNum = start + 1;
-            for (const r of pageData) {
+        const groupKeys = Object.keys(groups);
+        for (let gi = 0; gi < groupKeys.length; gi++) {
+            const key = groupKeys[gi];
+            const rows = groups[key];
+            for (let i = 0; i < rows.length; i++) {
+                const r = rows[i];
+                const isFirst = i === 0;
                 html += `
                     <tr>
-                        <td data-col="0">${rowNum}</td>
-                        <td data-col="1">${r.name || '-'}</td>
-                        <td data-col="2">${r.phone || '-'}</td>
-                        <td data-col="3">${r.governorate || '-'}</td>
-                        <td data-col="4">${r.factory || '-'}</td>
-                        <td data-col="5">${r.supplierCode || '-'}</td>
-                        <td data-col="6">${r.sparkleCode || '-'}</td>
-                        <td data-col="7">${r.description || '-'}</td>
-                        <td data-col="8">${r.size || '-'}</td>
-                        <td data-col="9">${r.quantity || 0}</td>
-                        <td data-col="10">${r.price || '-'}</td>
-                        <td data-col="11">${r.shippingCode || '-'}</td>
-                        <td data-col="12">${r.orderCode || '-'}</td>
-                        <td data-col="13">${r.note || '-'}</td>
-                        <td data-col="14">${formatDateTime(r.customerDate)}</td>
-                        <td data-col="15">${r.arrivalDate ? new Date(r.arrivalDate).toLocaleDateString('ar-EG') : '-'}</td>
-                        <td data-col="16">${r.returnNumber || '-'}</td>
+                        <td><strong>${rowNum}</strong></td>
+                        <td>${isFirst ? (r.name || '-') : ''}</td>
+                        <td>${isFirst ? (r.phone || '-') : ''}</td>
+                        <td>${isFirst ? (r.governorate || '-') : ''}</td>
+                        <td>${r.factory || '-'}</td>
+                        <td>${r.supplierCode || '-'}</td>
+                        <td>${isFirst ? (r.sparkleCode || '-') : ''}</td>
+                        <td>${r.description || '-'}</td>
+                        <td>${r.size || '-'}</td>
+                        <td>${r.quantity || 0}</td>
+                        <td>${r.price || '-'}</td>
+                        <td>${isFirst ? (r.shippingCode || '-') : ''}</td>
+                        <td>${isFirst ? (r.orderCode || '-') : ''}</td>
+                        <td>${isFirst ? (r.note || '-') : ''}</td>
+                        <td>${formatDateTime(r.customerDate)}</td>
+                        <td>${r.arrivalDate ? new Date(r.arrivalDate).toLocaleDateString('ar-EG') : '-'}</td>
                     </tr>
                 `;
                 rowNum++;
             }
-            tbody.innerHTML = html;
-
-            document.getElementById('winjasPageInfo').textContent = `صفحة ${page} من ${totalPages}`;
-            document.getElementById('winjasPrev').disabled = page <= 1;
-            document.getElementById('winjasNext').disabled = page >= totalPages;
-
-            applyColumnVisibility('winjas');
-            updateSortIndicators('winjas');
         }
+        tbody.innerHTML = html;
+    }
+    document.getElementById('allWinjasPageInfo').textContent = `صفحة ${page} من ${totalPages}`;
+    document.getElementById('allWinjasPrev').disabled = page <= 1;
+    document.getElementById('allWinjasNext').disabled = page >= totalPages;
+}
 
-        // ============================================================
-        // RENDER XPRESS
-        // ============================================================
-        function renderXpressTable(page) {
-            const search = document.getElementById('xpressSearch').value.toLowerCase();
-            const pageSize = parseInt(document.getElementById('xpressPageSize').value);
+function renderAllXpressTable(page) {
+    const search = document.getElementById('allXpressSearch').value;
+    const pageSize = parseInt(document.getElementById('allXpressPageSize').value);
+    const filtered = getFilteredData(allXpressData, search);
+    const totalItems = filtered.length;
+    const totalPages = Math.ceil(totalItems / pageSize) || 1;
+    if (page < 1) page = 1;
+    if (page > totalPages) page = totalPages;
+    currentAllXpressPage = page;
 
-            let filtered = xpressData.filter(r => {
-                if (!search) return true;
-                return Object.values(r).some(val => String(val).toLowerCase().includes(search));
-            });
+    const start = (page - 1) * pageSize;
+    const end = Math.min(start + pageSize, totalItems);
+    const pageData = filtered.slice(start, end);
 
-            if (xpressSort.field) {
-                filtered.sort((a, b) => {
-                    const va = a[xpressSort.field] || '';
-                    const vb = b[xpressSort.field] || '';
-                    if (xpressSort.field === 'returnNumber' || xpressSort.field === 'quantity') {
-                        return xpressSort.asc ? (Number(va) - Number(vb)) : (Number(vb) - Number(va));
-                    }
-                    return xpressSort.asc ? String(va).localeCompare(String(vb)) : String(vb).localeCompare(String(va));
-                });
-            } else {
-                filtered.sort((a, b) => (b.returnNumber || 0) - (a.returnNumber || 0));
-            }
+    const tbody = document.getElementById('allXpressTableBody');
+    document.getElementById('allXpressCount').textContent = totalItems;
 
-            const totalItems = filtered.length;
-            const totalPages = Math.ceil(totalItems / pageSize) || 1;
-            if (page < 1) page = 1;
-            if (page > totalPages) page = totalPages;
-            currentXpressPage = page;
-
-            const start = (page - 1) * pageSize;
-            const end = Math.min(start + pageSize, totalItems);
-            const pageData = filtered.slice(start, end);
-
-            const tbody = document.getElementById('xpressTableBody');
-            document.getElementById('xpressCount').textContent = totalItems;
-            document.getElementById('xpressCountTab').textContent = totalItems;
-
-            if (pageData.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="18" class="empty-state"><i class="fas fa-inbox"></i><p>لا توجد مرتجعات</p></td></tr>';
-                document.getElementById('xpressPageInfo').textContent = `صفحة ${page} من ${totalPages}`;
-                document.getElementById('xpressPrev').disabled = page <= 1;
-                document.getElementById('xpressNext').disabled = page >= totalPages;
-                applyColumnVisibility('xpress');
-                return;
-            }
-
-            let html = '';
-            let rowNum = start + 1;
-            for (const r of pageData) {
+    if (pageData.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="17" class="empty-state"><i class="fas fa-inbox"></i><p>لا توجد مرتجعات</p></td></tr>';
+    } else {
+        let html = '';
+        let rowNum = start + 1;
+        const groups = {};
+        for (const r of pageData) {
+            const key = getGroupKey(r);
+            if (!groups[key]) groups[key] = [];
+            groups[key].push(r);
+        }
+        const groupKeys = Object.keys(groups);
+        for (let gi = 0; gi < groupKeys.length; gi++) {
+            const key = groupKeys[gi];
+            const rows = groups[key];
+            for (let i = 0; i < rows.length; i++) {
+                const r = rows[i];
+                const isFirst = i === 0;
                 html += `
                     <tr>
-                        <td data-col="0">${rowNum}</td>
-                        <td data-col="1">${r.name || '-'}</td>
-                        <td data-col="2">${r.phone || '-'}</td>
-                        <td data-col="3">${r.governorate || '-'}</td>
-                        <td data-col="4">${r.factory || '-'}</td>
-                        <td data-col="5">${r.supplierCode || '-'}</td>
-                        <td data-col="6">${r.sparkleCode || '-'}</td>
-                        <td data-col="7">${r.description || '-'}</td>
-                        <td data-col="8">${r.size || '-'}</td>
-                        <td data-col="9">${r.quantity || 0}</td>
-                        <td data-col="10">${r.price || '-'}</td>
-                        <td data-col="11">${r.shippingCode || '-'}</td>
-                        <td data-col="12">${r.orderCode || '-'}</td>
-                        <td data-col="13">${r.shippingDate ? new Date(r.shippingDate).toLocaleDateString('ar-EG') : '-'}</td>
-                        <td data-col="14">${r.note2 || '-'}</td>
-                        <td data-col="15">${formatDateTime(r.customerDate)}</td>
-                        <td data-col="16">${r.arrivalDate ? new Date(r.arrivalDate).toLocaleDateString('ar-EG') : '-'}</td>
-                        <td data-col="17">${r.returnNumber || '-'}</td>
+                        <td><strong>${rowNum}</strong></td>
+                        <td>${isFirst ? (r.name || '-') : ''}</td>
+                        <td>${isFirst ? (r.phone || '-') : ''}</td>
+                        <td>${isFirst ? (r.governorate || '-') : ''}</td>
+                        <td>${r.factory || '-'}</td>
+                        <td>${r.supplierCode || '-'}</td>
+                        <td>${isFirst ? (r.sparkleCode || '-') : ''}</td>
+                        <td>${r.description || '-'}</td>
+                        <td>${r.size || '-'}</td>
+                        <td>${r.quantity || 0}</td>
+                        <td>${r.price || '-'}</td>
+                        <td>${isFirst ? (r.shippingCode || '-') : ''}</td>
+                        <td>${isFirst ? (r.orderCode || '-') : ''}</td>
+                        <td>${isFirst ? (r.shippingDate ? new Date(r.shippingDate).toLocaleDateString('ar-EG') : '-') : ''}</td>
+                        <td>${isFirst ? (r.note2 || '-') : ''}</td>
+                        <td>${formatDateTime(r.customerDate)}</td>
+                        <td>${r.arrivalDate ? new Date(r.arrivalDate).toLocaleDateString('ar-EG') : '-'}</td>
                     </tr>
                 `;
                 rowNum++;
             }
-            tbody.innerHTML = html;
+        }
+        tbody.innerHTML = html;
+    }
+    document.getElementById('allXpressPageInfo').textContent = `صفحة ${page} من ${totalPages}`;
+    document.getElementById('allXpressPrev').disabled = page <= 1;
+    document.getElementById('allXpressNext').disabled = page >= totalPages;
+}
 
-            document.getElementById('xpressPageInfo').textContent = `صفحة ${page} من ${totalPages}`;
-            document.getElementById('xpressPrev').disabled = page <= 1;
-            document.getElementById('xpressNext').disabled = page >= totalPages;
+function renderAllReturns() {
+    getLastCloseDate().then(date => {
+        document.getElementById('lastCloseInfo').textContent = date ? 'آخر تقفيل: ' + new Date(date).toLocaleDateString('ar-EG') : 'آخر تقفيل: --';
+    });
+    renderAllWinjasTable(currentAllWinjasPage);
+    renderAllXpressTable(currentAllXpressPage);
+}
 
-            applyColumnVisibility('xpress');
-            updateSortIndicators('xpress');
+// ============================================================
+// INLINE EDITING
+// ============================================================
+function startEdit(el) {
+    if (el.classList.contains('cell-editing')) return;
+    const id = el.dataset.id;
+    const field = el.dataset.field;
+    const currentText = el.textContent.replace('✎', '').trim();
+    let row = winjasData.find(r => r.id === id) || xpressData.find(r => r.id === id);
+    if (!row) return;
+
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.value = row[field] || '';
+    input.style.width = '100%';
+    input.style.minWidth = '50px';
+    input.style.padding = '3px 6px';
+    input.style.border = '2px solid #4f46e5';
+    input.style.borderRadius = '4px';
+    input.style.fontFamily = "'Cairo', sans-serif";
+    input.style.fontSize = '12px';
+    input.style.background = '#fff';
+    input.style.outline = 'none';
+    input.style.boxShadow = '0 0 0 3px rgba(79,70,229,0.12)';
+
+    const actions = document.createElement('span');
+    actions.className = 'edit-actions';
+    actions.style.display = 'inline-flex';
+    actions.style.gap = '3px';
+    actions.style.marginRight = '4px';
+
+    const saveBtn = document.createElement('button');
+    saveBtn.className = 'btn-sm btn-save';
+    saveBtn.innerHTML = '<i class="fas fa-check"></i>';
+    saveBtn.onclick = function(e) {
+        e.stopPropagation();
+        saveEdit(el, id, field, input.value);
+    };
+
+    const cancelBtn = document.createElement('button');
+    cancelBtn.className = 'btn-sm btn-cancel';
+    cancelBtn.innerHTML = '<i class="fas fa-times"></i>';
+    cancelBtn.onclick = function(e) {
+        e.stopPropagation();
+        cancelEdit(el, currentText);
+    };
+
+    actions.appendChild(saveBtn);
+    actions.appendChild(cancelBtn);
+
+    el.textContent = '';
+    el.classList.add('cell-editing');
+    el.appendChild(input);
+    el.appendChild(actions);
+
+    input.focus();
+    input.select();
+
+    input.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') { e.preventDefault(); saveEdit(el, id, field, input.value); }
+        else if (e.key === 'Escape') { e.preventDefault(); cancelEdit(el, currentText); }
+    });
+
+    input.addEventListener('blur', function() {
+        setTimeout(() => {
+            if (el.classList.contains('cell-editing')) {
+                saveEdit(el, id, field, input.value);
+            }
+        }, 150);
+    });
+}
+
+async function saveEdit(el, id, field, newValue) {
+    let row = winjasData.find(r => r.id === id) || xpressData.find(r => r.id === id);
+    if (!row) { cancelEdit(el, ''); return; }
+
+    if (field === 'quantity') {
+        const num = parseInt(newValue);
+        row[field] = isNaN(num) ? 0 : num;
+    } else {
+        row[field] = newValue;
+    }
+
+    if (field === 'supplierCode' && newValue) {
+        const factory = row.factory || '';
+        const productName = row.description || '';
+        updateCodeInfo(newValue, factory, productName);
+    }
+    if (field === 'factory' && row.supplierCode) {
+        updateCodeInfo(row.supplierCode, newValue, row.description || '');
+    }
+    if (field === 'description' && row.supplierCode) {
+        updateCodeInfo(row.supplierCode, row.factory || '', newValue);
+    }
+
+    // Fire and forget - save in background
+    saveWinjas().catch(() => {});
+    saveXpress().catch(() => {});
+    saveCodes().catch(() => {});
+
+    const display = row[field] !== undefined && row[field] !== '' ? String(row[field]) : '-';
+    el.textContent = display;
+    el.classList.remove('cell-editing');
+
+    const icon = document.createElement('span');
+    icon.className = 'edit-icon';
+    icon.innerHTML = '<i class="fas fa-pen"></i>';
+    el.appendChild(icon);
+
+    refreshAllTables();
+}
+
+function cancelEdit(el, originalText) {
+    el.textContent = originalText || '-';
+    el.classList.remove('cell-editing');
+    const icon = document.createElement('span');
+    icon.className = 'edit-icon';
+    icon.innerHTML = '<i class="fas fa-pen"></i>';
+    el.appendChild(icon);
+}
+
+// CODE EDIT
+function startEditCode(el) {
+    if (el.classList.contains('cell-editing')) return;
+    const id = el.dataset.id;
+    const field = el.dataset.field;
+    const item = codesData.find(c => c.id === id);
+    if (!item) return;
+
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.value = item[field] || '';
+    input.style.width = '100%';
+    input.style.minWidth = '60px';
+    input.style.padding = '3px 6px';
+    input.style.border = '2px solid #4f46e5';
+    input.style.borderRadius = '4px';
+    input.style.fontFamily = "'Cairo', sans-serif";
+    input.style.fontSize = '12px';
+    input.style.background = '#fff';
+    input.style.outline = 'none';
+
+    const actions = document.createElement('span');
+    actions.className = 'edit-actions';
+    actions.style.display = 'inline-flex';
+    actions.style.gap = '3px';
+    actions.style.marginRight = '4px';
+
+    const saveBtn = document.createElement('button');
+    saveBtn.className = 'btn-sm btn-save';
+    saveBtn.innerHTML = '<i class="fas fa-check"></i>';
+    saveBtn.onclick = function(e) {
+        e.stopPropagation();
+        item[field] = input.value;
+        saveCodes().catch(() => {});
+        renderCodesTable();
+        updateAllRowsWithSKU(item.code, item.factory, item.productName);
+    };
+
+    const cancelBtn = document.createElement('button');
+    cancelBtn.className = 'btn-sm btn-cancel';
+    cancelBtn.innerHTML = '<i class="fas fa-times"></i>';
+    cancelBtn.onclick = function(e) {
+        e.stopPropagation();
+        renderCodesTable();
+    };
+
+    actions.appendChild(saveBtn);
+    actions.appendChild(cancelBtn);
+
+    el.textContent = '';
+    el.classList.add('cell-editing');
+    el.appendChild(input);
+    el.appendChild(actions);
+
+    input.focus();
+    input.select();
+
+    input.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            item[field] = input.value;
+            saveCodes().catch(() => {});
+            renderCodesTable();
+            updateAllRowsWithSKU(item.code, item.factory, item.productName);
+        } else if (e.key === 'Escape') {
+            e.preventDefault();
+            renderCodesTable();
+        }
+    });
+}
+
+function updateAllRowsWithSKU(sku, factory, productName) {
+    if (!sku) return;
+    for (const r of winjasData) {
+        if (r.supplierCode === sku) {
+            if (factory) r.factory = factory;
+            if (productName) r.description = productName;
+        }
+    }
+    for (const r of xpressData) {
+        if (r.supplierCode === sku) {
+            if (factory) r.factory = factory;
+            if (productName) r.description = productName;
+        }
+    }
+    saveWinjas().catch(() => {});
+    saveXpress().catch(() => {});
+    refreshAllTables();
+}
+
+// ============================================================
+// DELETE (Two options)
+// ============================================================
+let deleteTarget = { type: null, id: null };
+
+function openDeleteModal(type, id) {
+    const arr = type === 'winjas' ? winjasData : xpressData;
+    const row = arr.find(r => r.id === id);
+    if (!row) { showToast('لم يتم العثور على الصف', 'error'); return; }
+
+    deleteTarget = { type, id };
+
+    const key = getGroupKey(row);
+    const groupRows = getRowsByGroupKey(arr, key);
+    const isOnly = groupRows.length <= 1;
+
+    document.getElementById('deleteMsg').textContent = isOnly ?
+        'هذه هي القطعة الوحيدة في هذا الأوردر. سيؤدي أي حذف إلى حذف الأوردر بالكامل.' :
+        'اختر نوع الحذف:';
+    document.getElementById('deleteSub').textContent = isOnly ?
+        'يمكنك حذف الأوردر بالكامل أو إلغاء العملية.' :
+        'يمكنك حذف العميل وجميع قطع الأوردر، أو حذف هذه القطعة فقط مع إعادة الترتيب.';
+
+    document.getElementById('deleteModal').classList.add('open');
+}
+
+function closeDeleteModal() {
+    document.getElementById('deleteModal').classList.remove('open');
+    deleteTarget = { type: null, id: null };
+}
+
+async function confirmDeleteCustomer() {
+    const { type, id } = deleteTarget;
+    if (!id) { closeDeleteModal(); return; }
+
+    const arr = type === 'winjas' ? winjasData : xpressData;
+    const row = arr.find(r => r.id === id);
+    if (!row) { closeDeleteModal(); showToast('لم يتم العثور على الصف', 'error'); return; }
+
+    const key = getGroupKey(row);
+    const groupRows = getRowsByGroupKey(arr, key);
+    const ids = groupRows.map(r => r.id);
+    const filtered = arr.filter(r => !ids.includes(r.id));
+
+    if (type === 'winjas') winjasData = filtered;
+    else xpressData = filtered;
+
+    if (type === 'winjas') {
+        await saveWinjas();
+    } else {
+        await saveXpress();
+    }
+    closeDeleteModal();
+    refreshAllTables();
+}
+
+async function confirmDeleteSingleItem() {
+    const { type, id } = deleteTarget;
+    if (!id) { closeDeleteModal(); return; }
+
+    const arr = type === 'winjas' ? winjasData : xpressData;
+    const row = arr.find(r => r.id === id);
+    if (!row) { closeDeleteModal(); showToast('لم يتم العثور على الصف', 'error'); return; }
+
+    const key = getGroupKey(row);
+    const groupRows = getRowsByGroupKey(arr, key);
+
+    if (groupRows.length <= 1) {
+        const ids = groupRows.map(r => r.id);
+        const filtered = arr.filter(r => !ids.includes(r.id));
+        if (type === 'winjas') winjasData = filtered;
+        else xpressData = filtered;
+    } else {
+        const filtered = arr.filter(r => r.id !== id);
+        if (type === 'winjas') winjasData = filtered;
+        else xpressData = filtered;
+    }
+
+    if (type === 'winjas') {
+        await saveWinjas();
+    } else {
+        await saveXpress();
+    }
+    closeDeleteModal();
+    refreshAllTables();
+}
+
+// ============================================================
+// INSERT ROW
+// ============================================================
+async function insertRowAfter(type, afterId) {
+    const arr = type === 'winjas' ? winjasData : xpressData;
+    const refRow = arr.find(r => r.id === afterId);
+    if (!refRow) { showToast('لم يتم العثور على الصف المرجعي', 'error'); return; }
+
+    const key = getGroupKey(refRow);
+    const groupRows = getRowsByGroupKey(arr, key);
+    const refIndex = groupRows.findIndex(r => r.id === afterId);
+    if (refIndex === -1) { showToast('خطأ في تحديد الموقع', 'error'); return; }
+
+    const newRow = {
+        id: genId(),
+        name: refRow.name || '',
+        phone: refRow.phone || '',
+        governorate: refRow.governorate || '',
+        factory: '',
+        supplierCode: '',
+        sparkleCode: '',
+        description: '',
+        size: '',
+        quantity: 0,
+        price: '',
+        shippingCode: '',
+        orderCode: refRow.orderCode || '',
+        note: '',
+        shippingDate: getNow(),
+        note2: '',
+        arrivalDate: '',
+        customerDate: getNow(),
+        isReturn: false,
+        createdAt: getNow()
+    };
+
+    const globalIndex = arr.findIndex(r => r.id === afterId);
+    if (globalIndex === -1) { showToast('خطأ في تحديد الموقع', 'error'); return; }
+
+    arr.splice(globalIndex + 1, 0, newRow);
+
+    if (type === 'winjas') winjasData = arr;
+    else xpressData = arr;
+
+    saveWinjas().catch(() => {});
+    saveXpress().catch(() => {});
+    refreshAllTables();
+}
+
+// ============================================================
+// CODES CRUD (specific)
+// ============================================================
+async function addCodeRow() {
+    const factory = prompt('أدخل اسم المصنع:');
+    if (factory === null) return;
+    const code = prompt('أدخل الكود:');
+    if (code === null) return;
+    const productName = prompt('أدخل اسم القطعة (اختياري):') || '';
+    if (!factory.trim() || !code.trim()) {
+        showToast('الرجاء إدخال المصنع والكود', 'warning');
+        return;
+    }
+    addNewSKU(factory.trim(), code.trim(), productName.trim());
+    renderCodesTable();
+}
+
+async function deleteCode(id) {
+    if (!confirm('تأكيد حذف هذا الكود؟')) return;
+    codesData = codesData.filter(c => c.id !== id);
+    await saveCodes().catch(() => {});
+    renderCodesTable();
+}
+
+function checkDuplicateCodes() {
+    const codes = codesData.map(c => c.code);
+    const dupes = codes.filter((c, i) => codes.indexOf(c) !== i);
+    if (dupes.length === 0) showToast('✅ لا توجد أكواد مكررة', 'success');
+    else showToast(`⚠️ تم العثور على ${dupes.length} كود مكرر`, 'warning');
+}
+
+// ============================================================
+// REQUIRED ORDERS (specific)
+// ============================================================
+let pendingOrderCode = null, pendingPersonName = null, forceAdd = false;
+
+async function addRequiredOrder() {
+    const code = document.getElementById('reqOrderCode').value.trim();
+    const name = document.getElementById('reqPersonName').value.trim();
+    if (!code) { showToast('الرجاء إدخال كود الأوردر', 'warning'); return; }
+    if (!name) { showToast('الرجاء إدخال اسم الشخص', 'warning'); return; }
+
+    if (requiredData.some(o => String(o.orderCode).trim() === code && !o.delivered)) {
+        showToast('الأوردر موجود بالفعل في القائمة', 'warning');
+        return;
+    }
+
+    const existing = findOrderInAllReturns(code);
+    if (existing) {
+        pendingOrderCode = code;
+        pendingPersonName = name;
+        forceAdd = false;
+        document.getElementById('alreadyOrderCode').textContent = '📦 ' + code;
+        document.getElementById('alreadyCustomerName').innerHTML = 'العميل: <span>' + (existing.customerName || 'غير معروف') +
+            '</span>';
+        document.getElementById('alreadyReceiveDate').innerHTML = 'تاريخ الاستلام: <span>' + existing.date + '</span>';
+        document.getElementById('alreadyCompany').innerHTML = 'شركة الشحن: <span>' + existing.company + '</span>';
+        document.getElementById('alreadyReceivedPopup').classList.add('open');
+        return;
+    }
+
+    requiredData.push({ id: genId(), orderCode: code, personName: name, delivered: false });
+    saveRequired().catch(() => {});
+    renderRequiredOrders();
+    document.getElementById('reqOrderCode').value = '';
+    document.getElementById('reqPersonName').value = '';
+    refreshAllTables();
+}
+
+function findOrderInAllReturns(orderCode) {
+    const all = [...allWinjasData, ...allXpressData, ...winjasData, ...xpressData];
+    for (const r of all) {
+        if (String(r.orderCode).trim() === String(orderCode).trim()) {
+            let company = 'غير معروف';
+            if (allWinjasData.some(w => w.id === r.id)) company = 'وينجز';
+            else if (allXpressData.some(x => x.id === r.id)) company = 'شيركس';
+            else if (winjasData.some(w => w.id === r.id)) company = 'وينجز (حالي)';
+            else if (xpressData.some(x => x.id === r.id)) company = 'شيركس (حالي)';
+            const date = r.arrivalDate ? new Date(r.arrivalDate).toLocaleDateString('ar-EG') : 'تاريخ غير معروف';
+            const customerName = r.name || '';
+            return { date, company, customerName };
+        }
+    }
+    return null;
+}
+
+async function forceAddRequiredOrder() {
+    forceAdd = true;
+    closeAlreadyReceivedPopup();
+    const code = pendingOrderCode, name = pendingPersonName;
+    if (!code || !name) return;
+    requiredData.push({ id: genId(), orderCode: code, personName: name, delivered: false });
+    saveRequired().catch(() => {});
+    renderRequiredOrders();
+    document.getElementById('reqOrderCode').value = '';
+    document.getElementById('reqPersonName').value = '';
+    refreshAllTables();
+    pendingOrderCode = null;
+    pendingPersonName = null;
+}
+
+async function deleteRequired(id) {
+    if (!confirm('تأكيد حذف هذا الأوردر؟')) return;
+    requiredData = requiredData.filter(o => o.id !== id);
+    saveRequired().catch(() => {});
+    renderRequiredOrders();
+    refreshAllTables();
+}
+
+async function toggleRequiredDelivery(id, checked) {
+    const item = requiredData.find(o => o.id === id);
+    if (item) {
+        item.delivered = checked;
+        saveRequired().catch(() => {});
+        renderRequiredOrders();
+        refreshAllTables();
+    }
+}
+
+async function clearAllRequired() {
+    if (requiredData.length === 0) return;
+    if (!confirm('تأكيد مسح جميع الأوردرات المطلوبة؟')) return;
+    requiredData = [];
+    saveRequired().catch(() => {});
+    renderRequiredOrders();
+    refreshAllTables();
+}
+
+// ============================================================
+// REQUIRED POPUP
+// ============================================================
+let pendingRequiredOrder = null;
+
+function showRequiredPopup(orderCode, personName) {
+    pendingRequiredOrder = { orderCode, personName };
+    document.getElementById('popupOrderCode').textContent = '📦 ' + orderCode;
+    document.getElementById('popupPersonName').textContent = '👤 ' + personName;
+    document.getElementById('popupDeliveredCheck').checked = false;
+    document.getElementById('requiredPopup').classList.add('open');
+}
+
+function closeRequiredPopup() {
+    document.getElementById('requiredPopup').classList.remove('open');
+    pendingRequiredOrder = null;
+}
+
+async function confirmRequiredDelivery() {
+    const checked = document.getElementById('popupDeliveredCheck').checked;
+    if (!checked) { showToast('الرجاء تأكيد التسليم', 'warning'); return; }
+    if (!pendingRequiredOrder) return;
+    const { orderCode, personName } = pendingRequiredOrder;
+    const item = requiredData.find(o => String(o.orderCode).trim() === String(orderCode).trim() &&
+        String(o.personName).trim() === String(personName).trim() && !o.delivered);
+    if (item) {
+        item.delivered = true;
+        saveRequired().catch(() => {});
+        renderRequiredOrders();
+        refreshAllTables();
+    } else {
+        showToast('⚠️ لم يتم العثور على الأوردر', 'warning');
+    }
+    closeRequiredPopup();
+}
+
+function closeAlreadyReceivedPopup() {
+    document.getElementById('alreadyReceivedPopup').classList.remove('open');
+}
+
+// ============================================================
+// STICKY INPUT PROCESSING
+// ============================================================
+let processingTimeout = null;
+
+function getCurrentCompany() {
+    const activeTab = document.querySelector('.tab-content.active');
+    if (activeTab) {
+        if (activeTab.id === 'tab-shipping') return 'winjas';
+        if (activeTab.id === 'tab-xpress') return 'xpress';
+    }
+    return 'winjas';
+}
+
+async function processShipmentData(text) {
+    const company = getCurrentCompany();
+    const trimmed = text.trim();
+    if (!trimmed) { document.getElementById('shipmentStatus').textContent = ''; return; }
+
+    let customerName = '', phone = '', location = '', serial = '', reference = '', modified = '';
+    let shippingCode = '', shippingDate = '', note2 = '', arrivalDate = '';
+
+    // Check if it's Xpress format (contains tabs)
+    if (company === 'xpress' && trimmed.includes('\t')) {
+        const parts = trimmed.split('\t').map(p => p.trim());
+        if (parts.length >= 16) {
+            reference = parts[0] || ''; // كود الأوردر
+            shippingCode = parts[1] || ''; // كود الشحن
+            shippingDate = parts[2] || ''; // تاريخ الشحن
+            customerName = parts[3] || ''; // الاسم
+            location = parts[4] || ''; // العنوان
+            phone = parts[5] || ''; // رقم الموبيل
+            note2 = ''; // الملحوظة2 - تم إلغاء رصها من شيركس
+            arrivalDate = parts[15] || ''; // تاريخ الوصول
+            if (phone.startsWith('0')) phone = phone.substring(1);
+        }
+    } else {
+        // Original Winjas format
+        customerName = extractVal(trimmed, 'اسم العميل');
+        phone = extractVal(trimmed, 'تليفون العميل');
+        location = extractVal(trimmed, 'الموقع');
+        serial = extractVal(trimmed, 'الرقم التسلسلي');
+        reference = extractVal(trimmed, 'الرقم المرجعي');
+        modified = extractVal(trimmed, 'تاريخ اخر تعديل');
+    }
+
+    if (!customerName && !phone && !reference) {
+        document.getElementById('shipmentStatus').innerHTML =
+            '<span class="err">⚠️ لم يتم التعرف على بيانات الشحنة</span>';
+        return;
+    }
+
+    const governorate = getGovFromAddress(location);
+    const isReq = isOrderRequired(reference);
+    const reqInfo = isReq ? getRequiredOrder(reference) : null;
+    const customerDate = modified || shippingDate || getNow();
+
+    const newRow = {
+        id: genId(),
+        name: customerName || '',
+        phone: phone || '',
+        governorate: governorate || '',
+        factory: '',
+        supplierCode: '',
+        sparkleCode: serial || '',
+        description: '',
+        size: '',
+        quantity: 0,
+        price: '',
+        shippingCode: shippingCode || '',
+        orderCode: reference || '',
+        note: '',
+        shippingDate: shippingDate || modified || getNow(),
+        note2: '', // تم إلغاء رص الملحوظة2 من شيركس
+        arrivalDate: arrivalDate || '',
+        customerDate: customerDate,
+        isReturn: false,
+        createdAt: getNow()
+    };
+
+    if (company === 'winjas') winjasData.push(newRow);
+    else xpressData.push(newRow);
+
+    if (company === 'winjas') {
+        saveWinjas().catch(() => {});
+    } else {
+        saveXpress().catch(() => {});
+    }
+
+    document.getElementById('stickyShipmentArea').value = '';
+    document.getElementById('shipmentStatus').innerHTML =
+        `<span class="ok">✅ تم رص الشحنة (${company === 'winjas' ? 'وينجز' : 'شيركس'})</span>`;
+
+    if (isReq && reqInfo) {
+        showRequiredPopup(reference, reqInfo.personName);
+    }
+
+    refreshAllTables();
+}
+
+let pendingProducts = null, pendingCompany = null, pendingLastOrder = null, pendingFirstProductMerged = false;
+
+async function processProductsData(text) {
+    const company = getCurrentCompany();
+    const trimmed = text.trim();
+    if (!trimmed) { document.getElementById('productsStatus').textContent = ''; return; }
+
+    const lines = trimmed.split('\n').map(l => l.trim()).filter(Boolean);
+    let products = [], product = null, qty = 1, sku = '', price = '';
+
+    for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+        if (line.startsWith('Image for')) {
+            if (product) { product.qty = qty; product.sku = sku; product.price = price; products.push(product); }
+            product = { name: '', size: '' }; qty = 1; sku = ''; price = '';
+            continue;
+        }
+        if (!product) continue;
+        if (!product.name && !line.includes('SKU') && !line.includes('Unit price') &&
+            !line.includes('Total') && !line.includes('Returned') && !line.includes('×')) {
+            product.name = line;
+            continue;
+        }
+        const size = extractSize(line);
+        if (size) product.size = size;
+        if (line === 'SKU') {
+            const next = lines[i + 1];
+            if (next) sku = next.trim();
+        }
+        if (line === '×') {
+            const num = parseInt(lines[i + 1]);
+            qty = (!isNaN(num) && num > 0) ? num : 1;
+        }
+        const p = extractPrice(line);
+        if (p) price = p;
+    }
+    if (product) { product.qty = qty; product.sku = sku; product.price = price; products.push(product); }
+
+    if (products.length === 0) {
+        document.getElementById('productsStatus').innerHTML =
+            '<span class="err">⚠️ لم يتم العثور على منتجات</span>';
+        return;
+    }
+
+    const arr = company === 'winjas' ? winjasData : xpressData;
+    const orders = arr.filter(r => !r.isReturn && (r.name || r.orderCode));
+    if (orders.length === 0) {
+        document.getElementById('productsStatus').innerHTML =
+            '<span class="err">⚠️ لا يوجد أوردر لإضافة القطع إليه. قم برص بيانات العميل أولاً.</span>';
+        return;
+    }
+
+    const sorted = orders.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    const lastOrder = sorted[0];
+    const hasProductData = lastOrder.supplierCode || lastOrder.description || lastOrder.size || lastOrder.quantity > 0;
+
+    if (!hasProductData) {
+        const firstProduct = products[0];
+        const factory = getFactoryBySKU(firstProduct.sku);
+        const productName = getProductNameBySKU(firstProduct.sku);
+        if (firstProduct.sku) updateCodeInfo(firstProduct.sku, factory || '', firstProduct.name || '');
+        lastOrder.supplierCode = firstProduct.sku || '';
+        lastOrder.description = firstProduct.name || '';
+        lastOrder.size = firstProduct.size || '';
+        lastOrder.quantity = (firstProduct.qty) || 1;
+        lastOrder.price = firstProduct.price || '';
+        lastOrder.factory = factory || '';
+        lastOrder.customerDate = getNow();
+        products.shift();
+
+        if (products.length > 0) {
+            pendingProducts = products;
+            pendingCompany = company;
+            pendingLastOrder = lastOrder;
+            pendingFirstProductMerged = true;
+            const orderCode = lastOrder.orderCode || 'بدون كود';
+            document.getElementById('confirmAddMsg').textContent =
+                `تم دمج القطعة الأولى مع العميل. هل تريد إضافة ${products.length} قطعة إضافية إلى الأوردر (كود: ${orderCode})؟`;
+            document.getElementById('confirmAddSub').textContent =
+                `سيتم إضافة ${products.length} قطعة (بإجمالي ${products.reduce((s, p) => s + (p.qty || 1), 0)} قطعة) إلى الأوردر الحالي.`;
+            document.getElementById('confirmAddPopup').classList.add('open');
+        } else {
+            saveWinjas().catch(() => {});
+            saveXpress().catch(() => {});
+            document.getElementById('stickyProductsArea').value = '';
+            document.getElementById('productsStatus').innerHTML =
+                `<span class="ok">✅ تم دمج القطعة مع بيانات العميل</span>`;
+            if (isOrderRequired(lastOrder.orderCode)) {
+                const reqInfo = getRequiredOrder(lastOrder.orderCode);
+                if (reqInfo) showRequiredPopup(lastOrder.orderCode, reqInfo.personName);
+            }
+            refreshAllTables();
+        }
+    } else {
+        pendingProducts = products;
+        pendingCompany = company;
+        pendingLastOrder = lastOrder;
+        pendingFirstProductMerged = false;
+        const orderCode = lastOrder.orderCode || 'بدون كود';
+        document.getElementById('confirmAddMsg').textContent =
+            `هل تريد إضافة ${products.length} قطعة إلى آخر أوردر (كود: ${orderCode})؟`;
+        document.getElementById('confirmAddSub').textContent =
+            `سيتم إضافة ${products.length} قطعة (بإجمالي ${products.reduce((s, p) => s + (p.qty || 1), 0)} قطعة) إلى الأوردر الحالي.`;
+        document.getElementById('confirmAddPopup').classList.add('open');
+    }
+}
+
+function closeConfirmAddPopup() {
+    document.getElementById('confirmAddPopup').classList.remove('open');
+    pendingProducts = null;
+    pendingCompany = null;
+    pendingLastOrder = null;
+    pendingFirstProductMerged = false;
+    document.getElementById('productsStatus').textContent = '';
+}
+
+async function confirmAddToLastOrder() {
+    if (!pendingProducts || !pendingCompany || !pendingLastOrder) {
+        closeConfirmAddPopup();
+        return;
+    }
+
+    const company = pendingCompany;
+    const arr = company === 'winjas' ? winjasData : xpressData;
+    const baseRow = pendingLastOrder;
+    let inserted = 0;
+    let newRows = [];
+
+    for (const p of pendingProducts) {
+        const repeat = Number(p.qty) || 1;
+        for (let i = 0; i < repeat; i++) {
+            const factory = getFactoryBySKU(p.sku);
+            const productName = getProductNameBySKU(p.sku);
+            if (p.sku) updateCodeInfo(p.sku, factory || '', p.name || '');
+            const row = {
+                id: genId(),
+                name: '',
+                phone: '',
+                governorate: '',
+                factory: factory || '',
+                supplierCode: p.sku || '',
+                sparkleCode: '',
+                description: p.name || '',
+                size: p.size || '',
+                quantity: 1,
+                price: p.price || '',
+                shippingCode: baseRow.shippingCode || '',
+                orderCode: baseRow.orderCode || '',
+                note: baseRow.note || '',
+                shippingDate: baseRow.shippingDate || getNow(),
+                note2: baseRow.note2 || '',
+                arrivalDate: '',
+                customerDate: getNow(),
+                isReturn: false,
+                createdAt: getNow()
+            };
+            newRows.push(row);
+            inserted++;
+        }
+    }
+
+    for (const row of newRows) arr.push(row);
+    arr.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+
+    if (company === 'winjas') winjasData = arr;
+    else xpressData = arr;
+
+    saveWinjas().catch(() => {});
+    saveXpress().catch(() => {});
+
+    document.getElementById('stickyProductsArea').value = '';
+    const msg = pendingFirstProductMerged ?
+        `✅ تم دمج القطعة الأولى و رص ${inserted} قطعة إضافية` :
+        `✅ تم رص ${inserted} قطعة إلى الأوردر الحالي`;
+    document.getElementById('productsStatus').innerHTML =
+        `<span class="ok">${msg}</span>`;
+
+    if (isOrderRequired(baseRow.orderCode)) {
+        const reqInfo = getRequiredOrder(baseRow.orderCode);
+        if (reqInfo) showRequiredPopup(baseRow.orderCode, reqInfo.personName);
+    }
+
+    refreshAllTables();
+    closeConfirmAddPopup();
+}
+
+function handleShipmentInput() {
+    const area = document.getElementById('stickyShipmentArea');
+    clearTimeout(processingTimeout);
+    processingTimeout = setTimeout(() => {
+        if (area.value.trim()) processShipmentData(area.value);
+        else document.getElementById('shipmentStatus').textContent = '';
+    }, 400);
+}
+
+function handleProductsInput() {
+    const area = document.getElementById('stickyProductsArea');
+    clearTimeout(processingTimeout);
+    processingTimeout = setTimeout(() => {
+        if (area.value.trim()) processProductsData(area.value);
+        else document.getElementById('productsStatus').textContent = '';
+    }, 400);
+}
+
+// ============================================================
+// CLOSE DAILY RETURNS
+// ============================================================
+async function closeDailyReturns() {
+    let moved = 0, error = false;
+    try {
+        const nextNum = await getNextReturnNumber();
+        let currentNum = nextNum;
+
+        // Move all Winjas data to archive
+        for (const r of winjasData) {
+            const item = { ...r, isReturn: true, returnNumber: currentNum++ };
+            allWinjasData.push(item);
+            moved++;
+        }
+        // Move all Xpress data to archive
+        for (const r of xpressData) {
+            const item = { ...r, isReturn: true, returnNumber: currentNum++ };
+            allXpressData.push(item);
+            moved++;
         }
 
-        // ============================================================
-        // SORTING
-        // ============================================================
-        function updateSortIndicators(table) {
-            const sort = table === 'winjas' ? winjasSort : xpressSort;
-            const tableId = table === 'winjas' ? 'winjasTable' : 'xpressTable';
-            const ths = document.querySelectorAll(`#${tableId} thead th`);
+        // Clear current data
+        winjasData = [];
+        xpressData = [];
 
-            ths.forEach(th => {
-                th.classList.remove('sorted');
-                const icon = th.querySelector('.sort-icon');
-                if (icon) icon.textContent = '';
-            });
+        // Save all - this will delete rows from Winjas and Xpress sheets via writeSheetObjects
+        await setNextReturnNumber(currentNum);
+        await setLastCloseDate(getNow());
+        await saveAllWinjas();
+        await saveAllXpress();
+        await saveWinjas(); // This will write empty array (only headers) and delete extra rows
+        await saveXpress(); // This will write empty array (only headers) and delete extra rows
+    } catch (e) {
+        error = true;
+    }
 
-            if (sort.field) {
-                const cols = table === 'winjas' ? WINJAS_COLS : XPRESS_COLS;
-                const idx = cols.indexOf(sort.field);
-                if (idx !== -1) {
-                    const th = ths[idx];
-                    if (th) {
-                        th.classList.add('sorted');
-                        const icon = th.querySelector('.sort-icon');
-                        if (icon) icon.textContent = sort.asc ? '▲' : '▼';
-                    }
+    if (!error) {
+        renderAllReturns();
+        renderWinjasTable(1);
+        renderXpressTable(1);
+        updateCounts();
+    }
+}
+
+// ============================================================
+// EXPORT
+// ============================================================
+function exportAllReturns() {
+    const data = [];
+    const header = ['#', 'الاسم', 'رقم الموبيل', 'المحافظة', 'مصنع', 'كود المورد', 'كود اسباركل',
+        'الوصف', 'المقاس', 'عدد القطع', 'السعر', 'كود الشحن', 'كود الأوردر',
+        'الملحوظة/تاريخ الشحن', 'تاريخ العميله', 'تاريخ الوصول', 'الشركة'
+    ];
+    data.push(header);
+
+    let num = 1;
+    for (const r of allWinjasData) {
+        data.push([
+            num++, r.name || '', r.phone || '', r.governorate || '', r.factory || '',
+            r.supplierCode || '', r.sparkleCode || '', r.description || '',
+            r.size || '', r.quantity || 0, r.price || '', r.shippingCode || '',
+            r.orderCode || '', r.note || '',
+            formatDateTime(r.customerDate),
+            r.arrivalDate ? new Date(r.arrivalDate).toLocaleDateString('ar-EG') : '',
+            'وينجز'
+        ]);
+    }
+    for (const r of allXpressData) {
+        data.push([
+            num++, r.name || '', r.phone || '', r.governorate || '', r.factory || '',
+            r.supplierCode || '', r.sparkleCode || '', r.description || '',
+            r.size || '', r.quantity || 0, r.price || '', r.shippingCode || '',
+            r.orderCode || '', r.shippingDate ? new Date(r.shippingDate).toLocaleDateString('ar-EG') : '',
+            formatDateTime(r.customerDate),
+            r.arrivalDate ? new Date(r.arrivalDate).toLocaleDateString('ar-EG') : '',
+            'شيركس'
+        ]);
+    }
+
+    downloadXLSX(data, 'جميع_المرتجعات.xlsx');
+}
+
+function openExportModal() { document.getElementById('exportModal').classList.add('open'); }
+function closeExportModal() { document.getElementById('exportModal').classList.remove('open'); }
+
+function exportWithDate() {
+    const company = document.getElementById('exportCompany').value;
+    const fromDate = document.getElementById('exportDateFrom').value;
+    const toDate = document.getElementById('exportDateTo').value;
+
+    if (!fromDate || !toDate) { showToast('الرجاء تحديد التاريخين', 'warning'); return; }
+
+    const from = new Date(fromDate);
+    const to = new Date(toDate);
+    to.setHours(23, 59, 59, 999);
+
+    const data = [];
+    const header = ['#', 'الاسم', 'رقم الموبيل', 'المحافظة', 'مصنع', 'كود المورد', 'كود اسباركل',
+        'الوصف', 'المقاس', 'عدد القطع', 'السعر', 'كود الشحن', 'كود الأوردر',
+        'الملحوظة/تاريخ الشحن', 'تاريخ العميله', 'تاريخ الوصول', 'الشركة'
+    ];
+    data.push(header);
+
+    const filterDate = (arr, companyName) => {
+        let count = 0;
+        for (const r of arr) {
+            const d = r.customerDate || r.createdAt || '';
+            if (d) {
+                const dateObj = new Date(d);
+                if (dateObj >= from && dateObj <= to) {
+                    count++;
+                    data.push([
+                        count, r.name || '', r.phone || '', r.governorate || '', r.factory || '',
+                        r.supplierCode || '', r.sparkleCode || '', r.description || '',
+                        r.size || '', r.quantity || 0, r.price || '', r.shippingCode || '',
+                        r.orderCode || '', r.note || r.shippingDate || '',
+                        formatDateTime(r.customerDate),
+                        r.arrivalDate ? new Date(r.arrivalDate).toLocaleDateString('ar-EG') : '',
+                        companyName
+                    ]);
                 }
             }
         }
+    };
 
-        function sortTable(table, field) {
-            const sort = table === 'winjas' ? winjasSort : xpressSort;
-            if (sort.field === field) {
-                sort.asc = !sort.asc;
-            } else {
-                sort.field = field;
-                sort.asc = true;
-            }
-            if (table === 'winjas') renderWinjasTable(1);
-            else renderXpressTable(1);
+    if (company === 'all' || company === 'winjas') filterDate(allWinjasData, 'وينجز');
+    if (company === 'all' || company === 'xpress') filterDate(allXpressData, 'شيركس');
+
+    if (data.length <= 1) { showToast('لا توجد بيانات في النطاق المحدد', 'warning'); return; }
+
+    downloadXLSX(data, `مرتجعات_${fromDate}_إلى_${toDate}.xlsx`);
+    closeExportModal();
+}
+
+function downloadXLSX(data, filename) {
+    const wb = XLSX.utils.book_new();
+    const ws = XLSX.utils.aoa_to_sheet(data);
+    ws['!cols'] = data[0].map((_, i) => ({ wch: Math.max(15, (data[1] && data[1][i] ? String(data[1][i]).length : 12) +
+            4) }));
+    XLSX.utils.book_append_sheet(wb, ws, 'Returns');
+    XLSX.writeFile(wb, filename);
+}
+
+// ============================================================
+// COLUMN VISIBILITY
+// ============================================================
+function getColumnVisibility(table) {
+    const key = table + '_columns_visibility';
+    const stored = localStorage.getItem(key);
+    if (stored) {
+        try { return JSON.parse(stored); } catch (_) {}
+    }
+    const count = table === 'winjas' ? 18 : 19;
+    return Array(count).fill(true);
+}
+
+function setColumnVisibility(table, vis) {
+    const key = table + '_columns_visibility';
+    localStorage.setItem(key, JSON.stringify(vis));
+}
+
+function applyColumnVisibility(table) {
+    const vis = getColumnVisibility(table);
+    const tableEl = document.getElementById(table === 'winjas' ? 'winjasTable' : 'xpressTable');
+    if (!tableEl) return;
+    const ths = tableEl.querySelectorAll('thead th');
+    const tbody = tableEl.querySelector('tbody');
+    const rows = tbody ? tbody.querySelectorAll('tr') : [];
+
+    ths.forEach((th, idx) => {
+        if (idx < vis.length) {
+            if (!vis[idx]) th.classList.add('col-hidden');
+            else th.classList.remove('col-hidden');
         }
+    });
 
-        // ============================================================
-        // TABS
-        // ============================================================
-        function switchTab(tabId) {
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+    rows.forEach(row => {
+        const tds = row.querySelectorAll('td');
+        tds.forEach((td, idx) => {
+            if (idx < vis.length) {
+                if (!vis[idx]) td.classList.add('col-hidden');
+                else td.classList.remove('col-hidden');
+            }
+        });
+    });
+}
 
-            document.getElementById(tabId).classList.add('active');
-            document.querySelector(`.tab-btn[data-tab="${tabId}"]`).classList.add('active');
+function openColumnVisibility(table) {
+    const vis = getColumnVisibility(table);
+    const labels = table === 'winjas' ?
+        ['#', 'الاسم', 'رقم الموبيل', 'المحافظة', 'مصنع', 'كود المورد', 'كود اسباركل',
+            'الوصف', 'المقاس', 'عدد القطع', 'السعر', 'كود الشحن', 'كود الأوردر',
+            'الملحوظة', 'تاريخ العميله', 'تاريخ الوصول', '+', 'إجراءات'
+        ] :
+        ['#', 'الاسم', 'رقم الموبيل', 'المحافظة', 'مصنع', 'كود المورد', 'كود اسباركل',
+            'الوصف', 'المقاس', 'عدد القطع', 'السعر', 'كود الشحن', 'كود الأوردر',
+            'تاريخ الشحن', 'الملحوظة2', 'تاريخ العميله', 'تاريخ الوصول', '+', 'إجراءات'
+        ];
 
-            if (tabId === 'tab-winjas') renderWinjasTable(currentWinjasPage);
-            else if (tabId === 'tab-xpress') renderXpressTable(currentXpressPage);
+    const list = document.getElementById('colVisList');
+    let html = '';
+    vis.forEach((checked, idx) => {
+        if (idx < labels.length) {
+            html += `
+                <label>
+                    <input type="checkbox" ${checked ? 'checked' : ''} data-idx="${idx}" />
+                    ${labels[idx]}
+                </label>
+            `;
         }
+    });
+    list.innerHTML = html;
+    list.dataset.table = table;
+    document.getElementById('colVisModal').classList.add('open');
+}
 
-        // ============================================================
-        // EXPORT
-        // ============================================================
-        function exportTab(table) {
-            const data = table === 'winjas' ? winjasData : xpressData;
-            if (data.length === 0) {
-                showToast('لا توجد بيانات للتصدير', 'warning');
-                return;
-            }
+function closeColVisModal() { document.getElementById('colVisModal').classList.remove('open'); }
 
-            const cols = table === 'winjas' ? WINJAS_COLS : XPRESS_COLS;
-            const header = cols.map(c => c === '#' ? '#' : c);
-            const rows = [header];
+function applyColVis() {
+    const list = document.getElementById('colVisList');
+    const table = list.dataset.table;
+    const checkboxes = list.querySelectorAll('input[type="checkbox"]');
+    const vis = Array.from(checkboxes).map(cb => cb.checked);
+    setColumnVisibility(table, vis);
+    closeColVisModal();
+    if (table === 'winjas') renderWinjasTable(currentWinjasPage);
+    else renderXpressTable(currentXpressPage);
+}
 
-            data.forEach((r, idx) => {
-                const row = [
-                    idx + 1,
-                    r.name || '',
-                    r.phone || '',
-                    r.governorate || '',
-                    r.factory || '',
-                    r.supplierCode || '',
-                    r.sparkleCode || '',
-                    r.description || '',
-                    r.size || '',
-                    r.quantity || 0,
-                    r.price || '',
-                    r.shippingCode || '',
-                    r.orderCode || '',
-                    r.note || r.shippingDate || '',
-                    formatDateTime(r.customerDate),
-                    r.arrivalDate ? new Date(r.arrivalDate).toLocaleDateString('ar-EG') : '',
-                    r.returnNumber || ''
-                ];
-                rows.push(row);
-            });
+// ============================================================
+// TABS SWITCH
+// ============================================================
+function switchTab(id) {
+    document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    document.querySelector(`.tab-btn[data-tab="${id}"]`).classList.add('active');
 
-            downloadXLSX(rows, `${table}_مرتجعات.xlsx`);
-        }
+    const sticky = document.getElementById('stickyInputArea');
+    if (id === 'tab-shipping' || id === 'tab-xpress') {
+        sticky.classList.add('visible');
+        const isWinjas = id === 'tab-shipping';
+        document.getElementById('stickyCompanyLabel').textContent = isWinjas ? 'وينجز' : 'شيركس';
+        document.getElementById('stickyProductsLabel').textContent = isWinjas ? 'وينجز' : 'شيركس';
+    } else {
+        sticky.classList.remove('visible');
+    }
+    document.getElementById('shipmentStatus').textContent = '';
+    document.getElementById('productsStatus').textContent = '';
+}
 
-        function openExportModal() {
-            document.getElementById('exportDateFrom').value = getToday();
-            document.getElementById('exportDateTo').value = getToday();
-            document.getElementById('exportModal').classList.add('open');
-        }
+function switchSubTab(id) {
+    document.querySelectorAll('.sub-content').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.sub-tab').forEach(el => el.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    document.querySelector(`.sub-tab[data-sub="${id}"]`).classList.add('active');
+    if (id === 'sub-winjas') renderAllWinjasTable(1);
+    else if (id === 'sub-xpress') renderAllXpressTable(1);
+}
 
-        function closeExportModal() {
-            document.getElementById('exportModal').classList.remove('open');
-        }
+// ============================================================
+// UPDATE COUNTS & REFRESH
+// ============================================================
+function updateCounts() {
+    document.getElementById('winjasCount').textContent = winjasData.filter(r => !r.isReturn).length;
+    document.getElementById('xpressCount').textContent = xpressData.filter(r => !r.isReturn).length;
+    renderAllReturns();
+    renderRequiredOrders();
+}
 
-        function exportWithDate() {
-            const company = document.getElementById('exportCompany').value;
-            const fromDate = document.getElementById('exportDateFrom').value;
-            const toDate = document.getElementById('exportDateTo').value;
+function refreshAllTables() {
+    renderWinjasTable(currentWinjasPage);
+    renderXpressTable(currentXpressPage);
+    renderCodesTable();
+    renderAllReturns();
+    renderRequiredOrders();
+    updateCounts();
+}
 
-            if (!fromDate || !toDate) {
-                showToast('الرجاء تحديد التاريخين', 'warning');
-                return;
-            }
+async function refreshData() {
+    await loadAllData();
+    refreshAllTables();
+}
 
-            const from = new Date(fromDate);
-            const to = new Date(toDate);
-            to.setHours(23, 59, 59, 999);
+// ============================================================
+// INIT
+// ============================================================
+async function init() {
+    const loaded = await loadAllData();
+    if (!loaded) {
+        // Silent fail - data loads locally if possible, otherwise empty
+    }
 
-            let data = [];
-            if (company === 'all' || company === 'winjas') {
-                data = data.concat(winjasData.filter(r => {
-                    const d = r.customerDate || r.createdAt || '';
-                    if (d) {
-                        const dateObj = new Date(d);
-                        return dateObj >= from && dateObj <= to;
-                    }
-                    return false;
-                }).map(r => ({ ...r, _company: 'وينجز' })));
-            }
-            if (company === 'all' || company === 'xpress') {
-                data = data.concat(xpressData.filter(r => {
-                    const d = r.customerDate || r.createdAt || '';
-                    if (d) {
-                        const dateObj = new Date(d);
-                        return dateObj >= from && dateObj <= to;
-                    }
-                    return false;
-                }).map(r => ({ ...r, _company: 'شيركس' })));
-            }
+    document.getElementById('stickyShipmentArea').addEventListener('input', handleShipmentInput);
+    document.getElementById('stickyProductsArea').addEventListener('input', handleProductsInput);
 
-            if (data.length === 0) {
-                showToast('لا توجد بيانات في النطاق المحدد', 'warning');
-                return;
-            }
+    document.getElementById('stickyInputArea').classList.add('visible');
 
-            const header = ['#', 'الاسم', 'رقم الموبيل', 'المحافظة', 'مصنع', 'كود المورد', 'كود اسباركل',
-                'الوصف', 'المقاس', 'عدد القطع', 'السعر', 'كود الشحن', 'كود الأوردر',
-                'الملحوظة/تاريخ الشحن', 'تاريخ العميله', 'تاريخ الوصول', 'رقم المرتجع', 'الشركة'
-            ];
-            const rows = [header];
+    renderWinjasTable(1);
+    renderXpressTable(1);
+    renderCodesTable();
+    renderAllReturns();
+    renderRequiredOrders();
+    updateCounts();
 
-            data.forEach((r, idx) => {
-                rows.push([
-                    idx + 1,
-                    r.name || '',
-                    r.phone || '',
-                    r.governorate || '',
-                    r.factory || '',
-                    r.supplierCode || '',
-                    r.sparkleCode || '',
-                    r.description || '',
-                    r.size || '',
-                    r.quantity || 0,
-                    r.price || '',
-                    r.shippingCode || '',
-                    r.orderCode || '',
-                    r.note || r.shippingDate || '',
-                    formatDateTime(r.customerDate),
-                    r.arrivalDate ? new Date(r.arrivalDate).toLocaleDateString('ar-EG') : '',
-                    r.returnNumber || '',
-                    r._company || ''
-                ]);
-            });
+    document.getElementById('exportDateFrom').value = getToday();
+    document.getElementById('exportDateTo').value = getToday();
 
-            downloadXLSX(rows, `مرتجعات_${fromDate}_إلى_${toDate}.xlsx`);
+    // Modal close events
+    document.getElementById('exportModal').addEventListener('click', function(e) { if (e.target === this) closeExportModal(); });
+    document.getElementById('requiredPopup').addEventListener('click', function(e) { if (e.target === this) closeRequiredPopup(); });
+    document.getElementById('deleteModal').addEventListener('click', function(e) { if (e.target === this) closeDeleteModal(); });
+    document.getElementById('alreadyReceivedPopup').addEventListener('click', function(e) { if (e.target === this) closeAlreadyReceivedPopup(); });
+    document.getElementById('confirmAddPopup').addEventListener('click', function(e) { if (e.target === this) closeConfirmAddPopup(); });
+    document.getElementById('colVisModal').addEventListener('click', function(e) { if (e.target === this) closeColVisModal(); });
+
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
             closeExportModal();
-        }
-
-        function downloadXLSX(data, filename) {
-            const wb = XLSX.utils.book_new();
-            const ws = XLSX.utils.aoa_to_sheet(data);
-            ws['!cols'] = data[0].map((_, i) => ({ wch: Math.max(15, (data[1] && data[1][i] ? String(data[1][i]).length : 12) + 4) }));
-            XLSX.utils.book_append_sheet(wb, ws, 'Returns');
-            XLSX.writeFile(wb, filename);
-            showToast('✅ تم التصدير بنجاح');
-        }
-
-        // ============================================================
-        // COLUMN VISIBILITY
-        // ============================================================
-        let colVisTarget = 'winjas';
-
-        function openColumnVisibility(table) {
-            colVisTarget = table;
-            const vis = getColumnVisibility(table);
-            const labels = table === 'winjas' ? WINJAS_COLS : XPRESS_COLS;
-
-            const list = document.getElementById('colVisList');
-            let html = '';
-            vis.forEach((checked, idx) => {
-                if (idx < labels.length) {
-                    html += `
-                        <label>
-                            <input type="checkbox" ${checked ? 'checked' : ''} data-idx="${idx}" />
-                            ${labels[idx]}
-                        </label>
-                    `;
-                }
-            });
-            list.innerHTML = html;
-            document.getElementById('colVisModal').classList.add('open');
-        }
-
-        function closeColVisModal() {
-            document.getElementById('colVisModal').classList.remove('open');
-        }
-
-        function applyColVis() {
-            const list = document.getElementById('colVisList');
-            const checkboxes = list.querySelectorAll('input[type="checkbox"]');
-            const vis = Array.from(checkboxes).map(cb => cb.checked);
-            setColumnVisibility(colVisTarget, vis);
+            closeRequiredPopup();
+            closeDeleteModal();
+            closeAlreadyReceivedPopup();
+            closeConfirmAddPopup();
             closeColVisModal();
-            if (colVisTarget === 'winjas') renderWinjasTable(currentWinjasPage);
-            else renderXpressTable(currentXpressPage);
         }
+    });
 
-        // ============================================================
-        // REFRESH
-        // ============================================================
-        async function refreshData() {
-            await loadData();
-            renderWinjasTable(currentWinjasPage);
-            renderXpressTable(currentXpressPage);
-            showToast('✅ تم تحديث البيانات');
-        }
+}
 
-        // ============================================================
-        // INIT
-        // ============================================================
-        let currentAdmin = null;
+// ============================================================
+// EXPOSE FUNCTIONS TO HTML (onclick)
+// ============================================================
+window.switchTab = switchTab;
+window.switchSubTab = switchSubTab;
+window.renderWinjasTable = renderWinjasTable;
+window.renderXpressTable = renderXpressTable;
+window.renderAllWinjasTable = renderAllWinjasTable;
+window.renderAllXpressTable = renderAllXpressTable;
+window.startEdit = startEdit;
+window.startEditCode = startEditCode;
+window.openDeleteModal = openDeleteModal;
+window.closeDeleteModal = closeDeleteModal;
+window.confirmDeleteCustomer = confirmDeleteCustomer;
+window.confirmDeleteSingleItem = confirmDeleteSingleItem;
+window.insertRowAfter = insertRowAfter;
+window.addCodeRow = addCodeRow;
+window.deleteCode = deleteCode;
+window.checkDuplicateCodes = checkDuplicateCodes;
+window.addRequiredOrder = addRequiredOrder;
+window.deleteRequired = deleteRequired;
+window.toggleRequiredDelivery = toggleRequiredDelivery;
+window.clearAllRequired = clearAllRequired;
+window.closeRequiredPopup = closeRequiredPopup;
+window.confirmRequiredDelivery = confirmRequiredDelivery;
+window.closeAlreadyReceivedPopup = closeAlreadyReceivedPopup;
+window.forceAddRequiredOrder = forceAddRequiredOrder;
+window.closeConfirmAddPopup = closeConfirmAddPopup;
+window.confirmAddToLastOrder = confirmAddToLastOrder;
+window.closeDailyReturns = closeDailyReturns;
+window.exportAllReturns = exportAllReturns;
+window.openExportModal = openExportModal;
+window.closeExportModal = closeExportModal;
+window.exportWithDate = exportWithDate;
+window.openColumnVisibility = openColumnVisibility;
+window.closeColVisModal = closeColVisModal;
+window.applyColVis = applyColVis;
+window.refreshAllTables = refreshAllTables;
+window.refreshData = refreshData;
+window.showToast = showToast;
 
-        async function init() {
-            currentAdmin = loadLayout();
-
-            await loadData();
-
-            renderWinjasTable(1);
-            renderXpressTable(1);
-
-            // Add sort click handlers
-            document.querySelectorAll('#winjasTable thead th').forEach((th, idx) => {
-                th.addEventListener('click', () => {
-                    const field = WINJAS_COLS[idx];
-                    if (field && field !== '#') sortTable('winjas', field);
-                });
-            });
-            document.querySelectorAll('#xpressTable thead th').forEach((th, idx) => {
-                th.addEventListener('click', () => {
-                    const field = XPRESS_COLS[idx];
-                    if (field && field !== '#') sortTable('xpress', field);
-                });
-            });
-
-            // Modal close events
-            document.getElementById('exportModal').addEventListener('click', function(e) {
-                if (e.target === this) closeExportModal();
-            });
-            document.getElementById('colVisModal').addEventListener('click', function(e) {
-                if (e.target === this) closeColVisModal();
-            });
-
-            document.addEventListener('keydown', function(e) {
-                if (e.key === 'Escape') {
-                    closeExportModal();
-                    closeColVisModal();
-                }
-            });
-        }
-
-        // ============================================================
-        // EXPOSE FUNCTIONS
-        // ============================================================
-        window.toggleSidebar = toggleSidebar;
-        window.switchTab = switchTab;
-        window.renderWinjasTable = renderWinjasTable;
-        window.renderXpressTable = renderXpressTable;
-        window.sortTable = sortTable;
-        window.openColumnVisibility = openColumnVisibility;
-        window.closeColVisModal = closeColVisModal;
-        window.applyColVis = applyColVis;
-        window.openExportModal = openExportModal;
-        window.closeExportModal = closeExportModal;
-        window.exportTab = exportTab;
-        window.exportWithDate = exportWithDate;
-        window.refreshData = refreshData;
-        window.showToast = showToast;
-
-        document.addEventListener('DOMContentLoaded', init);
-    </script>
+document.addEventListener('DOMContentLoaded', init);
+</script>
 
 </body>
 </html>
