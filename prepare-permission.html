@@ -1,0 +1,1337 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes" />
+  <title>السماح بالتحضير · Preparation Permission</title>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+  <!-- SheetJS -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', 'Tajawal', sans-serif;
+      background: #f6f8fc;
+      min-height: 100vh;
+      font-size: 15px;
+      color: #0b1b2f;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      padding: 24px 20px 100px;
+    }
+
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #e6edf5;
+      border-radius: 12px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #6c8cff;
+      border-radius: 12px;
+    }
+
+    .header {
+      background: #0b1b2f;
+      color: #fff;
+      padding: 14px 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+      box-shadow: 0 4px 24px rgba(0, 20, 40, 0.12);
+      position: sticky;
+      top: 0;
+      z-index: 120;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 20px 20px 0 0;
+      margin: -24px -20px 24px;
+      padding: 14px 32px;
+    }
+
+    @media (max-width: 768px) {
+      .header {
+        margin: -16px -16px 16px;
+        padding: 12px 16px;
+        border-radius: 16px 16px 0 0;
+      }
+    }
+
+    .header h1 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .header h1 i {
+      color: #f5a623;
+      font-size: 1.4rem;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .btn-ghost-header {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      padding: 6px 18px;
+      border-radius: 30px;
+      color: #fff;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      font-weight: 500;
+      font-size: 0.8rem;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-ghost-header:hover {
+      background: rgba(255, 255, 255, 0.15);
+      transform: scale(1.02);
+    }
+
+    .status-badge {
+      font-size: 12px;
+      font-weight: 500;
+      padding: 6px 16px;
+      border-radius: 40px;
+      background: #E8F5E9;
+      color: #16A34A;
+      border: 1px solid #C8E6C9;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .container {
+      max-width: 1280px;
+      margin: 0 auto;
+    }
+
+    .card {
+      background: #ffffff;
+      border-radius: 20px;
+      box-shadow: 0 2px 12px rgba(0, 20, 40, 0.04);
+      border: 1px solid rgba(0, 0, 0, 0.02);
+      transition: all 0.2s;
+      padding: 24px;
+      margin-bottom: 24px;
+    }
+
+    .card:hover {
+      box-shadow: 0 8px 28px rgba(0, 20, 40, 0.08);
+    }
+
+    .btn {
+      padding: 10px 24px;
+      border: none;
+      border-radius: 40px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 600;
+      font-family: 'Inter', sans-serif;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn:hover {
+      transform: scale(1.02);
+    }
+    .btn:active {
+      transform: scale(0.97);
+    }
+
+    .btn-primary {
+      background: #6c8cff;
+      color: #fff;
+    }
+    .btn-primary:hover {
+      background: #5a77e0;
+    }
+
+    .btn-gold {
+      background: linear-gradient(135deg, #f5a623, #d98e1a);
+      color: #fff;
+      box-shadow: 0 4px 14px rgba(245, 158, 11, 0.35);
+    }
+
+    .btn-gold:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(245, 158, 11, 0.45);
+    }
+
+    .btn-secondary {
+      background: transparent;
+      border: 1.5px solid #e6edf5;
+      color: #0b1b2f;
+    }
+    .btn-secondary:hover {
+      background: #f0f4fe;
+      border-color: #6c8cff;
+    }
+
+    .btn-success {
+      background: #3dbb7a;
+      color: #fff;
+    }
+    .btn-success:hover {
+      background: #2ea36a;
+    }
+
+    .btn-sm {
+      padding: 6px 16px;
+      font-size: 0.75rem;
+    }
+
+    .filter-section {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .filter-section select {
+      padding: 10px 16px;
+      border: 1.5px solid #e6edf5;
+      border-radius: 16px;
+      font-size: 14px;
+      background: #fafcff;
+      min-width: 200px;
+      outline: none;
+      transition: all 0.2s;
+      font-family: 'Inter', sans-serif;
+      color: #0b1b2f;
+    }
+
+    .filter-section select:focus {
+      border-color: #6c8cff;
+      box-shadow: 0 0 0 4px rgba(108, 140, 255, 0.08);
+    }
+
+    .filter-section .search-input {
+      padding: 10px 16px;
+      border: 1.5px solid #e6edf5;
+      border-radius: 16px;
+      font-size: 14px;
+      background: #fafcff;
+      flex: 1;
+      min-width: 150px;
+      outline: none;
+      transition: all 0.2s;
+      font-family: 'Inter', sans-serif;
+      color: #0b1b2f;
+    }
+
+    .filter-section .search-input:focus {
+      border-color: #6c8cff;
+      box-shadow: 0 0 0 4px rgba(108, 140, 255, 0.08);
+    }
+
+    .invoice-list-header {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .invoice-list-header h4 {
+      font-size: 18px;
+      font-weight: 700;
+      color: #0b1b2f;
+    }
+
+    .invoice-list-header h4 i {
+      color: #f5a623;
+    }
+
+    .invoice-list-header .count {
+      font-size: 13px;
+      color: #6d7b93;
+      background: #f0f4fe;
+      padding: 4px 16px;
+      border-radius: 30px;
+    }
+
+    .invoice-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .invoice-item {
+      background: #ffffff;
+      border-radius: 20px;
+      border: 1px solid rgba(0, 0, 0, 0.02);
+      padding: 16px 20px;
+      transition: all 0.2s;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      cursor: pointer;
+      box-shadow: 0 2px 10px rgba(0, 20, 40, 0.04);
+    }
+
+    .invoice-item:hover {
+      box-shadow: 0 8px 28px rgba(0, 20, 40, 0.08);
+      border-color: #f5a62340;
+      transform: translateY(-2px);
+    }
+
+    .invoice-item.selected {
+      border-color: #f5a623;
+      background: #fffbf0;
+      box-shadow: 0 0 0 4px rgba(245, 166, 35, 0.08);
+    }
+
+    .invoice-item .info {
+      flex: 1;
+      min-width: 150px;
+    }
+
+    .invoice-item .info .branch {
+      font-weight: 600;
+      font-size: 16px;
+      color: #0b1b2f;
+    }
+
+    .invoice-item .info .branch i {
+      color: #f5a623;
+      margin-left: 6px;
+    }
+
+    .invoice-item .info .meta {
+      font-size: 13px;
+      color: #6d7b93;
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 4px;
+    }
+
+    .badge {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 4px 14px;
+      border-radius: 40px;
+      text-transform: uppercase;
+    }
+
+    .badge.prepared {
+      background: #E8F5E9;
+      color: #16A34A;
+    }
+
+    .badge.pending {
+      background: #FEF3C7;
+      color: #92400E;
+    }
+
+    .badge.partial {
+      background: #FCE4EC;
+      color: #C62828;
+    }
+
+    .badge.closed {
+      background: #D1D5DB;
+      color: #374151;
+    }
+
+    .preview-card {
+      display: none;
+      animation: fadeSlide 0.3s ease;
+    }
+
+    .preview-card.show {
+      display: block;
+    }
+
+    .preview-header {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .preview-header .title {
+      font-size: 18px;
+      font-weight: 700;
+      color: #0b1b2f;
+    }
+
+    .preview-header .title i {
+      color: #f5a623;
+      margin-left: 8px;
+    }
+
+    .preview-header .meta {
+      font-size: 13px;
+      color: #6d7b93;
+    }
+
+    .product-card {
+      background: #ffffff;
+      border-radius: 20px;
+      border: 1px solid rgba(0, 0, 0, 0.02);
+      overflow: hidden;
+      transition: all 0.2s;
+      margin-bottom: 12px;
+      box-shadow: 0 2px 10px rgba(0, 20, 40, 0.04);
+    }
+
+    .product-card:hover {
+      box-shadow: 0 8px 28px rgba(0, 20, 40, 0.08);
+      border-color: #f5a62340;
+    }
+
+    .product-card-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 16px 20px;
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.2s;
+    }
+
+    .product-card-header:hover {
+      background: #fffbf0;
+    }
+
+    .product-card-header .thumb {
+      width: 60px;
+      height: 60px;
+      border-radius: 14px;
+      object-fit: cover;
+      border: 1px solid #e6edf5;
+      flex-shrink: 0;
+    }
+
+    .product-card-header .meta {
+      flex: 1;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px 18px;
+    }
+
+    .product-card-header .meta .name {
+      font-weight: 600;
+      font-size: 15px;
+      color: #0b1b2f;
+    }
+
+    .product-card-header .meta .sku {
+      font-size: 12px;
+      color: #6d7b93;
+      background: #f0f4fe;
+      padding: 2px 12px;
+      border-radius: 30px;
+    }
+
+    .product-card-header .meta .price {
+      font-weight: 600;
+      color: #f5a623;
+      font-size: 14px;
+    }
+
+    .product-card-header .chevron {
+      margin-right: auto;
+      font-size: 18px;
+      color: #6d7b93;
+      transition: transform 0.3s ease;
+    }
+
+    .product-card-header .chevron.open {
+      transform: rotate(180deg);
+    }
+
+    .product-card-body {
+      padding: 0 20px 20px;
+      display: none;
+      animation: fadeSlide 0.25s ease;
+    }
+
+    .product-card-body.open {
+      display: block;
+    }
+
+    .color-accordion {
+      border-top: 1px solid #e6edf5;
+      padding-top: 12px;
+      margin-top: 4px;
+    }
+
+    .color-accordion:first-child {
+      border-top: none;
+      padding-top: 0;
+    }
+
+    .color-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 0;
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.2s;
+      font-weight: 500;
+    }
+
+    .color-header:hover {
+      color: #f5a623;
+    }
+
+    .color-header .chevron-sm {
+      font-size: 14px;
+      color: #6d7b93;
+      transition: transform 0.3s ease;
+    }
+
+    .color-header .chevron-sm.open {
+      transform: rotate(180deg);
+    }
+
+    .color-header .color-total {
+      font-size: 12px;
+      color: #6d7b93;
+      margin-right: auto;
+      background: #f0f4fe;
+      padding: 2px 14px;
+      border-radius: 30px;
+    }
+
+    .color-sizes {
+      display: none;
+      padding-right: 28px;
+      padding-bottom: 8px;
+      animation: fadeSlide 0.2s ease;
+    }
+
+    .color-sizes.open {
+      display: block;
+    }
+
+    .size-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 6px 0;
+      font-size: 14px;
+      flex-wrap: wrap;
+      border-bottom: 1px solid #f6f8fc;
+    }
+
+    .size-row:last-child {
+      border-bottom: none;
+    }
+
+    .size-row .size-label {
+      min-width: 40px;
+      font-weight: 500;
+      color: #0b1b2f;
+    }
+
+    .size-row .qty-control {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .size-row .qty-control input {
+      width: 60px;
+      padding: 6px 8px;
+      border: 1.5px solid #e6edf5;
+      border-radius: 12px;
+      text-align: center;
+      font-size: 14px;
+      font-weight: 600;
+      font-family: 'Inter', sans-serif;
+      color: #0b1b2f;
+      background: #fafcff;
+      transition: all 0.2s;
+      outline: none;
+    }
+
+    .size-row .qty-control input:focus {
+      border-color: #f5a623;
+      box-shadow: 0 0 0 4px rgba(245, 166, 35, 0.08);
+    }
+
+    .size-row .qty-control input:disabled {
+      background: #f0f4fe;
+      color: #6d7b93;
+      cursor: not-allowed;
+    }
+
+    .size-row .qty-control .max-label {
+      font-size: 12px;
+      color: #6d7b93;
+    }
+
+    .size-row .qty-control .max-label span {
+      font-weight: 700;
+      color: #0b1b2f;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 48px 20px;
+      color: #6d7b93;
+    }
+
+    .empty-state i {
+      font-size: 2.8rem;
+      color: #f5a623;
+      opacity: 0.4;
+      margin-bottom: 12px;
+    }
+
+    .empty-state h3 {
+      font-size: 20px;
+      color: #0b1b2f;
+      margin-bottom: 8px;
+    }
+
+    .sticky-bottom {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: #ffffff;
+      border-top: 1px solid #e6edf5;
+      padding: 12px 24px;
+      box-shadow: 0 -10px 30px rgba(0, 20, 40, 0.05);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+      background: rgba(255, 255, 255, 0.95);
+    }
+
+    .sticky-bottom .summary {
+      display: flex;
+      gap: 24px;
+      flex-wrap: wrap;
+      font-size: 14px;
+    }
+
+    .sticky-bottom .summary .item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: #4e5e77;
+    }
+
+    .sticky-bottom .summary .item i {
+      color: #f5a623;
+    }
+
+    .sticky-bottom .summary .item strong {
+      font-weight: 700;
+      color: #0b1b2f;
+    }
+
+    .sticky-bottom .actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .toast-alert {
+      position: fixed;
+      bottom: 90px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 12px 24px;
+      border-radius: 16px;
+      font-weight: 500;
+      font-size: 14px;
+      z-index: 9999;
+      animation: fadeSlide 0.3s ease;
+      max-width: 90vw;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    }
+
+    @keyframes fadeSlide {
+      from {
+        opacity: 0;
+        transform: translateY(-6px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media (max-width: 768px) {
+      body {
+        padding: 16px 12px 110px;
+      }
+      .header h1 {
+        font-size: 1rem;
+      }
+      .card {
+        padding: 16px;
+      }
+      .filter-section {
+        flex-direction: column;
+        width: 100%;
+      }
+      .filter-section select,
+      .filter-section .search-input {
+        width: 100%;
+      }
+      .invoice-item {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .sticky-bottom {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .sticky-bottom .summary {
+        justify-content: center;
+      }
+      .sticky-bottom .actions {
+        justify-content: center;
+      }
+    }
+
+    .hidden {
+      display: none !important;
+    }
+  </style>
+</head>
+<body>
+
+  <header class="header">
+    <h1><i class="fas fa-user-check"></i> السماح بالتحضير · Preparation Permission</h1>
+    <div class="header-actions">
+      <button class="btn-ghost-header" id="refreshBtn">
+        <i class="fas fa-sync-alt"></i> تحديث
+      </button>
+      <span class="status-badge" id="storeStatus">
+        <i class="fas fa-circle" style="font-size:8px;"></i> جاهز
+      </span>
+    </div>
+  </header>
+
+  <div class="container">
+
+    <!-- FILTERS -->
+    <section class="card">
+      <div class="filter-section">
+        <select id="invoiceFilter">
+          <option value="all">جميع الفواتير</option>
+          <option value="prepared">محضرة</option>
+          <option value="pending">غير محضرة</option>
+          <option value="partial">تحضير جزئي</option>
+        </select>
+        <input type="text" class="search-input" id="searchInput" placeholder="🔍 بحث عن فرع أو منتج..." />
+      </div>
+    </section>
+
+    <!-- INVOICE LIST -->
+    <section class="card">
+      <div class="invoice-list-header">
+        <h4><i class="fas fa-file-invoice"></i> الفواتير المغلقة</h4>
+        <span class="count" id="invoicesCount">0 فاتورة</span>
+      </div>
+      <div class="invoice-list" id="invoiceList">
+        <div class="empty-state" id="emptyInvoiceList">
+          <i class="fas fa-inbox"></i>
+          <h3>لا توجد فواتير مغلقة</h3>
+          <p>قم بتقفيل الفواتير من صفحة التحضير أولاً</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- INVOICE PREVIEW -->
+    <section class="card preview-card" id="previewSection">
+      <div class="preview-header">
+        <div>
+          <div class="title" id="previewTitle"><i class="fas fa-user-check"></i> السماح بالتحضير</div>
+          <div class="meta" id="previewMeta"><i class="fas fa-store"></i> الفرع: — | <i class="fas fa-calendar-alt"></i> التاريخ: —</div>
+        </div>
+        <span class="badge prepared" id="previewStatus">✅ محضرة</span>
+      </div>
+
+      <div id="previewContainer">
+        <div class="empty-state">
+          <i class="fas fa-hand-pointer"></i>
+          <h3>اختر فاتورة</h3>
+          <p>اضغط على أي فاتورة لتحديد الكميات المسموح بتحضيرها</p>
+        </div>
+      </div>
+
+      <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:16px;flex-wrap:wrap;">
+        <button class="btn btn-secondary" id="closePreviewBtn">
+          <i class="fas fa-times"></i> إغلاق
+        </button>
+        <button class="btn btn-gold btn-lg" id="savePermissionBtn">
+          <i class="fas fa-save"></i> حفظ السماح بالتحضير
+        </button>
+      </div>
+    </section>
+
+    <!-- STICKY BOTTOM -->
+    <div class="sticky-bottom" id="stickyBottom">
+      <div class="summary">
+        <span class="item"><i class="fas fa-file-invoice"></i> الفاتورة: <strong id="bottomInvoice">—</strong></span>
+        <span class="item"><i class="fas fa-cubes"></i> إجمالي القطع: <strong id="bottomTotal">0</strong></span>
+        <span class="item"><i class="fas fa-check-circle" style="color:#f5a623;"></i> المسموح: <strong id="bottomAllowed">0</strong></span>
+      </div>
+      <div class="actions">
+        <button class="btn btn-gold" id="savePermissionStickyBtn">
+          <i class="fas fa-save"></i> حفظ السماح بالتحضير
+        </button>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    (function() {
+      'use strict';
+
+      const STORAGE_VERSION = 2;
+      const STORAGE_VERSION_KEY = 'shopify_storage_version';
+
+      const currentVersion = localStorage.getItem(STORAGE_VERSION_KEY);
+      if (currentVersion !== String(STORAGE_VERSION)) {
+        const keysToRemove = [];
+        for (let i = 0; i < localStorage.length; i++) {
+          const key = localStorage.key(i);
+          if (key && key.startsWith('shopify_')) {
+            keysToRemove.push(key);
+          }
+        }
+        keysToRemove.forEach(key => localStorage.removeItem(key));
+        localStorage.setItem(STORAGE_VERSION_KEY, String(STORAGE_VERSION));
+      }
+
+      const firebaseConfig = {
+        apiKey: "AIzaSyC7M4JhDl7KGZdrPj78W0nPqQy2I4P4I6I",
+        authDomain: "exams-fab0f.firebaseapp.com",
+        databaseURL: "https://exams-fab0f-default-rtdb.firebaseio.com",
+        projectId: "exams-fab0f",
+        storageBucket: "exams-fab0f.appspot.com",
+        messagingSenderId: "123456789",
+        appId: "1:123456789:web:abcdef123456"
+      };
+
+      let firebaseApp, database;
+      try {
+        firebaseApp = firebase.initializeApp(firebaseConfig);
+        database = firebase.database();
+        console.log('✅ Firebase ready');
+      } catch (e) { console.warn('⚠️ Firebase init error', e); }
+
+      const Utils = {
+        cleanText(t) { return t ? t.replace(/\s+/g, ' ').trim() : ''; },
+        escapeHtml(text) { const d = document.createElement('div');
+          d.textContent = text; return d.innerHTML; },
+        calculateTotalPieces(items) { let t = 0;
+          items.forEach(r => { t += r.qty || 0; }); return t; },
+        calculatePrepared(items) { let t = 0;
+          items.forEach(r => { t += r.preparedQty || 0; }); return t; },
+        calculateAllowed(items) { let t = 0;
+          items.forEach(r => { t += r.allowedQty || 0; }); return t; },
+        isInvoiceClosed(invoice) {
+          return invoice && (invoice.status === 'prepared' || invoice.isClosed === true);
+        }
+      };
+
+      const UI = {
+        elements: {
+          invoiceList: document.getElementById('invoiceList'),
+          emptyInvoiceList: document.getElementById('emptyInvoiceList'),
+          invoicesCount: document.getElementById('invoicesCount'),
+          filter: document.getElementById('invoiceFilter'),
+          searchInput: document.getElementById('searchInput'),
+          refreshBtn: document.getElementById('refreshBtn'),
+          previewSection: document.getElementById('previewSection'),
+          previewTitle: document.getElementById('previewTitle'),
+          previewMeta: document.getElementById('previewMeta'),
+          previewStatus: document.getElementById('previewStatus'),
+          previewContainer: document.getElementById('previewContainer'),
+          closePreviewBtn: document.getElementById('closePreviewBtn'),
+          savePermissionBtn: document.getElementById('savePermissionBtn'),
+          savePermissionStickyBtn: document.getElementById('savePermissionStickyBtn'),
+          storeStatus: document.getElementById('storeStatus'),
+          bottomInvoice: document.getElementById('bottomInvoice'),
+          bottomTotal: document.getElementById('bottomTotal'),
+          bottomAllowed: document.getElementById('bottomAllowed'),
+        },
+        _invoices: [],
+        _filteredInvoices: [],
+        _selectedInvoice: null,
+        _selectedInvoiceId: null,
+        _permissionValues: {},
+
+        init() {
+          console.log('🚀 Initializing Permission UI...');
+          this.loadInvoices();
+
+          this.elements.refreshBtn.addEventListener('click', () => this.loadInvoices());
+          this.elements.filter.addEventListener('change', () => this.renderInvoiceList());
+          this.elements.searchInput.addEventListener('input', () => this.renderInvoiceList());
+          this.elements.closePreviewBtn.addEventListener('click', () => this.closePreview());
+
+          this.elements.savePermissionBtn.addEventListener('click', () => this.savePermissions());
+          this.elements.savePermissionStickyBtn.addEventListener('click', () => this.savePermissions());
+        },
+
+        loadInvoices() {
+          if (!database) {
+            this.showAlert('⚠️ Firebase not ready', 'error');
+            return;
+          }
+
+          this.elements.storeStatus.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري التحميل...';
+          this.elements.storeStatus.style.background = '#FEF3C7';
+          this.elements.storeStatus.style.color = '#92400E';
+
+          const oneMonthAgo = Date.now() - (30 * 24 * 60 * 60 * 1000);
+          database.ref('invoices').orderByChild('createdAt').startAt(oneMonthAgo).once('value', (snapshot) => {
+            const data = snapshot.val();
+            this._invoices = [];
+            if (data) {
+              for (const key in data) {
+                const inv = data[key];
+                if (inv.items) {
+                  inv.items.forEach(item => {
+                    if (item.preparedQty === undefined) item.preparedQty = 0;
+                    if (item.allowedQty === undefined) item.allowedQty = 0;
+                  });
+                }
+                this._invoices.push({
+                  id: key,
+                  ...inv,
+                  createdAt: inv.createdAt || 0
+                });
+              }
+              this._invoices.sort((a, b) => b.createdAt - a.createdAt);
+            }
+            // فقط الفواتير المغلقة
+            this._invoices = this._invoices.filter(inv => Utils.isInvoiceClosed(inv));
+            this.renderInvoiceList();
+            this.elements.storeStatus.innerHTML = '<i class="fas fa-circle" style="font-size:8px;"></i> جاهز';
+            this.elements.storeStatus.style.background = '#E8F5E9';
+            this.elements.storeStatus.style.color = '#16A34A';
+            this.showAlert(`✅ تم تحميل ${this._invoices.length} فاتورة مغلقة`, 'success');
+          }, (error) => {
+            console.error('❌ Error loading invoices:', error);
+            this.elements.storeStatus.innerHTML = '<i class="fas fa-circle" style="font-size:8px;"></i> خطأ';
+            this.elements.storeStatus.style.background = '#FEE2E2';
+            this.elements.storeStatus.style.color = '#DC2626';
+            this.showAlert('❌ فشل تحميل الفواتير', 'error');
+          });
+        },
+
+        getInvoiceStatus(invoice) {
+          if (!invoice || !invoice.items || !invoice.items.length) {
+            return invoice && invoice.status === 'prepared' ? 'prepared' : 'pending';
+          }
+          if (invoice.status === 'prepared' || invoice.isClosed === true) {
+            return 'prepared';
+          }
+          const allPrepared = invoice.items.every(item => (item.preparedQty || 0) >= (item.qty || 0));
+          const anyPrepared = invoice.items.some(item => (item.preparedQty || 0) > 0);
+          if (allPrepared) return 'prepared';
+          if (anyPrepared) return 'partial';
+          return 'pending';
+        },
+
+        renderInvoiceList() {
+          const filter = this.elements.filter.value;
+          const search = this.elements.searchInput.value.toLowerCase().trim();
+
+          let filtered = this._invoices.filter(inv => {
+            const status = this.getInvoiceStatus(inv);
+            if (filter !== 'all' && status !== filter) return false;
+            if (search) {
+              const branch = (inv.branch || '').toLowerCase();
+              const nameMatch = inv.items && inv.items.some(item =>
+                (item.name || '').toLowerCase().includes(search) ||
+                (item.sku || '').toLowerCase().includes(search)
+              );
+              if (!branch.includes(search) && !nameMatch) return false;
+            }
+            return true;
+          });
+
+          this._filteredInvoices = filtered;
+          const list = this.elements.invoiceList;
+
+          if (!filtered.length) {
+            list.innerHTML = `
+              <div class="empty-state">
+                <i class="fas ${this._invoices.length ? 'fa-search' : 'fa-inbox'}"></i>
+                <h3>${this._invoices.length ? 'لا توجد نتائج مطابقة' : 'لا توجد فواتير مغلقة'}</h3>
+                <p>${this._invoices.length ? 'حاول تغيير الفلتر أو البحث' : 'قم بتقفيل الفواتير من صفحة التحضير أولاً'}</p>
+              </div>
+            `;
+            this.elements.invoicesCount.textContent = `${filtered.length} فاتورة`;
+            return;
+          }
+
+          let html = '';
+          filtered.forEach((inv) => {
+            const status = this.getInvoiceStatus(inv);
+            const isClosed = Utils.isInvoiceClosed(inv);
+            const date = new Date(inv.createdAt);
+            const dateStr = date.toLocaleDateString('ar-EG') + ' ' + date.toLocaleTimeString('ar-EG', {
+              hour: '2-digit',
+              minute: '2-digit'
+            });
+            const isSelected = this._selectedInvoiceId === inv.id;
+
+            html += `
+              <div class="invoice-item ${isSelected ? 'selected' : ''}" onclick="window.UI.selectInvoice('${inv.id}')">
+                <div class="info">
+                  <div class="branch"><i class="fas fa-store"></i> ${Utils.escapeHtml(inv.branch || 'Branch not set')}</div>
+                  <div class="meta">
+                    <span><i class="fas fa-calendar-alt"></i> ${dateStr}</span>
+                    <span><i class="fas fa-boxes"></i> ${inv.items ? inv.items.length : 0} منتج</span>
+                    <span><i class="fas fa-cubes"></i> ${Utils.calculateTotalPieces(inv.items)} قطعة</span>
+                  </div>
+                </div>
+                <div>
+                  <span class="badge ${status}">${status === 'prepared' ? '✅ محضرة' : status === 'partial' ? '⚠️ جزئي' : '⏳ معلقة'}</span>
+                </div>
+              </div>
+            `;
+          });
+
+          list.innerHTML = html;
+          this.elements.invoicesCount.textContent = `${filtered.length} فاتورة`;
+        },
+
+        selectInvoice(invoiceId) {
+          const invoice = this._invoices.find(inv => inv.id === invoiceId);
+          if (!invoice) {
+            this.showAlert('⚠️ الفاتورة غير موجودة', 'error');
+            return;
+          }
+
+          this._selectedInvoice = invoice;
+          this._selectedInvoiceId = invoiceId;
+          this._permissionValues = {};
+
+          // Initialize permission values from existing allowedQty
+          if (invoice.items) {
+            invoice.items.forEach(item => {
+              const key = this.getItemKey(item);
+              this._permissionValues[key] = item.allowedQty || 0;
+            });
+          }
+
+          this.renderInvoicePreview(invoice);
+          this.renderInvoiceList();
+          this.updateBottomBar(invoice);
+        },
+
+        getItemKey(item) {
+          return `${item.sku || 'Unknown'}|${item.color || 'No Color'}|${item.size || 'No Size'}`;
+        },
+
+        renderInvoicePreview(invoice) {
+          const container = this.elements.previewContainer;
+          this.elements.previewSection.classList.add('show');
+
+          const branch = invoice.branch || 'Branch not set';
+          const date = new Date(invoice.createdAt);
+          const dateStr = date.toLocaleDateString('ar-EG') + ' ' + date.toLocaleTimeString('ar-EG', {
+            hour: '2-digit',
+            minute: '2-digit'
+          });
+
+          this.elements.previewTitle.innerHTML = `<i class="fas fa-user-check"></i> السماح بالتحضير · ${Utils.escapeHtml(branch)}`;
+          this.elements.previewMeta.innerHTML = `
+            <i class="fas fa-calendar-alt"></i> ${dateStr} | 
+            <i class="fas fa-cubes"></i> ${Utils.calculateTotalPieces(invoice.items)} قطعة
+          `;
+          this.elements.previewStatus.textContent = '✅ محضرة';
+          this.elements.previewStatus.className = 'badge prepared';
+
+          if (!invoice.items || !invoice.items.length) {
+            container.innerHTML = `
+              <div class="empty-state">
+                <i class="fas fa-box-open"></i>
+                <h3>لا توجد منتجات</h3>
+                <p>هذه الفاتورة فارغة</p>
+              </div>
+            `;
+            return;
+          }
+
+          // Group by SKU
+          const groups = {};
+          invoice.items.forEach(item => {
+            const sku = item.sku || 'Unknown';
+            if (!groups[sku]) {
+              groups[sku] = {
+                sku: sku,
+                name: item.name || 'Unknown',
+                unitPrice: item.unitPrice || 0,
+                image: item.image || '',
+                items: []
+              };
+            }
+            groups[sku].items.push({
+              color: item.color || 'No Color',
+              size: item.size || 'No Size',
+              qty: item.qty || 0,
+              preparedQty: item.preparedQty || 0,
+              allowedQty: item.allowedQty || 0,
+              uniqueKey: this.getItemKey(item)
+            });
+          });
+
+          let html = '';
+          let productIdx = 0;
+          for (const sku in groups) {
+            const g = groups[sku];
+            const productId = 'permission_prod_' + productIdx;
+            const isOpen = true;
+
+            let totalQty = 0,
+              totalAllowed = 0;
+            g.items.forEach(item => {
+              totalQty += item.qty || 0;
+              totalAllowed += this._permissionValues[item.uniqueKey] || 0;
+            });
+
+            html += `
+              <div class="product-card">
+                <div class="product-card-header">
+                  <img class="thumb" src="${g.image || ''}" alt="${g.name}" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2260%22 height=%2260%22/%3E'" />
+                  <div class="meta">
+                    <span class="name">${Utils.escapeHtml(g.name)}</span>
+                    <span class="sku">SKU: ${Utils.escapeHtml(g.sku)}</span>
+                    <span class="price">${g.unitPrice} LE</span>
+                    <span style="font-size:12px;color:#6d7b93;">المسموح: ${totalAllowed}/${totalQty}</span>
+                  </div>
+                  <span class="chevron open"><i class="fas fa-chevron-down"></i></span>
+                </div>
+                <div class="product-card-body open">
+                  ${this.renderPermissionColors(g, productId)}
+                </div>
+              </div>
+            `;
+            productIdx++;
+          }
+
+          container.innerHTML = html;
+        },
+
+        renderPermissionColors(g, productId) {
+          const colorMap = {};
+          g.items.forEach(item => {
+            const color = item.color;
+            if (!colorMap[color]) {
+              colorMap[color] = [];
+            }
+            colorMap[color].push(item);
+          });
+
+          let html = '';
+          let colorIdx = 0;
+          for (const color in colorMap) {
+            const colorItems = colorMap[color];
+            const colorId = productId + '_color_' + colorIdx;
+            const isColorOpen = true;
+
+            let totalQty = 0,
+              totalAllowed = 0;
+            colorItems.forEach(item => {
+              totalQty += item.qty || 0;
+              totalAllowed += this._permissionValues[item.uniqueKey] || 0;
+            });
+
+            html += `
+              <div class="color-accordion">
+                <div class="color-header">
+                  <span class="chevron-sm open"><i class="fas fa-chevron-down"></i></span>
+                  <span><i class="fas fa-palette" style="color:#f5a623;"></i> ${Utils.escapeHtml(color)}</span>
+                  <span class="color-total">${totalAllowed}/${totalQty}</span>
+                </div>
+                <div class="color-sizes open">
+                  ${colorItems.map((item) => {
+                    const currentVal = this._permissionValues[item.uniqueKey] || 0;
+                    const maxVal = item.qty || 0;
+                    return `
+                      <div class="size-row">
+                        <span class="size-label">${Utils.escapeHtml(item.size)}</span>
+                        <div class="qty-control">
+                          <input type="number" 
+                                 min="0" 
+                                 max="${maxVal}" 
+                                 value="${currentVal}"
+                                 data-key="${item.uniqueKey}"
+                                 onchange="window.UI.updatePermissionValue(this)" />
+                          <span class="max-label">من <span>${maxVal}</span></span>
+                        </div>
+                      </div>
+                    `;
+                  }).join('')}
+                </div>
+              </div>
+            `;
+            colorIdx++;
+          }
+          return html;
+        },
+
+        updatePermissionValue(input) {
+          const key = input.dataset.key;
+          let val = parseInt(input.value) || 0;
+          const max = parseInt(input.max) || 0;
+          val = Math.max(0, Math.min(max, val));
+          this._permissionValues[key] = val;
+          input.value = val;
+
+          // Update totals in UI
+          if (this._selectedInvoice) {
+            this.updateBottomBar(this._selectedInvoice);
+            // Update the preview totals
+            this.renderInvoicePreview(this._selectedInvoice);
+          }
+        },
+
+        updateBottomBar(invoice) {
+          if (!invoice) return;
+          const total = Utils.calculateTotalPieces(invoice.items);
+          let allowed = 0;
+          if (invoice.items) {
+            invoice.items.forEach(item => {
+              const key = this.getItemKey(item);
+              allowed += this._permissionValues[key] || 0;
+            });
+          }
+          this.elements.bottomInvoice.textContent = invoice.branch || '—';
+          this.elements.bottomTotal.textContent = total;
+          this.elements.bottomAllowed.textContent = allowed;
+        },
+
+        savePermissions() {
+          if (!this._selectedInvoice) {
+            this.showAlert('⚠️ اختر فاتورة أولاً', 'error');
+            return;
+          }
+
+          const invoice = this._selectedInvoice;
+          let hasChanges = false;
+
+          if (invoice.items) {
+            invoice.items.forEach(item => {
+              const key = this.getItemKey(item);
+              const newVal = this._permissionValues[key] || 0;
+              if (item.allowedQty !== newVal) {
+                item.allowedQty = newVal;
+                hasChanges = true;
+              }
+            });
+          }
+
+          if (!hasChanges) {
+            this.showAlert('ℹ️ لا توجد تغييرات لحفظها', 'info');
+            return;
+          }
+
+          // Save to Firebase
+          if (database) {
+            const ref = database.ref('invoices/' + invoice.id);
+            const { id, ...data } = invoice;
+            ref.update(data, (error) => {
+              if (error) {
+                console.error('❌ Save error:', error);
+                this.showAlert('❌ فشل حفظ السماح بالتحضير', 'error');
+              } else {
+                console.log('✅ Permission saved');
+                this.showAlert('✅ تم حفظ السماح بالتحضير بنجاح!', 'success');
+                this.renderInvoiceList();
+                this.updateBottomBar(invoice);
+              }
+            });
+          } else {
+            this.showAlert('⚠️ Firebase غير متاح', 'error');
+          }
+        },
+
+        closePreview() {
+          this.elements.previewSection.classList.remove('show');
+          this._selectedInvoice = null;
+          this._selectedInvoiceId = null;
+          this._permissionValues = {};
+          this.renderInvoiceList();
+        },
+
+        showAlert(msg, type = 'info') {
+          const existing = document.querySelector('.toast-alert');
+          if (existing) existing.remove();
+          const div = document.createElement('div');
+          div.className = 'toast-alert';
+          const colors = {
+            error: { bg: '#FEE2E2', color: '#DC2626', border: '#FCA5A5' },
+            success: { bg: '#E8F5E9', color: '#16A34A', border: '#86EFAC' },
+            info: { bg: '#E1ECF9', color: '#1E3A5F', border: '#93C5FD' }
+          };
+          const c = colors[type] || colors.info;
+          div.style.cssText = `
+            background:${c.bg};color:${c.color};border:1px solid ${c.border};
+            padding:12px 24px;border-radius:16px;font-weight:500;font-size:14px;
+            z-index:9999;animation:fadeSlide 0.3s ease;
+            max-width:90vw;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,0.1);
+          `;
+          div.textContent = msg;
+          document.body.appendChild(div);
+          setTimeout(() => { if (div.parentNode) div.remove(); }, 3000);
+        }
+      };
+
+      window.UI = UI;
+
+      document.addEventListener('DOMContentLoaded', () => {
+        UI.init();
+      });
+
+    })();
+  </script>
+</body>
+</html>
