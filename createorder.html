@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes" />
-    <title>نظام استلام الفواتير · إنشاء أوردر</title>
+    <title>نظام استلام الفواتير · Create Order</title>
 
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js">
@@ -15,7 +15,6 @@
     </script>
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
-
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet" />
 
@@ -23,7 +22,9 @@
     <script src="usermenu.js"></script>
 
     <style>
-        /* ========== RESET & BASE ========== */
+        /* =========================================================
+           RESET & BASE (موحد مع باقي الصفحات)
+           ========================================================= */
         :root {
             --primary: #4f46e5;
             --primary-light: #818cf8;
@@ -196,7 +197,9 @@
             margin-right: 0;
         }
 
-        /* ========== HEADER ========== */
+        /* =========================================================
+           HEADER (موحد مع باقي الصفحات)
+           ========================================================= */
         .header {
             background: white;
             padding: 16px 24px;
@@ -299,38 +302,26 @@
             background: var(--info-light);
         }
 
-        /* ========== CARDS ========== */
+        /* =========================================================
+           CARDS (موحد مع باقي الصفحات)
+           ========================================================= */
         .card {
             background: white;
             border-radius: var(--radius);
-            padding: 22px 24px;
-            margin-bottom: 25px;
             box-shadow: var(--shadow-sm);
             border: 1px solid rgba(0, 0, 0, 0.04);
+            transition: all 0.2s;
+            padding: 22px 24px;
+            margin-bottom: 25px;
         }
 
-        .card .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 15px;
-            margin-bottom: 20px;
+        .card:hover {
+            box-shadow: var(--shadow);
         }
 
-        .card h3 {
-            font-size: 18px;
-            color: var(--dark-secondary);
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .card h3 i {
-            color: var(--primary);
-        }
-
-        /* ========== BUTTONS - ROUNDED ========== */
+        /* =========================================================
+           BUTTONS (موحد مع باقي الصفحات)
+           ========================================================= */
         .btn {
             padding: 10px 22px;
             border: none;
@@ -394,24 +385,15 @@
             background: var(--info-light);
         }
 
-        .btn-outline {
-            background: transparent;
-            border: 2px solid var(--gray-light);
-            color: var(--dark-secondary);
-            border-radius: 40px;
-        }
-        .btn-outline:hover {
-            border-color: var(--primary);
-            color: var(--primary);
-        }
-
         .btn-sm {
             padding: 6px 16px;
             font-size: 12px;
             border-radius: 40px;
         }
 
-        /* ========== FORM ========== */
+        /* =========================================================
+           FORM
+           ========================================================= */
         .floating-group {
             position: relative;
             margin-bottom: 8px;
@@ -500,7 +482,9 @@
             }
         }
 
-        /* ========== PREVIEW ========== */
+        /* =========================================================
+           PREVIEW
+           ========================================================= */
         .preview-card {
             display: none;
             animation: fadeSlide 0.3s ease;
@@ -560,7 +544,9 @@
             }
         }
 
-        /* ========== INVOICE HEADER ACTIONS ========== */
+        /* =========================================================
+           INVOICE HEADER ACTIONS
+           ========================================================= */
         .invoice-header-actions {
             display: flex;
             justify-content: space-between;
@@ -576,7 +562,9 @@
             flex-wrap: wrap;
         }
 
-        /* ========== PRODUCT CARD ========== */
+        /* =========================================================
+           PRODUCT CARDS (موحد مع باقي الصفحات)
+           ========================================================= */
         .product-card {
             background: white;
             border-radius: var(--radius);
@@ -801,7 +789,9 @@
             background: var(--light);
         }
 
-        /* ========== STATS GRID ========== */
+        /* =========================================================
+           STATISTICS (موحد مع باقي الصفحات)
+           ========================================================= */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -865,76 +855,9 @@
             }
         }
 
-        /* ========== OLD ORDERS ========== */
-        .old-orders-list {
-            max-height: 400px;
-            overflow-y: auto;
-        }
-
-        .old-order-item {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 10px 12px;
-            border-bottom: 1px solid var(--gray-light);
-            flex-wrap: wrap;
-            transition: background 0.2s;
-            cursor: pointer;
-        }
-
-        .old-order-item:hover {
-            background: var(--light);
-        }
-
-        .old-order-item .order-number {
-            font-weight: 600;
-            min-width: 30px;
-            color: var(--primary);
-        }
-
-        .old-order-item .order-branch {
-            min-width: 80px;
-            font-weight: 500;
-            color: var(--dark-secondary);
-        }
-
-        .old-order-item .order-date {
-            font-size: 12px;
-            color: var(--gray);
-            min-width: 120px;
-        }
-
-        .old-order-item .order-pieces {
-            font-weight: 600;
-            min-width: 60px;
-            color: var(--dark-secondary);
-        }
-
-        .old-order-item .order-value {
-            font-weight: 600;
-            color: var(--primary);
-            min-width: 80px;
-        }
-
-        .old-order-item .order-url {
-            font-size: 11px;
-            color: var(--gray);
-            flex: 1;
-            min-width: 80px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            direction: ltr;
-        }
-
-        .old-order-item .order-details {
-            font-size: 12px;
-            color: var(--gray);
-            flex: 2;
-            min-width: 100px;
-        }
-
-        /* ========== STICKY BOTTOM ========== */
+        /* =========================================================
+           STICKY BOTTOM (موحد مع باقي الصفحات)
+           ========================================================= */
         .sticky-bottom-wrapper {
             position: fixed;
             bottom: 0;
@@ -1019,7 +942,9 @@
             }
         }
 
-        /* ========== DIALOGS / MODALS ========== */
+        /* =========================================================
+           DIALOGS / MODALS (موحد مع باقي الصفحات)
+           ========================================================= */
         .dialog-overlay {
             display: none;
             position: fixed;
@@ -1119,73 +1044,6 @@
             height: 18px;
         }
 
-        .duplicate-product-preview {
-            display: flex;
-            gap: 16px;
-            align-items: center;
-            padding: 12px;
-            background: var(--light);
-            border-radius: var(--radius-sm);
-            margin: 8px 0;
-            border: 1px solid var(--gray-light);
-        }
-
-        .duplicate-product-preview img {
-            width: 50px;
-            height: 50px;
-            border-radius: var(--radius-sm);
-            object-fit: cover;
-            border: 1px solid var(--gray-light);
-        }
-
-        .duplicate-product-preview .info {
-            flex: 1;
-        }
-
-        .duplicate-product-preview .info .name {
-            font-weight: 600;
-            font-size: 14px;
-            color: var(--dark-secondary);
-        }
-
-        .duplicate-product-preview .info .details {
-            font-size: 12px;
-            color: var(--gray);
-        }
-
-        .invoice-preview-box {
-            max-height: 60vh;
-            overflow-y: auto;
-            background: var(--light);
-            border-radius: var(--radius-sm);
-            padding: 16px;
-            margin: 12px 0;
-            border: 1px solid var(--gray-light);
-            font-size: 13px;
-        }
-
-        .invoice-preview-box .preview-item {
-            display: flex;
-            gap: 8px;
-            padding: 4px 0;
-            border-bottom: 1px dashed var(--gray-light);
-        }
-
-        .invoice-preview-box .preview-item .preview-label {
-            min-width: 100px;
-            color: var(--gray);
-        }
-
-        .invoice-preview-box .preview-item .preview-value {
-            font-weight: 500;
-            color: var(--dark-secondary);
-        }
-
-        .invoice-preview-box .preview-sku {
-            color: var(--primary);
-            font-weight: 600;
-        }
-
         .modal-close-btn {
             position: absolute;
             top: 15px;
@@ -1203,7 +1061,119 @@
             transform: rotate(90deg);
         }
 
-        /* ========== IMAGE MODAL ========== */
+        /* =========================================================
+           OLD ORDERS
+           ========================================================= */
+        .old-orders-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .old-order-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 12px;
+            border-bottom: 1px solid var(--gray-light);
+            flex-wrap: wrap;
+            transition: background 0.2s;
+            cursor: pointer;
+        }
+
+        .old-order-item:hover {
+            background: var(--light);
+        }
+
+        .old-order-item .order-number {
+            font-weight: 600;
+            min-width: 30px;
+            color: var(--primary);
+        }
+
+        .old-order-item .order-branch {
+            min-width: 80px;
+            font-weight: 500;
+            color: var(--dark-secondary);
+        }
+
+        .old-order-item .order-date {
+            font-size: 12px;
+            color: var(--gray);
+            min-width: 120px;
+        }
+
+        .old-order-item .order-pieces {
+            font-weight: 600;
+            min-width: 60px;
+            color: var(--dark-secondary);
+        }
+
+        .old-order-item .order-value {
+            font-weight: 600;
+            color: var(--primary);
+            min-width: 80px;
+        }
+
+        .old-order-item .order-url {
+            font-size: 11px;
+            color: var(--gray);
+            flex: 1;
+            min-width: 80px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            direction: ltr;
+        }
+
+        .old-order-item .order-details {
+            font-size: 12px;
+            color: var(--gray);
+            flex: 2;
+            min-width: 100px;
+        }
+
+        /* =========================================================
+           EMPTY STATE
+           ========================================================= */
+        .empty-state {
+            text-align: center;
+            padding: 48px 20px;
+            color: var(--gray);
+        }
+
+        .empty-state i {
+            font-size: 2.8rem;
+            color: var(--primary);
+            opacity: 0.4;
+            margin-bottom: 12px;
+        }
+
+        .empty-state p {
+            font-size: 0.95rem;
+        }
+
+        /* =========================================================
+           TOAST / ALERT (موحد مع باقي الصفحات)
+           ========================================================= */
+        .toast-alert {
+            position: fixed;
+            bottom: 90px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 12px 24px;
+            border-radius: var(--radius-sm);
+            font-weight: 500;
+            font-size: 14px;
+            z-index: 9999;
+            animation: fadeSlide 0.3s ease;
+            max-width: 90vw;
+            text-align: center;
+            box-shadow: var(--shadow-lg);
+        }
+
+        /* =========================================================
+           IMAGE MODAL
+           ========================================================= */
         .image-modal-overlay {
             display: none;
             position: fixed;
@@ -1254,67 +1224,82 @@
             transform: scale(1.05);
         }
 
-        /* ========== TOAST ========== */
-        .toast-alert {
-            position: fixed;
-            bottom: 90px;
-            left: 50%;
-            transform: translateX(-50%);
-            padding: 12px 24px;
+        /* =========================================================
+           INVOICE PREVIEW
+           ========================================================= */
+        .invoice-preview-box {
+            max-height: 60vh;
+            overflow-y: auto;
+            background: var(--light);
             border-radius: var(--radius-sm);
-            font-weight: 500;
-            font-size: 14px;
-            z-index: 9999;
-            animation: fadeSlide 0.3s ease;
-            max-width: 90vw;
-            text-align: center;
-            box-shadow: var(--shadow-lg);
+            padding: 16px;
+            margin: 12px 0;
+            border: 1px solid var(--gray-light);
+            font-size: 13px;
         }
 
-        /* ========== UTILITIES ========== */
-        .empty-state {
-            text-align: center;
-            padding: 48px 20px;
+        .invoice-preview-box .preview-item {
+            display: flex;
+            gap: 8px;
+            padding: 4px 0;
+            border-bottom: 1px dashed var(--gray-light);
+        }
+
+        .invoice-preview-box .preview-item .preview-label {
+            min-width: 100px;
             color: var(--gray);
         }
 
-        .empty-state i {
-            font-size: 2.8rem;
+        .invoice-preview-box .preview-item .preview-value {
+            font-weight: 500;
+            color: var(--dark-secondary);
+        }
+
+        .invoice-preview-box .preview-sku {
             color: var(--primary);
-            opacity: 0.4;
-            margin-bottom: 12px;
+            font-weight: 600;
         }
 
-        .empty-state p {
-            font-size: 0.95rem;
-        }
-
-        .hidden {
-            display: none !important;
-        }
-
-        .flex {
+        /* =========================================================
+           DUPLICATE PRODUCT PREVIEW
+           ========================================================= */
+        .duplicate-product-preview {
             display: flex;
-        }
-        .flex-wrap {
-            flex-wrap: wrap;
-        }
-        .items-center {
+            gap: 16px;
             align-items: center;
-        }
-        .justify-between {
-            justify-content: space-between;
-        }
-        .gap-8 {
-            gap: 8px;
-        }
-        .mt-8 {
-            margin-top: 8px;
-        }
-        .mb-8 {
-            margin-bottom: 8px;
+            padding: 12px;
+            background: var(--light);
+            border-radius: var(--radius-sm);
+            margin: 8px 0;
+            border: 1px solid var(--gray-light);
         }
 
+        .duplicate-product-preview img {
+            width: 50px;
+            height: 50px;
+            border-radius: var(--radius-sm);
+            object-fit: cover;
+            border: 1px solid var(--gray-light);
+        }
+
+        .duplicate-product-preview .info {
+            flex: 1;
+        }
+
+        .duplicate-product-preview .info .name {
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--dark-secondary);
+        }
+
+        .duplicate-product-preview .info .details {
+            font-size: 12px;
+            color: var(--gray);
+        }
+
+        /* =========================================================
+           ANIMATIONS
+           ========================================================= */
         @keyframes fadeSlide {
             from {
                 opacity: 0;
@@ -1326,18 +1311,9 @@
             }
         }
 
-        @keyframes slideUp {
-            from {
-                transform: translateY(20px);
-                opacity: 0;
-            }
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
-        }
-
-        /* ========== RESPONSIVE ========== */
+        /* =========================================================
+           RESPONSIVE
+           ========================================================= */
         @media (max-width: 992px) {
             .main-content {
                 margin-right: 0;
@@ -1366,6 +1342,13 @@
             .card {
                 padding: 16px;
             }
+            .product-card-header {
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+            .product-card-header .meta {
+                width: 100%;
+            }
             .invoice-header-actions {
                 flex-direction: column;
                 align-items: stretch;
@@ -1390,6 +1373,10 @@
                 padding: 10px 16px;
                 max-width: 95vw;
             }
+            .sticky-bottom .summary {
+                flex-wrap: wrap;
+                gap: 8px;
+            }
         }
 
         @media (max-width: 480px) {
@@ -1403,6 +1390,34 @@
                 grid-template-columns: 1fr;
             }
         }
+
+        /* =========================================================
+           UTILITIES
+           ========================================================= */
+        .hidden {
+            display: none !important;
+        }
+        .mt-8 {
+            margin-top: 8px;
+        }
+        .mb-8 {
+            margin-bottom: 8px;
+        }
+        .flex {
+            display: flex;
+        }
+        .flex-wrap {
+            flex-wrap: wrap;
+        }
+        .items-center {
+            align-items: center;
+        }
+        .justify-between {
+            justify-content: space-between;
+        }
+        .gap-8 {
+            gap: 8px;
+        }
     </style>
 </head>
 <body>
@@ -1413,7 +1428,9 @@
     <!-- ===== MAIN CONTENT ===== -->
     <div class="main-content" id="mainContent">
 
-        <!-- ===== HEADER ===== -->
+        <!-- =========================================================
+        HEADER (موحد مع باقي الصفحات)
+        ========================================================= -->
         <div class="header">
             <div class="header-left">
                 <button class="menu-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
@@ -1433,9 +1450,12 @@
             </div>
         </div>
 
+        <!-- =========================================================
+        CONTAINER
+        ========================================================= -->
         <div class="container">
 
-            <!-- ===== PRODUCT INPUT ===== -->
+            <!-- PRODUCT INPUT -->
             <section class="card">
                 <div class="product-info-grid">
                     <div class="floating-group">
@@ -1459,7 +1479,7 @@
                 </div>
             </section>
 
-            <!-- ===== PRODUCT PREVIEW ===== -->
+            <!-- PRODUCT PREVIEW -->
             <section class="card preview-card" id="previewSection">
                 <div class="preview-content">
                     <img id="previewImg" src="" alt="Product" onclick="window.openModal(this.src)" />
@@ -1473,7 +1493,7 @@
                 </div>
             </section>
 
-            <!-- ===== INVOICE TABLE ===== -->
+            <!-- INVOICE TABLE -->
             <section class="card">
                 <div class="invoice-header-actions">
                     <div class="left-actions">
@@ -1507,7 +1527,7 @@
                 </div>
             </section>
 
-            <!-- ===== STATS ===== -->
+            <!-- STATS -->
             <section class="stats-grid" id="statsGrid">
                 <div class="stat-card">
                     <div class="stat-label"><i class="fas fa-calendar-day"></i> طلبات اليوم</div>
@@ -1527,10 +1547,12 @@
                 </div>
             </section>
 
-            <!-- ===== OLD ORDERS ===== -->
+            <!-- OLD ORDERS -->
             <section class="card" id="oldOrdersSection" style="display:none;">
-                <div class="section-header">
-                    <h3><i class="fas fa-history" style="color:var(--primary);"></i> الفواتير السابقة</h3>
+                <div class="section-header" style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:12px;">
+                    <h4 style="font-size:18px;font-weight:700;color:var(--dark-secondary);">
+                        <i class="fas fa-history" style="color:var(--primary);"></i> الفواتير السابقة
+                    </h4>
                     <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
                         <span class="btn-ghost-header" style="padding:4px 14px;font-size:12px;background:var(--light);border:1px solid var(--gray-light);border-radius:40px;color:var(--dark-secondary);" id="oldOrdersCount">0 فاتورة</span>
                         <button class="btn-ghost-header" style="padding:4px 14px;font-size:12px;" id="refreshOldOrdersBtn">
@@ -1548,96 +1570,105 @@
 
         </div>
 
-    </div>
-
-    <!-- ===== STICKY BOTTOM (خارج main-content) ===== -->
-    <div class="sticky-bottom-wrapper" id="stickyWrapper">
-        <div class="sticky-bottom" id="stickyBottom">
-            <div class="summary">
-                <span class="item"><i class="fas fa-boxes"></i> القطع: <strong id="bottomPieces">0</strong></span>
-                <span class="item"><i class="fas fa-tags"></i> المنتجات: <strong id="bottomProducts">0</strong></span>
-                <span class="item"><i class="fas fa-money-bill-wave"></i> القيمة: <strong id="bottomValue">0 LE</strong></span>
-            </div>
-            <div class="actions">
-                <button class="btn btn-success" id="closeInvoiceBtn">
-                    <i class="fas fa-check-double"></i> تقفيل الفاتورة
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- ===== EXPORT DIALOG ===== -->
-    <div class="dialog-overlay" id="exportDialog">
-        <div class="dialog-box">
-            <button class="modal-close-btn" onclick="window.UI.closeExportDialog()"><i class="fas fa-times"></i></button>
-            <h3><i class="fas fa-file-excel" style="color:var(--success);"></i> تصدير الفاتورة</h3>
-            <p>اختر صيغة التصدير المناسبة</p>
-            <div class="options">
-                <label>
-                    <input type="radio" name="exportFormat" value="detail" checked />
-                    <i class="fas fa-list"></i> تفصيل (جميع المقاسات والألوان)
-                </label>
-                <label>
-                    <input type="radio" name="exportFormat" value="summary" />
-                    <i class="fas fa-chart-simple"></i> ملخص (حسب المنتج)
-                </label>
-                <label>
-                    <input type="radio" name="exportFormat" value="colorSummary" />
-                    <i class="fas fa-palette"></i> ملخص بالألوان
-                </label>
-                <label>
-                    <input type="radio" name="exportFormat" value="system" />
-                    <i class="fas fa-cogs"></i> Excel for System (موديل كامل)
-                </label>
-            </div>
-            <div class="dialog-actions">
-                <button class="btn btn-secondary" id="dialogCancel"><i class="fas fa-times"></i> إلغاء</button>
-                <button class="btn btn-primary" id="dialogExport">
-                    <i class="fas fa-file-excel"></i> تصدير XLSX
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- ===== DUPLICATE DIALOG ===== -->
-    <div class="dialog-overlay" id="duplicateDialog">
-        <div class="dialog-box">
-            <button class="modal-close-btn" onclick="window.UI.closeDuplicateDialog()"><i class="fas fa-times"></i></button>
-            <h3><i class="fas fa-exclamation-triangle" style="color:var(--warning);"></i> منتج مكرر</h3>
-            <p>هذا المنتج موجود بالفعل في الطلبية. ماذا تريد أن تفعل؟</p>
-            <div class="duplicate-product-preview" id="duplicatePreview">
-                <img id="dupImg" src="" alt="Product" />
-                <div class="info">
-                    <div class="name" id="dupName">اسم المنتج</div>
-                    <div class="details" id="dupDetails">SKU: — | الكمية الحالية: 0</div>
+        <!-- =========================================================
+        STICKY BOTTOM (خارج main-content)
+        ========================================================= -->
+        <div class="sticky-bottom-wrapper" id="stickyWrapper">
+            <div class="sticky-bottom" id="stickyBottom">
+                <div class="summary">
+                    <span class="item"><i class="fas fa-boxes"></i> القطع: <strong id="bottomPieces">0</strong></span>
+                    <span class="item"><i class="fas fa-tags"></i> المنتجات: <strong id="bottomProducts">0</strong></span>
+                    <span class="item"><i class="fas fa-money-bill-wave"></i> القيمة: <strong id="bottomValue">0 LE</strong></span>
+                </div>
+                <div class="actions">
+                    <button class="btn btn-success" id="closeInvoiceBtn">
+                        <i class="fas fa-check-double"></i> تقفيل الفاتورة
+                    </button>
                 </div>
             </div>
-            <div class="dialog-actions">
-                <button class="btn btn-secondary" id="dupCancel"><i class="fas fa-times"></i> إلغاء</button>
-                <button class="btn btn-warning" id="dupAddQty"><i class="fas fa-plus"></i> إضافة الكمية</button>
+        </div>
+
+        <!-- =========================================================
+        DIALOGS / MODALS
+        ========================================================= -->
+
+        <!-- EXPORT DIALOG -->
+        <div class="dialog-overlay" id="exportDialog">
+            <div class="dialog-box">
+                <button class="modal-close-btn" onclick="window.UI.closeExportDialog()"><i class="fas fa-times"></i></button>
+                <h3><i class="fas fa-file-excel" style="color:var(--success);"></i> تصدير الفاتورة</h3>
+                <p>اختر صيغة التصدير المناسبة</p>
+                <div class="options">
+                    <label>
+                        <input type="radio" name="exportFormat" value="detail" checked />
+                        <i class="fas fa-list"></i> تفصيل (جميع المقاسات والألوان)
+                    </label>
+                    <label>
+                        <input type="radio" name="exportFormat" value="summary" />
+                        <i class="fas fa-chart-simple"></i> ملخص (حسب المنتج)
+                    </label>
+                    <label>
+                        <input type="radio" name="exportFormat" value="colorSummary" />
+                        <i class="fas fa-palette"></i> ملخص بالألوان
+                    </label>
+                    <label>
+                        <input type="radio" name="exportFormat" value="system" />
+                        <i class="fas fa-cogs"></i> Excel for System (موديل كامل)
+                    </label>
+                </div>
+                <div class="dialog-actions">
+                    <button class="btn btn-secondary" id="dialogCancel"><i class="fas fa-times"></i> إلغاء</button>
+                    <button class="btn btn-primary" id="dialogExport">
+                        <i class="fas fa-file-excel"></i> تصدير XLSX
+                    </button>
+                </div>
             </div>
         </div>
-    </div>
 
-    <!-- ===== INVOICE PREVIEW DIALOG ===== -->
-    <div class="dialog-overlay" id="invoicePreviewDialog">
-        <div class="dialog-box" style="max-width: 700px;">
-            <button class="modal-close-btn" onclick="document.getElementById('invoicePreviewDialog').classList.remove('show')"><i class="fas fa-times"></i></button>
-            <h3><i class="fas fa-file-invoice" style="color:var(--primary);"></i> تفاصيل الفاتورة</h3>
-            <div id="invoicePreviewContent"></div>
-            <div class="dialog-actions">
-                <button class="btn btn-secondary" id="closeInvoicePreview"><i class="fas fa-times"></i> إغلاق</button>
-                <button class="btn btn-primary" id="exportInvoicePreviewBtn"><i class="fas fa-file-excel"></i> تصدير هذه الفاتورة</button>
+        <!-- DUPLICATE DIALOG -->
+        <div class="dialog-overlay" id="duplicateDialog">
+            <div class="dialog-box">
+                <button class="modal-close-btn" onclick="window.UI.closeDuplicateDialog()"><i class="fas fa-times"></i></button>
+                <h3><i class="fas fa-exclamation-triangle" style="color:var(--warning);"></i> منتج مكرر</h3>
+                <p>هذا المنتج موجود بالفعل في الطلبية. ماذا تريد أن تفعل؟</p>
+                <div class="duplicate-product-preview" id="duplicatePreview">
+                    <img id="dupImg" src="" alt="Product" />
+                    <div class="info">
+                        <div class="name" id="dupName">اسم المنتج</div>
+                        <div class="details" id="dupDetails">SKU: — | الكمية الحالية: 0</div>
+                    </div>
+                </div>
+                <div class="dialog-actions">
+                    <button class="btn btn-secondary" id="dupCancel"><i class="fas fa-times"></i> إلغاء</button>
+                    <button class="btn btn-warning" id="dupAddQty"><i class="fas fa-plus"></i> إضافة الكمية</button>
+                </div>
             </div>
         </div>
+
+        <!-- INVOICE PREVIEW DIALOG -->
+        <div class="dialog-overlay" id="invoicePreviewDialog">
+            <div class="dialog-box" style="max-width: 700px;">
+                <button class="modal-close-btn" onclick="document.getElementById('invoicePreviewDialog').classList.remove('show')"><i class="fas fa-times"></i></button>
+                <h3><i class="fas fa-file-invoice" style="color:var(--primary);"></i> تفاصيل الفاتورة</h3>
+                <div id="invoicePreviewContent"></div>
+                <div class="dialog-actions">
+                    <button class="btn btn-secondary" id="closeInvoicePreview"><i class="fas fa-times"></i> إغلاق</button>
+                    <button class="btn btn-primary" id="exportInvoicePreviewBtn"><i class="fas fa-file-excel"></i> تصدير هذه الفاتورة</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- IMAGE MODAL -->
+        <div class="image-modal-overlay" id="imageModal" onclick="closeModal()">
+            <button class="close-btn" onclick="event.stopPropagation();closeModal();"><i class="fas fa-times"></i></button>
+            <img id="modalImage" src="" alt="Product" onclick="event.stopPropagation();" />
+        </div>
+
     </div>
 
-    <!-- ===== IMAGE MODAL ===== -->
-    <div class="image-modal-overlay" id="imageModal" onclick="closeModal()">
-        <button class="close-btn" onclick="event.stopPropagation();closeModal();"><i class="fas fa-times"></i></button>
-        <img id="modalImage" src="" alt="Product" onclick="event.stopPropagation();" />
-    </div>
-
+    <!-- =========================================================
+    JAVASCRIPT
+    ========================================================= -->
     <script>
         (function() {
             'use strict';
@@ -1863,7 +1894,7 @@
                     });
                 },
 
-                saveInvoiceToFirebase(branchName, tableData, productUrl, createdBy, callback) {
+                saveInvoiceToFirebase(branchName, tableData, productUrl, callback) {
                     if (!database) {
                         if (callback) callback('⚠️ Firebase not ready');
                         return;
@@ -1875,7 +1906,6 @@
                         totalValue: this.calculateTotalValue(nonZeroRows),
                         itemsCount: nonZeroRows.length,
                         productUrl: productUrl || '',
-                        createdBy: createdBy || 'مستخدم غير معروف',
                         items: nonZeroRows.map(row => ({
                             name: row.name,
                             color: row.color || '',
@@ -1884,9 +1914,11 @@
                             qty: row.qty || 0,
                             unitPrice: row.unitPrice || 0,
                             total: row.total || 0,
-                            image: row.image || ''
+                            image: row.image || '',
+                            productId: row.productId || ''
                         })),
-                        createdAt: firebase.database.ServerValue.TIMESTAMP
+                        createdAt: firebase.database.ServerValue.TIMESTAMP,
+                        createdBy: 'مستخدم'
                     };
                     const ref = database.ref('invoices').push();
                     ref.set(invoice, (error) => {
@@ -1981,7 +2013,6 @@
                             [`Invoice: ${invoice.branch || 'Branch not set'}`],
                             [`Date: ${new Date(invoice.createdAt).toLocaleDateString('ar-EG')}`],
                             [`URL: ${invoice.productUrl || '—'}`],
-                            [`Created By: ${invoice.createdBy || '—'}`],
                             [],
                             headers
                         ];
@@ -2091,7 +2122,8 @@
                         images: Utils.unique(images),
                         mainImage: mainImage,
                         variants: jsonData.variants || [],
-                        dataSource: 'JSON'
+                        dataSource: 'JSON',
+                        productId: jsonData.id || ''
                     };
                 },
                 parseFromHTML(html) {
@@ -2113,7 +2145,8 @@
                         images: image ? [image] : [],
                         mainImage: image || '',
                         variants: [],
-                        dataSource: 'HTML'
+                        dataSource: 'HTML',
+                        productId: ''
                     };
                 }
             };
@@ -2141,7 +2174,8 @@
                                 unitPrice: p,
                                 total: seriesQty * p,
                                 image: product.mainImage || (product.images && product.images.length ?
-                                    product.images[0] : '')
+                                    product.images[0] : ''),
+                                productId: product.productId || ''
                             });
                         });
                     } else {
@@ -2158,7 +2192,8 @@
                                     unitPrice: product.price,
                                     total: seriesQty * product.price,
                                     image: product.mainImage || (product.images && product
-                                        .images.length ? product.images[0] : '')
+                                        .images.length ? product.images[0] : ''),
+                                    productId: product.productId || ''
                                 });
                             });
                         });
@@ -2397,7 +2432,7 @@
                 init() {
                     console.log('🚀 Initializing Create Order UI...');
 
-                    // Get current user name from localStorage or session
+                    // Get current user name from localStorage
                     this._currentUser = Storage.get('userName', 'مستخدم غير معروف');
                     const userNameEl = document.getElementById('currentAdminName');
                     if (userNameEl) {
@@ -2407,6 +2442,7 @@
                     this.elements.url.value = Storage.get('url', '');
                     this.elements.series.value = Storage.get('series', '1');
                     this.elements.branch.value = Storage.get('branch', '');
+                    this.updateStickyPosition();
 
                     this._isLoadingFromFirebase = true;
                     Utils.loadCurrentTable((data) => {
@@ -2442,7 +2478,8 @@
                             mainImage: cached.mainImage || cached.image || (cached.images && cached.images
                                 .length ? cached.images[0] : ''),
                             variants: Array.isArray(cached.variants) ? cached.variants : [],
-                            dataSource: cached.dataSource || 'JSON'
+                            dataSource: cached.dataSource || 'JSON',
+                            productId: cached.productId || ''
                         };
                         this.showPreview(this._lastProduct);
                         console.log('✅ Cached product loaded:', this._lastProduct.name);
@@ -2450,9 +2487,6 @@
 
                     this.loadOldInvoices();
                     Utils.cleanOldInvoices();
-
-                    // Update sticky wrapper padding based on sidebar state
-                    this.updateStickyPosition();
 
                     this.elements.branch.addEventListener('change', () => {
                         Storage.set('branch', this.elements.branch.value);
@@ -2541,7 +2575,7 @@
                         }
                     }, 2000);
 
-                    // Load sidebar and user info from usermenu.js
+                    // Load sidebar from usermenu.js
                     if (typeof loadLayout === 'function') {
                         loadLayout();
                     }
@@ -2557,7 +2591,6 @@
 
                     if (isMobile) {
                         wrapper.classList.add('sidebar-hidden');
-                        wrapper.classList.remove('sidebar-hidden');
                         wrapper.style.paddingRight = '15px';
                         wrapper.style.paddingLeft = '15px';
                     } else if (isHidden) {
@@ -2591,6 +2624,7 @@
                         try {
                             jsonData = await ShopifyFetcher.fetchProduct(url);
                             product = ProductParser.parse(jsonData);
+                            console.log('🔍 Extracted productId:', product.productId);
                         } catch (e) {
                             const html = await ShopifyFetcher.fetchProductHTML(url);
                             product = ProductParser.parseFromHTML(html);
@@ -2600,7 +2634,7 @@
                         this.showPreview(product);
                         if (!silent) {
                             this.elements.storeStatus.innerHTML =
-                            '<i class="fas fa-circle" style="font-size:8px;"></i> جاهز';
+                                '<i class="fas fa-circle" style="font-size:8px;"></i> جاهز';
                             this.elements.storeStatus.style.background = 'var(--success-light)';
                             this.elements.storeStatus.style.color = 'var(--success)';
                             this.showAlert('✅ تم تحميل المنتج بنجاح', 'success');
@@ -2610,7 +2644,7 @@
                     } catch (err) {
                         if (!silent) {
                             this.elements.storeStatus.innerHTML =
-                            '<i class="fas fa-circle" style="font-size:8px;"></i> خطأ';
+                                '<i class="fas fa-circle" style="font-size:8px;"></i> خطأ';
                             this.elements.storeStatus.style.background = 'var(--danger-light)';
                             this.elements.storeStatus.style.color = 'var(--danger)';
                             this.showAlert('❌ ' + err.message, 'error');
@@ -2959,7 +2993,7 @@
                         return;
                     }
 
-                    Utils.saveInvoiceToFirebase(branchName, nonZeroRows, productUrl, this._currentUser, (error, key) => {
+                    Utils.saveInvoiceToFirebase(branchName, nonZeroRows, productUrl, (error, key) => {
                         if (error) {
                             this.showAlert('❌ ' + error, 'error');
                             return;
@@ -3091,7 +3125,6 @@
                             const urlDisplay = inv.productUrl ?
                                 `<span class="order-url" title="${this.escapeHtml(inv.productUrl)}">${this.escapeHtml(inv.productUrl.substring(0, 50))}...</span>` :
                                 '—';
-                            const createdBy = inv.createdBy ? `👤 ${this.escapeHtml(inv.createdBy)}` : '';
                             html += `
                                 <div class="old-order-item" onclick="window.UI.showInvoicePreview(${idx})">
                                     <span class="order-number">#${idx+1}</span>
@@ -3099,7 +3132,6 @@
                                     <span class="order-date"><i class="far fa-calendar-alt"></i> ${dateStr}</span>
                                     <span class="order-pieces">${inv.totalPieces||0} قطعة</span>
                                     <span class="order-value">${Utils.formatCurrency(inv.totalValue||0)} LE</span>
-                                    ${createdBy ? `<span style="font-size:11px;color:var(--gray);">${createdBy}</span>` : ''}
                                     ${urlDisplay}
                                     <span class="order-details">${details||'—'}</span>
                                     <button class="btn btn-secondary btn-sm" onclick="event.stopPropagation();window.UI.exportSingleOldInvoice(${idx})">
@@ -3194,8 +3226,7 @@
                         <div style="margin-bottom:8px;"><strong>الفرع:</strong> ${this.escapeHtml(inv.branch||'—')}</div>
                         <div style="margin-bottom:8px;"><strong>التاريخ:</strong> ${new Date(inv.createdAt).toLocaleString('ar-EG')}</div>
                         <div style="margin-bottom:8px;"><strong>القطع:</strong> ${inv.totalPieces||0}</div>
-                        <div style="margin-bottom:8px;"><strong>القيمة:</strong> ${Utils.formatCurrency(inv.totalValue||0)} LE</div>
-                        ${inv.createdBy ? `<div style="margin-bottom:8px;"><strong>تم الإنشاء بواسطة:</strong> ${this.escapeHtml(inv.createdBy)}</div>` : ''}
+                        <div style="margin-bottom:12px;"><strong>القيمة:</strong> ${Utils.formatCurrency(inv.totalValue||0)} LE</div>
                         ${inv.productUrl ? `<div style="margin-bottom:12px;"><strong>الرابط:</strong> <span style="direction:ltr;display:inline-block;font-size:12px;color:var(--gray);word-break:break-all;">${this.escapeHtml(inv.productUrl)}</span></div>` : ''}
                         <div style="border-top:1px solid var(--gray-light);padding-top:12px;">
                             <strong>المنتجات:</strong>
@@ -3274,7 +3305,7 @@
             window.openModal = function(img) { if (window.UI) window.UI.openModal(img); };
             window.closeModal = function() { if (window.UI) window.UI.closeModal(); };
 
-            // ===== دالة toggle sidebar =====
+            // ===== TOGGLE SIDEBAR =====
             function toggleSidebar() {
                 const sidebar = document.getElementById('sidebar');
                 const mainContent = document.getElementById('mainContent');
@@ -3288,7 +3319,6 @@
                     mainContent.classList.toggle('sidebar-hidden');
                 }
 
-                // Update sticky wrapper position
                 if (window.UI) {
                     window.UI.updateStickyPosition();
                 }
