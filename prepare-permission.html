@@ -2819,22 +2819,28 @@
 
       // ===== TOGGLE SIDEBAR =====
       function toggleSidebar() {
-        const sidebar = document.getElementById('sidebar');
-        const mainContent = document.getElementById('mainContent');
+    const sidebar = document.getElementById('sidebar');
+    const mainContent = document.getElementById('mainContent');
 
-        if (window.innerWidth > 992) {
-          sidebar.classList.toggle('hidden');
-          mainContent.classList.toggle('sidebar-hidden');
+    if (window.innerWidth > 992) {
+        sidebar.classList.toggle('hidden');
+        mainContent.classList.toggle('sidebar-hidden');
+    } else {
+        if (sidebar.classList.contains('visible')) {
+            sidebar.classList.remove('visible');
+            sidebar.classList.add('hidden');
+            mainContent.classList.add('sidebar-hidden');
         } else {
-          sidebar.classList.toggle('hidden');
-          sidebar.classList.toggle('visible');
-          mainContent.classList.toggle('sidebar-hidden');
+            sidebar.classList.remove('hidden');
+            sidebar.classList.add('visible');
+            mainContent.classList.remove('sidebar-hidden');
         }
+    }
 
-        if (window.UI) {
-          window.UI.updateStickyPosition();
-        }
-      }
+    if (window.UI) {
+        window.UI.updateStickyPosition();
+    }
+}
       window.toggleSidebar = toggleSidebar;
 
       // Close sidebar on outside click (mobile)
