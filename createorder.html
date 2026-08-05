@@ -636,7 +636,7 @@
             color: var(--primary);
             font-size: 14px;
         }
-        
+
         .product-card-header .meta .total-pieces {
             font-weight: 600;
             color: var(--success);
@@ -725,6 +725,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            margin-right: 4px;
         }
         .color-header .delete-color-btn:hover {
             background: var(--danger);
@@ -1740,7 +1741,7 @@
                     try {
                         const fullKey = 'shopify_' + key;
                         localStorage.setItem(fullKey, typeof value === 'object' ? JSON.stringify(value) : String(
-                        value));
+                            value));
                     } catch {}
                 },
                 remove(key) {
@@ -1968,7 +1969,7 @@
                     }
                     const oneMonthAgo = Date.now() - (30 * 24 * 60 * 60 * 1000);
                     database.ref('invoices').orderByChild('createdAt').startAt(oneMonthAgo).once('value', (
-                    snapshot) => {
+                        snapshot) => {
                         const data = snapshot.val();
                         if (!data) {
                             if (callback) callback([]);
@@ -2238,7 +2239,8 @@
                     if (mode === 'detail' || mode === 'rows') {
                         data = [
                             ['#', 'Name', 'Color', 'Size', 'SKU', 'Qty', 'Pieces', 'Unit Price',
-                            'Total']
+                                'Total'
+                            ]
                         ];
                         filteredData.forEach((r, i) => {
                             data.push([i + 1, r.name, r.color, r.size, r.sku, r.qty, r.qty, r
@@ -2268,7 +2270,8 @@
                         });
                         data = [
                             ['Name', 'Colors', 'Sizes', 'SKU', 'Total Pieces', 'Unit Price',
-                            'Total']
+                                'Total'
+                            ]
                         ];
                         const orderedKeys = [];
                         const keySet = new Set();
@@ -2311,7 +2314,8 @@
                         });
                         data = [
                             ['Name', 'SKU', 'Color', 'Sizes', 'Total Pieces', 'Unit Price',
-                            'Total']
+                                'Total'
+                            ]
                         ];
                         const orderedKeys = [];
                         const keySet = new Set();
@@ -2353,7 +2357,7 @@
                         });
                         data = [
                             ['المنتج', 'باركود', 'توتال الكمية', 'سعر البيع', 'التصنيف',
-                            'اللون و الكمية الخرجت من كل مقاس'
+                                'اللون و الكمية الخرجت من كل مقاس'
                             ]
                         ];
                         const orderedKeys = [];
@@ -2461,7 +2465,6 @@
                 init() {
                     console.log('🚀 Initializing Create Order UI...');
 
-                    // Get current user name from localStorage
                     this._currentUser = Storage.get('userName', 'مستخدم غير معروف');
                     const userNameEl = document.getElementById('currentAdminName');
                     if (userNameEl) {
@@ -2515,7 +2518,6 @@
                     }
 
                     // لا نقوم بتحميل الفواتير القديمة تلقائياً
-                    // this.loadOldInvoices();
                     Utils.cleanOldInvoices();
 
                     this.elements.branch.addEventListener('change', () => {
@@ -2605,7 +2607,6 @@
                         }
                     }, 2000);
 
-                    // Load sidebar from usermenu.js
                     if (typeof loadLayout === 'function') {
                         loadLayout();
                     }
@@ -2857,13 +2858,12 @@
                     for (const key of groupOrder) {
                         const g = groups[key];
                         const productId = 'prod_' + productIdx;
-                        
-                        // تجميع إجمالي القطع لكل منتج
+
                         let totalPieces = 0;
                         for (const color in g.colors) {
                             g.colors[color].forEach(s => { totalPieces += s.qty; });
                         }
-                        
+
                         // افتراضي: المنتج مغلق عند الإضافة
                         if (this._productCardStates[productId] === undefined) {
                             this._productCardStates[productId] = false;
@@ -2914,24 +2914,30 @@
                         const isColorOpen = this._productCardStates[colorId];
                         const totalQty = sizes.reduce((sum, s) => sum + s.qty, 0);
 
+                        const escapedColor = this.escapeHtml(color);
+                        const escapedSku = this.escapeHtml(g.sku);
+                        const escapedName = this.escapeHtml(g.name);
+
                         html += `
                             <div class="color-accordion">
                                 <div class="color-header" onclick="window.UI.toggleColor('${colorId}')">
                                     <span class="chevron-sm ${isColorOpen ? 'open' : ''}"><i class="fas fa-chevron-down"></i></span>
-                                    <span><i class="fas fa-palette" style="color:var(--primary);"></i> ${this.escapeHtml(color)}</span>
+                                    <span><i class="fas fa-palette" style="color:var(--primary);"></i> ${escapedColor}</span>
                                     <span class="color-total">${totalQty} قطعة</span>
-                                    <button class="delete-col<button class="delete-color-btn"
-onclick='event.stopPropagation();window.UI.deleteColor(${JSON.stringify(productId)}, ${JSON.stringify(color)}, ${JSON.stringify(g.sku)}, ${JSON.stringify(g.name)})'
-title="حذف اللون">
-    <i class="fas fa-times"></i>
-</button>
+                                    <button class="delete-color-btn" onclick="event.stopPropagation();window.UI.deleteColor(${JSON.stringify(productId)}, ${JSON.stringify(color)}, ${JSON.stringify(g.sku)}, ${JSON.stringify(g.name)})" title="حذف اللون">
+                                        <i class="fas fa-times"></i>
+                                    </button>
                                 </div>
                                 <div class="color-sizes ${isColorOpen ? 'open' : ''}">
                                     ${sizes.map((s, idx) => {
                                         const isZero = s.qty === 0;
+                                        const escapedSize = this.escapeHtml(s.size);
+                                        const escapedColor2 = this.escapeHtml(color);
+                                        const escapedSku2 = this.escapeHtml(g.sku);
+                                        const escapedName2 = this.escapeHtml(g.name);
                                         return `
                                             <div class="size-row ${isZero ? 'zero-qty' : ''}" data-product="${productId}" data-color="${color}" data-size="${s.size}" data-sku="${g.sku}" data-name="${g.name}">
-                                                <span class="size-label">${this.escapeHtml(s.size)}</span>
+                                                <span class="size-label">${escapedSize}</span>
                                                 <div class="qty-control">
                                                     <button onclick='window.UI.changeQty(${JSON.stringify(productId)}, ${JSON.stringify(color)}, ${JSON.stringify(s.size)}, -1, ${JSON.stringify(g.sku)}, ${JSON.stringify(g.name)})'>
                                                         <i class="fas fa-minus"></i>
@@ -2955,12 +2961,12 @@ title="حذف اللون">
                 deleteColor(productId, color, sku, name) {
                     const colorName = color || 'No Color';
                     if (!confirm(`هل أنت متأكد من حذف اللون "${colorName}"؟`)) return;
-                    
+
                     this._tableData = this._tableData.filter(row => {
                         const rowColor = row.color || 'No Color';
                         return !(row.name === name && row.sku === sku && rowColor === colorName);
                     });
-                    
+
                     this.renderInvoice();
                     this.saveAll();
                     this.markDirty();
@@ -3065,8 +3071,6 @@ title="حذف اللون">
                         this.renderInvoice();
                         this.saveAll();
                         Utils.saveCurrentTable([]);
-                        // لا نقوم بتحميل الفواتير تلقائياً
-                        // this.loadOldInvoices();
                         this.showAlert(`✅ تم تقفيل الفاتورة (ID: ${key})`, 'success');
                     });
                 },
@@ -3395,7 +3399,6 @@ title="حذف اللون">
             }
             window.toggleSidebar = toggleSidebar;
 
-            // Close sidebar on outside click (mobile)
             document.addEventListener('click', function(event) {
                 const sidebar = document.getElementById('sidebar');
                 const menuToggle = document.querySelector('.menu-toggle');
@@ -3421,7 +3424,6 @@ title="حذف اللون">
                 }
             });
 
-            // Handle window resize
             window.addEventListener('resize', function() {
                 const sidebar = document.getElementById('sidebar');
                 const mainContent = document.getElementById('mainContent');
