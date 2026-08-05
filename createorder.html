@@ -2889,9 +2889,15 @@
                                             <div class="size-row ${isZero ? 'zero-qty' : ''}" data-product="${productId}" data-color="${color}" data-size="${s.size}" data-sku="${g.sku}" data-name="${g.name}">
                                                 <span class="size-label">${this.escapeHtml(s.size)}</span>
                                                 <div class="qty-control">
-                                                    <button onclick="window.UI.changeQty('${productId}', '${color}', '${s.size}', -1, '${g.sku}', '${g.name}')"><i class="fas fa-minus"></i></button>
-                                                    <span class="qty-val">${s.qty}</span>
-                                                    <button onclick="window.UI.changeQty('${productId}', '${color}', '${s.size}', 1, '${g.sku}', '${g.name}')"><i class="fas fa-plus"></i></button>
+                                                    <button onclick='window.UI.changeQty(${JSON.stringify(productId)}, ${JSON.stringify(color)}, ${JSON.stringify(s.size)}, -1, ${JSON.stringify(g.sku)}, ${JSON.stringify(g.name)})'>
+    <i class="fas fa-minus"></i>
+</button>
+
+<span class="qty-val">${s.qty}</span>
+
+<button onclick='window.UI.changeQty(${JSON.stringify(productId)}, ${JSON.stringify(color)}, ${JSON.stringify(s.size)}, 1, ${JSON.stringify(g.sku)}, ${JSON.stringify(g.name)})'>
+    <i class="fas fa-plus"></i>
+</button>
                                                 </div>
                                             </div>
                                         `;
