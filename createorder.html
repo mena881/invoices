@@ -636,6 +636,15 @@
             color: var(--primary);
             font-size: 14px;
         }
+        
+        .product-card-header .meta .total-pieces {
+            font-weight: 600;
+            color: var(--success);
+            font-size: 13px;
+            background: var(--success-light);
+            padding: 2px 12px;
+            border-radius: 30px;
+        }
 
         .product-card-header .chevron {
             margin-right: auto;
@@ -701,6 +710,26 @@
             background: var(--light);
             padding: 2px 14px;
             border-radius: 30px;
+        }
+
+        .color-header .delete-color-btn {
+            background: var(--danger-light);
+            color: var(--danger);
+            border: none;
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .color-header .delete-color-btn:hover {
+            background: var(--danger);
+            color: white;
+            transform: scale(1.1);
         }
 
         .color-sizes {
@@ -1564,7 +1593,7 @@
                     </div>
                 </div>
                 <div class="old-orders-list" id="oldOrdersList">
-                    <div style="text-align:center;padding:20px;color:var(--gray);">جاري التحميل...</div>
+                    <div style="text-align:center;padding:20px;color:var(--gray);">اضغط على "تحديث" لتحميل الفواتير</div>
                 </div>
             </section>
 
@@ -2485,7 +2514,8 @@
                         console.log('✅ Cached product loaded:', this._lastProduct.name);
                     }
 
-                    this.loadOldInvoices();
+                    // لا نقوم بتحميل الفواتير القديمة تلقائياً
+                    // this.loadOldInvoices();
                     Utils.cleanOldInvoices();
 
                     this.elements.branch.addEventListener('change', () => {
@@ -2827,8 +2857,16 @@
                     for (const key of groupOrder) {
                         const g = groups[key];
                         const productId = 'prod_' + productIdx;
+                        
+                        // تجميع إجمالي القطع لكل منتج
+                        let totalPieces = 0;
+                        for (const color in g.colors) {
+                            g.colors[color].forEach(s => { totalPieces += s.qty; });
+                        }
+                        
+                        // افتراضي: المنتج مغلق عند الإضافة
                         if (this._productCardStates[productId] === undefined) {
-                            this._productCardStates[productId] = true;
+                            this._productCardStates[productId] = false;
                         }
                         const isProductOpen = this._productCardStates[productId];
 
@@ -2840,6 +2878,7 @@
                                         <span class="name">${this.escapeHtml(g.name)}</span>
                                         <span class="sku">SKU: ${this.escapeHtml(g.sku)}</span>
                                         <span class="price">${Utils.formatCurrency(g.unitPrice)} LE</span>
+                                        <span class="total-pieces"><i class="fas fa-boxes"></i> ${totalPieces}</span>
                                     </div>
                                     <span class="chevron ${isProductOpen ? 'open' : ''}"><i class="fas fa-chevron-down"></i></span>
                                 </div>
@@ -2848,8 +2887,8 @@
                                 </div>
                                 <div class="product-card-footer">
                                     <button class="btn btn-danger btn-sm" onclick='window.UI.deleteProduct(${JSON.stringify(key)})'>
-    <i class="fas fa-trash"></i> حذف المنتج
-</button>
+                                        <i class="fas fa-trash"></i> حذف المنتج
+                                    </button>
                                 </div>
                             </div>
                         `;
@@ -2881,6 +2920,9 @@
                                     <span class="chevron-sm ${isColorOpen ? 'open' : ''}"><i class="fas fa-chevron-down"></i></span>
                                     <span><i class="fas fa-palette" style="color:var(--primary);"></i> ${this.escapeHtml(color)}</span>
                                     <span class="color-total">${totalQty} قطعة</span>
+                                    <button class="delete-color-btn" onclick="event.stopPropagation();window.UI.deleteColor('${productId}', '${this.escapeHtml(color)}', '${this.escapeHtml(g.sku)}', '${this.escapeHtml(g.name)}')" title="حذف اللون">
+                                        <i class="fas fa-times"></i>
+                                    </button>
                                 </div>
                                 <div class="color-sizes ${isColorOpen ? 'open' : ''}">
                                     ${sizes.map((s, idx) => {
@@ -2890,14 +2932,12 @@
                                                 <span class="size-label">${this.escapeHtml(s.size)}</span>
                                                 <div class="qty-control">
                                                     <button onclick='window.UI.changeQty(${JSON.stringify(productId)}, ${JSON.stringify(color)}, ${JSON.stringify(s.size)}, -1, ${JSON.stringify(g.sku)}, ${JSON.stringify(g.name)})'>
-    <i class="fas fa-minus"></i>
-</button>
-
-<span class="qty-val">${s.qty}</span>
-
-<button onclick='window.UI.changeQty(${JSON.stringify(productId)}, ${JSON.stringify(color)}, ${JSON.stringify(s.size)}, 1, ${JSON.stringify(g.sku)}, ${JSON.stringify(g.name)})'>
-    <i class="fas fa-plus"></i>
-</button>
+                                                        <i class="fas fa-minus"></i>
+                                                    </button>
+                                                    <span class="qty-val">${s.qty}</span>
+                                                    <button onclick='window.UI.changeQty(${JSON.stringify(productId)}, ${JSON.stringify(color)}, ${JSON.stringify(s.size)}, 1, ${JSON.stringify(g.sku)}, ${JSON.stringify(g.name)})'>
+                                                        <i class="fas fa-plus"></i>
+                                                    </button>
                                                 </div>
                                             </div>
                                         `;
@@ -2908,6 +2948,21 @@
                         colorIdx++;
                     }
                     return html;
+                },
+
+                deleteColor(productId, color, sku, name) {
+                    const colorName = color || 'No Color';
+                    if (!confirm(`هل أنت متأكد من حذف اللون "${colorName}"؟`)) return;
+                    
+                    this._tableData = this._tableData.filter(row => {
+                        const rowColor = row.color || 'No Color';
+                        return !(row.name === name && row.sku === sku && rowColor === colorName);
+                    });
+                    
+                    this.renderInvoice();
+                    this.saveAll();
+                    this.markDirty();
+                    this.showAlert(`🗑️ تم حذف اللون ${colorName}`, 'info');
                 },
 
                 toggleProduct(productId) {
@@ -3008,7 +3063,8 @@
                         this.renderInvoice();
                         this.saveAll();
                         Utils.saveCurrentTable([]);
-                        this.loadOldInvoices();
+                        // لا نقوم بتحميل الفواتير تلقائياً
+                        // this.loadOldInvoices();
                         this.showAlert(`✅ تم تقفيل الفاتورة (ID: ${key})`, 'success');
                     });
                 },
@@ -3313,28 +3369,28 @@
 
             // ===== TOGGLE SIDEBAR =====
             function toggleSidebar() {
-    const sidebar = document.getElementById('sidebar');
-    const mainContent = document.getElementById('mainContent');
+                const sidebar = document.getElementById('sidebar');
+                const mainContent = document.getElementById('mainContent');
 
-    if (window.innerWidth > 992) {
-        sidebar.classList.toggle('hidden');
-        mainContent.classList.toggle('sidebar-hidden');
-    } else {
-        if (sidebar.classList.contains('visible')) {
-            sidebar.classList.remove('visible');
-            sidebar.classList.add('hidden');
-            mainContent.classList.add('sidebar-hidden');
-        } else {
-            sidebar.classList.remove('hidden');
-            sidebar.classList.add('visible');
-            mainContent.classList.remove('sidebar-hidden');
-        }
-    }
+                if (window.innerWidth > 992) {
+                    sidebar.classList.toggle('hidden');
+                    mainContent.classList.toggle('sidebar-hidden');
+                } else {
+                    if (sidebar.classList.contains('visible')) {
+                        sidebar.classList.remove('visible');
+                        sidebar.classList.add('hidden');
+                        mainContent.classList.add('sidebar-hidden');
+                    } else {
+                        sidebar.classList.remove('hidden');
+                        sidebar.classList.add('visible');
+                        mainContent.classList.remove('sidebar-hidden');
+                    }
+                }
 
-    if (window.UI) {
-        window.UI.updateStickyPosition();
-    }
-}
+                if (window.UI) {
+                    window.UI.updateStickyPosition();
+                }
+            }
             window.toggleSidebar = toggleSidebar;
 
             // Close sidebar on outside click (mobile)
