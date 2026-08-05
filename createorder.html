@@ -2920,9 +2920,11 @@
                                     <span class="chevron-sm ${isColorOpen ? 'open' : ''}"><i class="fas fa-chevron-down"></i></span>
                                     <span><i class="fas fa-palette" style="color:var(--primary);"></i> ${this.escapeHtml(color)}</span>
                                     <span class="color-total">${totalQty} قطعة</span>
-                                    <button class="delete-color-btn" onclick="event.stopPropagation();window.UI.deleteColor('${productId}', '${this.escapeHtml(color)}', '${this.escapeHtml(g.sku)}', '${this.escapeHtml(g.name)}')" title="حذف اللون">
-                                        <i class="fas fa-times"></i>
-                                    </button>
+                                    <button class="delete-col<button class="delete-color-btn"
+onclick='event.stopPropagation();window.UI.deleteColor(${JSON.stringify(productId)}, ${JSON.stringify(color)}, ${JSON.stringify(g.sku)}, ${JSON.stringify(g.name)})'
+title="حذف اللون">
+    <i class="fas fa-times"></i>
+</button>
                                 </div>
                                 <div class="color-sizes ${isColorOpen ? 'open' : ''}">
                                     ${sizes.map((s, idx) => {
