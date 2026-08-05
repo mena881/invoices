@@ -2847,9 +2847,9 @@
                                     ${this.renderColors(g, productId)}
                                 </div>
                                 <div class="product-card-footer">
-                                    <button class="btn btn-danger btn-sm" onclick="window.UI.deleteProduct('${key}')">
-                                        <i class="fas fa-trash"></i> حذف المنتج
-                                    </button>
+                                    <button class="btn btn-danger btn-sm" onclick='window.UI.deleteProduct(${JSON.stringify(key)})'>
+    <i class="fas fa-trash"></i> حذف المنتج
+</button>
                                 </div>
                             </div>
                         `;
