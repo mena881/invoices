@@ -895,11 +895,11 @@
             }
 
             // Load initial data
-            if (typeof fetchPurchaseData === 'function') {
-                loadPurchaseData();
-            } else {
-                showToast('⚠️ دالة جلب البيانات غير موجودة. تأكد من تحميل apipurchase.js', 'error');
-            }
+            if (typeof fetchInventoryData === 'function') {
+    loadPurchaseData();
+} else {
+    showToast('⚠️ دالة جلب البيانات غير موجودة.', 'error');
+}
         });
 
         // ============================================================
