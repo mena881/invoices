@@ -1,0 +1,1137 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>إعداد الشراء</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="apifromsheet.js"></script>
+    <script src="usermenu.js"></script>
+
+    <style>
+        /* ===== RESET & BASE ===== (مأخوذ من allreturn.html) */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: #f0f4f9;
+            direction: rtl;
+            min-height: 100vh;
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #e8ecf1;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #4f46e5;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #3730a3;
+        }
+
+        /* ===== SIDEBAR (نفس تصميم allreturn) ===== */
+        .sidebar {
+            position: fixed;
+            right: 0;
+            top: 0;
+            width: 280px;
+            height: 100%;
+            background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
+            color: white;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1000;
+            overflow-y: auto;
+            box-shadow: -5px 0 30px rgba(0, 0, 0, 0.15);
+            transform: translateX(0);
+        }
+
+        .sidebar.hidden {
+            transform: translateX(100%);
+        }
+
+        .sidebar-header {
+            padding: 30px 20px 20px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            margin-bottom: 15px;
+        }
+
+        .sidebar-header .logo-icon {
+            font-size: 40px;
+            background: linear-gradient(135deg, #818cf8, #7c3aed);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .sidebar-header h2 {
+            font-size: 22px;
+            font-weight: 700;
+            margin-top: 8px;
+            background: linear-gradient(135deg, #818cf8, #7c3aed);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .sidebar-header p {
+            font-size: 12px;
+            opacity: 0.5;
+            margin-top: 4px;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 0 12px;
+        }
+
+        .sidebar-menu li {
+            padding: 12px 16px;
+            margin-bottom: 4px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            border-radius: 12px;
+            font-weight: 500;
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .sidebar-menu li i {
+            width: 22px;
+            font-size: 16px;
+        }
+        .sidebar-menu li:hover {
+            background: rgba(255, 255, 255, 0.08);
+            color: white;
+            transform: translateX(-4px);
+        }
+        .sidebar-menu li.active {
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            color: white;
+            box-shadow: 0 4px 15px rgba(79, 70, 229, 0.4);
+        }
+
+        .logout-btn {
+            margin: 20px 15px 30px;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: rgba(255, 255, 255, 0.7);
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            width: calc(100% - 30px);
+        }
+        .logout-btn:hover {
+            background: #ef4444;
+            border-color: #ef4444;
+            color: white;
+        }
+
+        /* ===== MAIN CONTENT ===== */
+        .main-content {
+            margin-right: 280px;
+            padding: 20px 25px;
+            transition: margin-right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            min-height: 100vh;
+            position: relative;
+        }
+        .main-content.sidebar-hidden {
+            margin-right: 0;
+        }
+
+        .app-container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        /* ===== HEADER (نفس تصميم allreturn) ===== */
+        .header {
+            background: white;
+            padding: 16px 24px;
+            border-radius: 16px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            border: 1px solid rgba(0, 0, 0, 0.04);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .menu-toggle {
+            background: #1e293b;
+            border: none;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+            padding: 10px 14px;
+            border-radius: 12px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .menu-toggle:hover {
+            background: #4f46e5;
+        }
+
+        .header h1 {
+            font-size: 22px;
+            color: #1e293b;
+            font-weight: 700;
+        }
+        .header h1 i {
+            color: #4f46e5;
+            margin-left: 10px;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: #f8fafc;
+            padding: 6px 16px 6px 20px;
+            border-radius: 40px;
+            border: 1px solid #e2e8f0;
+        }
+        .user-info i {
+            font-size: 22px;
+            color: #4f46e5;
+        }
+        .user-info span {
+            font-weight: 600;
+            color: #1e293b;
+            font-size: 14px;
+        }
+
+        .status-badge {
+            padding: 4px 14px;
+            border-radius: 30px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #d1fae5;
+            color: #10b981;
+        }
+
+        .btn-ghost-header {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            padding: 8px 16px;
+            border-radius: 40px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            color: #1e293b;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-family: 'Cairo', sans-serif;
+        }
+        .btn-ghost-header:hover {
+            border-color: #4f46e5;
+            color: #4f46e5;
+            background: #dbeafe;
+        }
+
+        /* ===== TOAST ===== */
+        .toast-container {
+            position: fixed;
+            bottom: 30px;
+            left: 30px;
+            z-index: 99999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            direction: rtl;
+        }
+        .toast {
+            padding: 14px 24px;
+            border-radius: 14px;
+            color: #fff;
+            font-weight: 700;
+            font-size: 14px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+            animation: slideUp 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-width: 200px;
+        }
+        .toast.success {
+            background: #10b981;
+        }
+        .toast.error {
+            background: #ef4444;
+        }
+        .toast.info {
+            background: #3b82f6;
+        }
+        .toast.warning {
+            background: #f59e0b;
+        }
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ===== TABLE ===== */
+        .table-wrapper {
+            background: #fff;
+            border-radius: 16px;
+            padding: 16px 18px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+            border: 1px solid #e8ecf1;
+            overflow-x: auto;
+            margin-top: 14px;
+        }
+        .table-header-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+        .table-header-bar h3 {
+            font-size: 16px;
+            font-weight: 700;
+            color: #0f172a;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .table-header-bar h3 i {
+            color: #4f46e5;
+        }
+        .count-badge {
+            font-size: 12px;
+            background: #e8ecf1;
+            padding: 3px 14px;
+            border-radius: 30px;
+            color: #64748b;
+            font-weight: 600;
+        }
+
+        .table-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 10px;
+            justify-content: flex-end;
+        }
+        .table-controls .pagination {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+        .table-controls .pagination select {
+            padding: 4px 8px;
+            border: 2px solid #e2e8f0;
+            border-radius: 6px;
+            font-family: 'Cairo', sans-serif;
+            font-size: 12px;
+            background: #fff;
+        }
+        .table-controls .pagination .page-info {
+            font-size: 13px;
+            color: #64748b;
+        }
+        .table-controls .pagination button {
+            padding: 4px 10px;
+            border: none;
+            border-radius: 6px;
+            background: #f1f5f9;
+            color: #1e293b;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+        .table-controls .pagination button:hover:not(:disabled) {
+            background: #e2e8f0;
+        }
+        .table-controls .pagination button:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+            min-width: 600px;
+        }
+        .data-table thead {
+            background: #f1f5f9;
+            border-radius: 10px;
+        }
+        .data-table th {
+            padding: 10px 6px;
+            text-align: center;
+            font-weight: 700;
+            color: #0f172a;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.2px;
+            border-bottom: 2px solid #e2e8f0;
+            white-space: nowrap;
+            position: sticky;
+            top: 0;
+            background: #f1f5f9;
+            z-index: 5;
+        }
+        .data-table td {
+            padding: 6px 6px;
+            text-align: center;
+            border-bottom: 1px solid #f1f5f9;
+            color: #1e293b;
+            font-size: 12px;
+            max-width: 120px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            vertical-align: middle;
+        }
+        .data-table tbody tr:hover {
+            background: #f8fafc;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 30px 16px;
+            color: #94a3b8;
+        }
+        .empty-state i {
+            font-size: 36px;
+            margin-bottom: 8px;
+            opacity: 0.4;
+        }
+        .empty-state p {
+            font-size: 14px;
+        }
+
+        /* ===== BUTTONS ===== */
+        .btn {
+            padding: 8px 18px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 700;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-family: 'Cairo', sans-serif;
+            text-decoration: none;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(79, 70, 229, 0.3);
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(79, 70, 229, 0.4);
+        }
+        .btn-success {
+            background: #10b981;
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+        }
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+        }
+        .btn-danger {
+            background: #ef4444;
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+        }
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
+        }
+        .btn-warning {
+            background: #f59e0b;
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);
+        }
+        .btn-warning:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(245, 158, 11, 0.4);
+        }
+        .btn-outline {
+            background: transparent;
+            border: 2px solid #e2e8f0;
+            color: #64748b;
+        }
+        .btn-outline:hover {
+            background: rgba(79, 70, 229, 0.08);
+            border-color: #4f46e5;
+            color: #4f46e5;
+        }
+        .btn-sm {
+            padding: 3px 10px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: 600;
+            transition: all 0.2s;
+            font-family: 'Cairo', sans-serif;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .btn-sm.btn-edit {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+        .btn-sm.btn-edit:hover {
+            background: #bfdbfe;
+        }
+        .btn-sm.btn-delete {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+        .btn-sm.btn-delete:hover {
+            background: #fecaca;
+        }
+        .btn-sm.btn-save {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        .btn-sm.btn-save:hover {
+            background: #a7f3d0;
+        }
+        .btn-sm.btn-cancel {
+            background: #f1f5f9;
+            color: #64748b;
+        }
+        .btn-sm.btn-cancel:hover {
+            background: #e2e8f0;
+        }
+
+        /* ===== MODALS ===== */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.55);
+            backdrop-filter: blur(6px);
+            z-index: 99999;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.25s ease;
+        }
+        .modal-overlay.open {
+            display: flex;
+        }
+        .modal-box {
+            background: #fff;
+            border-radius: 20px;
+            padding: 26px 30px;
+            max-width: 640px;
+            width: 95%;
+            max-height: 85vh;
+            overflow-y: auto;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.3);
+            animation: slideUp 0.3s ease;
+        }
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(24px) scale(0.97);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .modal-box h3 {
+            font-size: 18px;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .modal-box h3 i {
+            color: #4f46e5;
+        }
+        .modal-close {
+            float: left;
+            background: none;
+            border: none;
+            font-size: 22px;
+            color: #94a3b8;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .modal-close:hover {
+            color: #ef4444;
+            transform: rotate(90deg);
+        }
+        .modal-box .form-group {
+            margin-bottom: 14px;
+        }
+        .modal-box .form-group label {
+            display: block;
+            font-weight: 600;
+            font-size: 13px;
+            color: #0f172a;
+            margin-bottom: 4px;
+        }
+        .modal-box .form-group input,
+        .modal-box .form-group select {
+            width: 100%;
+            padding: 8px 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 13px;
+            font-family: 'Cairo', sans-serif;
+            transition: all 0.3s;
+            background: #fff;
+        }
+        .modal-box .form-group input:focus,
+        .modal-box .form-group select:focus {
+            outline: none;
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+        .modal-box .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 12px;
+        }
+        .modal-box .modal-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 18px;
+            flex-wrap: wrap;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 992px) {
+            .main-content {
+                margin-right: 0;
+            }
+            .sidebar {
+                transform: translateX(100%);
+            }
+            .sidebar.visible {
+                transform: translateX(0);
+            }
+            .sidebar.hidden {
+                transform: translateX(100%);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 12px 12px 20px 12px;
+            }
+            .header {
+                padding: 14px 16px;
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .header h1 {
+                font-size: 18px;
+            }
+            .header-actions {
+                justify-content: center;
+            }
+            .data-table {
+                font-size: 11px;
+                min-width: 500px;
+            }
+            .data-table th,
+            .data-table td {
+                padding: 4px 4px;
+            }
+            .modal-box .form-row {
+                grid-template-columns: 1fr;
+            }
+            .modal-box {
+                padding: 18px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header h1 {
+                font-size: 16px;
+            }
+            .data-table {
+                min-width: 400px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== SIDEBAR ===== -->
+    <div class="sidebar" id="sidebar"></div>
+
+    <!-- ===== MAIN CONTENT ===== -->
+    <div class="main-content" id="mainContent">
+
+        <!-- ===== HEADER ===== -->
+        <header class="header">
+            <div class="header-left">
+                <button class="menu-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+                <h1><i class="fas fa-shopping-cart"></i> إعداد الشراء</h1>
+            </div>
+            <div class="header-actions">
+                <button class="btn-ghost-header" onclick="refreshData()">
+                    <i class="fas fa-sync-alt"></i> تحديث
+                </button>
+                <button class="btn-ghost-header" onclick="openAddPurchaseModal()">
+                    <i class="fas fa-plus"></i> إضافة أمر شراء
+                </button>
+                <div class="user-info">
+                    <i class="fas fa-user-circle"></i>
+                    <span id="currentAdminName">مرحباً، مدير النظام</span>
+                </div>
+                <span class="status-badge" id="storeStatus">
+                    <i class="fas fa-circle" style="font-size:8px;"></i> جاهز
+                </span>
+            </div>
+        </header>
+
+        <div class="app-container">
+            <!-- ===== TABLE ===== -->
+            <div class="table-wrapper">
+                <div class="table-header-bar">
+                    <h3><i class="fas fa-list"></i> أوامر الشراء</h3>
+                    <span class="count-badge" id="dataCount">0</span>
+                </div>
+                <div class="table-controls">
+                    <div class="pagination">
+                        <button onclick="changePage(-1)" id="prevPageBtn" disabled><i class="fas fa-chevron-right"></i></button>
+                        <span class="page-info" id="pageInfo">صفحة 1</span>
+                        <button onclick="changePage(1)" id="nextPageBtn"><i class="fas fa-chevron-left"></i></button>
+                    </div>
+                </div>
+                <div style="overflow-x:auto;">
+                    <table class="data-table" id="purchaseTable">
+                        <thead id="tableHeader">
+                            <tr>
+                                <th>...</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody">
+                            <tr>
+                                <td colspan="10" class="empty-state"><i class="fas fa-inbox"></i>
+                                    <p>لا توجد بيانات</p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== ADD PURCHASE MODAL ===== -->
+        <div class="modal-overlay" id="addPurchaseModal">
+            <div class="modal-box">
+                <button class="modal-close" onclick="closeAddPurchaseModal()"><i class="fas fa-times"></i></button>
+                <h3><i class="fas fa-plus-circle"></i> إضافة أمر شراء جديد</h3>
+                <div id="dynamicForm">
+                    <!-- سيتم إنشاء الحقول ديناميكياً بناءً على بيانات الجدول -->
+                </div>
+                <div class="modal-actions">
+                    <button class="btn btn-outline" onclick="closeAddPurchaseModal()" style="border-color:#e2e8f0;color:#64748b;">
+                        <i class="fas fa-times"></i> إلغاء
+                    </button>
+                    <button class="btn btn-success" onclick="savePurchaseOrder()">
+                        <i class="fas fa-save"></i> حفظ
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== TOAST ===== -->
+        <div class="toast-container" id="toastContainer"></div>
+    </div>
+
+    <script>
+        // ============================================================
+        // SIDEBAR TOGGLE (نفس طريقة allreturn)
+        // ============================================================
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('mainContent');
+
+            if (window.innerWidth > 992) {
+                sidebar.classList.toggle('hidden');
+                mainContent.classList.toggle('sidebar-hidden');
+            } else {
+                if (sidebar.classList.contains('visible')) {
+                    sidebar.classList.remove('visible');
+                    sidebar.classList.add('hidden');
+                    mainContent.classList.add('sidebar-hidden');
+                } else {
+                    sidebar.classList.remove('hidden');
+                    sidebar.classList.add('visible');
+                    mainContent.classList.remove('sidebar-hidden');
+                }
+            }
+        }
+
+        // Close sidebar on outside click (mobile)
+        document.addEventListener('click', function(event) {
+            const sidebar = document.getElementById('sidebar');
+            const menuToggle = document.querySelector('.menu-toggle');
+            const mainContent = document.getElementById('mainContent');
+
+            if (window.innerWidth <= 992) {
+                const isSidebarVisible = sidebar.classList.contains('visible') && !sidebar.classList.contains('hidden');
+
+                if (isSidebarVisible) {
+                    const isClickInsideSidebar = sidebar.contains(event.target);
+                    const isClickOnMenuToggle = menuToggle && menuToggle.contains(event.target);
+
+                    if (!isClickInsideSidebar && !isClickOnMenuToggle) {
+                        sidebar.classList.add('hidden');
+                        sidebar.classList.remove('visible');
+                        mainContent.classList.remove('sidebar-hidden');
+                    }
+                }
+            }
+        });
+
+        // Handle window resize
+        window.addEventListener('resize', function() {
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('mainContent');
+
+            if (window.innerWidth > 992) {
+                sidebar.classList.remove('hidden');
+                sidebar.classList.remove('visible');
+                mainContent.classList.remove('sidebar-hidden');
+            } else {
+                sidebar.classList.add('hidden');
+                sidebar.classList.remove('visible');
+                mainContent.classList.add('sidebar-hidden');
+            }
+        });
+
+        // ============================================================
+        // LOAD SIDEBAR AND USER INFO (باستخدام usermenu.js)
+        // ============================================================
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load sidebar from usermenu.js
+            if (typeof loadLayout === 'function') {
+                const user = loadLayout();
+                if (user) {
+                    const userNameEl = document.getElementById('currentAdminName');
+                    if (userNameEl) {
+                        userNameEl.textContent = `مرحباً، ${user.fullName}`;
+                    }
+                }
+            } else {
+                console.warn('⚠️ loadLayout function not found. Make sure usermenu.js is loaded.');
+            }
+
+            // Load initial data
+            if (typeof fetchPurchaseData === 'function') {
+                loadPurchaseData();
+            } else {
+                showToast('⚠️ دالة جلب البيانات غير موجودة. تأكد من تحميل apipurchase.js', 'error');
+            }
+        });
+
+        // ============================================================
+        // MAIN APPLICATION SCRIPT
+        // ============================================================
+        let purchaseData = [];
+        let currentPage = 1;
+        const pageSize = 30;
+        let tableHeaders = [];
+
+        // ===== TOAST =====
+        function showToast(msg, type = 'success') {
+            const c = document.getElementById('toastContainer');
+            const t = document.createElement('div');
+            t.className = 'toast ' + type;
+            const icon = type === 'success' ? 'fa-check-circle' :
+                type === 'error' ? 'fa-exclamation-circle' :
+                type === 'warning' ? 'fa-exclamation-triangle' : 'fa-info-circle';
+            t.innerHTML = `<i class="fas ${icon}"></i> ${msg}`;
+            c.appendChild(t);
+            setTimeout(() => {
+                t.style.opacity = '0';
+                t.style.transform = 'translateY(20px)';
+                setTimeout(() => t.remove(), 400);
+            }, 3000);
+        }
+
+        // ===== LOAD DATA =====
+        async function loadPurchaseData() {
+            const data = await fetchPurchaseData();
+            if (data && Array.isArray(data) && data.length > 0) {
+                purchaseData = data;
+                if (data.length > 0) {
+                    tableHeaders = Object.keys(data[0]);
+                }
+                renderTable(1);
+                document.getElementById('storeStatus').innerHTML =
+                    `<i class="fas fa-circle" style="font-size:8px; color:#10b981;"></i> متصل`;
+            } else {
+                purchaseData = [];
+                tableHeaders = [];
+                renderTable(1);
+                document.getElementById('storeStatus').innerHTML =
+                    `<i class="fas fa-circle" style="font-size:8px; color:#ef4444;"></i> لا توجد بيانات`;
+                if (data === null) {
+                    showToast('⚠️ فشل الاتصال بالخادم', 'error');
+                }
+            }
+        }
+
+        // ===== RENDER TABLE =====
+        function renderTable(page) {
+            const totalItems = purchaseData.length;
+            const totalPages = Math.ceil(totalItems / pageSize) || 1;
+            if (page < 1) page = 1;
+            if (page > totalPages) page = totalPages;
+            currentPage = page;
+
+            const start = (page - 1) * pageSize;
+            const end = Math.min(start + pageSize, totalItems);
+            const pageData = purchaseData.slice(start, end);
+
+            const thead = document.getElementById('tableHeader');
+            const tbody = document.getElementById('tableBody');
+            document.getElementById('dataCount').textContent = totalItems;
+
+            if (pageData.length === 0 || tableHeaders.length === 0) {
+                thead.innerHTML = `<tr><th>...</th></tr>`;
+                tbody.innerHTML =
+                    `<tr><td colspan="10" class="empty-state"><i class="fas fa-inbox"></i><p>لا توجد بيانات</p></td></tr>`;
+                document.getElementById('pageInfo').textContent = `صفحة ${page} من ${totalPages}`;
+                document.getElementById('prevPageBtn').disabled = page <= 1;
+                document.getElementById('nextPageBtn').disabled = page >= totalPages;
+                return;
+            }
+
+            // Dynamic headers
+            let headerHtml = '<tr>';
+            // Add a column for actions
+            headerHtml += `<th style="width:80px;min-width:80px;">الإجراءات</th>`;
+            tableHeaders.forEach(col => {
+                headerHtml += `<th>${col}</th>`;
+            });
+            headerHtml += '</tr>';
+            thead.innerHTML = headerHtml;
+
+            // Dynamic rows
+            let bodyHtml = '';
+            pageData.forEach((row, index) => {
+                bodyHtml += '<tr>';
+                // Actions column
+                bodyHtml += `<td>
+                                <button class="btn-sm btn-edit" onclick="editPurchaseRow(${start + index})"><i class="fas fa-edit"></i></button>
+                                <button class="btn-sm btn-delete" onclick="deletePurchaseRow(${start + index})"><i class="fas fa-trash"></i></button>
+                            </td>`;
+                tableHeaders.forEach(col => {
+                    const value = row[col] !== undefined && row[col] !== null ? String(row[col]) : '-';
+                    bodyHtml += `<td>${value}</td>`;
+                });
+                bodyHtml += '</tr>';
+            });
+            tbody.innerHTML = bodyHtml;
+
+            document.getElementById('pageInfo').textContent = `صفحة ${page} من ${totalPages}`;
+            document.getElementById('prevPageBtn').disabled = page <= 1;
+            document.getElementById('nextPageBtn').disabled = page >= totalPages;
+        }
+
+        // ===== CHANGE PAGE =====
+        function changePage(delta) {
+            const newPage = currentPage + delta;
+            const totalPages = Math.ceil(purchaseData.length / pageSize) || 1;
+            if (newPage < 1 || newPage > totalPages) return;
+            renderTable(newPage);
+        }
+
+        // ===== REFRESH DATA =====
+        function refreshData() {
+            document.getElementById('storeStatus').innerHTML =
+                `<i class="fas fa-circle" style="font-size:8px; color:#f59e0b;"></i> جاري التحميل...`;
+            loadPurchaseData();
+        }
+
+        // ===== ADD PURCHASE MODAL =====
+        function openAddPurchaseModal() {
+            const form = document.getElementById('dynamicForm');
+            if (tableHeaders.length === 0) {
+                form.innerHTML = '<p class="text-muted">لا توجد أعمدة محددة. قم بتحميل البيانات أولاً.</p>';
+                document.getElementById('addPurchaseModal').classList.add('open');
+                return;
+            }
+
+            let html = '';
+            tableHeaders.forEach(col => {
+                html += `
+                            <div class="form-group">
+                                <label>${col}</label>
+                                <input type="text" id="field_${col}" placeholder="أدخل ${col}" />
+                            </div>
+                        `;
+            });
+            form.innerHTML = html;
+            document.getElementById('addPurchaseModal').classList.add('open');
+        }
+
+        function closeAddPurchaseModal() {
+            document.getElementById('addPurchaseModal').classList.remove('open');
+        }
+
+        async function savePurchaseOrder() {
+            const newRow = {};
+            let hasData = false;
+            tableHeaders.forEach(col => {
+                const val = document.getElementById(`field_${col}`).value.trim();
+                if (val) hasData = true;
+                newRow[col] = val;
+            });
+
+            if (!hasData) {
+                showToast('الرجاء إدخال بيانات صالحة', 'warning');
+                return;
+            }
+
+            purchaseData.push(newRow);
+            renderTable(currentPage);
+            closeAddPurchaseModal();
+            showToast('✅ تم إضافة أمر الشراء بنجاح', 'success');
+
+            // هنا يمكن إضافة منطق لحفظ البيانات في الـ Web App إذا كان مدعوماً
+            // await savePurchaseData(purchaseData);
+        }
+
+        // ===== EDIT PURCHASE ROW =====
+        function editPurchaseRow(index) {
+            const row = purchaseData[index];
+            if (!row) {
+                showToast('لم يتم العثور على الصف', 'error');
+                return;
+            }
+
+            const form = document.getElementById('dynamicForm');
+            let html = '';
+            tableHeaders.forEach(col => {
+                const value = row[col] !== undefined && row[col] !== null ? String(row[col]) : '';
+                html += `
+                            <div class="form-group">
+                                <label>${col}</label>
+                                <input type="text" id="edit_field_${col}" value="${value}" placeholder="أدخل ${col}" />
+                            </div>
+                        `;
+            });
+            form.innerHTML = html;
+            document.getElementById('addPurchaseModal').classList.add('open');
+
+            // Override save function for editing
+            const saveBtn = document.querySelector('#addPurchaseModal .btn-success');
+            const originalClick = saveBtn.onclick;
+            saveBtn.onclick = function() {
+                const updatedRow = {};
+                tableHeaders.forEach(col => {
+                    const val = document.getElementById(`edit_field_${col}`).value.trim();
+                    updatedRow[col] = val;
+                });
+                purchaseData[index] = updatedRow;
+                renderTable(currentPage);
+                closeAddPurchaseModal();
+                showToast('✅ تم تحديث أمر الشراء بنجاح', 'success');
+                saveBtn.onclick = originalClick; // Restore original function
+            };
+        }
+
+        // ===== DELETE PURCHASE ROW =====
+        function deletePurchaseRow(index) {
+            if (!confirm('تأكيد حذف هذا الأمر؟')) return;
+            purchaseData.splice(index, 1);
+            renderTable(currentPage);
+            showToast('🗑️ تم حذف أمر الشراء', 'info');
+        }
+
+        // ============================================================
+        // EXPOSE FUNCTIONS TO HTML
+        // ============================================================
+        window.toggleSidebar = toggleSidebar;
+        window.refreshData = refreshData;
+        window.changePage = changePage;
+        window.showToast = showToast;
+        window.openAddPurchaseModal = openAddPurchaseModal;
+        window.closeAddPurchaseModal = closeAddPurchaseModal;
+        window.savePurchaseOrder = savePurchaseOrder;
+        window.editPurchaseRow = editPurchaseRow;
+        window.deletePurchaseRow = deletePurchaseRow;
+    </script>
+
+</body>
+</html>
