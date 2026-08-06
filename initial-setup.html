@@ -683,7 +683,7 @@
 
         // ===== LOAD DATA =====
         async function loadInventoryData() {
-            const data = await fetchInventoryData();
+            const data = await fetchInventoryData("استوك");
             if (data && Array.isArray(data) && data.length > 0) {
                 inventoryData = data;
                 renderTable(1);
