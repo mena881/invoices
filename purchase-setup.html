@@ -929,7 +929,7 @@
 
         // ===== LOAD DATA =====
         async function loadPurchaseData() {
-            const data = await fetchPurchaseData();
+            const data = await fetchInventoryData("شراء");
             if (data && Array.isArray(data) && data.length > 0) {
                 purchaseData = data;
                 if (data.length > 0) {
