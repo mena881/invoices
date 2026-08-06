@@ -8,8 +8,13 @@ async function fetchInventoryData() {
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
-        const data = await response.json();
-        return data;
+        const json = await response.json();
+
+if (!json.success) {
+    throw new Error(json.error || "فشل في جلب البيانات");
+}
+
+return json.data.data;
     } catch (error) {
         console.error('Error fetching inventory data:', error);
         showToast('حدث خطأ في جلب البيانات من الخادم.', 'error');
