@@ -19,11 +19,12 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet" />
 
     <!-- تضمين ملف usermenu.js -->
-    <script src="usermenu.js"></script>
+    <script src="usermenu.js">
+    </script>
 
     <style>
         /* =========================================================
-           RESET & BASE (موحد مع باقي الصفحات)
+           RESET & BASE
            ========================================================= */
         :root {
             --primary: #4f46e5;
@@ -198,7 +199,7 @@
         }
 
         /* =========================================================
-           HEADER (موحد مع باقي الصفحات)
+           HEADER
            ========================================================= */
         .header {
             background: white;
@@ -218,6 +219,7 @@
             display: flex;
             align-items: center;
             gap: 15px;
+            flex-wrap: wrap;
         }
 
         .menu-toggle {
@@ -229,6 +231,7 @@
             padding: 10px 14px;
             border-radius: 12px;
             transition: var(--transition);
+            flex-shrink: 0;
         }
         .menu-toggle:hover {
             background: var(--primary);
@@ -303,7 +306,7 @@
         }
 
         /* =========================================================
-           CARDS (موحد مع باقي الصفحات)
+           CARDS
            ========================================================= */
         .card {
             background: white;
@@ -320,7 +323,7 @@
         }
 
         /* =========================================================
-           BUTTONS (موحد مع باقي الصفحات)
+           BUTTONS
            ========================================================= */
         .btn {
             padding: 10px 22px;
@@ -335,6 +338,9 @@
             gap: 8px;
             text-decoration: none;
             font-family: inherit;
+            touch-action: manipulation;
+            user-select: none;
+            justify-content: center;
         }
 
         .btn-primary {
@@ -392,11 +398,12 @@
         }
 
         /* =========================================================
-           FORM
+           FORM — responsive for mobile
            ========================================================= */
         .floating-group {
             position: relative;
             margin-bottom: 8px;
+            width: 100%;
         }
 
         .floating-group input,
@@ -411,6 +418,8 @@
             outline: none;
             font-family: inherit;
             color: var(--dark-secondary);
+            -webkit-appearance: none;
+            appearance: none;
         }
 
         .floating-group input:focus,
@@ -446,10 +455,11 @@
             opacity: 0;
         }
 
+        /* product input grid — responsive */
         .product-info-grid {
             display: grid;
-            grid-template-columns: 2fr 1fr 1fr auto auto;
-            gap: 16px;
+            grid-template-columns: 2fr 1.2fr 1fr auto auto;
+            gap: 12px;
             align-items: end;
         }
 
@@ -459,26 +469,52 @@
 
         .product-info-grid .btn {
             height: 52px;
-            padding: 0 28px;
+            padding: 0 20px;
             white-space: nowrap;
             border-radius: 40px;
+            min-width: 70px;
+            font-size: 13px;
         }
 
-        @media (max-width: 780px) {
+        @media (max-width: 820px) {
             .product-info-grid {
                 grid-template-columns: 1fr 1fr;
+                gap: 10px;
             }
             .product-info-grid .btn {
+                grid-column: span 1;
+                height: 48px;
+                font-size: 12px;
+                padding: 0 14px;
+            }
+            .product-info-grid .btn:last-of-type {
                 grid-column: 1 / -1;
             }
         }
 
         @media (max-width: 480px) {
             .product-info-grid {
-                grid-template-columns: 1fr;
+                grid-template-columns: 1fr 1fr;
+                gap: 8px;
+            }
+            .product-info-grid .floating-group input,
+            .product-info-grid .floating-group select {
+                font-size: 13px;
+                padding: 14px 12px 6px;
+            }
+            .product-info-grid .floating-group label {
+                font-size: 12px;
+                top: 11px;
+                right: 10px;
             }
             .product-info-grid .btn {
-                grid-column: 1;
+                height: 44px;
+                font-size: 11px;
+                padding: 0 10px;
+                min-width: 60px;
+            }
+            .product-info-grid .btn:last-of-type {
+                grid-column: 1 / -1;
             }
         }
 
@@ -496,13 +532,13 @@
 
         .preview-content {
             display: flex;
-            gap: 24px;
+            gap: 20px;
             align-items: flex-start;
         }
 
         .preview-content img {
-            width: 100px;
-            height: 100px;
+            width: 90px;
+            height: 90px;
             border-radius: var(--radius-sm);
             object-fit: cover;
             border: 1px solid var(--gray-light);
@@ -518,13 +554,13 @@
         .preview-content .info {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 4px 24px;
+            gap: 4px 20px;
             flex: 1;
+            font-size: 13px;
         }
 
         .preview-content .info .field {
-            font-size: 14px;
-            padding: 4px 0;
+            padding: 3px 0;
         }
 
         .preview-content .info .field strong {
@@ -541,6 +577,11 @@
             .preview-content .info {
                 grid-template-columns: 1fr;
                 width: 100%;
+                font-size: 13px;
+            }
+            .preview-content img {
+                width: 70px;
+                height: 70px;
             }
         }
 
@@ -552,18 +593,23 @@
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
-            gap: 12px;
+            gap: 10px;
             margin-bottom: 16px;
         }
 
         .invoice-header-actions .left-actions {
             display: flex;
-            gap: 8px;
+            gap: 6px;
             flex-wrap: wrap;
         }
 
+        .invoice-header-actions .left-actions .btn-sm {
+            font-size: 11px;
+            padding: 5px 12px;
+        }
+
         /* =========================================================
-           PRODUCT CARDS (موحد مع باقي الصفحات)
+           PRODUCT CARDS
            ========================================================= */
         .product-card {
             background: white;
@@ -583,8 +629,8 @@
         .product-card-header {
             display: flex;
             align-items: center;
-            gap: 16px;
-            padding: 16px 20px;
+            gap: 14px;
+            padding: 14px 18px;
             cursor: pointer;
             user-select: none;
             transition: var(--transition);
@@ -595,8 +641,8 @@
         }
 
         .product-card-header .thumb {
-            width: 60px;
-            height: 60px;
+            width: 56px;
+            height: 56px;
             border-radius: var(--radius-sm);
             object-fit: cover;
             border: 1px solid var(--gray-light);
@@ -614,43 +660,44 @@
             display: flex;
             flex-wrap: wrap;
             align-items: center;
-            gap: 6px 18px;
+            gap: 4px 14px;
         }
 
         .product-card-header .meta .name {
             font-weight: 600;
-            font-size: 15px;
+            font-size: 14px;
             color: var(--dark-secondary);
         }
 
         .product-card-header .meta .sku {
-            font-size: 12px;
+            font-size: 11px;
             color: var(--gray);
             background: var(--light);
-            padding: 2px 12px;
+            padding: 2px 10px;
             border-radius: 30px;
         }
 
         .product-card-header .meta .price {
             font-weight: 600;
             color: var(--primary);
-            font-size: 14px;
+            font-size: 13px;
         }
 
         .product-card-header .meta .total-pieces {
             font-weight: 600;
             color: var(--success);
-            font-size: 13px;
+            font-size: 12px;
             background: var(--success-light);
-            padding: 2px 12px;
+            padding: 2px 10px;
             border-radius: 30px;
         }
 
         .product-card-header .chevron {
             margin-right: auto;
-            font-size: 18px;
+            font-size: 16px;
             color: var(--gray);
             transition: transform 0.3s ease;
+            flex-shrink: 0;
         }
 
         .product-card-header .chevron.open {
@@ -658,7 +705,7 @@
         }
 
         .product-card-body {
-            padding: 0 20px 20px;
+            padding: 0 18px 18px;
             display: none;
             animation: fadeSlide 0.25s ease;
         }
@@ -682,11 +729,13 @@
             display: flex;
             align-items: center;
             gap: 10px;
-            padding: 8px 0;
+            padding: 6px 0;
             cursor: pointer;
             user-select: none;
             transition: var(--transition);
             font-weight: 500;
+            font-size: 13px;
+            flex-wrap: wrap;
         }
 
         .color-header:hover {
@@ -694,7 +743,7 @@
         }
 
         .color-header .chevron-sm {
-            font-size: 14px;
+            font-size: 13px;
             color: var(--gray);
             transition: transform 0.3s ease;
         }
@@ -708,7 +757,7 @@
             color: var(--gray);
             margin-right: auto;
             background: var(--light);
-            padding: 2px 14px;
+            padding: 2px 12px;
             border-radius: 30px;
         }
 
@@ -726,6 +775,7 @@
             align-items: center;
             justify-content: center;
             margin-right: 4px;
+            flex-shrink: 0;
         }
         .color-header .delete-color-btn:hover {
             background: var(--danger);
@@ -735,8 +785,8 @@
 
         .color-sizes {
             display: none;
-            padding-right: 28px;
-            padding-bottom: 8px;
+            padding-right: 24px;
+            padding-bottom: 6px;
             animation: fadeSlide 0.2s ease;
         }
 
@@ -747,15 +797,17 @@
         .size-row {
             display: flex;
             align-items: center;
-            gap: 12px;
-            padding: 6px 0;
+            gap: 10px;
+            padding: 5px 0;
             font-size: 14px;
+            flex-wrap: wrap;
         }
 
         .size-row .size-label {
-            min-width: 40px;
+            min-width: 36px;
             font-weight: 500;
             color: var(--dark-secondary);
+            font-size: 13px;
         }
 
         .size-row .qty-control {
@@ -765,13 +817,13 @@
         }
 
         .size-row .qty-control button {
-            width: 30px;
-            height: 30px;
+            width: 32px;
+            height: 32px;
             border: 1px solid var(--gray-light);
             border-radius: 40px;
             background: white;
             cursor: pointer;
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 600;
             transition: var(--transition);
             display: flex;
@@ -779,6 +831,7 @@
             justify-content: center;
             touch-action: manipulation;
             color: var(--dark-secondary);
+            flex-shrink: 0;
         }
 
         .size-row .qty-control button:hover {
@@ -810,7 +863,7 @@
         }
 
         .product-card-footer {
-            padding: 12px 20px 16px;
+            padding: 10px 18px 14px;
             border-top: 1px solid var(--gray-light);
             display: flex;
             justify-content: flex-end;
@@ -819,8 +872,13 @@
             background: var(--light);
         }
 
+        .product-card-footer .btn-sm {
+            font-size: 11px;
+            padding: 4px 14px;
+        }
+
         /* =========================================================
-           STATISTICS (موحد مع باقي الصفحات)
+           STATISTICS
            ========================================================= */
         .stats-grid {
             display: grid;
@@ -832,7 +890,7 @@
         .stat-card {
             background: white;
             border-radius: var(--radius);
-            padding: 18px 20px;
+            padding: 16px 18px;
             box-shadow: var(--shadow-sm);
             border: 1px solid rgba(0, 0, 0, 0.04);
             transition: var(--transition);
@@ -845,7 +903,7 @@
         }
 
         .stat-card .stat-label {
-            font-size: 12px;
+            font-size: 11px;
             color: var(--gray);
             font-weight: 500;
             text-transform: uppercase;
@@ -853,7 +911,7 @@
         }
 
         .stat-card .stat-value {
-            font-size: 28px;
+            font-size: 26px;
             font-weight: 700;
             color: var(--dark-secondary);
             margin-top: 4px;
@@ -872,21 +930,31 @@
         @media (max-width: 768px) {
             .stats-grid {
                 grid-template-columns: 1fr 1fr;
-                gap: 12px;
+                gap: 10px;
             }
             .stat-card .stat-value {
-                font-size: 22px;
+                font-size: 20px;
+            }
+            .stat-card {
+                padding: 12px 14px;
             }
         }
 
         @media (max-width: 480px) {
             .stats-grid {
-                grid-template-columns: 1fr;
+                grid-template-columns: 1fr 1fr;
+                gap: 8px;
+            }
+            .stat-card .stat-value {
+                font-size: 18px;
+            }
+            .stat-card .stat-label {
+                font-size: 10px;
             }
         }
 
         /* =========================================================
-           STICKY BOTTOM (موحد مع باقي الصفحات)
+           STICKY BOTTOM
            ========================================================= */
         .sticky-bottom-wrapper {
             position: fixed;
@@ -909,30 +977,30 @@
         .sticky-bottom {
             background: white;
             border-top: 1px solid var(--gray-light);
-            padding: 12px 24px;
+            padding: 10px 20px;
             box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.05);
             display: flex;
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
-            gap: 12px;
+            gap: 10px;
             backdrop-filter: blur(12px);
-            background: rgba(255, 255, 255, 0.95);
+            background: rgba(255, 255, 255, 0.96);
             border-radius: var(--radius) var(--radius) 0 0;
             max-width: 100%;
         }
 
         .sticky-bottom .summary {
             display: flex;
-            gap: 24px;
+            gap: 18px;
             flex-wrap: wrap;
-            font-size: 14px;
+            font-size: 13px;
         }
 
         .sticky-bottom .summary .item {
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 5px;
             color: var(--gray);
         }
 
@@ -943,8 +1011,13 @@
 
         .sticky-bottom .actions {
             display: flex;
-            gap: 10px;
+            gap: 8px;
             flex-wrap: wrap;
+        }
+
+        .sticky-bottom .actions .btn {
+            font-size: 13px;
+            padding: 8px 18px;
         }
 
         @media (max-width: 768px) {
@@ -954,26 +1027,35 @@
             .sticky-bottom {
                 flex-direction: column;
                 align-items: stretch;
-                padding: 12px 16px;
+                padding: 10px 14px;
                 border-radius: var(--radius-sm) var(--radius-sm) 0 0;
             }
             .sticky-bottom .summary {
                 justify-content: center;
+                gap: 10px;
+                font-size: 12px;
             }
             .sticky-bottom .actions {
                 justify-content: center;
+            }
+            .sticky-bottom .actions .btn {
+                font-size: 12px;
+                padding: 6px 14px;
             }
         }
 
         @media (max-width: 480px) {
             .sticky-bottom .summary {
-                gap: 12px;
-                font-size: 12px;
+                gap: 6px;
+                font-size: 11px;
+            }
+            .sticky-bottom .summary .item {
+                gap: 3px;
             }
         }
 
         /* =========================================================
-           DIALOGS / MODALS (موحد مع باقي الصفحات)
+           DIALOGS / MODALS
            ========================================================= */
         .dialog-overlay {
             display: none;
@@ -1009,7 +1091,7 @@
 
         .dialog-box {
             background: white;
-            padding: 30px 35px;
+            padding: 28px 30px;
             border-radius: 24px;
             max-width: 600px;
             width: 100%;
@@ -1061,6 +1143,7 @@
             cursor: pointer;
             transition: var(--transition);
             font-weight: 500;
+            font-size: 14px;
         }
 
         .dialog-box .options label:hover {
@@ -1072,6 +1155,7 @@
             accent-color: var(--primary);
             width: 18px;
             height: 18px;
+            flex-shrink: 0;
         }
 
         .modal-close-btn {
@@ -1102,12 +1186,13 @@
         .old-order-item {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
             padding: 10px 12px;
             border-bottom: 1px solid var(--gray-light);
             flex-wrap: wrap;
             transition: background 0.2s;
             cursor: pointer;
+            font-size: 13px;
         }
 
         .old-order-item:hover {
@@ -1116,39 +1201,39 @@
 
         .old-order-item .order-number {
             font-weight: 600;
-            min-width: 30px;
+            min-width: 28px;
             color: var(--primary);
         }
 
         .old-order-item .order-branch {
-            min-width: 80px;
+            min-width: 70px;
             font-weight: 500;
             color: var(--dark-secondary);
         }
 
         .old-order-item .order-date {
-            font-size: 12px;
+            font-size: 11px;
             color: var(--gray);
-            min-width: 120px;
+            min-width: 100px;
         }
 
         .old-order-item .order-pieces {
             font-weight: 600;
-            min-width: 60px;
+            min-width: 50px;
             color: var(--dark-secondary);
         }
 
         .old-order-item .order-value {
             font-weight: 600;
             color: var(--primary);
-            min-width: 80px;
+            min-width: 70px;
         }
 
         .old-order-item .order-url {
-            font-size: 11px;
+            font-size: 10px;
             color: var(--gray);
             flex: 1;
-            min-width: 80px;
+            min-width: 60px;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
@@ -1156,10 +1241,35 @@
         }
 
         .old-order-item .order-details {
-            font-size: 12px;
+            font-size: 11px;
             color: var(--gray);
             flex: 2;
-            min-width: 100px;
+            min-width: 80px;
+        }
+
+        .old-order-item .btn-sm {
+            font-size: 10px;
+            padding: 3px 10px;
+        }
+
+        @media (max-width: 640px) {
+            .old-order-item {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 4px;
+                font-size: 12px;
+                padding: 8px 10px;
+            }
+            .old-order-item .order-url {
+                white-space: normal;
+                font-size: 10px;
+            }
+            .old-order-item .order-details {
+                font-size: 10px;
+            }
+            .dialog-box {
+                padding: 20px 16px;
+            }
         }
 
         /* =========================================================
@@ -1167,30 +1277,30 @@
            ========================================================= */
         .empty-state {
             text-align: center;
-            padding: 48px 20px;
+            padding: 40px 16px;
             color: var(--gray);
         }
 
         .empty-state i {
-            font-size: 2.8rem;
+            font-size: 2.4rem;
             color: var(--primary);
             opacity: 0.4;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
         }
 
         .empty-state p {
-            font-size: 0.95rem;
+            font-size: 0.9rem;
         }
 
         /* =========================================================
-           TOAST / ALERT (موحد مع باقي الصفحات)
+           TOAST
            ========================================================= */
         .toast-alert {
             position: fixed;
             bottom: 90px;
             left: 50%;
             transform: translateX(-50%);
-            padding: 12px 24px;
+            padding: 12px 22px;
             border-radius: var(--radius-sm);
             font-weight: 500;
             font-size: 14px;
@@ -1199,6 +1309,15 @@
             max-width: 90vw;
             text-align: center;
             box-shadow: var(--shadow-lg);
+        }
+
+        @media (max-width: 480px) {
+            .toast-alert {
+                font-size: 12px;
+                padding: 10px 16px;
+                bottom: 80px;
+                max-width: 95vw;
+            }
         }
 
         /* =========================================================
@@ -1262,7 +1381,7 @@
             overflow-y: auto;
             background: var(--light);
             border-radius: var(--radius-sm);
-            padding: 16px;
+            padding: 14px;
             margin: 12px 0;
             border: 1px solid var(--gray-light);
             font-size: 13px;
@@ -1273,21 +1392,25 @@
             gap: 8px;
             padding: 4px 0;
             border-bottom: 1px dashed var(--gray-light);
+            flex-wrap: wrap;
         }
 
         .invoice-preview-box .preview-item .preview-label {
-            min-width: 100px;
+            min-width: 80px;
             color: var(--gray);
+            font-size: 12px;
         }
 
         .invoice-preview-box .preview-item .preview-value {
             font-weight: 500;
             color: var(--dark-secondary);
+            font-size: 12px;
         }
 
         .invoice-preview-box .preview-sku {
             color: var(--primary);
             font-weight: 600;
+            font-size: 11px;
         }
 
         /* =========================================================
@@ -1295,7 +1418,7 @@
            ========================================================= */
         .duplicate-product-preview {
             display: flex;
-            gap: 16px;
+            gap: 14px;
             align-items: center;
             padding: 12px;
             background: var(--light);
@@ -1305,11 +1428,12 @@
         }
 
         .duplicate-product-preview img {
-            width: 50px;
-            height: 50px;
+            width: 48px;
+            height: 48px;
             border-radius: var(--radius-sm);
             object-fit: cover;
             border: 1px solid var(--gray-light);
+            flex-shrink: 0;
         }
 
         .duplicate-product-preview .info {
@@ -1325,6 +1449,25 @@
         .duplicate-product-preview .info .details {
             font-size: 12px;
             color: var(--gray);
+        }
+
+        /* =========================================================
+           ZERO QUANTITY CONFIRM DIALOG
+           ========================================================= */
+        .zero-qty-dialog .color-preview {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 14px;
+            background: var(--warning-light);
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--warning);
+            margin: 12px 0;
+        }
+
+        .zero-qty-dialog .color-preview i {
+            color: var(--warning);
+            font-size: 20px;
         }
 
         /* =========================================================
@@ -1364,103 +1507,193 @@
 
         @media (max-width: 768px) {
             .main-content {
-                padding: 16px 15px;
+                padding: 14px 12px;
+            }
+            .header {
+                padding: 12px 16px;
+                gap: 8px;
             }
             .header h1 {
                 font-size: 17px;
             }
+            .header h1 i {
+                margin-left: 6px;
+            }
             .card {
-                padding: 16px;
+                padding: 14px 16px;
+                margin-bottom: 16px;
             }
             .product-card-header {
-                flex-wrap: wrap;
-                gap: 8px;
-            }
-            .product-card-header .meta {
-                width: 100%;
-            }
-            .invoice-header-actions {
-                flex-direction: column;
-                align-items: stretch;
-            }
-            .invoice-header-actions .left-actions {
-                justify-content: center;
-            }
-            .dialog-box {
-                padding: 24px 20px;
-            }
-            .old-order-item {
-                flex-direction: column;
-                align-items: stretch;
-                gap: 4px;
-            }
-            .old-order-item .order-url {
-                white-space: normal;
-            }
-            .toast-alert {
-                bottom: 80px;
-                font-size: 12px;
-                padding: 10px 16px;
-                max-width: 95vw;
-            }
-            .sticky-bottom .summary {
-                flex-wrap: wrap;
-                gap: 8px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
-            .stat-card .stat-value {
-                font-size: 20px;
-            }
-            .preview-content .info {
-                grid-template-columns: 1fr;
-            }
-            .product-info-grid {
-                gap: 12px;
-            }
-            .product-info-grid .btn {
-                height: 44px;
-                font-size: 13px;
-                padding: 0 16px;
-            }
-            .floating-group input,
-            .floating-group select {
-                padding: 14px 12px 6px;
-                font-size: 13px;
-            }
-            .floating-group label {
-                font-size: 13px;
-                top: 12px;
-            }
-            .floating-group input:focus+label,
-            .floating-group input:not(:placeholder-shown)+label,
-            .floating-group select:focus+label,
-            .floating-group select:not([value=""]):not([value=""])+label {
-                font-size: 10px;
-                top: 3px;
+                padding: 12px 14px;
+                gap: 10px;
             }
             .product-card-header .meta .name {
                 font-size: 13px;
             }
-            .product-card-header .meta .price {
+            .product-card-body {
+                padding: 0 14px 14px;
+            }
+            .color-header {
                 font-size: 12px;
+                padding: 4px 0;
             }
             .size-row {
                 font-size: 13px;
-                gap: 8px;
+                padding: 4px 0;
             }
             .size-row .qty-control button {
-                width: 26px;
-                height: 26px;
-                font-size: 14px;
+                width: 28px;
+                height: 28px;
+                font-size: 13px;
             }
             .size-row .qty-control .qty-val {
                 min-width: 28px;
                 font-size: 14px;
+            }
+            .invoice-header-actions .left-actions .btn-sm {
+                font-size: 10px;
+                padding: 4px 10px;
+            }
+            .product-card-footer {
+                padding: 8px 14px 12px;
+            }
+            .product-card-footer .btn-sm {
+                font-size: 10px;
+                padding: 4px 12px;
+            }
+            .header-actions .btn-ghost-header {
+                font-size: 11px;
+                padding: 5px 12px;
+            }
+            .user-info {
+                padding: 4px 12px 4px 16px;
+                gap: 8px;
+            }
+            .user-info i {
+                font-size: 18px;
+            }
+            .user-info span {
+                font-size: 12px;
+            }
+            .status-badge {
+                font-size: 10px;
+                padding: 3px 10px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .main-content {
+                padding: 10px 8px;
+            }
+            .header {
+                padding: 10px 12px;
+                border-radius: 12px;
+            }
+            .header h1 {
+                font-size: 15px;
+            }
+            .header-left {
+                gap: 8px;
+            }
+            .menu-toggle {
+                padding: 8px 10px;
+                font-size: 15px;
+            }
+            .card {
+                padding: 12px 12px;
+                border-radius: 12px;
+                margin-bottom: 12px;
+            }
+            .product-card-header {
+                padding: 10px 10px;
+                gap: 8px;
+            }
+            .product-card-header .thumb {
+                width: 44px;
+                height: 44px;
+            }
+            .product-card-header .meta .name {
+                font-size: 12px;
+            }
+            .product-card-header .meta .sku {
+                font-size: 9px;
+                padding: 1px 8px;
+            }
+            .product-card-header .meta .price {
+                font-size: 11px;
+            }
+            .product-card-header .meta .total-pieces {
+                font-size: 10px;
+                padding: 1px 8px;
+            }
+            .product-card-header .chevron {
+                font-size: 14px;
+            }
+            .product-card-body {
+                padding: 0 10px 12px;
+            }
+            .color-header {
+                font-size: 11px;
+                gap: 6px;
+            }
+            .color-header .color-total {
+                font-size: 10px;
+                padding: 1px 8px;
+            }
+            .color-header .delete-color-btn {
+                width: 24px;
+                height: 24px;
+                font-size: 10px;
+            }
+            .color-sizes {
+                padding-right: 12px;
+            }
+            .size-row {
+                font-size: 12px;
+                padding: 3px 0;
+                gap: 6px;
+            }
+            .size-row .size-label {
+                min-width: 28px;
+                font-size: 11px;
+            }
+            .size-row .qty-control button {
+                width: 24px;
+                height: 24px;
+                font-size: 11px;
+            }
+            .size-row .qty-control .qty-val {
+                min-width: 24px;
+                font-size: 12px;
+            }
+            .product-card-footer {
+                padding: 6px 10px 10px;
+            }
+            .product-card-footer .btn-sm {
+                font-size: 9px;
+                padding: 3px 10px;
+            }
+            .invoice-header-actions .left-actions .btn-sm {
+                font-size: 9px;
+                padding: 3px 8px;
+            }
+            .sticky-bottom .summary {
+                font-size: 10px;
+                gap: 4px;
+            }
+            .sticky-bottom .actions .btn {
+                font-size: 11px;
+                padding: 5px 12px;
+            }
+            .dialog-box {
+                padding: 16px 14px;
+            }
+            .dialog-box h3 {
+                font-size: 17px;
+            }
+            .dialog-box .options label {
+                font-size: 12px;
+                padding: 8px 10px;
             }
         }
 
@@ -1491,6 +1724,12 @@
         .gap-8 {
             gap: 8px;
         }
+        .w-full {
+            width: 100%;
+        }
+        .text-center {
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -1502,7 +1741,7 @@
     <div class="main-content" id="mainContent">
 
         <!-- =========================================================
-        HEADER (موحد مع باقي الصفحات)
+        HEADER
         ========================================================= -->
         <div class="header">
             <div class="header-left">
@@ -1536,7 +1775,7 @@
                         <label><i class="fas fa-link"></i> رابط المنتج</label>
                     </div>
                     <div class="floating-group">
-                        <select id="branchName">
+                        <select id="branchSelect">
                             <option value="">اختر الفرع</option>
                             <option value="الشيخ زايد">الشيخ زايد</option>
                             <option value="مكرم عبيد">مكرم عبيد</option>
@@ -1589,7 +1828,7 @@
                             <i class="fas fa-chevron-left"></i> غلق كل المنتجات
                         </button>
                     </div>
-                    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                    <div style="display:flex;gap:6px;flex-wrap:wrap;">
                         <button class="btn btn-danger btn-sm" id="clearAllBtn">
                             <i class="fas fa-trash"></i> مسح الكل
                         </button>
@@ -1632,9 +1871,9 @@
                     <h4 style="font-size:18px;font-weight:700;color:var(--dark-secondary);">
                         <i class="fas fa-history" style="color:var(--primary);"></i> الفواتير السابقة
                     </h4>
-                    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
-                        <span class="btn-ghost-header" style="padding:4px 14px;font-size:12px;background:var(--light);border:1px solid var(--gray-light);border-radius:40px;color:var(--dark-secondary);" id="oldOrdersCount">0 فاتورة</span>
-                        <button class="btn-ghost-header" style="padding:4px 14px;font-size:12px;" id="refreshOldOrdersBtn">
+                    <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;">
+                        <span class="btn-ghost-header" style="padding:4px 12px;font-size:11px;background:var(--light);border:1px solid var(--gray-light);border-radius:40px;color:var(--dark-secondary);" id="oldOrdersCount">0 فاتورة</span>
+                        <button class="btn-ghost-header" style="padding:4px 12px;font-size:11px;" id="refreshOldOrdersBtn">
                             <i class="fas fa-sync-alt"></i> تحديث
                         </button>
                         <button class="btn btn-primary btn-sm" id="exportAllOldOrdersBtn">
@@ -1650,7 +1889,7 @@
         </div>
 
         <!-- =========================================================
-        STICKY BOTTOM (خارج main-content)
+        STICKY BOTTOM
         ========================================================= -->
         <div class="sticky-bottom-wrapper" id="stickyWrapper">
             <div class="sticky-bottom" id="stickyBottom">
@@ -1709,7 +1948,7 @@
             <div class="dialog-box">
                 <button class="modal-close-btn" onclick="window.UI.closeDuplicateDialog()"><i class="fas fa-times"></i></button>
                 <h3><i class="fas fa-exclamation-triangle" style="color:var(--warning);"></i> منتج مكرر</h3>
-                <p id="duplicateMessage">هذا المنتج موجود بالفعل في الطلبية. ماذا تريد أن تفعل؟</p>
+                <p>هذا المنتج موجود بالفعل في الطلبية. ماذا تريد أن تفعل؟</p>
                 <div class="duplicate-product-preview" id="duplicatePreview">
                     <img id="dupImg" src="" alt="Product" />
                     <div class="info">
@@ -1720,7 +1959,6 @@
                 <div class="dialog-actions">
                     <button class="btn btn-secondary" id="dupCancel"><i class="fas fa-times"></i> إلغاء</button>
                     <button class="btn btn-warning" id="dupAddQty"><i class="fas fa-plus"></i> إضافة الكمية</button>
-                    <button class="btn btn-danger" id="dupDeleteProduct" style="display:none;"><i class="fas fa-trash"></i> حذف المنتج</button>
                 </div>
             </div>
         </div>
@@ -1738,23 +1976,27 @@
             </div>
         </div>
 
+        <!-- ZERO QUANTITY CONFIRM DIALOG -->
+        <div class="dialog-overlay" id="zeroQtyDialog">
+            <div class="dialog-box zero-qty-dialog">
+                <button class="modal-close-btn" onclick="window.UI.closeZeroQtyDialog()"><i class="fas fa-times"></i></button>
+                <h3><i class="fas fa-exclamation-circle" style="color:var(--warning);"></i> كمية صفرية</h3>
+                <p>هذا المنتج/اللون ليس له كميات محددة. ماذا تريد أن تفعل؟</p>
+                <div class="color-preview" id="zeroQtyPreview">
+                    <i class="fas fa-palette"></i>
+                    <span id="zeroQtyLabel">المنتج: —</span>
+                </div>
+                <div class="dialog-actions">
+                    <button class="btn btn-secondary" id="zeroQtyCancel"><i class="fas fa-times"></i> إلغاء</button>
+                    <button class="btn btn-danger" id="zeroQtyDelete"><i class="fas fa-trash"></i> حذف هذا اللون</button>
+                </div>
+            </div>
+        </div>
+
         <!-- IMAGE MODAL -->
         <div class="image-modal-overlay" id="imageModal" onclick="closeModal()">
             <button class="close-btn" onclick="event.stopPropagation();closeModal();"><i class="fas fa-times"></i></button>
             <img id="modalImage" src="" alt="Product" onclick="event.stopPropagation();" />
-        </div>
-
-        <!-- ZERO QUANTITY CONFIRM DIALOG -->
-        <div class="dialog-overlay" id="zeroQtyDialog">
-            <div class="dialog-box">
-                <button class="modal-close-btn" onclick="window.UI.closeZeroQtyDialog()"><i class="fas fa-times"></i></button>
-                <h3><i class="fas fa-exclamation-circle" style="color:var(--warning);"></i> كميات صفرية</h3>
-                <p id="zeroQtyMessage">المنتج ليس لديه أي كميات. هل تريد حذفه من الفاتورة؟</p>
-                <div class="dialog-actions">
-                    <button class="btn btn-secondary" id="zeroQtyCancel"><i class="fas fa-times"></i> إلغاء</button>
-                    <button class="btn btn-danger" id="zeroQtyDelete"><i class="fas fa-trash"></i> حذف المنتج</button>
-                </div>
-            </div>
         </div>
 
     </div>
@@ -1819,6 +2061,21 @@
                         }
                         keys.forEach(k => localStorage.removeItem(k));
                     } catch {}
+                },
+                getUser() {
+                    try {
+                        const raw = this.get('userData');
+                        if (raw && typeof raw === 'object') return raw;
+                        return null;
+                    } catch { return null; }
+                },
+                getUserId() {
+                    const user = this.getUser();
+                    return user ? (user.username || user.id || 'unknown') : 'unknown';
+                },
+                getUserName() {
+                    const user = this.getUser();
+                    return user ? (user.fullName || user.username || 'مستخدم') : 'مستخدم';
                 }
             };
 
@@ -1934,112 +2191,296 @@
                     check(v.option3);
                     return { color, size };
                 },
-                // تحويل البيانات القديمة (صفوف) إلى الهيكل الجديد (منتج واحد)
-                convertRowsToProduct(rows) {
-                    if (!rows || !rows.length) return null;
-                    const first = rows[0];
-                    const product = {
-                        name: first.name,
-                        sku: first.sku,
-                        unitPrice: first.unitPrice,
-                        image: first.image,
-                        productId: first.productId || '',
-                        colors: {}
-                    };
-                    rows.forEach(row => {
-                        const color = row.color || 'No Color';
-                        const size = row.size || 'No Size';
-                        if (!product.colors[color]) product.colors[color] = { sizes: {} };
-                        product.colors[color].sizes[size] = (product.colors[color].sizes[size] || 0) + (row.qty ||
-                            0);
-                    });
-                    return product;
+                getVariantPrice(v) {
+                    if (v.compare_at_price && v.compare_at_price > 0) return this.centsToCurrency(v.compare_at_price);
+                    if (v.price) return this.centsToCurrency(v.price);
+                    return 0;
                 },
-                // حساب الإجماليات من الهيكل الجديد
-                computeTotals(product) {
-                    let totalQty = 0,
-                        totalValue = 0;
-                    if (product.colors) {
-                        for (const color in product.colors) {
-                            const sizes = product.colors[color].sizes || {};
-                            for (const size in sizes) {
-                                const qty = sizes[size] || 0;
-                                totalQty += qty;
-                                totalValue += qty * product.unitPrice;
-                            }
+
+                // New: calculate total pieces from sizes object
+                getTotalPieces(sizes) {
+                    let t = 0;
+                    for (const sz in sizes) { t += sizes[sz] || 0; }
+                    return t;
+                },
+
+                // New: calculate total value from sizes and unitPrice
+                getTotalValue(sizes, unitPrice) {
+                    return this.getTotalPieces(sizes) * unitPrice;
+                },
+
+                // New: convert old flat rows to new grouped structure
+                groupRowsToProducts(rows) {
+                    const map = {};
+                    const order = [];
+                    rows.forEach(row => {
+                        const key = row.name + '|' + row.sku + '|' + (row.color || '');
+                        if (!map[key]) {
+                            map[key] = {
+                                name: row.name,
+                                sku: row.sku || '',
+                                unitPrice: row.unitPrice || 0,
+                                image: row.image || '',
+                                productId: row.productId || '',
+                                color: row.color || '',
+                                sizes: {},
+                                totalPieces: 0,
+                                totalValue: 0
+                            };
+                            order.push(key);
+                        }
+                        const size = row.size || 'No Size';
+                        const qty = row.qty || 0;
+                        map[key].sizes[size] = (map[key].sizes[size] || 0) + qty;
+                        // recalc totals
+                        map[key].totalPieces = this.getTotalPieces(map[key].sizes);
+                        map[key].totalValue = map[key].totalPieces * map[key].unitPrice;
+                    });
+                    return order.map(key => map[key]);
+                },
+
+                // New: flatten grouped products to rows for export
+                flattenProductToRows(product) {
+                    const rows = [];
+                    const sizes = product.sizes || {};
+                    for (const size in sizes) {
+                        const qty = sizes[size] || 0;
+                        if (qty > 0) {
+                            rows.push({
+                                name: product.name,
+                                sku: product.sku || '',
+                                unitPrice: product.unitPrice || 0,
+                                image: product.image || '',
+                                productId: product.productId || '',
+                                color: product.color || '',
+                                size: size,
+                                qty: qty,
+                                total: qty * product.unitPrice
+                            });
                         }
                     }
-                    return { totalQty, totalValue };
+                    return rows;
                 },
-                // تحويل الهيكل الجديد إلى صفوف للتصدير
-                productToRows(product) {
-                    const rows = [];
-                    if (product.colors) {
-                        for (const color in product.colors) {
-                            const sizes = product.colors[color].sizes || {};
+
+                // Load current table from Firebase (new structure)
+                loadCurrentTable(callback) {
+                    if (!database) {
+                        if (callback) callback(null);
+                        return;
+                    }
+                    const userId = Storage.getUserId();
+                    database.ref('currentTables/' + userId).once('value', (snapshot) => {
+                        const data = snapshot.val();
+                        if (data && data.data && Array.isArray(data.data)) {
+                            console.log('✅ تم تحميل currentTable للمستخدم:', userId, data.data.length, 'عنصر');
+                            if (callback) callback(data.data);
+                        } else {
+                            console.log('ℹ️ لا توجد بيانات في currentTable للمستخدم:', userId);
+                            if (callback) callback(null);
+                        }
+                    }, (error) => {
+                        console.error('❌ خطأ في تحميل currentTable:', error);
+                        if (callback) callback(null);
+                    });
+                },
+
+                // Save current table to Firebase (new structure)
+                saveCurrentTable(tableData, callback) {
+                    if (!database || !tableData) {
+                        if (callback) callback('Firebase not ready');
+                        return;
+                    }
+                    const userId = Storage.getUserId();
+                    database.ref('currentTables/' + userId).set({
+                        data: tableData,
+                        updatedAt: firebase.database.ServerValue.TIMESTAMP,
+                        userId: userId
+                    }, (error) => {
+                        if (error) {
+                            console.error('❌ خطأ في حفظ currentTable:', error);
+                            if (callback) callback(error);
+                        } else {
+                            console.log('✅ تم حفظ currentTable للمستخدم:', userId, tableData.length, 'عنصر');
+                            if (callback) callback(null);
+                        }
+                    });
+                },
+
+                // Save invoice with user info
+                saveInvoiceToFirebase(branchName, tableData, productUrl, callback) {
+                    if (!database) {
+                        if (callback) callback('⚠️ Firebase not ready');
+                        return;
+                    }
+                    const userId = Storage.getUserId();
+                    const userName = Storage.getUserName();
+
+                    // Filter out zero quantities
+                    const filtered = tableData.filter(p => Utils.getTotalPieces(p.sizes) > 0);
+
+                    const invoice = {
+                        branch: branchName || 'Branch not set',
+                        totalPieces: filtered.reduce((s, p) => s + Utils.getTotalPieces(p.sizes), 0),
+                        totalValue: filtered.reduce((s, p) => s + (Utils.getTotalPieces(p.sizes) * p.unitPrice), 0),
+                        itemsCount: filtered.length,
+                        productUrl: productUrl || '',
+                        userId: userId,
+                        userName: userName,
+                        items: filtered.map(p => ({
+                            name: p.name,
+                            color: p.color || '',
+                            sku: p.sku || '',
+                            unitPrice: p.unitPrice || 0,
+                            image: p.image || '',
+                            productId: p.productId || '',
+                            sizes: p.sizes || {},
+                            totalPieces: Utils.getTotalPieces(p.sizes),
+                            totalValue: Utils.getTotalPieces(p.sizes) * p.unitPrice
+                        })),
+                        createdAt: firebase.database.ServerValue.TIMESTAMP,
+                        createdBy: userName || 'مستخدم'
+                    };
+
+                    const ref = database.ref('invoices').push();
+                    ref.set(invoice, (error) => {
+                        if (error) {
+                            console.error('❌ Firebase save error:', error);
+                            if (callback) callback('❌ فشل الحفظ: ' + error.message);
+                        } else {
+                            console.log('✅ Invoice saved for user:', userId);
+                            if (callback) callback(null, ref.key);
+                        }
+                    });
+                },
+
+                // Load old invoices for current user
+                loadOldInvoices(callback) {
+                    if (!database) {
+                        if (callback) callback([]);
+                        return;
+                    }
+                    const userId = Storage.getUserId();
+                    const oneMonthAgo = Date.now() - (30 * 24 * 60 * 60 * 1000);
+
+                    database.ref('invoices').orderByChild('createdAt').startAt(oneMonthAgo).once('value', (
+                        snapshot) => {
+                        const data = snapshot.val();
+                        if (!data) {
+                            if (callback) callback([]);
+                            return;
+                        }
+                        const invoices = [];
+                        for (const key in data) {
+                            const inv = data[key];
+                            // Filter by userId
+                            if (inv.userId === userId) {
+                                invoices.push({ id: key, ...inv, createdAt: inv.createdAt || 0 });
+                            }
+                        }
+                        invoices.sort((a, b) => b.createdAt - a.createdAt);
+                        if (callback) callback(invoices);
+                    }, (error) => {
+                        console.error('❌ Error loading invoices:', error);
+                        if (callback) callback([]);
+                    });
+                },
+
+                cleanOldInvoices() {
+                    if (!database) return;
+                    const oneMonthAgo = Date.now() - (30 * 24 * 60 * 60 * 1000);
+                    database.ref('invoices').once('value', (snapshot) => {
+                        const invoices = snapshot.val();
+                        if (!invoices) return;
+                        const updates = {};
+                        let count = 0;
+                        for (const key in invoices) {
+                            if (invoices[key].createdAt && invoices[key].createdAt < oneMonthAgo) {
+                                updates[key] = null;
+                                count++;
+                            }
+                        }
+                        if (count > 0) {
+                            database.ref('invoices').update(updates, (error) => {
+                                if (!error) console.log(`✅ Cleaned ${count} old invoices`);
+                            });
+                        }
+                    });
+                },
+
+                exportSingleInvoice(invoice) {
+                    const wb = XLSX.utils.book_new();
+                    const headers = ['#', 'Name', 'Color', 'Size', 'SKU', 'Qty', 'Unit Price', 'Total'];
+                    const data = [headers];
+                    let idx = 1;
+                    invoice.items.forEach(item => {
+                        const sizes = item.sizes || {};
+                        for (const size in sizes) {
+                            const qty = sizes[size] || 0;
+                            if (qty > 0) {
+                                data.push([idx++, item.name || '', item.color || '', size,
+                                    item.sku || '', qty, item.unitPrice || 0, qty * (item
+                                        .unitPrice || 0)
+                                ]);
+                            }
+                        }
+                    });
+                    data.push(['', '', '', '', '', invoice.totalPieces || 0, '', invoice.totalValue || 0]);
+                    const ws = XLSX.utils.aoa_to_sheet(data);
+                    XLSX.utils.book_append_sheet(wb, ws, 'Invoice');
+                    const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+                    const blob = new Blob([wbout], { type: 'application/octet-stream' });
+                    const link = document.createElement('a');
+                    link.href = URL.createObjectURL(blob);
+                    const dateStr = new Date(invoice.createdAt).toISOString().slice(0, 10);
+                    link.download = `invoice_${invoice.branch}_${dateStr}.xlsx`;
+                    link.click();
+                    URL.revokeObjectURL(link.href);
+                },
+
+                exportAllInvoices(invoices) {
+                    const wb = XLSX.utils.book_new();
+                    invoices.forEach((invoice, idx) => {
+                        const headers = ['#', 'Name', 'Color', 'Size', 'SKU', 'Qty', 'Unit Price', 'Total'];
+                        const data = [
+                            [`Invoice: ${invoice.branch || 'Branch not set'}`],
+                            [`Date: ${new Date(invoice.createdAt).toLocaleDateString('ar-EG')}`],
+                            [`User: ${invoice.userName || '—'}`],
+                            [`URL: ${invoice.productUrl || '—'}`],
+                            [],
+                            headers
+                        ];
+                        let counter = 1;
+                        invoice.items.forEach(item => {
+                            const sizes = item.sizes || {};
                             for (const size in sizes) {
                                 const qty = sizes[size] || 0;
                                 if (qty > 0) {
-                                    rows.push({
-                                        name: product.name,
-                                        sku: product.sku,
-                                        unitPrice: product.unitPrice,
-                                        image: product.image,
-                                        productId: product.productId || '',
-                                        color: color === 'No Color' ? '' : color,
-                                        size: size === 'No Size' ? '' : size,
-                                        qty: qty,
-                                        total: qty * product.unitPrice
-                                    });
+                                    data.push([counter++, item.name || '', item.color || '', size,
+                                        item.sku || '', qty, item.unitPrice || 0, qty * (item
+                                            .unitPrice || 0)
+                                    ]);
                                 }
                             }
-                        }
-                    }
-                    return rows;
-                },
-                // تحويل قائمة منتجات إلى صفوف للتصدير
-                productsToRows(products) {
-                    let rows = [];
-                    products.forEach(p => {
-                        rows = rows.concat(this.productToRows(p));
+                        });
+                        data.push(['', '', '', '', '', invoice.totalPieces || 0, '', invoice
+                            .totalValue || 0
+                        ]);
+                        const ws = XLSX.utils.aoa_to_sheet(data);
+                        const sheetName = `Invoice_${idx+1}`.slice(0, 31);
+                        XLSX.utils.book_append_sheet(wb, ws, sheetName);
                     });
-                    return rows;
-                },
-                // الحصول على userId الحالي
-                getCurrentUserId() {
-                    const userData = Storage.get('userData', null);
-                    if (userData) {
-                        try {
-                            const user = typeof userData === 'string' ? JSON.parse(userData) : userData;
-                            return user.id || user.username || 'unknown';
-                        } catch (e) { return 'unknown'; }
-                    }
-                    return 'unknown';
-                },
-                getCurrentUserFullName() {
-                    const userData = Storage.get('userData', null);
-                    if (userData) {
-                        try {
-                            const user = typeof userData === 'string' ? JSON.parse(userData) : userData;
-                            return user.fullName || user.username || 'مستخدم';
-                        } catch (e) { return 'مستخدم'; }
-                    }
-                    return 'مستخدم';
-                },
-                getDefaultBranch() {
-                    const userData = Storage.get('userData', null);
-                    if (userData) {
-                        try {
-                            const user = typeof userData === 'string' ? JSON.parse(userData) : userData;
-                            return user.branch || '';
-                        } catch (e) { return ''; }
-                    }
-                    return '';
+                    const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+                    const blob = new Blob([wbout], { type: 'application/octet-stream' });
+                    const link = document.createElement('a');
+                    link.href = URL.createObjectURL(blob);
+                    link.download = `all_invoices_${new Date().toISOString().slice(0,10)}.xlsx`;
+                    link.click();
+                    URL.revokeObjectURL(link.href);
                 }
             };
 
             // ================================================================
-            //  SHOPIFY FETCHER (نفسه)
+            //  SHOPIFY FETCHER
             // ================================================================
             const ShopifyFetcher = {
                 async fetchProduct(url) {
@@ -2073,7 +2514,7 @@
             };
 
             // ================================================================
-            //  PARSER (نفسه)
+            //  PARSER
             // ================================================================
             const ProductParser = {
                 parse(jsonData) {
@@ -2151,28 +2592,58 @@
             };
 
             // ================================================================
-            //  EXCEL GENERATOR (معدل)
+            //  EXCEL GENERATOR (updated for new structure)
             // ================================================================
             const ExcelGenerator = {
-                fromProducts(products, mode) {
+                generateProductsFromProduct(product, seriesQty) {
+                    // For each color, create a product entry with sizes
+                    const result = [];
+                    const colors = product.colors.length ? product.colors : [''];
+                    const sizes = product.sizes.length ? product.sizes : ['No Size'];
+
+                    colors.forEach(color => {
+                        const sizesObj = {};
+                        sizes.forEach(size => {
+                            sizesObj[size] = seriesQty;
+                        });
+                        result.push({
+                            name: product.name,
+                            sku: product.sku || '',
+                            unitPrice: product.price || 0,
+                            image: product.mainImage || (product.images && product.images.length ?
+                                product.images[0] : ''),
+                            productId: product.productId || '',
+                            color: color,
+                            sizes: sizesObj,
+                            totalPieces: Utils.getTotalPieces(sizesObj),
+                            totalValue: Utils.getTotalPieces(sizesObj) * product.price
+                        });
+                    });
+                    return result;
+                },
+
+                fromTableData(tableData, mode) {
                     const wb = XLSX.utils.book_new();
                     let data = [];
-                    const rows = Utils.productsToRows(products);
+
+                    // Flatten all products to rows
+                    let allRows = [];
+                    tableData.forEach(p => {
+                        const rows = Utils.flattenProductToRows(p);
+                        allRows = allRows.concat(rows);
+                    });
 
                     if (mode === 'detail' || mode === 'rows') {
                         data = [
-                            ['#', 'Name', 'Color', 'Size', 'SKU', 'Qty', 'Pieces', 'Unit Price',
-                                'Total'
-                            ]
+                            ['#', 'Name', 'Color', 'Size', 'SKU', 'Qty', 'Unit Price', 'Total']
                         ];
-                        rows.forEach((r, i) => {
-                            data.push([i + 1, r.name, r.color, r.size, r.sku, r.qty, r.qty, r
-                                .unitPrice, r.total
-                            ]);
+                        allRows.forEach((r, i) => {
+                            data.push([i + 1, r.name, r.color, r.size, r.sku, r.qty, r.unitPrice, r
+                                .total]);
                         });
                     } else if (mode === 'summary') {
                         const map = new Map();
-                        rows.forEach(row => {
+                        allRows.forEach(row => {
                             const key = row.name + '|' + row.sku;
                             if (!map.has(key)) {
                                 map.set(key, {
@@ -2192,13 +2663,11 @@
                             s.total += row.total || 0;
                         });
                         data = [
-                            ['Name', 'Colors', 'Sizes', 'SKU', 'Total Pieces', 'Unit Price',
-                                'Total'
-                            ]
+                            ['Name', 'Colors', 'Sizes', 'SKU', 'Total Pieces', 'Unit Price', 'Total']
                         ];
                         const orderedKeys = [];
                         const keySet = new Set();
-                        rows.forEach(row => {
+                        allRows.forEach(row => {
                             const key = row.name + '|' + row.sku;
                             if (!keySet.has(key)) {
                                 keySet.add(key);
@@ -2217,7 +2686,7 @@
                         }
                     } else if (mode === 'colorSummary') {
                         const map = new Map();
-                        rows.forEach(row => {
+                        allRows.forEach(row => {
                             const key = row.name + '|' + row.sku + '|' + row.color;
                             if (!map.has(key)) {
                                 map.set(key, {
@@ -2236,13 +2705,11 @@
                             s.total += row.total || 0;
                         });
                         data = [
-                            ['Name', 'SKU', 'Color', 'Sizes', 'Total Pieces', 'Unit Price',
-                                'Total'
-                            ]
+                            ['Name', 'SKU', 'Color', 'Sizes', 'Total Pieces', 'Unit Price', 'Total']
                         ];
                         const orderedKeys = [];
                         const keySet = new Set();
-                        rows.forEach(row => {
+                        allRows.forEach(row => {
                             const key = row.name + '|' + row.sku + '|' + row.color;
                             if (!keySet.has(key)) {
                                 keySet.add(key);
@@ -2260,7 +2727,7 @@
                         }
                     } else if (mode === 'system') {
                         const map = new Map();
-                        rows.forEach(row => {
+                        allRows.forEach(row => {
                             const key = row.name + '|' + row.sku;
                             if (!map.has(key)) {
                                 map.set(key, {
@@ -2285,7 +2752,7 @@
                         ];
                         const orderedKeys = [];
                         const keySet = new Set();
-                        rows.forEach(row => {
+                        allRows.forEach(row => {
                             const key = row.name + '|' + row.sku;
                             if (!keySet.has(key)) {
                                 keySet.add(key);
@@ -2312,43 +2779,73 @@
                     const ws = XLSX.utils.aoa_to_sheet(data);
                     XLSX.utils.book_append_sheet(wb, ws, 'Invoice');
                     return wb;
-                },
-                // للتوافق مع الوضع القديم (استدعاء من tableData)
-                fromTableData(tableData, mode) {
-                    // تحويل tableData (صفوف) إلى منتجات
-                    const productMap = new Map();
-                    tableData.forEach(row => {
-                        const key = row.name + '|' + row.sku;
-                        if (!productMap.has(key)) {
-                            productMap.set(key, {
-                                name: row.name,
-                                sku: row.sku,
-                                unitPrice: row.unitPrice,
-                                image: row.image,
-                                productId: row.productId || '',
-                                colors: {}
-                            });
-                        }
-                        const product = productMap.get(key);
-                        const color = row.color || 'No Color';
-                        const size = row.size || 'No Size';
-                        if (!product.colors[color]) product.colors[color] = { sizes: {} };
-                        product.colors[color].sizes[size] = (product.colors[color].sizes[size] || 0) + (row.qty ||
-                            0);
-                    });
-                    const products = Array.from(productMap.values());
-                    return this.fromProducts(products, mode);
                 }
             };
 
             // ================================================================
-            //  UI CONTROLLER (معدل بالكامل)
+            //  UI CONTROLLER (updated)
             // ================================================================
             const UI = {
-                elements: {},
+                elements: {
+                    url: document.getElementById('productUrl'),
+                    branch: document.getElementById('branchSelect'),
+                    series: document.getElementById('seriesQty'),
+                    fetchBtn: document.getElementById('fetchProductBtn'),
+                    addBtn: document.getElementById('addToTableBtn'),
+                    previewSection: document.getElementById('previewSection'),
+                    previewImg: document.getElementById('previewImg'),
+                    pName: document.getElementById('pName'),
+                    pPrice: document.getElementById('pPrice'),
+                    pSku: document.getElementById('pSku'),
+                    pColors: document.getElementById('pColors'),
+                    pSizes: document.getElementById('pSizes'),
+                    storeStatus: document.getElementById('storeStatus'),
+                    invoiceContainer: document.getElementById('invoiceContainer'),
+                    emptyMsg: document.getElementById('emptyInvoiceMsg'),
+                    statTodayOrders: document.getElementById('statTodayOrders'),
+                    statCurrentOrder: document.getElementById('statCurrentOrder'),
+                    statTotalPieces: document.getElementById('statTotalPieces'),
+                    statTotalValue: document.getElementById('statTotalValue'),
+                    bottomPieces: document.getElementById('bottomPieces'),
+                    bottomProducts: document.getElementById('bottomProducts'),
+                    bottomValue: document.getElementById('bottomValue'),
+                    closeInvoiceBtn: document.getElementById('closeInvoiceBtn'),
+                    exportDialogBtn: document.getElementById('exportDialogBtn'),
+                    exportDialog: document.getElementById('exportDialog'),
+                    dialogCancel: document.getElementById('dialogCancel'),
+                    dialogExport: document.getElementById('dialogExport'),
+                    showOldOrdersBtn: document.getElementById('showOldOrdersBtn'),
+                    oldOrdersSection: document.getElementById('oldOrdersSection'),
+                    oldOrdersList: document.getElementById('oldOrdersList'),
+                    oldOrdersCount: document.getElementById('oldOrdersCount'),
+                    refreshOldOrdersBtn: document.getElementById('refreshOldOrdersBtn'),
+                    exportAllOldOrdersBtn: document.getElementById('exportAllOldOrdersBtn'),
+                    expandAllColors: document.getElementById('expandAllColors'),
+                    collapseAllColors: document.getElementById('collapseAllColors'),
+                    expandAllProducts: document.getElementById('expandAllProducts'),
+                    collapseAllProducts: document.getElementById('collapseAllProducts'),
+                    imageModal: document.getElementById('imageModal'),
+                    modalImage: document.getElementById('modalImage'),
+                    duplicateDialog: document.getElementById('duplicateDialog'),
+                    dupImg: document.getElementById('dupImg'),
+                    dupName: document.getElementById('dupName'),
+                    dupDetails: document.getElementById('dupDetails'),
+                    dupCancel: document.getElementById('dupCancel'),
+                    dupAddQty: document.getElementById('dupAddQty'),
+                    clearAllBtn: document.getElementById('clearAllBtn'),
+                    invoicePreviewDialog: document.getElementById('invoicePreviewDialog'),
+                    invoicePreviewContent: document.getElementById('invoicePreviewContent'),
+                    closeInvoicePreview: document.getElementById('closeInvoicePreview'),
+                    exportInvoicePreviewBtn: document.getElementById('exportInvoicePreviewBtn'),
+                    stickyWrapper: document.getElementById('stickyWrapper'),
+                    zeroQtyDialog: document.getElementById('zeroQtyDialog'),
+                    zeroQtyLabel: document.getElementById('zeroQtyLabel'),
+                    zeroQtyCancel: document.getElementById('zeroQtyCancel'),
+                    zeroQtyDelete: document.getElementById('zeroQtyDelete'),
+                },
                 _lastProduct: null,
                 _lastProductUrl: '',
-                _tableData: [], // الآن مصفوفة من المنتجات (هيكل جديد)
+                _tableData: [], // new structure: array of product objects
                 _oldInvoices: [],
                 _productCardStates: {},
                 _fetchTimer: null,
@@ -2357,108 +2854,59 @@
                 _pendingAddData: null,
                 _isLoadingFromFirebase: false,
                 _previewInvoiceIndex: -1,
+                _currentUser: 'مستخدم غير معروف',
                 _currentUserId: 'unknown',
-                _currentUserFullName: 'مستخدم',
-                _zeroQtyProductKey: null, // للمنتج الذي سيتم حذفه
+                _zeroQtyTarget: null, // for zero qty dialog
 
                 init() {
-                    console.log('🚀 Initializing Create Order UI (new structure)...');
+                    console.log('🚀 Initializing Create Order UI (v2)...');
 
-                    // جمع العناصر
-                    const ids = [
-                        'productUrl', 'branchName', 'seriesQty', 'addToTableBtn', 'fetchProductBtn',
-                        'previewSection', 'previewImg', 'pName', 'pPrice', 'pSku', 'pColors', 'pSizes',
-                        'storeStatus', 'invoiceContainer', 'emptyInvoiceMsg',
-                        'statTodayOrders', 'statCurrentOrder', 'statTotalPieces', 'statTotalValue',
-                        'bottomPieces', 'bottomProducts', 'bottomValue',
-                        'closeInvoiceBtn', 'exportDialogBtn', 'exportDialog', 'dialogCancel', 'dialogExport',
-                        'showOldOrdersBtn', 'oldOrdersSection', 'oldOrdersList', 'oldOrdersCount',
-                        'refreshOldOrdersBtn', 'exportAllOldOrdersBtn',
-                        'expandAllColors', 'collapseAllColors', 'expandAllProducts', 'collapseAllProducts',
-                        'imageModal', 'modalImage',
-                        'duplicateDialog', 'dupImg', 'dupName', 'dupDetails', 'dupCancel', 'dupAddQty',
-                        'dupDeleteProduct', 'duplicateMessage',
-                        'clearAllBtn',
-                        'invoicePreviewDialog', 'invoicePreviewContent', 'closeInvoicePreview',
-                        'exportInvoicePreviewBtn',
-                        'stickyWrapper',
-                        'zeroQtyDialog', 'zeroQtyMessage', 'zeroQtyCancel', 'zeroQtyDelete'
-                    ];
-                    ids.forEach(id => {
-                        this.elements[id] = document.getElementById(id);
-                    });
-
-                    // قراءة المستخدم
-                    this._currentUserId = Utils.getCurrentUserId();
-                    this._currentUserFullName = Utils.getCurrentUserFullName();
+                    this._currentUser = Storage.getUserName();
+                    this._currentUserId = Storage.getUserId();
                     const userNameEl = document.getElementById('currentAdminName');
                     if (userNameEl) {
-                        userNameEl.textContent = `مرحباً، ${this._currentUserFullName}`;
+                        userNameEl.textContent = `مرحباً، ${this._currentUser}`;
                     }
 
-                    // تعيين الفرع الافتراضي
-                    const defaultBranch = Utils.getDefaultBranch() || Storage.get('branch', '');
-                    if (defaultBranch) {
-                        this.elements.branchName.value = defaultBranch;
-                    } else {
-                        // حفظ أول فرع من القائمة إذا لم يوجد
-                        const firstOption = this.elements.branchName.querySelector('option:not([value=""])');
-                        if (firstOption) {
-                            this.elements.branchName.value = firstOption.value;
-                            Storage.set('branch', firstOption.value);
-                        }
+                    // Restore branch
+                    const savedBranch = Storage.get('branch', '');
+                    if (savedBranch) {
+                        this.elements.branch.value = savedBranch;
                     }
 
                     this.elements.url.value = Storage.get('url', '');
-                    this.elements.seriesQty.value = Storage.get('series', '1');
+                    this.elements.series.value = Storage.get('series', '1');
+
+                    this.elements.branch.addEventListener('change', () => {
+                        Storage.set('branch', this.elements.branch.value);
+                    });
+
                     this.updateStickyPosition();
 
-                    // تحميل الجدول من Firebase (خاص بالمستخدم)
+                    // Load data from Firebase (user-specific)
                     this._isLoadingFromFirebase = true;
-                    const userId = this._currentUserId;
-                    if (database) {
-                        database.ref('currentTable/' + userId).once('value', (snapshot) => {
-                            this._isLoadingFromFirebase = false;
-                            const data = snapshot.val();
-                            if (data && data.data && Array.isArray(data.data)) {
-                                console.log('📥 Loading currentTable for user:', userId, data.data.length);
-                                this._tableData = data.data;
-                                Storage.set('tableData', data.data);
-                                this.renderInvoice();
-                                this.showAlert('✅ تم تحميل البيانات من السحابة', 'success');
-                            } else {
-                                const saved = Storage.get('tableData', []);
-                                if (Array.isArray(saved) && saved.length) {
-                                    this._tableData = saved;
-                                    this.renderInvoice();
-                                    this.saveCurrentTable();
-                                } else {
-                                    this._tableData = [];
-                                    this.renderInvoice();
-                                }
-                            }
-                        }, (error) => {
-                            this._isLoadingFromFirebase = false;
-                            console.error('❌ Error loading currentTable:', error);
+                    Utils.loadCurrentTable((data) => {
+                        this._isLoadingFromFirebase = false;
+                        if (data && Array.isArray(data) && data.length > 0) {
+                            console.log('📥 Loading data from currentTable (user):', data.length, 'items');
+                            this._tableData = data;
+                            Storage.set('tableData', data);
+                            this.renderInvoice();
+                            this.showAlert('✅ تم تحميل البيانات من السحابة', 'success');
+                        } else {
                             const saved = Storage.get('tableData', []);
                             if (Array.isArray(saved) && saved.length) {
                                 this._tableData = saved;
                                 this.renderInvoice();
+                                Utils.saveCurrentTable(this._tableData);
                             } else {
                                 this._tableData = [];
                                 this.renderInvoice();
                             }
-                        });
-                    } else {
-                        const saved = Storage.get('tableData', []);
-                        if (Array.isArray(saved) && saved.length) {
-                            this._tableData = saved;
-                            this.renderInvoice();
                         }
-                        this._isLoadingFromFirebase = false;
-                    }
+                    });
 
-                    // تحميل المنتج المخبأ
+                    // Load cached product
                     const cached = Storage.get('cachedProduct', null);
                     if (cached && cached.name) {
                         this._lastProduct = {
@@ -2475,18 +2923,12 @@
                             productId: cached.productId || ''
                         };
                         this.showPreview(this._lastProduct);
+                        console.log('✅ Cached product loaded:', this._lastProduct.name);
                     }
 
-                    // تنظيف الفواتير القديمة (لكل مستخدم)
-                    if (database) {
-                        this.cleanOldInvoices();
-                    }
+                    Utils.cleanOldInvoices();
 
-                    // أحداث
-                    this.elements.branchName.addEventListener('change', () => {
-                        Storage.set('branch', this.elements.branchName.value);
-                    });
-
+                    // Event listeners
                     this.elements.url.addEventListener('input', () => {
                         clearTimeout(this._fetchTimer);
                         const url = this.elements.url.value.trim();
@@ -2501,8 +2943,8 @@
                         }
                     });
 
-                    this.elements.fetchProductBtn.addEventListener('click', () => this.handleFetch(false));
-                    this.elements.addToTableBtn.addEventListener('click', () => this.handleAddWithDuplicateCheck());
+                    this.elements.fetchBtn.addEventListener('click', () => this.handleFetch(false));
+                    this.elements.addBtn.addEventListener('click', () => this.handleAddWithDuplicateCheck());
 
                     this.elements.closeInvoiceBtn.addEventListener('click', () => this.closeFullInvoice());
                     this.elements.exportDialogBtn.addEventListener('click', () => this.openExportDialog());
@@ -2519,6 +2961,9 @@
                     });
                     this.elements.duplicateDialog.addEventListener('click', (e) => {
                         if (e.target === this.elements.duplicateDialog) this.closeDuplicateDialog();
+                    });
+                    this.elements.zeroQtyDialog.addEventListener('click', (e) => {
+                        if (e.target === this.elements.zeroQtyDialog) this.closeZeroQtyDialog();
                     });
 
                     this.elements.showOldOrdersBtn.addEventListener('click', () => this.toggleOldOrders());
@@ -2540,7 +2985,6 @@
 
                     this.elements.dupCancel.addEventListener('click', () => this.closeDuplicateDialog());
                     this.elements.dupAddQty.addEventListener('click', () => this.confirmAddDuplicate());
-                    this.elements.dupDeleteProduct.addEventListener('click', () => this.confirmDeleteDuplicate());
 
                     this.elements.closeInvoicePreview.addEventListener('click', () => {
                         this.elements.invoicePreviewDialog.classList.remove('show');
@@ -2557,10 +3001,11 @@
                         }
                     });
 
-                    // Zero Qty dialog
+                    // Zero qty dialog
                     this.elements.zeroQtyCancel.addEventListener('click', () => this.closeZeroQtyDialog());
                     this.elements.zeroQtyDelete.addEventListener('click', () => this.confirmZeroQtyDelete());
 
+                    // Keyboard shortcut
                     document.addEventListener('keydown', (e) => {
                         if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
                             e.preventDefault();
@@ -2568,9 +3013,10 @@
                         }
                     });
 
+                    // Auto-sync timer
                     this._syncTimer = setInterval(() => {
                         if (this._isDirty && this._tableData.length > 0 && !this._isLoadingFromFirebase) {
-                            this.saveCurrentTable();
+                            Utils.saveCurrentTable(this._tableData);
                             this._isDirty = false;
                         }
                     }, 2000);
@@ -2607,7 +3053,6 @@
                     this._isDirty = true;
                 },
 
-                // ==================== FETCH PRODUCT ====================
                 async handleFetch(silent = false) {
                     const url = this.elements.url.value.trim();
                     if (!url) {
@@ -2624,6 +3069,7 @@
                         try {
                             jsonData = await ShopifyFetcher.fetchProduct(url);
                             product = ProductParser.parse(jsonData);
+                            console.log('🔍 Extracted productId:', product.productId);
                         } catch (e) {
                             const html = await ShopifyFetcher.fetchProductHTML(url);
                             product = ProductParser.parseFromHTML(html);
@@ -2673,13 +3119,12 @@
                     }
                 },
 
-                // ==================== ADD PRODUCT ====================
                 handleAddWithDuplicateCheck() {
                     if (!this._lastProduct) {
                         this.showAlert('⚠️ لا توجد بيانات منتج. قم بجلب منتج أولاً.', 'error');
                         return;
                     }
-                    const seriesQty = parseInt(this.elements.seriesQty.value);
+                    const seriesQty = parseInt(this.elements.series.value);
                     if (!seriesQty || seriesQty <= 0) {
                         this.showAlert('⚠️ أدخل كمية صحيحة', 'error');
                         return;
@@ -2687,74 +3132,84 @@
 
                     const product = this._lastProduct;
                     const sku = product.sku || '';
-                    const productKey = product.name + '|' + sku;
 
-                    // البحث عن المنتج في الجدول الحالي
-                    const existingIndex = this._tableData.findIndex(p => p.name === product.name && p.sku === sku);
-                    if (existingIndex !== -1) {
-                        // المنتج موجود
-                        const existingProduct = this._tableData[existingIndex];
-                        const { totalQty } = Utils.computeTotals(existingProduct);
-                        if (totalQty === 0) {
-                            // المنتج موجود ولكن كمياته صفر
-                            this._zeroQtyProductKey = existingIndex;
-                            this.elements.zeroQtyMessage.textContent =
-                                `المنتج "${product.name}" موجود ولكن كمياته كلها صفر. هل تريد حذفه من الفاتورة؟`;
-                            this.elements.zeroQtyDialog.classList.add('show');
-                            return;
-                        } else {
-                            // منتج مكرر به كميات > 0
-                            this._pendingAddData = { product, seriesQty, sku, existingIndex };
-                            const img = product.mainImage || product.image || (product.images && product.images
-                                .length ? product.images[0] : '');
-                            this.elements.dupImg.src = img || '';
-                            this.elements.dupName.textContent = product.name;
-                            this.elements.dupDetails.textContent =
-                                `SKU: ${sku || '—'} | الكمية الحالية: ${totalQty}`;
-                            this.elements.duplicateMessage.textContent =
-                                'هذا المنتج موجود بالفعل في الطلبية. ماذا تريد أن تفعل؟';
-                            this.elements.dupDeleteProduct.style.display = 'none';
-                            this.elements.dupAddQty.style.display = 'inline-flex';
-                            this.elements.duplicateDialog.classList.add('show');
-                            return;
+                    // Check if this product already exists in table (by name+sku, any color)
+                    let exists = false;
+                    for (const p of this._tableData) {
+                        if (p.name === product.name && p.sku === sku) {
+                            exists = true;
+                            break;
                         }
+                    }
+
+                    if (exists) {
+                        this._pendingAddData = { product, seriesQty, sku };
+                        const img = product.mainImage || product.image || (product.images && product.images
+                            .length ? product.images[0] : '');
+                        this.elements.dupImg.src = img || '';
+                        this.elements.dupName.textContent = product.name;
+
+                        let totalQty = 0;
+                        for (const p of this._tableData) {
+                            if (p.name === product.name && p.sku === sku) {
+                                totalQty += Utils.getTotalPieces(p.sizes);
+                            }
+                        }
+                        this.elements.dupDetails.textContent =
+                            `SKU: ${sku || '—'} | الكمية الحالية: ${totalQty}`;
+                        this.elements.duplicateDialog.classList.add('show');
                     } else {
-                        // منتج جديد
-                        this.addNewProduct(product, seriesQty, sku);
+                        this.addProductToTable(product, seriesQty, sku);
                     }
                 },
 
-                addNewProduct(product, seriesQty, sku) {
-                    // إنشاء هيكل المنتج الجديد
-                    const newProduct = {
-                        name: product.name,
-                        sku: sku,
-                        unitPrice: product.price,
-                        image: product.mainImage || (product.images && product.images.length ? product.images[0] :
-                            ''),
-                        productId: product.productId || '',
-                        colors: {}
-                    };
+                confirmAddDuplicate() {
+                    if (this._pendingAddData) {
+                        const { product, seriesQty, sku } = this._pendingAddData;
+                        this.addProductToTable(product, seriesQty, sku);
+                        this.closeDuplicateDialog();
+                    }
+                },
 
-                    // إضافة الألوان والمقاسات من المنتج
-                    const colors = product.colors.length ? product.colors : ['No Color'];
-                    const sizes = product.sizes.length ? product.sizes : ['No Size'];
+                closeDuplicateDialog() {
+                    this.elements.duplicateDialog.classList.remove('show');
+                    this._pendingAddData = null;
+                },
 
-                    colors.forEach(color => {
-                        newProduct.colors[color] = { sizes: {} };
-                        sizes.forEach(size => {
-                            newProduct.colors[color].sizes[size] = seriesQty;
-                        });
+                addProductToTable(product, seriesQty, sku) {
+                    // Generate product entries per color
+                    const newProducts = ExcelGenerator.generateProductsFromProduct(product, seriesQty);
+
+                    newProducts.forEach(newProd => {
+                        // Check if this exact product+color exists
+                        let found = false;
+                        for (const p of this._tableData) {
+                            if (p.name === newProd.name && p.sku === newProd.sku && p.color === newProd
+                                .color) {
+                                // Merge sizes
+                                const sizes = newProd.sizes || {};
+                                for (const sz in sizes) {
+                                    p.sizes[sz] = (p.sizes[sz] || 0) + sizes[sz];
+                                }
+                                p.totalPieces = Utils.getTotalPieces(p.sizes);
+                                p.totalValue = p.totalPieces * p.unitPrice;
+                                found = true;
+                                break;
+                            }
+                        }
+                        if (!found) {
+                            this._tableData.push({ ...newProd });
+                        }
                     });
 
-                    this._tableData.push(newProduct);
                     this.renderInvoice();
                     this.saveAll();
                     this.markDirty();
-                    this.showAlert(`✅ تم إضافة المنتج "${product.name}"`, 'success');
+                    this.showAlert(`✅ تم إضافة ${newProducts.length} لون`, 'success');
 
+                    // Reset form
                     this.elements.url.value = '';
-                    this.elements.seriesQty.value = '1';
+                    this.elements.series.value = '1';
                     this._lastProduct = null;
                     this._lastProductUrl = '';
                     Storage.remove('cachedProduct');
@@ -2763,122 +3218,21 @@
                     Storage.set('series', '1');
                 },
 
-                confirmAddDuplicate() {
-                    if (this._pendingAddData) {
-                        const { product, seriesQty, sku, existingIndex } = this._pendingAddData;
-                        // إضافة الكمية إلى المنتج الموجود
-                        const existingProduct = this._tableData[existingIndex];
-                        // إضافة الكمية إلى كل مقاس (أو نضيف فقط إلى المقاسات الموجودة)
-                        const colors = Object.keys(existingProduct.colors);
-                        if (colors.length === 0) {
-                            // لو لا يوجد ألوان، نضيف لون افتراضي
-                            existingProduct.colors['No Color'] = { sizes: {} };
-                        }
-                        colors.forEach(color => {
-                            const sizes = Object.keys(existingProduct.colors[color].sizes);
-                            if (sizes.length === 0) {
-                                existingProduct.colors[color].sizes['No Size'] = seriesQty;
-                            } else {
-                                sizes.forEach(size => {
-                                    existingProduct.colors[color].sizes[size] = (existingProduct
-                                        .colors[color].sizes[size] || 0) + seriesQty;
-                                });
-                            }
-                        });
+                clearAllData() {
+                    if (!this._tableData.length) {
+                        this.showAlert('⚠️ لا توجد بيانات لمسحها', 'info');
+                        return;
+                    }
+                    if (confirm('هل أنت متأكد من حذف جميع البيانات؟')) {
+                        this._tableData = [];
                         this.renderInvoice();
                         this.saveAll();
                         this.markDirty();
-                        this.showAlert(`✅ تم إضافة ${seriesQty} قطعة إلى المنتج`, 'success');
-                        this.closeDuplicateDialog();
+                        Utils.saveCurrentTable([]);
+                        this.showAlert('🗑️ تم مسح جميع البيانات', 'info');
                     }
                 },
 
-                confirmDeleteDuplicate() {
-                    // حذف المنتج المكرر (عند الطلب)
-                    if (this._pendingAddData && this._pendingAddData.existingIndex !== undefined) {
-                        const idx = this._pendingAddData.existingIndex;
-                        this._tableData.splice(idx, 1);
-                        this.renderInvoice();
-                        this.saveAll();
-                        this.markDirty();
-                        this.showAlert('🗑️ تم حذف المنتج المكرر', 'info');
-                        this.closeDuplicateDialog();
-                    }
-                },
-
-                confirmZeroQtyDelete() {
-                    if (this._zeroQtyProductKey !== null) {
-                        const idx = this._zeroQtyProductKey;
-                        this._tableData.splice(idx, 1);
-                        this.renderInvoice();
-                        this.saveAll();
-                        this.markDirty();
-                        this.showAlert('🗑️ تم حذف المنتج بدون كميات', 'info');
-                        this.closeZeroQtyDialog();
-                        this._zeroQtyProductKey = null;
-                    }
-                },
-
-                closeZeroQtyDialog() {
-                    this.elements.zeroQtyDialog.classList.remove('show');
-                    this._zeroQtyProductKey = null;
-                },
-
-                // ==================== CHANGE QUANTITY ====================
-                changeQty(productIndex, color, size, delta) {
-                    const product = this._tableData[productIndex];
-                    if (!product) return;
-                    if (!product.colors[color]) return;
-                    const sizes = product.colors[color].sizes;
-                    if (sizes[size] === undefined) return;
-
-                    const newQty = Math.max(0, (sizes[size] || 0) + delta);
-                    sizes[size] = newQty;
-
-                    // إذا أصبحت كل الكميات صفر، نعرض بوب أب للحذف
-                    const { totalQty } = Utils.computeTotals(product);
-                    if (totalQty === 0) {
-                        this._zeroQtyProductKey = productIndex;
-                        this.elements.zeroQtyMessage.textContent =
-                            `المنتج "${product.name}" أصبح بدون كميات. هل تريد حذفه من الفاتورة؟`;
-                        this.elements.zeroQtyDialog.classList.add('show');
-                    }
-
-                    this.renderInvoice();
-                    this.saveAll();
-                    this.markDirty();
-                },
-
-                // ==================== DELETE COLOR / PRODUCT ====================
-                deleteColor(productIndex, color) {
-                    const product = this._tableData[productIndex];
-                    if (!product) return;
-                    if (!confirm(`هل تريد حذف اللون "${color}" من المنتج "${product.name}"؟`)) return;
-                    delete product.colors[color];
-                    // إذا لم يتبق ألوان، نحذف المنتج كاملاً
-                    if (Object.keys(product.colors).length === 0) {
-                        this._tableData.splice(productIndex, 1);
-                        this.showAlert('🗑️ تم حذف المنتج (لم يتبق ألوان)', 'info');
-                    } else {
-                        this.showAlert(`🗑️ تم حذف اللون ${color}`, 'info');
-                    }
-                    this.renderInvoice();
-                    this.saveAll();
-                    this.markDirty();
-                },
-
-                deleteProduct(productIndex) {
-                    const product = this._tableData[productIndex];
-                    if (!product) return;
-                    if (!confirm(`هل تريد حذف المنتج "${product.name}" بالكامل؟`)) return;
-                    this._tableData.splice(productIndex, 1);
-                    this.renderInvoice();
-                    this.saveAll();
-                    this.markDirty();
-                    this.showAlert('🗑️ تم حذف المنتج', 'info');
-                },
-
-                // ==================== RENDER INVOICE ====================
                 renderInvoice() {
                     const container = this.elements.invoiceContainer;
 
@@ -2894,116 +3248,157 @@
                     }
 
                     let html = '';
-                    this._tableData.forEach((product, idx) => {
-                        const productId = 'prod_' + idx;
-                        const { totalQty, totalValue } = Utils.computeTotals(product);
+                    let productIdx = 0;
 
-                        // حالة الفتح
+                    for (const product of this._tableData) {
+                        const productId = 'prod_' + productIdx;
+                        const totalPieces = Utils.getTotalPieces(product.sizes);
+                        const totalValue = totalPieces * product.unitPrice;
+
+                        // Product card state: default closed
                         if (this._productCardStates[productId] === undefined) {
                             this._productCardStates[productId] = false;
                         }
                         const isProductOpen = this._productCardStates[productId];
 
+                        const imgSrc = product.image || '';
+
                         html += `
-                            <div class="product-card" data-product-index="${idx}">
-                                <div class="product-card-header" onclick="window.UI.toggleProduct(${idx})">
-                                    <img class="thumb" src="${product.image || ''}" alt="${this.escapeHtml(product.name)}" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2260%22 height=%2260%22/%3E'" onclick="event.stopPropagation();window.openModal('${product.image || ''}')" />
+                            <div class="product-card" data-product-id="${productId}">
+                                <div class="product-card-header" onclick="window.UI.toggleProduct('${productId}')">
+                                    <img class="thumb" src="${imgSrc}" alt="${this.escapeHtml(product.name)}" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2260%22 height=%2260%22/%3E'" onclick="event.stopPropagation();window.openModal('${imgSrc}')" />
                                     <div class="meta">
                                         <span class="name">${this.escapeHtml(product.name)}</span>
                                         <span class="sku">SKU: ${this.escapeHtml(product.sku)}</span>
                                         <span class="price">${Utils.formatCurrency(product.unitPrice)} LE</span>
-                                        <span class="total-pieces"><i class="fas fa-boxes"></i> ${totalQty}</span>
+                                        <span class="total-pieces"><i class="fas fa-boxes"></i> ${totalPieces}</span>
                                     </div>
                                     <span class="chevron ${isProductOpen ? 'open' : ''}"><i class="fas fa-chevron-down"></i></span>
                                 </div>
                                 <div class="product-card-body ${isProductOpen ? 'open' : ''}">
-                                    ${this.renderColors(idx, product)}
+                                    ${this.renderProductColors(product, productId)}
                                 </div>
                                 <div class="product-card-footer">
-                                    <button class="btn btn-danger btn-sm" onclick='window.UI.deleteProduct(${idx})'>
+                                    <button class="btn btn-danger btn-sm" onclick='window.UI.deleteProduct(${JSON.stringify(productId)})'>
                                         <i class="fas fa-trash"></i> حذف المنتج
                                     </button>
                                 </div>
                             </div>
                         `;
-                    });
+                        productIdx++;
+                    }
 
                     container.innerHTML = html;
                     this.updateStats();
                     this.saveAll();
                 },
 
-                renderColors(productIndex, product) {
-                    let html = '';
-                    const colorKeys = Object.keys(product.colors);
-                    let colorIdx = 0;
+                renderProductColors(product, productId) {
+                    // Each product has a single color (or empty string)
+                    const color = product.color || 'No Color';
+                    const sizes = product.sizes || {};
+                    const colorId = productId + '_color_0';
 
-                    for (const color of colorKeys) {
-                        const colorId = 'prod_' + productIndex + '_color_' + colorIdx;
-                        if (this._productCardStates[colorId] === undefined) {
-                            this._productCardStates[colorId] = true;
-                        }
-                        const isColorOpen = this._productCardStates[colorId];
+                    if (this._productCardStates[colorId] === undefined) {
+                        this._productCardStates[colorId] = true;
+                    }
+                    const isColorOpen = this._productCardStates[colorId];
 
-                        const sizes = product.colors[color].sizes || {};
-                        const sizeKeys = Object.keys(sizes);
-                        const totalQty = sizeKeys.reduce((sum, sz) => sum + (sizes[sz] || 0), 0);
+                    const totalQty = Utils.getTotalPieces(sizes);
 
-                        const escapedColor = this.escapeHtml(color);
+                    let sizeHtml = '';
+                    const sizeKeys = Object.keys(sizes);
+                    if (sizeKeys.length === 0) {
+                        sizeHtml = `<div style="color:var(--gray);font-size:13px;padding:8px 0;">لا توجد مقاسات</div>`;
+                    } else {
+                        sizeKeys.forEach(size => {
+                            const qty = sizes[size] || 0;
+                            const isZero = qty === 0;
+                            const escapedSize = this.escapeHtml(size);
+                            const escapedColor = this.escapeHtml(product.color || '');
+                            const escapedSku = this.escapeHtml(product.sku);
+                            const escapedName = this.escapeHtml(product.name);
 
-                        html += `
-                            <div class="color-accordion">
-                                <div class="color-header" onclick="window.UI.toggleColor('${colorId}')">
-                                    <span class="chevron-sm ${isColorOpen ? 'open' : ''}"><i class="fas fa-chevron-down"></i></span>
-                                    <span><i class="fas fa-palette" style="color:var(--primary);"></i> ${escapedColor}</span>
-                                    <span class="color-total">${totalQty} قطعة</span>
-                                    <button class="delete-color-btn" onclick="event.stopPropagation();window.UI.deleteColor(${productIndex}, ${JSON.stringify(color)})" title="حذف اللون">
-                                        <i class="fas fa-times"></i>
-                                    </button>
+                            sizeHtml += `
+                                <div class="size-row ${isZero ? 'zero-qty' : ''}" data-product="${productId}" data-color="${product.color || ''}" data-size="${size}" data-sku="${product.sku}" data-name="${product.name}">
+                                    <span class="size-label">${escapedSize}</span>
+                                    <div class="qty-control">
+                                        <button onclick='window.UI.changeQty(${JSON.stringify(productId)}, ${JSON.stringify(product.color || '')}, ${JSON.stringify(size)}, -1, ${JSON.stringify(product.sku)}, ${JSON.stringify(product.name)})'>
+                                            <i class="fas fa-minus"></i>
+                                        </button>
+                                        <span class="qty-val">${qty}</span>
+                                        <button onclick='window.UI.changeQty(${JSON.stringify(productId)}, ${JSON.stringify(product.color || '')}, ${JSON.stringify(size)}, 1, ${JSON.stringify(product.sku)}, ${JSON.stringify(product.name)})'>
+                                            <i class="fas fa-plus"></i>
+                                        </button>
+                                    </div>
                                 </div>
-                                <div class="color-sizes ${isColorOpen ? 'open' : ''}">
-                                    ${sizeKeys.map(size => {
-                                        const qty = sizes[size] || 0;
-                                        const isZero = qty === 0;
-                                        const escapedSize = this.escapeHtml(size);
-                                        return `
-                                            <div class="size-row ${isZero ? 'zero-qty' : ''}">
-                                                <span class="size-label">${escapedSize}</span>
-                                                <div class="qty-control">
-                                                    <button onclick='window.UI.changeQty(${productIndex}, ${JSON.stringify(color)}, ${JSON.stringify(size)}, -1)'>
-                                                        <i class="fas fa-minus"></i>
-                                                    </button>
-                                                    <span class="qty-val">${qty}</span>
-                                                    <button onclick='window.UI.changeQty(${productIndex}, ${JSON.stringify(color)}, ${JSON.stringify(size)}, 1)'>
-                                                        <i class="fas fa-plus"></i>
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        `;
-                                    }).join('')}
-                                </div>
+                            `;
+                        });
+                    }
+
+                    const colorLabel = product.color || 'بدون لون';
+                    const escapedColorLabel = this.escapeHtml(colorLabel);
+
+                    return `
+                        <div class="color-accordion">
+                            <div class="color-header" onclick="window.UI.toggleColor('${colorId}')">
+                                <span class="chevron-sm ${isColorOpen ? 'open' : ''}"><i class="fas fa-chevron-down"></i></span>
+                                <span><i class="fas fa-palette" style="color:var(--primary);"></i> ${escapedColorLabel}</span>
+                                <span class="color-total">${totalQty} قطعة</span>
+                                <button class="delete-color-btn" onclick="event.stopPropagation();window.UI.deleteColor(${JSON.stringify(productId)}, ${JSON.stringify(product.color || '')}, ${JSON.stringify(product.sku)}, ${JSON.stringify(product.name)})" title="حذف اللون">
+                                    <i class="fas fa-times"></i>
+                                </button>
                             </div>
-                        `;
-                        colorIdx++;
-                    }
-
-                    // إذا لم يكن هناك ألوان، نضيف لون افتراضي
-                    if (colorKeys.length === 0) {
-                        // هذا لا يجب أن يحدث لأننا نضيف دائمًا لونًا
-                    }
-
-                    return html;
+                            <div class="color-sizes ${isColorOpen ? 'open' : ''}">
+                                ${sizeHtml}
+                            </div>
+                        </div>
+                    `;
                 },
 
-                // ==================== TOGGLE ====================
-                toggleProduct(index) {
-                    const key = 'prod_' + index;
-                    this._productCardStates[key] = !this._productCardStates[key];
+                deleteColor(productId, color, sku, name) {
+                    // Find the product in table
+                    const colorName = color || '';
+                    let targetIndex = -1;
+                    for (let i = 0; i < this._tableData.length; i++) {
+                        const p = this._tableData[i];
+                        if (p.name === name && p.sku === sku && (p.color || '') === colorName) {
+                            targetIndex = i;
+                            break;
+                        }
+                    }
+
+                    if (targetIndex === -1) {
+                        this.showAlert('⚠️ لم يتم العثور على اللون', 'error');
+                        return;
+                    }
+
+                    // Check if this color has any positive quantity
+                    const product = this._tableData[targetIndex];
+                    const totalQty = Utils.getTotalPieces(product.sizes);
+
+                    if (totalQty > 0) {
+                        if (!confirm(`هل أنت متأكد من حذف اللون "${colorName || 'بدون لون'}"؟ (لديه ${totalQty} قطعة)`)) {
+                            return;
+                        }
+                    }
+
+                    this._tableData.splice(targetIndex, 1);
+                    this.renderInvoice();
+                    this.saveAll();
+                    this.markDirty();
+                    this.showAlert(`🗑️ تم حذف اللون ${colorName || 'بدون لون'}`, 'info');
+                },
+
+                toggleProduct(productId) {
+                    const state = this._productCardStates[productId];
+                    this._productCardStates[productId] = state === false ? true : false;
                     this.renderInvoice();
                 },
 
                 toggleColor(colorId) {
-                    this._productCardStates[colorId] = !this._productCardStates[colorId];
+                    const state = this._productCardStates[colorId];
+                    this._productCardStates[colorId] = state === false ? true : false;
                     this.renderInvoice();
                 },
 
@@ -3021,69 +3416,150 @@
                     this.renderInvoice();
                 },
 
-                // ==================== STATS ====================
-                updateStats() {
-                    let totalPieces = 0,
-                        totalValue = 0;
-                    this._tableData.forEach(p => {
-                        const { totalQty, totalValue: val } = Utils.computeTotals(p);
-                        totalPieces += totalQty;
-                        totalValue += val;
-                    });
-                    const productCount = this._tableData.length;
+                changeQty(productId, color, size, delta, sku, name) {
+                    // Find the product entry
+                    const colorName = color || '';
+                    let targetIndex = -1;
+                    for (let i = 0; i < this._tableData.length; i++) {
+                        const p = this._tableData[i];
+                        if (p.name === name && p.sku === sku && (p.color || '') === colorName) {
+                            targetIndex = i;
+                            break;
+                        }
+                    }
 
-                    this.elements.statCurrentOrder.textContent = productCount;
+                    if (targetIndex === -1) {
+                        console.warn('⚠️ Could not find product:', { name, sku, color });
+                        return;
+                    }
+
+                    const product = this._tableData[targetIndex];
+                    const currentQty = product.sizes[size] || 0;
+                    const newQty = Math.max(0, currentQty + delta);
+
+                    // If newQty is 0, we might want to ask user if they want to delete this color
+                    if (newQty === 0 && currentQty > 0) {
+                        // Check if all sizes in this color are zero after this change
+                        const tempSizes = { ...product.sizes };
+                        tempSizes[size] = 0;
+                        const totalAfter = Utils.getTotalPieces(tempSizes);
+                        if (totalAfter === 0) {
+                            // All sizes are zero - ask user
+                            this._zeroQtyTarget = {
+                                productId: productId,
+                                color: colorName,
+                                sku: sku,
+                                name: name,
+                                size: size,
+                                targetIndex: targetIndex
+                            };
+                            this.elements.zeroQtyLabel.textContent =
+                                `المنتج: ${name} | اللون: ${colorName || 'بدون لون'} | المقاس: ${size}`;
+                            this.elements.zeroQtyDialog.classList.add('show');
+                            return;
+                        }
+                    }
+
+                    // Update quantity
+                    if (newQty === 0) {
+                        delete product.sizes[size];
+                    } else {
+                        product.sizes[size] = newQty;
+                    }
+
+                    // Recalculate totals
+                    product.totalPieces = Utils.getTotalPieces(product.sizes);
+                    product.totalValue = product.totalPieces * product.unitPrice;
+
+                    // If totalPieces is 0, remove the entire product
+                    if (product.totalPieces === 0) {
+                        this._tableData.splice(targetIndex, 1);
+                        this.renderInvoice();
+                        this.saveAll();
+                        this.markDirty();
+                        this.showAlert('🗑️ تم حذف المنتج (جميع الكميات صفر)', 'info');
+                        return;
+                    }
+
+                    this.renderInvoice();
+                    this.saveAll();
+                    this.markDirty();
+                },
+
+                confirmZeroQtyDelete() {
+                    if (this._zeroQtyTarget) {
+                        const { targetIndex, productId, color, sku, name } = this._zeroQtyTarget;
+                        // Remove the entire color (product entry)
+                        this._tableData.splice(targetIndex, 1);
+                        this.renderInvoice();
+                        this.saveAll();
+                        this.markDirty();
+                        this.showAlert(`🗑️ تم حذف اللون ${color || 'بدون لون'}`, 'info');
+                        this.closeZeroQtyDialog();
+                    }
+                },
+
+                closeZeroQtyDialog() {
+                    this.elements.zeroQtyDialog.classList.remove('show');
+                    this._zeroQtyTarget = null;
+                },
+
+                deleteProduct(productId) {
+                    // Find product by index from productId
+                    const idx = parseInt(productId.replace('prod_', ''));
+                    if (isNaN(idx) || idx >= this._tableData.length) {
+                        this.showAlert('⚠️ لم يتم العثور على المنتج', 'error');
+                        return;
+                    }
+                    const name = this._tableData[idx].name;
+                    if (!confirm(`هل أنت متأكد من حذف المنتج "${name}"؟`)) return;
+                    this._tableData.splice(idx, 1);
+                    this.renderInvoice();
+                    this.saveAll();
+                    this.markDirty();
+                    this.showAlert(`🗑️ تم حذف المنتج ${name}`, 'info');
+                },
+
+                updateStats() {
+                    let totalPieces = 0;
+                    let totalValue = 0;
+                    const productSet = new Set();
+
+                    for (const p of this._tableData) {
+                        const pieces = Utils.getTotalPieces(p.sizes);
+                        if (pieces > 0) {
+                            totalPieces += pieces;
+                            totalValue += pieces * p.unitPrice;
+                            productSet.add(p.name + '|' + p.sku);
+                        }
+                    }
+
+                    this.elements.statCurrentOrder.textContent = productSet.size;
                     this.elements.statTotalPieces.textContent = totalPieces;
                     this.elements.statTotalValue.textContent = Utils.formatCurrency(totalValue) + ' LE';
                     this.elements.bottomPieces.textContent = totalPieces;
-                    this.elements.bottomProducts.textContent = productCount;
+                    this.elements.bottomProducts.textContent = productSet.size;
                     this.elements.bottomValue.textContent = Utils.formatCurrency(totalValue) + ' LE';
                 },
 
-                // ==================== SAVE ====================
-                saveAll() {
-                    Storage.set('tableData', this._tableData);
-                    Storage.set('branch', this.elements.branchName.value);
-                    Storage.set('cardStates', this._productCardStates);
-                    if (!this._isLoadingFromFirebase) {
-                        this.saveCurrentTable();
-                    }
-                },
-
-                saveCurrentTable() {
-                    if (!database) return;
-                    const userId = this._currentUserId;
-                    database.ref('currentTable/' + userId).set({
-                        data: this._tableData,
-                        updatedAt: firebase.database.ServerValue.TIMESTAMP
-                    }, (error) => {
-                        if (error) console.error('❌ Error saving currentTable:', error);
-                        else console.log('✅ currentTable saved for user', userId);
-                    });
-                },
-
-                // ==================== CLOSE INVOICE ====================
                 closeFullInvoice() {
-                    // حساب الكميات الفعلية
-                    let totalPieces = 0,
-                        totalValue = 0;
-                    this._tableData.forEach(p => {
-                        const { totalQty, totalValue: val } = Utils.computeTotals(p);
-                        totalPieces += totalQty;
-                        totalValue += val;
-                    });
-                    if (totalPieces === 0) {
+                    const nonZeroProducts = this._tableData.filter(p => Utils.getTotalPieces(p.sizes) > 0);
+                    if (!nonZeroProducts.length) {
                         this.showAlert('⚠️ لا توجد كميات لإقفال الفاتورة', 'error');
                         return;
                     }
-                    const branchName = this.elements.branchName.value || 'Branch not set';
+                    const branchName = this.elements.branch.value.trim() || 'Branch not set';
                     const productUrl = this._lastProductUrl || this.elements.url.value.trim() || '';
+
+                    const totalPieces = nonZeroProducts.reduce((s, p) => s + Utils.getTotalPieces(p.sizes), 0);
+                    const totalValue = nonZeroProducts.reduce((s, p) => s + (Utils.getTotalPieces(p.sizes) * p
+                        .unitPrice), 0);
 
                     if (!confirm(`هل أنت متأكد من تقفيل الفاتورة؟\nالفرع: ${branchName}\nالقطع: ${totalPieces}\nالقيمة: ${Utils.formatCurrency(totalValue)} LE`)) {
                         return;
                     }
 
-                    this.saveInvoiceToFirebase(branchName, productUrl, (error, key) => {
+                    Utils.saveInvoiceToFirebase(branchName, nonZeroProducts, productUrl, (error, key) => {
                         if (error) {
                             this.showAlert('❌ ' + error, 'error');
                             return;
@@ -3091,324 +3567,15 @@
                         this._tableData = [];
                         this.renderInvoice();
                         this.saveAll();
-                        this.saveCurrentTable();
+                        Utils.saveCurrentTable([]);
                         this.showAlert(`✅ تم تقفيل الفاتورة (ID: ${key})`, 'success');
                     });
                 },
 
-                saveInvoiceToFirebase(branchName, productUrl, callback) {
-                    if (!database) {
-                        if (callback) callback('⚠️ Firebase not ready');
-                        return;
-                    }
-                    const userId = this._currentUserId;
-                    const invoice = {
-                        branch: branchName,
-                        totalPieces: 0,
-                        totalValue: 0,
-                        itemsCount: this._tableData.length,
-                        productUrl: productUrl || '',
-                        items: this._tableData.map(p => {
-                            const rows = Utils.productToRows(p);
-                            return rows.map(r => ({
-                                name: r.name,
-                                color: r.color || '',
-                                size: r.size || '',
-                                sku: r.sku || '',
-                                qty: r.qty || 0,
-                                unitPrice: r.unitPrice || 0,
-                                total: r.total || 0,
-                                image: r.image || '',
-                                productId: r.productId || ''
-                            }));
-                        }).flat(),
-                        createdAt: firebase.database.ServerValue.TIMESTAMP,
-                        createdBy: this._currentUserFullName,
-                        userId: userId
-                    };
-                    // حساب الإجماليات
-                    let totalPieces = 0,
-                        totalValue = 0;
-                    invoice.items.forEach(item => {
-                        totalPieces += item.qty || 0;
-                        totalValue += item.total || 0;
-                    });
-                    invoice.totalPieces = totalPieces;
-                    invoice.totalValue = totalValue;
-
-                    const ref = database.ref('invoices/' + userId).push();
-                    ref.set(invoice, (error) => {
-                        if (error) {
-                            console.error('❌ Firebase save error:', error);
-                            if (callback) callback('❌ فشل الحفظ: ' + error.message);
-                        } else {
-                            console.log('✅ Invoice saved for user', userId);
-                            if (callback) callback(null, ref.key);
-                        }
-                    });
-                },
-
-                // ==================== OLD INVOICES ====================
-                toggleOldOrders() {
-                    const sec = this.elements.oldOrdersSection;
-                    if (sec.style.display === 'none') {
-                        sec.style.display = 'block';
-                        this.elements.showOldOrdersBtn.innerHTML =
-                            '<i class="fas fa-chevron-up"></i> إخفاء الفواتير السابقة';
-                        this.loadOldInvoices();
-                    } else {
-                        sec.style.display = 'none';
-                        this.elements.showOldOrdersBtn.innerHTML = '<i class="fas fa-history"></i> الفواتير السابقة';
-                    }
-                },
-
-                loadOldInvoices() {
-                    const list = this.elements.oldOrdersList;
-                    list.innerHTML =
-                        `<div style="text-align:center;padding:20px;color:var(--gray);"><i class="fas fa-spinner fa-spin"></i> جاري التحميل...</div>`;
-                    if (!database) {
-                        list.innerHTML =
-                            `<div style="text-align:center;padding:20px;color:var(--gray);">لا يمكن الاتصال بقاعدة البيانات</div>`;
-                        return;
-                    }
-                    const userId = this._currentUserId;
-                    const oneMonthAgo = Date.now() - (30 * 24 * 60 * 60 * 1000);
-                    database.ref('invoices/' + userId).orderByChild('createdAt').startAt(oneMonthAgo).once('value', (
-                        snapshot) => {
-                        const data = snapshot.val();
-                        if (!data) {
-                            list.innerHTML =
-                                `<div style="text-align:center;padding:20px;color:var(--gray);">لا توجد فواتير سابقة</div>`;
-                            this.elements.oldOrdersCount.textContent = '0 فاتورة';
-                            this.elements.statTodayOrders.textContent = '0';
-                            return;
-                        }
-                        const invoices = [];
-                        for (const key in data) {
-                            const inv = data[key];
-                            invoices.push({ id: key, ...inv, createdAt: inv.createdAt || 0 });
-                        }
-                        invoices.sort((a, b) => b.createdAt - a.createdAt);
-                        this._oldInvoices = invoices;
-                        let html = '';
-                        invoices.forEach((inv, idx) => {
-                            const date = new Date(inv.createdAt);
-                            const dateStr = date.toLocaleDateString('ar-EG') + ' ' + date
-                                .toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
-                            let details = '';
-                            if (inv.items && inv.items.length) {
-                                const items = inv.items.slice(0, 3);
-                                details = items.map(item =>
-                                    `${item.name} (${item.color||''} ${item.size||''} × ${item.qty})`
-                                ).join('، ');
-                                if (inv.items.length > 3) details += ` ... +${inv.items.length-3} أكثر`;
-                            }
-                            const urlDisplay = inv.productUrl ?
-                                `<span class="order-url" title="${this.escapeHtml(inv.productUrl)}">${this.escapeHtml(inv.productUrl.substring(0, 50))}...</span>` :
-                                '—';
-                            html += `
-                                <div class="old-order-item" onclick="window.UI.showInvoicePreview(${idx})">
-                                    <span class="order-number">#${idx+1}</span>
-                                    <span class="order-branch">${this.escapeHtml(inv.branch||'الفرع')}</span>
-                                    <span class="order-date"><i class="far fa-calendar-alt"></i> ${dateStr}</span>
-                                    <span class="order-pieces">${inv.totalPieces||0} قطعة</span>
-                                    <span class="order-value">${Utils.formatCurrency(inv.totalValue||0)} LE</span>
-                                    ${urlDisplay}
-                                    <span class="order-details">${details||'—'}</span>
-                                    <button class="btn btn-secondary btn-sm" onclick="event.stopPropagation();window.UI.exportSingleOldInvoice(${idx})">
-                                        <i class="fas fa-file-excel"></i>
-                                    </button>
-                                </div>
-                            `;
-                        });
-                        list.innerHTML = html;
-                        this.elements.oldOrdersCount.textContent = `${invoices.length} فاتورة`;
-                        this.elements.statTodayOrders.textContent = invoices.length;
-                    }, (error) => {
-                        console.error('❌ Error loading invoices:', error);
-                        list.innerHTML =
-                            `<div style="text-align:center;padding:20px;color:var(--gray);">حدث خطأ في التحميل</div>`;
-                    });
-                },
-
-                cleanOldInvoices() {
-                    if (!database) return;
-                    const userId = this._currentUserId;
-                    const oneMonthAgo = Date.now() - (30 * 24 * 60 * 60 * 1000);
-                    database.ref('invoices/' + userId).once('value', (snapshot) => {
-                        const data = snapshot.val();
-                        if (!data) return;
-                        const updates = {};
-                        let count = 0;
-                        for (const key in data) {
-                            if (data[key].createdAt && data[key].createdAt < oneMonthAgo) {
-                                updates[key] = null;
-                                count++;
-                            }
-                        }
-                        if (count > 0) {
-                            database.ref('invoices/' + userId).update(updates, (error) => {
-                                if (!error) console.log(`✅ Cleaned ${count} old invoices for user ${userId}`);
-                            });
-                        }
-                    });
-                },
-
-                showInvoicePreview(idx) {
-                    const inv = this._oldInvoices[idx];
-                    if (!inv) return;
-                    this._previewInvoiceIndex = idx;
-                    const container = this.elements.invoicePreviewContent;
-
-                    let itemsHtml = '';
-                    if (inv.items && inv.items.length) {
-                        inv.items.forEach(item => {
-                            itemsHtml += `
-                                <div class="preview-item">
-                                    <span class="preview-label">${this.escapeHtml(item.name)}</span>
-                                    <span class="preview-value">${this.escapeHtml(item.color||'')} ${this.escapeHtml(item.size||'')} × ${item.qty}</span>
-                                    <span class="preview-sku">SKU: ${this.escapeHtml(item.sku||'')}</span>
-                                    <span class="preview-value">${Utils.formatCurrency(item.unitPrice)} LE</span>
-                                </div>
-                            `;
-                        });
-                    }
-
-                    // تجميع المنتجات بالهيكل الجديد للعرض
-                    const productMap = new Map();
-                    if (inv.items) {
-                        inv.items.forEach(item => {
-                            const key = item.name + '|' + (item.sku || '');
-                            if (!productMap.has(key)) {
-                                productMap.set(key, {
-                                    name: item.name,
-                                    sku: item.sku || '',
-                                    unitPrice: item.unitPrice || 0,
-                                    image: item.image || '',
-                                    colors: {}
-                                });
-                            }
-                            const p = productMap.get(key);
-                            const color = item.color || 'No Color';
-                            if (!p.colors[color]) p.colors[color] = { sizes: {} };
-                            const size = item.size || 'No Size';
-                            p.colors[color].sizes[size] = (p.colors[color].sizes[size] || 0) + (item.qty || 0);
-                        });
-                    }
-                    const products = Array.from(productMap.values());
-                    let groupsHtml = '';
-                    products.forEach(p => {
-                        const { totalQty, totalValue } = Utils.computeTotals(p);
-                        groupsHtml += `
-                            <div style="background:var(--light);border-radius:12px;padding:12px;margin-bottom:8px;border:1px solid var(--gray-light);">
-                                <div style="display:flex;align-items:center;gap:12px;">
-                                    <img src="${p.image || ''}" style="width:40px;height:40px;border-radius:8px;object-fit:cover;border:1px solid var(--gray-light);" onerror="this.style.display='none'" />
-                                    <div>
-                                        <strong>${this.escapeHtml(p.name)}</strong>
-                                        <span style="font-size:11px;color:var(--gray);display:block;">SKU: ${this.escapeHtml(p.sku)}</span>
-                                    </div>
-                                    <span style="margin-right:auto;font-weight:600;color:var(--primary);">${Utils.formatCurrency(p.unitPrice)} LE</span>
-                                </div>
-                                ${Object.entries(p.colors).map(([color, data]) => `
-                                    <div style="margin-top:8px;padding-right:16px;border-right:2px solid var(--primary-light);">
-                                        <div style="font-weight:500;font-size:13px;color:var(--dark-secondary);">
-                                            <i class="fas fa-palette" style="color:var(--primary);font-size:11px;"></i> ${this.escapeHtml(color)}
-                                            <span style="font-size:11px;color:var(--gray);margin-right:8px;">${Object.values(data.sizes).reduce((a,b)=>a+b,0)} قطعة</span>
-                                        </div>
-                                        <div style="display:flex;flex-wrap:wrap;gap:4px 12px;padding:4px 0 0 16px;font-size:13px;">
-                                            ${Object.entries(data.sizes).map(([sz, qty]) => `
-                                                <span>${this.escapeHtml(sz)}: <strong>${qty}</strong></span>
-                                            `).join('')}
-                                        </div>
-                                    </div>
-                                `).join('')}
-                            </div>
-                        `;
-                    });
-
-                    container.innerHTML = `
-                        <div style="margin-bottom:8px;"><strong>الفرع:</strong> ${this.escapeHtml(inv.branch||'—')}</div>
-                        <div style="margin-bottom:8px;"><strong>التاريخ:</strong> ${new Date(inv.createdAt).toLocaleString('ar-EG')}</div>
-                        <div style="margin-bottom:8px;"><strong>القطع:</strong> ${inv.totalPieces||0}</div>
-                        <div style="margin-bottom:12px;"><strong>القيمة:</strong> ${Utils.formatCurrency(inv.totalValue||0)} LE</div>
-                        ${inv.productUrl ? `<div style="margin-bottom:12px;"><strong>الرابط:</strong> <span style="direction:ltr;display:inline-block;font-size:12px;color:var(--gray);word-break:break-all;">${this.escapeHtml(inv.productUrl)}</span></div>` : ''}
-                        <div style="border-top:1px solid var(--gray-light);padding-top:12px;">
-                            <strong>المنتجات:</strong>
-                            <div style="margin-top:8px;">${groupsHtml}</div>
-                        </div>
-                    `;
-                    this.elements.invoicePreviewDialog.classList.add('show');
-                },
-
-                exportSingleOldInvoice(idx) {
-                    if (this._oldInvoices[idx]) {
-                        const inv = this._oldInvoices[idx];
-                        this.openExportOldInvoice(inv);
-                    }
-                },
-
-                exportAllInvoices() {
-                    if (!this._oldInvoices || !this._oldInvoices.length) {
-                        this.showAlert('⚠️ لا توجد فواتير', 'error');
-                        return;
-                    }
-                    // تحويل الفواتير إلى منتجات للتصدير
-                    const wb = XLSX.utils.book_new();
-                    this._oldInvoices.forEach((inv, idx) => {
-                        const productMap = new Map();
-                        if (inv.items) {
-                            inv.items.forEach(item => {
-                                const key = item.name + '|' + (item.sku || '');
-                                if (!productMap.has(key)) {
-                                    productMap.set(key, {
-                                        name: item.name,
-                                        sku: item.sku || '',
-                                        unitPrice: item.unitPrice || 0,
-                                        image: item.image || '',
-                                        colors: {}
-                                    });
-                                }
-                                const p = productMap.get(key);
-                                const color = item.color || 'No Color';
-                                if (!p.colors[color]) p.colors[color] = { sizes: {} };
-                                const size = item.size || 'No Size';
-                                p.colors[color].sizes[size] = (p.colors[color].sizes[size] || 0) + (item.qty ||
-                                    0);
-                            });
-                        }
-                        const products = Array.from(productMap.values());
-                        const rows = Utils.productsToRows(products);
-                        const data = [
-                            [`Invoice ${idx+1}: ${inv.branch||''}`],
-                            [`Date: ${new Date(inv.createdAt).toLocaleDateString('ar-EG')}`],
-                            [`URL: ${inv.productUrl||'—'}`],
-                            [],
-                            ['#', 'Name', 'Color', 'Size', 'SKU', 'Qty', 'Pieces', 'Unit Price', 'Total']
-                        ];
-                        rows.forEach((r, i) => {
-                            data.push([i + 1, r.name, r.color, r.size, r.sku, r.qty, r.qty, r
-                                .unitPrice, r.total
-                            ]);
-                        });
-                        data.push(['', '', '', '', '', '', inv.totalPieces || 0, '', inv.totalValue || 0]);
-                        const ws = XLSX.utils.aoa_to_sheet(data);
-                        const sheetName = `Invoice_${idx+1}`.slice(0, 31);
-                        XLSX.utils.book_append_sheet(wb, ws, sheetName);
-                    });
-                    const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
-                    const blob = new Blob([wbout], { type: 'application/octet-stream' });
-                    const link = document.createElement('a');
-                    link.href = URL.createObjectURL(blob);
-                    link.download = `all_invoices_${new Date().toISOString().slice(0,10)}.xlsx`;
-                    link.click();
-                    URL.revokeObjectURL(link.href);
-                    this.showAlert(`✅ تم تصدير ${this._oldInvoices.length} فاتورة`, 'success');
-                },
-
-                // ==================== EXPORT ====================
                 openExportDialog() {
-                    if (!this._tableData.length) {
-                        this.showAlert('⚠️ لا توجد منتجات لتصديرها', 'error');
+                    const nonZero = this._tableData.filter(p => Utils.getTotalPieces(p.sizes) > 0);
+                    if (!nonZero.length) {
+                        this.showAlert('⚠️ لا توجد كميات لتصديرها', 'error');
                         return;
                     }
                     this.elements.exportDialog.classList.add('show');
@@ -3422,8 +3589,8 @@
                     const format = document.querySelector('input[name="exportFormat"]:checked')?.value || 'detail';
                     this.closeExportDialog();
 
-                    // استخدام المنتجات مباشرة
-                    const wb = ExcelGenerator.fromProducts(this._tableData, format);
+                    const nonZero = this._tableData.filter(p => Utils.getTotalPieces(p.sizes) > 0);
+                    const wb = ExcelGenerator.fromTableData(nonZero, format);
                     const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
                     const blob = new Blob([wbout], { type: 'application/octet-stream' });
                     const link = document.createElement('a');
@@ -3448,30 +3615,19 @@
                     this.elements.dialogExport.onclick = () => {
                         const format = document.querySelector('input[name="exportFormat"]:checked')?.value || 'detail';
                         this.closeExportDialog();
-                        // تحويل invoice.items إلى منتجات
-                        const productMap = new Map();
-                        if (invoice.items) {
-                            invoice.items.forEach(item => {
-                                const key = item.name + '|' + (item.sku || '');
-                                if (!productMap.has(key)) {
-                                    productMap.set(key, {
-                                        name: item.name,
-                                        sku: item.sku || '',
-                                        unitPrice: item.unitPrice || 0,
-                                        image: item.image || '',
-                                        colors: {}
-                                    });
-                                }
-                                const p = productMap.get(key);
-                                const color = item.color || 'No Color';
-                                if (!p.colors[color]) p.colors[color] = { sizes: {} };
-                                const size = item.size || 'No Size';
-                                p.colors[color].sizes[size] = (p.colors[color].sizes[size] || 0) + (item.qty ||
-                                    0);
-                            });
-                        }
-                        const products = Array.from(productMap.values());
-                        const wb = ExcelGenerator.fromProducts(products, format);
+                        // Convert invoice items to table data format
+                        const tableData = invoice.items.map(item => ({
+                            name: item.name,
+                            sku: item.sku || '',
+                            unitPrice: item.unitPrice || 0,
+                            image: item.image || '',
+                            productId: item.productId || '',
+                            color: item.color || '',
+                            sizes: item.sizes || {},
+                            totalPieces: Utils.getTotalPieces(item.sizes || {}),
+                            totalValue: Utils.getTotalPieces(item.sizes || {}) * (item.unitPrice || 0)
+                        }));
+                        const wb = ExcelGenerator.fromTableData(tableData, format);
                         const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
                         const blob = new Blob([wbout], { type: 'application/octet-stream' });
                         const link = document.createElement('a');
@@ -3495,29 +3651,142 @@
                     };
                 },
 
-                // ==================== CLEAR ====================
-                clearAllData() {
-                    if (!this._tableData.length) {
-                        this.showAlert('⚠️ لا توجد بيانات لمسحها', 'info');
+                toggleOldOrders() {
+                    const sec = this.elements.oldOrdersSection;
+                    if (sec.style.display === 'none') {
+                        sec.style.display = 'block';
+                        this.elements.showOldOrdersBtn.innerHTML =
+                            '<i class="fas fa-chevron-up"></i> إخفاء الفواتير السابقة';
+                        this.loadOldInvoices();
+                    } else {
+                        sec.style.display = 'none';
+                        this.elements.showOldOrdersBtn.innerHTML = '<i class="fas fa-history"></i> الفواتير السابقة';
+                    }
+                },
+
+                loadOldInvoices() {
+                    const list = this.elements.oldOrdersList;
+                    list.innerHTML =
+                        `<div style="text-align:center;padding:20px;color:var(--gray);"><i class="fas fa-spinner fa-spin"></i> جاري التحميل...</div>`;
+                    Utils.loadOldInvoices((invoices) => {
+                        this._oldInvoices = invoices;
+                        if (!invoices || !invoices.length) {
+                            list.innerHTML =
+                                `<div style="text-align:center;padding:20px;color:var(--gray);">لا توجد فواتير سابقة لك</div>`;
+                            this.elements.oldOrdersCount.textContent = '0 فاتورة';
+                            this.elements.statTodayOrders.textContent = '0';
+                            return;
+                        }
+                        let html = '';
+                        invoices.forEach((inv, idx) => {
+                            const date = new Date(inv.createdAt);
+                            const dateStr = date.toLocaleDateString('ar-EG') + ' ' + date
+                                .toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
+                            let details = '';
+                            if (inv.items && inv.items.length) {
+                                const items = inv.items.slice(0, 3);
+                                details = items.map(item => {
+                                    const sizes = item.sizes || {};
+                                    const parts = [];
+                                    for (const sz in sizes) {
+                                        if (sizes[sz] > 0) parts.push(`${sz}:${sizes[sz]}`);
+                                    }
+                                    return `${item.name} (${item.color||''} ${parts.join(' ')})`;
+                                }).join('، ');
+                                if (inv.items.length > 3) details += ` ... +${inv.items.length-3} أكثر`;
+                            }
+                            const urlDisplay = inv.productUrl ?
+                                `<span class="order-url" title="${this.escapeHtml(inv.productUrl)}">${this.escapeHtml(inv.productUrl.substring(0, 40))}...</span>` :
+                                '—';
+                            html += `
+                                <div class="old-order-item" onclick="window.UI.showInvoicePreview(${idx})">
+                                    <span class="order-number">#${idx+1}</span>
+                                    <span class="order-branch">${this.escapeHtml(inv.branch||'الفرع')}</span>
+                                    <span class="order-date"><i class="far fa-calendar-alt"></i> ${dateStr}</span>
+                                    <span class="order-pieces">${inv.totalPieces||0}</span>
+                                    <span class="order-value">${Utils.formatCurrency(inv.totalValue||0)} LE</span>
+                                    ${urlDisplay}
+                                    <span class="order-details">${details||'—'}</span>
+                                    <button class="btn btn-secondary btn-sm" onclick="event.stopPropagation();window.UI.exportSingleOldInvoice(${idx})">
+                                        <i class="fas fa-file-excel"></i>
+                                    </button>
+                                </div>
+                            `;
+                        });
+                        list.innerHTML = html;
+                        this.elements.oldOrdersCount.textContent = `${invoices.length} فاتورة`;
+                        this.elements.statTodayOrders.textContent = invoices.length;
+                    });
+                },
+
+                showInvoicePreview(idx) {
+                    const inv = this._oldInvoices[idx];
+                    if (!inv) return;
+                    this._previewInvoiceIndex = idx;
+                    const container = this.elements.invoicePreviewContent;
+
+                    let groupsHtml = '';
+                    if (inv.items && inv.items.length) {
+                        inv.items.forEach(item => {
+                            const sizes = item.sizes || {};
+                            const sizeParts = [];
+                            for (const sz in sizes) {
+                                if (sizes[sz] > 0) sizeParts.push(`${sz}:${sizes[sz]}`);
+                            }
+                            groupsHtml += `
+                                <div style="background:var(--light);border-radius:12px;padding:10px 14px;margin-bottom:8px;border:1px solid var(--gray-light);">
+                                    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+                                        <img src="${item.image || ''}" style="width:36px;height:36px;border-radius:8px;object-fit:cover;border:1px solid var(--gray-light);" onerror="this.style.display='none'" />
+                                        <div>
+                                            <strong style="font-size:13px;">${this.escapeHtml(item.name)}</strong>
+                                            <span style="font-size:10px;color:var(--gray);display:block;">SKU: ${this.escapeHtml(item.sku||'')}</span>
+                                        </div>
+                                        <span style="margin-right:auto;font-weight:600;color:var(--primary);font-size:12px;">${Utils.formatCurrency(item.unitPrice)} LE</span>
+                                    </div>
+                                    <div style="margin-top:6px;padding-right:12px;border-right:2px solid var(--primary-light);">
+                                        <div style="font-weight:500;font-size:12px;color:var(--dark-secondary);">
+                                            <i class="fas fa-palette" style="color:var(--primary);font-size:10px;"></i> ${this.escapeHtml(item.color || 'بدون لون')}
+                                            <span style="font-size:10px;color:var(--gray);margin-right:6px;">${Utils.getTotalPieces(sizes)} قطعة</span>
+                                        </div>
+                                        <div style="display:flex;flex-wrap:wrap;gap:3px 10px;padding:3px 0 0 12px;font-size:12px;">
+                                            ${sizeParts.map(part => `<span>${this.escapeHtml(part)}</span>`).join('')}
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                        });
+                    }
+
+                    container.innerHTML = `
+                        <div style="margin-bottom:6px;font-size:13px;"><strong>الفرع:</strong> ${this.escapeHtml(inv.branch||'—')}</div>
+                        <div style="margin-bottom:6px;font-size:13px;"><strong>التاريخ:</strong> ${new Date(inv.createdAt).toLocaleString('ar-EG')}</div>
+                        <div style="margin-bottom:6px;font-size:13px;"><strong>القطع:</strong> ${inv.totalPieces||0}</div>
+                        <div style="margin-bottom:10px;font-size:13px;"><strong>القيمة:</strong> ${Utils.formatCurrency(inv.totalValue||0)} LE</div>
+                        ${inv.productUrl ? `<div style="margin-bottom:10px;font-size:12px;"><strong>الرابط:</strong> <span style="direction:ltr;display:inline-block;font-size:11px;color:var(--gray);word-break:break-all;">${this.escapeHtml(inv.productUrl)}</span></div>` : ''}
+                        <div style="border-top:1px solid var(--gray-light);padding-top:10px;">
+                            <strong style="font-size:13px;">المنتجات:</strong>
+                            <div style="margin-top:6px;">${groupsHtml}</div>
+                        </div>
+                    `;
+                    this.elements.invoicePreviewDialog.classList.add('show');
+                },
+
+                exportSingleOldInvoice(idx) {
+                    if (this._oldInvoices[idx]) {
+                        const inv = this._oldInvoices[idx];
+                        this.openExportOldInvoice(inv);
+                    }
+                },
+
+                exportAllInvoices() {
+                    if (!this._oldInvoices || !this._oldInvoices.length) {
+                        this.showAlert('⚠️ لا توجد فواتير', 'error');
                         return;
                     }
-                    if (confirm('هل أنت متأكد من حذف جميع البيانات؟')) {
-                        this._tableData = [];
-                        this.renderInvoice();
-                        this.saveAll();
-                        this.markDirty();
-                        this.saveCurrentTable();
-                        this.showAlert('🗑️ تم مسح جميع البيانات', 'info');
-                    }
+                    Utils.exportAllInvoices(this._oldInvoices);
+                    this.showAlert(`✅ تم تصدير ${this._oldInvoices.length} فاتورة`, 'success');
                 },
 
-                // ==================== DUPLICATE DIALOG ====================
-                closeDuplicateDialog() {
-                    this.elements.duplicateDialog.classList.remove('show');
-                    this._pendingAddData = null;
-                },
-
-                // ==================== UTILITIES ====================
                 escapeHtml(text) {
                     const d = document.createElement('div');
                     d.textContent = text;
@@ -3544,6 +3813,15 @@
                     div.textContent = msg;
                     document.body.appendChild(div);
                     setTimeout(() => { if (div.parentNode) div.remove(); }, 3000);
+                },
+
+                saveAll() {
+                    Storage.set('tableData', this._tableData);
+                    Storage.set('branch', this.elements.branch.value);
+                    Storage.set('cardStates', this._productCardStates);
+                    if (!this._isLoadingFromFirebase) {
+                        Utils.saveCurrentTable(this._tableData);
+                    }
                 },
 
                 openModal(imgSrc) {
@@ -3588,6 +3866,7 @@
             }
             window.toggleSidebar = toggleSidebar;
 
+            // Close sidebar on outside click (mobile)
             document.addEventListener('click', function(event) {
                 const sidebar = document.getElementById('sidebar');
                 const menuToggle = document.querySelector('.menu-toggle');
@@ -3613,6 +3892,7 @@
                 }
             });
 
+            // Handle resize
             window.addEventListener('resize', function() {
                 const sidebar = document.getElementById('sidebar');
                 const mainContent = document.getElementById('mainContent');
@@ -3638,5 +3918,6 @@
 
         })();
     </script>
+
 </body>
 </html>
