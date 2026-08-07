@@ -2834,6 +2834,7 @@
 
         // ===== CONFIRM CLOSE PREPARATION =====
 // ===== CONFIRM CLOSE PREPARATION =====
+// ===== CONFIRM CLOSE PREPARATION =====
 confirmClosePreparation() {
     if (!this._selectedInvoice) return;
 
@@ -2841,7 +2842,7 @@ confirmClosePreparation() {
 
     // تقفيل السماح
     invoice.allowprepare = true;
-invoice.closeallowat = firebase.database.ServerValue.TIMESTAMP;
+    invoice.closeallowat = firebase.database.ServerValue.TIMESTAMP;
 
     // إعادة حساب الإجماليات
     invoice.totalPieces = Utils.calculateTotalPieces(invoice.items);
@@ -2859,19 +2860,20 @@ invoice.closeallowat = firebase.database.ServerValue.TIMESTAMP;
     this.showAlert('✅ تم تقفيل السماح بنجاح!', 'success');
 },
 
-        // ===== CLOSE PREVIEW =====
-        closePreview() {
-          this.elements.previewSection.classList.remove('show');
-          this._selectedInvoice = null;
-          this._selectedInvoiceId = null;
-          this._productCardStates = {};
-          const url = new URL(window.location);
-          url.searchParams.delete('invoice');
-          window.history.pushState({}, '', url);
-          this.renderInvoiceList();
-          this.updateStats();
-        },
+// ===== CLOSE PREVIEW =====
+closePreview() {
+    this.elements.previewSection.classList.remove('show');
+    this._selectedInvoice = null;
+    this._selectedInvoiceId = null;
+    this._productCardStates = {};
 
+    const url = new URL(window.location);
+    url.searchParams.delete('invoice');
+    window.history.pushState({}, '', url);
+
+    this.renderInvoiceList();
+    this.updateStats();
+},
         // ===== UPDATE STATS =====
         updateStats() {
           const total = this._invoices.length;
