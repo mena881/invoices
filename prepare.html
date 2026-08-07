@@ -1730,7 +1730,7 @@
     <div class="dialog-box">
       <button class="modal-close-btn" onclick="window.UI.closeCloseDialog()"><i class="fas fa-times"></i></button>
       <h3><i class="fas fa-lock" style="color:var(--warning);"></i> تقفيل التحضير</h3>
-      <p class="subtitle">سيتم تقفيل الفاتورة بالكميات المحضرة حالياً. الكميات غير المحضرة ستبقى 0.</p>
+      <p class="subtitle">سيتم تقفيل الفاتورة بالكميات المحضرة حالياً.</p>
 
       <div class="dialog-info-box">
         <span class="item"><i class="fas fa-cubes"></i> إجمالي القطع: <strong id="closeTotalPieces">0</strong></span>
@@ -1741,7 +1741,7 @@
       <div class="product-list" id="closeProductList"></div>
 
       <div class="dialog-confirm-box">
-        <p><i class="fas fa-check-circle" style="color:var(--success);"></i> ✅ سيتم تحديث حالة الفاتورة إلى "prepared" بعد التأكيد</p>
+        <p><i class="fas fa-check-circle" style="color:var(--success);"></i> ✅ سيتم إضافة <strong>prepared: true</strong> و <strong>Preparedcloseat</strong> للفاتورة</p>
       </div>
 
       <div class="dialog-actions">
@@ -1855,8 +1855,7 @@
           return [...std, ...num, ...other];
         },
 
-        // ===== حساب الكميات بناءً على الهيكل الجديد =====
-        // استخراج الكميات المسموحة من allowedQuantities
+        // ===== حساب الكميات =====
         getAllowedQuantities(item) {
           if (item && item.allowedQuantities) {
             return item.allowedQuantities;
@@ -1864,7 +1863,6 @@
           return null;
         },
 
-        // استخراج الكميات المحضرة من preparedQuantities
         getPreparedQuantities(item) {
           if (item && item.preparedQuantities) {
             return item.preparedQuantities;
@@ -1872,7 +1870,6 @@
           return null;
         },
 
-        // حساب إجمالي الكميات المسموحة من allowedQuantities
         calculateAllowedTotal(allowedQuantities) {
           if (!allowedQuantities) return 0;
           let total = 0;
@@ -1885,7 +1882,6 @@
           return total;
         },
 
-        // حساب إجمالي الكميات المحضرة من preparedQuantities
         calculatePreparedTotal(preparedQuantities) {
           if (!preparedQuantities) return 0;
           let total = 0;
@@ -1898,7 +1894,6 @@
           return total;
         },
 
-        // حساب التقدم بناءً على allowed vs prepared
         calculateProgress(allowedQuantities, preparedQuantities) {
           const allowed = this.calculateAllowedTotal(allowedQuantities);
           const prepared = this.calculatePreparedTotal(preparedQuantities);
@@ -1906,27 +1901,25 @@
           return Math.round((prepared / allowed) * 100);
         },
 
-        // التحقق من اكتمال التحضير
         isFullyPreparedV2(allowedQuantities, preparedQuantities) {
           const allowed = this.calculateAllowedTotal(allowedQuantities);
           const prepared = this.calculatePreparedTotal(preparedQuantities);
           return allowed > 0 && prepared >= allowed;
         },
 
-        // التحقق من تحضير جزئي
         isPartiallyPreparedV2(allowedQuantities, preparedQuantities) {
           const allowed = this.calculateAllowedTotal(allowedQuantities);
           const prepared = this.calculatePreparedTotal(preparedQuantities);
           return allowed > 0 && prepared > 0 && prepared < allowed;
         },
 
+        // 🔥 التحقق من أن الفاتورة مقفلة بناءً على prepared: true
         isInvoiceClosed(invoice) {
-          // التحقق من prepared: true أو isClosed أو createdclosed
-          return invoice && (invoice.prepared === true || invoice.isClosed === true || invoice.createdclosed === true);
+          return invoice && invoice.prepared === true;
         },
 
+        // 🔥 التحقق من أن الفاتورة مسموح بالتحضير (تحتوي على allowprepare: true)
         isInvoiceAllowed(invoice) {
-          // فقط الفواتير التي تحتوي على allowprepare: true
           return invoice && invoice.allowprepare === true;
         }
       };
@@ -1985,7 +1978,6 @@
         init() {
           console.log('🚀 Initializing Preparation UI V2...');
 
-          // Get current user name from localStorage
           this._currentUser = Storage.get('userName', 'مستخدم غير معروف');
           const userNameEl = document.getElementById('currentAdminName');
           if (userNameEl) {
@@ -2020,7 +2012,6 @@
 
           this.loadFromURL();
 
-          // Load sidebar from usermenu.js
           if (typeof loadLayout === 'function') {
             loadLayout();
           }
@@ -2049,7 +2040,6 @@
           }
         },
 
-        // ===== IMAGE MODAL =====
         openModal(imgSrc) {
           if (!imgSrc) return;
           this.elements.modalImage.src = imgSrc;
@@ -2061,7 +2051,6 @@
           this.elements.modalImage.src = '';
         },
 
-        // ===== ACCORDION CONTROLS =====
         expandAllColors(open) {
           for (const key in this._productCardStates) {
             if (key.includes('_color_')) this._productCardStates[key] = open;
@@ -2076,14 +2065,13 @@
           if (this._selectedInvoice) this.renderInvoicePreview(this._selectedInvoice);
         },
 
-        // ===== LOAD FROM URL =====
         loadFromURL() {
           const params = new URLSearchParams(window.location.search);
           const id = params.get('invoice');
           if (id) {
             setTimeout(() => {
               const invoice = this._invoices.find(inv => inv.id === id);
-              if (invoice && Utils.isInvoiceAllowed(invoice) && !Utils.isInvoiceClosed(invoice)) {
+              if (invoice && Utils.isInvoiceAllowed(invoice)) {
                 this.selectInvoice(invoice.id);
                 this.elements.filter.value = 'all';
                 this.renderInvoiceList();
@@ -2113,7 +2101,6 @@
                 // 🔥 فقط الفواتير التي تحتوي على allowprepare: true
                 if (inv.allowprepare !== true) continue;
 
-                // إذا كانت الفاتورة مقفلة (prepared === true) نعرضها لكن نمنع التعديل
                 if (inv.items) {
                   inv.items.forEach(item => {
                     if (!item.allowedQuantities) {
@@ -2149,14 +2136,14 @@
           });
         },
 
-        // ===== GET INVOICE STATUS (V2) =====
+        // ===== GET INVOICE STATUS =====
         getInvoiceStatus(invoice) {
           if (!invoice || !invoice.items || !invoice.items.length) {
             return 'pending';
           }
 
-          // التحقق من prepared: true
-          if (invoice.prepared === true || invoice.isClosed === true || invoice.createdclosed === true) {
+          // 🔥 إذا كان prepared: true → الفاتورة مقفلة بالكامل
+          if (invoice.prepared === true) {
             return 'prepared';
           }
 
@@ -2239,14 +2226,14 @@
           let html = '';
           filtered.forEach((inv) => {
             const status = this.getInvoiceStatus(inv);
-            const isClosed = Utils.isInvoiceClosed(inv);
+            // 🔥 الفاتورة مقفلة إذا كان prepared: true
+            const isClosed = inv.prepared === true;
             const date = new Date(inv.createdAt);
             const dateStr = date.toLocaleDateString('ar-EG') + ' ' + date.toLocaleTimeString('ar-EG', {
               hour: '2-digit',
               minute: '2-digit'
             });
 
-            // حساب التقدم باستخدام allowedQuantities و preparedQuantities
             let totalAllowed = 0;
             let totalPrepared = 0;
             if (inv.items) {
@@ -2306,7 +2293,8 @@
             return;
           }
 
-          if (Utils.isInvoiceClosed(invoice)) {
+          // 🔥 إذا كانت الفاتورة مقفلة (prepared: true) نعرضها لكن نمنع التعديل
+          if (invoice.prepared === true) {
             this.showAlert('🔒 هذه الفاتورة مقفلة ولا يمكن تعديلها', 'info');
             this._selectedInvoice = invoice;
             this._selectedInvoiceId = invoiceId;
@@ -2332,7 +2320,7 @@
           window.history.pushState({}, '', url);
         },
 
-        // ===== RENDER INVOICE PREVIEW (V2) =====
+        // ===== RENDER INVOICE PREVIEW =====
         renderInvoicePreview(invoice) {
           const container = this.elements.previewContainer;
           this.elements.previewSection.classList.add('show');
@@ -2344,9 +2332,9 @@
             minute: '2-digit'
           });
           const status = this.getInvoiceStatus(invoice);
-          const isClosed = Utils.isInvoiceClosed(invoice);
+          // 🔥 الفاتورة مقفلة إذا كان prepared: true
+          const isClosed = invoice.prepared === true;
 
-          // حساب إجمالي القطع المسموحة والمحضرة
           let totalAllowed = 0;
           let totalPrepared = 0;
           if (invoice.items) {
@@ -2382,7 +2370,7 @@
                   تم تحضير ${totalPrepared} من ${totalAllowed} قطعة
                 </div>
                 <div style="margin-top:8px;font-size:13px;color:var(--gray);">
-                  الحالة: ${invoice.status || 'prepared'}
+                  الحالة: مقفلة ✅
                 </div>
                 ${invoice.Preparedcloseat ? `<div style="margin-top:4px;font-size:12px;color:var(--gray);">تم التقفيل: ${new Date(invoice.Preparedcloseat).toLocaleString('ar-EG')}</div>` : ''}
               </div>
@@ -2408,9 +2396,7 @@
             return;
           }
 
-          // ============================================================
-          // 🔥 تجميع المنتجات حسب SKU مع الاحتفاظ بالكميات المسموحة والمحضرة
-          // ============================================================
+          // تجميع المنتجات حسب SKU
           const groups = {};
           invoice.items.forEach(item => {
             const sku = item.sku || 'Unknown';
@@ -2424,11 +2410,9 @@
               };
             }
 
-            // استخراج الألوان والمقاسات من allowedQuantities
             const allowedQuantities = item.allowedQuantities || {};
             const preparedQuantities = item.preparedQuantities || {};
 
-            // دمج الألوان من allowedQuantities
             for (const color in allowedQuantities) {
               const sizes = allowedQuantities[color];
               for (const size in sizes) {
@@ -2447,7 +2431,6 @@
               }
             }
 
-            // إذا لم يكن هناك allowedQuantities، نضيف البيانات القديمة
             if (Object.keys(allowedQuantities).length === 0) {
               const color = item.color || 'No Color';
               const size = item.size || 'No Size';
@@ -2508,7 +2491,6 @@
           this.updateBottomBar(invoice);
         },
 
-        // ===== RENDER PREVIEW COLORS (V2) =====
         renderPreviewColors(g, productId) {
           let html = '';
           const colorMap = {};
@@ -2575,30 +2557,28 @@
           return html;
         },
 
-        // ===== TOGGLE PRODUCT =====
         toggleProductPreview(productId) {
           const state = this._productCardStates[productId];
           this._productCardStates[productId] = state === false ? true : false;
           if (this._selectedInvoice) this.renderInvoicePreview(this._selectedInvoice);
         },
 
-        // ===== TOGGLE COLOR =====
         toggleColorPreview(colorId) {
           const state = this._productCardStates[colorId];
           this._productCardStates[colorId] = state === false ? true : false;
           if (this._selectedInvoice) this.renderInvoicePreview(this._selectedInvoice);
         },
 
-        // ===== CHANGE PREPARE QTY (V2 - مع احترام الكمية المسموحة) =====
+        // ===== CHANGE PREPARE QTY =====
         changePrepareQty(uniqueKey, delta) {
           if (!this._selectedInvoice || !this._selectedInvoice.items) return;
 
-          if (Utils.isInvoiceClosed(this._selectedInvoice)) {
+          // 🔥 منع التعديل إذا كانت الفاتورة مقفلة (prepared: true)
+          if (this._selectedInvoice.prepared === true) {
             this.showAlert('⚠️ لا يمكن تعديل كميات فاتورة مقفلة', 'error');
             return;
           }
 
-          // البحث عن العنصر في الفاتورة
           let targetItem = null;
           let targetColor = null;
           let targetSize = null;
@@ -2641,7 +2621,6 @@
             return;
           }
 
-          // تحديث الكمية المحضرة
           if (targetItem.allowedQuantities && targetItem.allowedQuantities[targetColor] && targetItem.allowedQuantities[targetColor][targetSize] !== undefined) {
             const maxAllowed = targetItem.allowedQuantities[targetColor][targetSize] || 0;
 
@@ -2674,7 +2653,6 @@
           this.updateStats();
         },
 
-        // ===== SAVE INVOICE TO FIREBASE =====
         saveInvoiceToFirebase(invoice) {
           if (!database) return;
           const ref = database.ref('invoices/' + invoice.id);
@@ -2709,7 +2687,8 @@
 
           const invoice = this._selectedInvoice;
 
-          if (Utils.isInvoiceClosed(invoice)) {
+          // 🔥 إذا كانت الفاتورة مقفلة بالفعل
+          if (invoice.prepared === true) {
             this.showAlert('🔒 هذه الفاتورة مقفلة بالفعل', 'info');
             return;
           }
@@ -2778,7 +2757,6 @@
           this.elements.closeDialog.classList.add('show');
         },
 
-        // ===== CLOSE CLOSE DIALOG =====
         closeCloseDialog() {
           this.elements.closeDialog.classList.remove('show');
         },
@@ -2789,14 +2767,13 @@
 
           const invoice = this._selectedInvoice;
 
-          // إضافة prepared: true و Preparedcloseat
+          // 🔥 إضافة prepared: true و Preparedcloseat
           invoice.prepared = true;
           invoice.Preparedcloseat = Date.now();
           invoice.isClosed = true;
           invoice.createdclosed = true;
           invoice.status = 'prepared';
 
-          // حساب القيم الإجمالية
           let totalAllowed = 0;
           let totalPrepared = 0;
           if (invoice.items) {
@@ -2820,7 +2797,6 @@
           this.showAlert(`✅ تم تقفيل التحضير بنجاح!`, 'success');
         },
 
-        // ===== CLOSE PREVIEW =====
         closePreview() {
           this.elements.previewSection.classList.remove('show');
           this._selectedInvoice = null;
@@ -2833,7 +2809,6 @@
           this.updateStats();
         },
 
-        // ===== UPDATE STATS =====
         updateStats() {
           const total = this._invoices.length;
           let pending = 0,
@@ -2853,7 +2828,6 @@
           this.elements.statPrepared.textContent = prepared;
         },
 
-        // ===== UPDATE BOTTOM BAR (V2) =====
         updateBottomBar(invoice) {
           if (!invoice) return;
           const items = invoice.items || [];
@@ -2878,7 +2852,6 @@
           this.elements.bottomPercent.textContent = progress + '%';
         },
 
-        // ===== SHOW ALERT =====
         showAlert(msg, type = 'info') {
           const existing = document.querySelector('.toast-alert');
           if (existing) existing.remove();
