@@ -2072,7 +2072,6 @@ const Storage = {
         return user ? (user.fullName || user.username || "مستخدم") : "مستخدم";
     }
 };
-
             // ================================================================
             //  UTILITIES
             // ================================================================
@@ -2191,69 +2190,22 @@ const Storage = {
                     return 0;
                 },
 
-                // New: calculate total pieces from sizes object
-                getTotalPieces(sizes) {
-                    let t = 0;
-                    for (const sz in sizes) { t += sizes[sz] || 0; }
-                    return t;
-                },
-
-                // New: calculate total value from sizes and unitPrice
-                getTotalValue(sizes, unitPrice) {
-                    return this.getTotalPieces(sizes) * unitPrice;
-                },
-
-                // New: convert old flat rows to new grouped structure
-                groupRowsToProducts(rows) {
-                    const map = {};
-                    const order = [];
-                    rows.forEach(row => {
-                        const key = row.name + '|' + row.sku + '|' + (row.color || '');
-                        if (!map[key]) {
-                            map[key] = {
-                                name: row.name,
-                                sku: row.sku || '',
-                                unitPrice: row.unitPrice || 0,
-                                image: row.image || '',
-                                productId: row.productId || '',
-                                color: row.color || '',
-                                sizes: {},
-                                totalPieces: 0,
-                                totalValue: 0
-                            };
-                            order.push(key);
-                        }
-                        const size = row.size || 'No Size';
-                        const qty = row.qty || 0;
-                        map[key].sizes[size] = (map[key].sizes[size] || 0) + qty;
-                        // recalc totals
-                        map[key].totalPieces = this.getTotalPieces(map[key].sizes);
-                        map[key].totalValue = map[key].totalPieces * map[key].unitPrice;
-                    });
-                    return order.map(key => map[key]);
-                },
-
-                // New: flatten grouped products to rows for export
-                flattenProductToRows(product) {
-                    const rows = [];
-                    const sizes = product.sizes || {};
-                    for (const size in sizes) {
-                        const qty = sizes[size] || 0;
-                        if (qty > 0) {
-                            rows.push({
-                                name: product.name,
-                                sku: product.sku || '',
-                                unitPrice: product.unitPrice || 0,
-                                image: product.image || '',
-                                productId: product.productId || '',
-                                color: product.color || '',
-                                size: size,
-                                qty: qty,
-                                total: qty * product.unitPrice
-                            });
+                // New: calculate total pieces from colorsSizes object
+                getTotalPieces(colorsSizes) {
+                    let total = 0;
+                    if (!colorsSizes) return 0;
+                    for (const color in colorsSizes) {
+                        const sizes = colorsSizes[color];
+                        for (const size in sizes) {
+                            total += sizes[size] || 0;
                         }
                     }
-                    return rows;
+                    return total;
+                },
+
+                // New: get total value from product
+                getTotalValue(product) {
+                    return this.getTotalPieces(product.colorsSizes) * product.unitPrice;
                 },
 
                 // Load current table from Firebase (new structure)
@@ -2300,7 +2252,7 @@ const Storage = {
                     });
                 },
 
-                // Save invoice with user info
+                // Save invoice with user info (new structure)
                 saveInvoiceToFirebase(branchName, tableData, productUrl, callback) {
                     if (!database) {
                         if (callback) callback('⚠️ Firebase not ready');
@@ -2309,27 +2261,26 @@ const Storage = {
                     const userId = Storage.getUserId();
                     const userName = Storage.getUserName();
 
-                    // Filter out zero quantities
-                    const filtered = tableData.filter(p => Utils.getTotalPieces(p.sizes) > 0);
+                    // Filter out products with zero total pieces
+                    const filtered = tableData.filter(p => this.getTotalPieces(p.colorsSizes) > 0);
 
                     const invoice = {
                         branch: branchName || 'Branch not set',
-                        totalPieces: filtered.reduce((s, p) => s + Utils.getTotalPieces(p.sizes), 0),
-                        totalValue: filtered.reduce((s, p) => s + (Utils.getTotalPieces(p.sizes) * p.unitPrice), 0),
+                        totalPieces: filtered.reduce((s, p) => s + this.getTotalPieces(p.colorsSizes), 0),
+                        totalValue: filtered.reduce((s, p) => s + this.getTotalValue(p), 0),
                         itemsCount: filtered.length,
                         productUrl: productUrl || '',
                         userId: userId,
                         userName: userName,
                         items: filtered.map(p => ({
                             name: p.name,
-                            color: p.color || '',
                             sku: p.sku || '',
                             unitPrice: p.unitPrice || 0,
                             image: p.image || '',
                             productId: p.productId || '',
-                            sizes: p.sizes || {},
-                            totalPieces: Utils.getTotalPieces(p.sizes),
-                            totalValue: Utils.getTotalPieces(p.sizes) * p.unitPrice
+                            colorsSizes: p.colorsSizes || {},
+                            totalPieces: Utils.getTotalPieces(p.colorsSizes),
+                            totalValue: Utils.getTotalValue(p)
                         })),
                         createdAt: firebase.database.ServerValue.TIMESTAMP,
                         createdBy: userName || 'مستخدم'
@@ -2366,7 +2317,6 @@ const Storage = {
                         const invoices = [];
                         for (const key in data) {
                             const inv = data[key];
-                            // Filter by userId
                             if (inv.userId === userId) {
                                 invoices.push({ id: key, ...inv, createdAt: inv.createdAt || 0 });
                             }
@@ -2407,14 +2357,17 @@ const Storage = {
                     const data = [headers];
                     let idx = 1;
                     invoice.items.forEach(item => {
-                        const sizes = item.sizes || {};
-                        for (const size in sizes) {
-                            const qty = sizes[size] || 0;
-                            if (qty > 0) {
-                                data.push([idx++, item.name || '', item.color || '', size,
-                                    item.sku || '', qty, item.unitPrice || 0, qty * (item
-                                        .unitPrice || 0)
-                                ]);
+                        const colorsSizes = item.colorsSizes || {};
+                        for (const color in colorsSizes) {
+                            const sizes = colorsSizes[color];
+                            for (const size in sizes) {
+                                const qty = sizes[size] || 0;
+                                if (qty > 0) {
+                                    data.push([idx++, item.name || '', color, size,
+                                        item.sku || '', qty, item.unitPrice || 0, qty * (item
+                                            .unitPrice || 0)
+                                    ]);
+                                }
                             }
                         }
                     });
@@ -2445,14 +2398,17 @@ const Storage = {
                         ];
                         let counter = 1;
                         invoice.items.forEach(item => {
-                            const sizes = item.sizes || {};
-                            for (const size in sizes) {
-                                const qty = sizes[size] || 0;
-                                if (qty > 0) {
-                                    data.push([counter++, item.name || '', item.color || '', size,
-                                        item.sku || '', qty, item.unitPrice || 0, qty * (item
-                                            .unitPrice || 0)
-                                    ]);
+                            const colorsSizes = item.colorsSizes || {};
+                            for (const color in colorsSizes) {
+                                const sizes = colorsSizes[color];
+                                for (const size in sizes) {
+                                    const qty = sizes[size] || 0;
+                                    if (qty > 0) {
+                                        data.push([counter++, item.name || '', color, size,
+                                            item.sku || '', qty, item.unitPrice || 0, qty * (item
+                                                .unitPrice || 0)
+                                        ]);
+                                    }
                                 }
                             }
                         });
@@ -2470,6 +2426,32 @@ const Storage = {
                     link.download = `all_invoices_${new Date().toISOString().slice(0,10)}.xlsx`;
                     link.click();
                     URL.revokeObjectURL(link.href);
+                },
+
+                // Flatten product to rows for export (from colorsSizes)
+                flattenProductToRows(product) {
+                    const rows = [];
+                    const colorsSizes = product.colorsSizes || {};
+                    for (const color in colorsSizes) {
+                        const sizes = colorsSizes[color];
+                        for (const size in sizes) {
+                            const qty = sizes[size] || 0;
+                            if (qty > 0) {
+                                rows.push({
+                                    name: product.name,
+                                    sku: product.sku || '',
+                                    unitPrice: product.unitPrice || 0,
+                                    image: product.image || '',
+                                    productId: product.productId || '',
+                                    color: color,
+                                    size: size,
+                                    qty: qty,
+                                    total: qty * product.unitPrice
+                                });
+                            }
+                        }
+                    }
+                    return rows;
                 }
             };
 
@@ -2586,34 +2568,30 @@ const Storage = {
             };
 
             // ================================================================
-            //  EXCEL GENERATOR (updated for new structure)
+            //  EXCEL GENERATOR (new structure)
             // ================================================================
             const ExcelGenerator = {
                 generateProductsFromProduct(product, seriesQty) {
-                    // For each color, create a product entry with sizes
-                    const result = [];
+                    // Create a product with colorsSizes
                     const colors = product.colors.length ? product.colors : [''];
                     const sizes = product.sizes.length ? product.sizes : ['No Size'];
-
+                    const colorsSizes = {};
                     colors.forEach(color => {
-                        const sizesObj = {};
+                        const sizeObj = {};
                         sizes.forEach(size => {
-                            sizesObj[size] = seriesQty;
+                            sizeObj[size] = seriesQty;
                         });
-                        result.push({
-                            name: product.name,
-                            sku: product.sku || '',
-                            unitPrice: product.price || 0,
-                            image: product.mainImage || (product.images && product.images.length ?
-                                product.images[0] : ''),
-                            productId: product.productId || '',
-                            color: color,
-                            sizes: sizesObj,
-                            totalPieces: Utils.getTotalPieces(sizesObj),
-                            totalValue: Utils.getTotalPieces(sizesObj) * product.price
-                        });
+                        colorsSizes[color] = sizeObj;
                     });
-                    return result;
+                    return {
+                        name: product.name,
+                        sku: product.sku || '',
+                        unitPrice: product.price || 0,
+                        image: product.mainImage || (product.images && product.images.length ?
+                            product.images[0] : ''),
+                        productId: product.productId || '',
+                        colorsSizes: colorsSizes
+                    };
                 },
 
                 fromTableData(tableData, mode) {
@@ -2777,7 +2755,7 @@ const Storage = {
             };
 
             // ================================================================
-            //  UI CONTROLLER (updated)
+            //  UI CONTROLLER (new structure)
             // ================================================================
             const UI = {
                 elements: {
@@ -2835,7 +2813,7 @@ const Storage = {
                 },
                 _lastProduct: null,
                 _lastProductUrl: '',
-                _tableData: [], // new structure: array of product objects
+                _tableData: [], // new structure: array of { name, sku, unitPrice, image, productId, colorsSizes: { color: { size: qty } } }
                 _oldInvoices: [],
                 _productCardStates: {},
                 _fetchTimer: null,
@@ -2848,7 +2826,7 @@ const Storage = {
                 _currentUserId: 'unknown',
 
                 init() {
-                    console.log('🚀 Initializing Create Order UI (v3)...');
+                    console.log('🚀 Initializing Create Order UI (v4)...');
 
                     this._currentUser = Storage.getUserName();
                     this._currentUserId = Storage.getUserId();
@@ -3115,7 +3093,7 @@ const Storage = {
                     const product = this._lastProduct;
                     const sku = product.sku || '';
 
-                    // Check if this product already exists in table (by name+sku, any color)
+                    // Check if this product already exists in table (by name+sku)
                     let exists = false;
                     for (const p of this._tableData) {
                         if (p.name === product.name && p.sku === sku) {
@@ -3134,7 +3112,7 @@ const Storage = {
                         let totalQty = 0;
                         for (const p of this._tableData) {
                             if (p.name === product.name && p.sku === sku) {
-                                totalQty += Utils.getTotalPieces(p.sizes);
+                                totalQty += Utils.getTotalPieces(p.colorsSizes);
                             }
                         }
                         this.elements.dupDetails.textContent =
@@ -3159,35 +3137,37 @@ const Storage = {
                 },
 
                 addProductToTable(product, seriesQty, sku) {
-                    // Generate product entries per color
-                    const newProducts = ExcelGenerator.generateProductsFromProduct(product, seriesQty);
+                    // Generate product with colorsSizes
+                    const newProduct = ExcelGenerator.generateProductsFromProduct(product, seriesQty);
 
-                    newProducts.forEach(newProd => {
-                        // Check if this exact product+color exists
-                        let found = false;
-                        for (const p of this._tableData) {
-                            if (p.name === newProd.name && p.sku === newProd.sku && p.color === newProd
-                                .color) {
-                                // Merge sizes
-                                const sizes = newProd.sizes || {};
-                                for (const sz in sizes) {
-                                    p.sizes[sz] = (p.sizes[sz] || 0) + sizes[sz];
+                    // Check if product exists (by name+sku)
+                    let found = false;
+                    for (const p of this._tableData) {
+                        if (p.name === newProduct.name && p.sku === newProduct.sku) {
+                            // Merge colorsSizes
+                            const cs = newProduct.colorsSizes || {};
+                            for (const color in cs) {
+                                if (!p.colorsSizes[color]) p.colorsSizes[color] = {};
+                                const sizes = cs[color];
+                                for (const size in sizes) {
+                                    p.colorsSizes[color][size] = (p.colorsSizes[color][size] || 0) + sizes[
+                                    size];
                                 }
-                                p.totalPieces = Utils.getTotalPieces(p.sizes);
-                                p.totalValue = p.totalPieces * p.unitPrice;
-                                found = true;
-                                break;
                             }
+                            found = true;
+                            break;
                         }
-                        if (!found) {
-                            this._tableData.push({ ...newProd });
-                        }
-                    });
+                    }
+
+                    if (!found) {
+                        this._tableData.push({ ...newProduct });
+                    }
 
                     this.renderInvoice();
                     this.saveAll();
                     this.markDirty();
-                    this.showAlert(`✅ تم إضافة ${newProducts.length} لون`, 'success');
+                    const colorCount = Object.keys(newProduct.colorsSizes).length;
+                    this.showAlert(`✅ تم إضافة ${colorCount} لون`, 'success');
 
                     // Reset form
                     this.elements.url.value = '';
@@ -3229,36 +3209,13 @@ const Storage = {
                         return;
                     }
 
-                    // Group by product (name+sku)
-                    const groups = {};
-                    this._tableData.forEach(entry => {
-                        const key = entry.name + '|' + entry.sku;
-                        if (!groups[key]) {
-                            groups[key] = {
-                                name: entry.name,
-                                sku: entry.sku,
-                                unitPrice: entry.unitPrice,
-                                image: entry.image,
-                                productId: entry.productId,
-                                colors: []
-                            };
-                        }
-                        groups[key].colors.push(entry);
-                    });
-
                     let html = '';
                     let productIdx = 0;
-                    const groupKeys = Object.keys(groups);
 
-                    for (const key of groupKeys) {
-                        const product = groups[key];
+                    for (const product of this._tableData) {
                         const productId = 'prod_' + productIdx;
-
-                        // Calculate total pieces across all colors
-                        let totalPieces = 0;
-                        product.colors.forEach(c => {
-                            totalPieces += Utils.getTotalPieces(c.sizes);
-                        });
+                        const totalPieces = Utils.getTotalPieces(product.colorsSizes);
+                        const totalValue = totalPieces * product.unitPrice;
 
                         // Product card state: default closed
                         if (this._productCardStates[productId] === undefined) {
@@ -3299,13 +3256,21 @@ const Storage = {
                 },
 
                 renderProductColors(product, productId) {
-                    // Each product has a list of colors (entries)
+                    // product.colorsSizes is an object: { color: { size: qty, ... }, ... }
+                    const colorsSizes = product.colorsSizes || {};
+                    const colorKeys = Object.keys(colorsSizes);
+                    if (colorKeys.length === 0) {
+                        return `<div style="color:var(--gray);padding:8px 0;">لا توجد ألوان</div>`;
+                    }
+
                     let html = '';
                     let colorIdx = 0;
 
-                    for (const entry of product.colors) {
-                        const color = entry.color || 'No Color';
-                        const sizes = entry.sizes || {};
+                    // Sort colors alphabetically
+                    colorKeys.sort();
+
+                    for (const color of colorKeys) {
+                        const sizes = colorsSizes[color];
                         const colorId = productId + '_color_' + colorIdx;
 
                         if (this._productCardStates[colorId] === undefined) {
@@ -3313,41 +3278,41 @@ const Storage = {
                         }
                         const isColorOpen = this._productCardStates[colorId];
 
-                        const totalQty = Utils.getTotalPieces(sizes);
+                        const totalQty = Utils.getTotalPieces({ [color]: sizes });
 
                         let sizeHtml = '';
                         const sizeKeys = Object.keys(sizes);
                         if (sizeKeys.length === 0) {
                             sizeHtml = `<div style="color:var(--gray);font-size:13px;padding:8px 0;">لا توجد مقاسات</div>`;
                         } else {
-                            // Sort sizes according to natural order (maybe use Utils.sortSizes)
+                            // Sort sizes
                             const sortedSizes = Utils.sortSizes(sizeKeys);
-                            sortedSizes.forEach(size => {
+                            for (const size of sortedSizes) {
                                 const qty = sizes[size] || 0;
                                 const isZero = qty === 0;
                                 const escapedSize = this.escapeHtml(size);
-                                const escapedColor = this.escapeHtml(entry.color || '');
-                                const escapedSku = this.escapeHtml(entry.sku);
-                                const escapedName = this.escapeHtml(entry.name);
+                                const escapedColor = this.escapeHtml(color);
+                                const escapedSku = this.escapeHtml(product.sku);
+                                const escapedName = this.escapeHtml(product.name);
 
                                 sizeHtml += `
-                                    <div class="size-row ${isZero ? 'zero-qty' : ''}" data-product="${productId}" data-color="${entry.color || ''}" data-size="${size}" data-sku="${entry.sku}" data-name="${entry.name}">
+                                    <div class="size-row ${isZero ? 'zero-qty' : ''}" data-product="${productId}" data-color="${color}" data-size="${size}" data-sku="${product.sku}" data-name="${product.name}">
                                         <span class="size-label">${escapedSize}</span>
                                         <div class="qty-control">
-                                            <button onclick='window.UI.changeQty(${JSON.stringify(productId)}, ${JSON.stringify(entry.color || '')}, ${JSON.stringify(size)}, -1, ${JSON.stringify(entry.sku)}, ${JSON.stringify(entry.name)})'>
+                                            <button onclick='window.UI.changeQty(${JSON.stringify(productId)}, ${JSON.stringify(color)}, ${JSON.stringify(size)}, -1, ${JSON.stringify(product.sku)}, ${JSON.stringify(product.name)})'>
                                                 <i class="fas fa-minus"></i>
                                             </button>
                                             <span class="qty-val">${qty}</span>
-                                            <button onclick='window.UI.changeQty(${JSON.stringify(productId)}, ${JSON.stringify(entry.color || '')}, ${JSON.stringify(size)}, 1, ${JSON.stringify(entry.sku)}, ${JSON.stringify(entry.name)})'>
+                                            <button onclick='window.UI.changeQty(${JSON.stringify(productId)}, ${JSON.stringify(color)}, ${JSON.stringify(size)}, 1, ${JSON.stringify(product.sku)}, ${JSON.stringify(product.name)})'>
                                                 <i class="fas fa-plus"></i>
                                             </button>
                                         </div>
                                     </div>
                                 `;
-                            });
+                            }
                         }
 
-                        const colorLabel = entry.color || 'بدون لون';
+                        const colorLabel = color || 'بدون لون';
                         const escapedColorLabel = this.escapeHtml(colorLabel);
 
                         html += `
@@ -3356,7 +3321,7 @@ const Storage = {
                                     <span class="chevron-sm ${isColorOpen ? 'open' : ''}"><i class="fas fa-chevron-down"></i></span>
                                     <span><i class="fas fa-palette" style="color:var(--primary);"></i> ${escapedColorLabel}</span>
                                     <span class="color-total">${totalQty} قطعة</span>
-                                    <button class="delete-color-btn" onclick="event.stopPropagation();window.UI.deleteColor(${JSON.stringify(productId)}, ${JSON.stringify(entry.color || '')}, ${JSON.stringify(entry.sku)}, ${JSON.stringify(entry.name)})" title="حذف اللون">
+                                    <button class="delete-color-btn" onclick="event.stopPropagation();window.UI.deleteColor(${JSON.stringify(productId)}, ${JSON.stringify(color)}, ${JSON.stringify(product.sku)}, ${JSON.stringify(product.name)})" title="حذف اللون">
                                         <i class="fas fa-times"></i>
                                     </button>
                                 </div>
@@ -3372,36 +3337,44 @@ const Storage = {
                 },
 
                 deleteColor(productId, color, sku, name) {
-                    // Find the product entry in _tableData that matches name, sku, color
-                    const colorName = color || '';
+                    // Find the product entry
                     let targetIndex = -1;
                     for (let i = 0; i < this._tableData.length; i++) {
                         const p = this._tableData[i];
-                        if (p.name === name && p.sku === sku && (p.color || '') === colorName) {
+                        if (p.name === name && p.sku === sku) {
                             targetIndex = i;
                             break;
                         }
                     }
 
                     if (targetIndex === -1) {
-                        this.showAlert('⚠️ لم يتم العثور على اللون', 'error');
+                        this.showAlert('⚠️ لم يتم العثور على المنتج', 'error');
                         return;
                     }
 
                     const product = this._tableData[targetIndex];
-                    const totalQty = Utils.getTotalPieces(product.sizes);
+                    const totalQty = Utils.getTotalPieces({ [color]: product.colorsSizes[color] || {} });
 
                     if (totalQty > 0) {
-                        if (!confirm(`هل أنت متأكد من حذف اللون "${colorName || 'بدون لون'}"؟ (لديه ${totalQty} قطعة)`)) {
+                        if (!confirm(`هل أنت متأكد من حذف اللون "${color}"؟ (لديه ${totalQty} قطعة)`)) {
                             return;
                         }
                     }
 
-                    this._tableData.splice(targetIndex, 1);
+                    // Delete the color
+                    delete product.colorsSizes[color];
+
+                    // If no colors left, remove the product
+                    if (Object.keys(product.colorsSizes).length === 0) {
+                        this._tableData.splice(targetIndex, 1);
+                        this.showAlert(`🗑️ تم حذف المنتج ${name} (جميع الألوان محذوفة)`, 'info');
+                    } else {
+                        this.showAlert(`🗑️ تم حذف اللون ${color}`, 'info');
+                    }
+
                     this.renderInvoice();
                     this.saveAll();
                     this.markDirty();
-                    this.showAlert(`🗑️ تم حذف اللون ${colorName || 'بدون لون'}`, 'info');
                 },
 
                 toggleProduct(productId) {
@@ -3431,79 +3404,63 @@ const Storage = {
                 },
 
                 changeQty(productId, color, size, delta, sku, name) {
-                    // Find the product entry in _tableData
-                    const colorName = color || '';
+                    // Find the product entry
                     let targetIndex = -1;
                     for (let i = 0; i < this._tableData.length; i++) {
                         const p = this._tableData[i];
-                        if (p.name === name && p.sku === sku && (p.color || '') === colorName) {
+                        if (p.name === name && p.sku === sku) {
                             targetIndex = i;
                             break;
                         }
                     }
 
                     if (targetIndex === -1) {
-                        console.warn('⚠️ Could not find product:', { name, sku, color });
+                        console.warn('⚠️ Could not find product:', { name, sku });
                         return;
                     }
 
                     const product = this._tableData[targetIndex];
-                    const currentQty = product.sizes[size] || 0;
+                    if (!product.colorsSizes[color]) {
+                        product.colorsSizes[color] = {};
+                    }
+                    const currentQty = product.colorsSizes[color][size] || 0;
                     const newQty = Math.max(0, currentQty + delta);
 
-                    // Update quantity (keep zero)
-                    product.sizes[size] = newQty;
+                    if (newQty === 0) {
+                        delete product.colorsSizes[color][size];
+                        // If the color has no sizes left, delete the color
+                        if (Object.keys(product.colorsSizes[color]).length === 0) {
+                            delete product.colorsSizes[color];
+                        }
+                    } else {
+                        product.colorsSizes[color][size] = newQty;
+                    }
 
-                    // Recalculate totals
-                    product.totalPieces = Utils.getTotalPieces(product.sizes);
-                    product.totalValue = product.totalPieces * product.unitPrice;
+                    // If product has no colors left, remove it
+                    if (Object.keys(product.colorsSizes).length === 0) {
+                        this._tableData.splice(targetIndex, 1);
+                        this.showAlert('🗑️ تم حذف المنتج (جميع الألوان صفر)', 'info');
+                    }
 
-                    // If totalPieces is 0, we keep the product (with zeros) — no auto-delete
                     this.renderInvoice();
                     this.saveAll();
                     this.markDirty();
                 },
 
                 deleteProduct(productId) {
-                    // Find product by index from productId (based on grouping)
+                    // Find product by index from productId
                     const idx = parseInt(productId.replace('prod_', ''));
-                    if (isNaN(idx)) {
+                    if (isNaN(idx) || idx >= this._tableData.length) {
                         this.showAlert('⚠️ لم يتم العثور على المنتج', 'error');
                         return;
                     }
-
-                    // Since we group, we need to find the product key by iterating groups again
-                    const groups = {};
-                    this._tableData.forEach(entry => {
-                        const key = entry.name + '|' + entry.sku;
-                        if (!groups[key]) {
-                            groups[key] = {
-                                name: entry.name,
-                                sku: entry.sku,
-                                colors: []
-                            };
-                        }
-                        groups[key].colors.push(entry);
-                    });
-                    const groupKeys = Object.keys(groups);
-                    if (idx >= groupKeys.length) {
-                        this.showAlert('⚠️ لم يتم العثور على المنتج', 'error');
-                        return;
-                    }
-                    const productKey = groupKeys[idx];
-                    const productName = groups[productKey].name;
-
-                    if (!confirm(`هل أنت متأكد من حذف المنتج "${productName}"؟`)) return;
-
-                    // Remove all entries with that product key
-                    this._tableData = this._tableData.filter(entry => {
-                        return !(entry.name === groups[productKey].name && entry.sku === groups[productKey].sku);
-                    });
-
+                    const name = this._tableData[idx].name;
+                    if (!confirm(`هل أنت متأكد من حذف المنتج "${name}"؟`)) return;
+                    this._tableData.splice(idx, 1);
                     this.renderInvoice();
                     this.saveAll();
                     this.markDirty();
-                    this.showAlert(`🗑️ تم حذف المنتج ${productName}`, 'info');
+                    this.showAlert(`🗑️ تم حذف المنتج ${name}`, 'info');
                 },
 
                 updateStats() {
@@ -3512,7 +3469,7 @@ const Storage = {
                     const productSet = new Set();
 
                     for (const p of this._tableData) {
-                        const pieces = Utils.getTotalPieces(p.sizes);
+                        const pieces = Utils.getTotalPieces(p.colorsSizes);
                         if (pieces > 0) {
                             totalPieces += pieces;
                             totalValue += pieces * p.unitPrice;
@@ -3529,7 +3486,7 @@ const Storage = {
                 },
 
                 closeFullInvoice() {
-                    const nonZeroProducts = this._tableData.filter(p => Utils.getTotalPieces(p.sizes) > 0);
+                    const nonZeroProducts = this._tableData.filter(p => Utils.getTotalPieces(p.colorsSizes) > 0);
                     if (!nonZeroProducts.length) {
                         this.showAlert('⚠️ لا توجد كميات لإقفال الفاتورة', 'error');
                         return;
@@ -3537,8 +3494,8 @@ const Storage = {
                     const branchName = this.elements.branch.value.trim() || 'Branch not set';
                     const productUrl = this._lastProductUrl || this.elements.url.value.trim() || '';
 
-                    const totalPieces = nonZeroProducts.reduce((s, p) => s + Utils.getTotalPieces(p.sizes), 0);
-                    const totalValue = nonZeroProducts.reduce((s, p) => s + (Utils.getTotalPieces(p.sizes) * p
+                    const totalPieces = nonZeroProducts.reduce((s, p) => s + Utils.getTotalPieces(p.colorsSizes), 0);
+                    const totalValue = nonZeroProducts.reduce((s, p) => s + (Utils.getTotalPieces(p.colorsSizes) * p
                         .unitPrice), 0);
 
                     if (!confirm(`هل أنت متأكد من تقفيل الفاتورة؟\nالفرع: ${branchName}\nالقطع: ${totalPieces}\nالقيمة: ${Utils.formatCurrency(totalValue)} LE`)) {
@@ -3559,7 +3516,7 @@ const Storage = {
                 },
 
                 openExportDialog() {
-                    const nonZero = this._tableData.filter(p => Utils.getTotalPieces(p.sizes) > 0);
+                    const nonZero = this._tableData.filter(p => Utils.getTotalPieces(p.colorsSizes) > 0);
                     if (!nonZero.length) {
                         this.showAlert('⚠️ لا توجد كميات لتصديرها', 'error');
                         return;
@@ -3575,7 +3532,7 @@ const Storage = {
                     const format = document.querySelector('input[name="exportFormat"]:checked')?.value || 'detail';
                     this.closeExportDialog();
 
-                    const nonZero = this._tableData.filter(p => Utils.getTotalPieces(p.sizes) > 0);
+                    const nonZero = this._tableData.filter(p => Utils.getTotalPieces(p.colorsSizes) > 0);
                     const wb = ExcelGenerator.fromTableData(nonZero, format);
                     const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
                     const blob = new Blob([wbout], { type: 'application/octet-stream' });
@@ -3608,10 +3565,7 @@ const Storage = {
                             unitPrice: item.unitPrice || 0,
                             image: item.image || '',
                             productId: item.productId || '',
-                            color: item.color || '',
-                            sizes: item.sizes || {},
-                            totalPieces: Utils.getTotalPieces(item.sizes || {}),
-                            totalValue: Utils.getTotalPieces(item.sizes || {}) * (item.unitPrice || 0)
+                            colorsSizes: item.colorsSizes || {}
                         }));
                         const wb = ExcelGenerator.fromTableData(tableData, format);
                         const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
@@ -3672,12 +3626,15 @@ const Storage = {
                             if (inv.items && inv.items.length) {
                                 const items = inv.items.slice(0, 3);
                                 details = items.map(item => {
-                                    const sizes = item.sizes || {};
+                                    const cs = item.colorsSizes || {};
                                     const parts = [];
-                                    for (const sz in sizes) {
-                                        if (sizes[sz] > 0) parts.push(`${sz}:${sizes[sz]}`);
+                                    for (const color in cs) {
+                                        const sizes = cs[color];
+                                        for (const size in sizes) {
+                                            if (sizes[size] > 0) parts.push(`${color} ${size}:${sizes[size]}`);
+                                        }
                                     }
-                                    return `${item.name} (${item.color||''} ${parts.join(' ')})`;
+                                    return `${item.name} (${parts.join(' ')})`;
                                 }).join('، ');
                                 if (inv.items.length > 3) details += ` ... +${inv.items.length-3} أكثر`;
                             }
@@ -3714,10 +3671,13 @@ const Storage = {
                     let groupsHtml = '';
                     if (inv.items && inv.items.length) {
                         inv.items.forEach(item => {
-                            const sizes = item.sizes || {};
-                            const sizeParts = [];
-                            for (const sz in sizes) {
-                                if (sizes[sz] > 0) sizeParts.push(`${sz}:${sizes[sz]}`);
+                            const cs = item.colorsSizes || {};
+                            const parts = [];
+                            for (const color in cs) {
+                                const sizes = cs[color];
+                                for (const size in sizes) {
+                                    if (sizes[size] > 0) parts.push(`${color} ${size}:${sizes[size]}`);
+                                }
                             }
                             groupsHtml += `
                                 <div style="background:var(--light);border-radius:12px;padding:10px 14px;margin-bottom:8px;border:1px solid var(--gray-light);">
@@ -3731,11 +3691,7 @@ const Storage = {
                                     </div>
                                     <div style="margin-top:6px;padding-right:12px;border-right:2px solid var(--primary-light);">
                                         <div style="font-weight:500;font-size:12px;color:var(--dark-secondary);">
-                                            <i class="fas fa-palette" style="color:var(--primary);font-size:10px;"></i> ${this.escapeHtml(item.color || 'بدون لون')}
-                                            <span style="font-size:10px;color:var(--gray);margin-right:6px;">${Utils.getTotalPieces(sizes)} قطعة</span>
-                                        </div>
-                                        <div style="display:flex;flex-wrap:wrap;gap:3px 10px;padding:3px 0 0 12px;font-size:12px;">
-                                            ${sizeParts.map(part => `<span>${this.escapeHtml(part)}</span>`).join('')}
+                                            <i class="fas fa-palette" style="color:var(--primary);font-size:10px;"></i> ${parts.join('، ')}
                                         </div>
                                     </div>
                                 </div>
