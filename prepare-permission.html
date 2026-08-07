@@ -2833,26 +2833,31 @@
         },
 
         // ===== CONFIRM CLOSE PREPARATION =====
-        confirmClosePreparation() {
-          if (!this._selectedInvoice) return;
+// ===== CONFIRM CLOSE PREPARATION =====
+confirmClosePreparation() {
+    if (!this._selectedInvoice) return;
 
-          const invoice = this._selectedInvoice;
+    const invoice = this._selectedInvoice;
 
-          invoice.allowprepare = true;
-          invoice.closedAt = Date.now();
-          invoice.status = 'allow_closed';
-          invoice.totalPieces = Utils.calculateTotalPieces(invoice.items);
-          invoice.totalValue = Utils.calculateTotalValue(invoice.items);
+    // تقفيل السماح
+    invoice.allowprepare = true;
+    invoice.allowClosedAt = firebase.database.ServerValue.TIMESTAMP;
 
-          this.saveInvoiceToFirebase(invoice);
-          this.closeCloseDialog();
+    // إعادة حساب الإجماليات
+    invoice.totalPieces = Utils.calculateTotalPieces(invoice.items);
+    invoice.totalValue = Utils.calculateTotalValue(invoice.items);
 
-          this.renderInvoicePreview(invoice);
-          this.renderInvoiceList();
-          this.updateStats();
+    // حفظ التعديلات
+    this.saveInvoiceToFirebase(invoice);
 
-          this.showAlert(`✅ تم تقفيل السماح بنجاح!`, 'success');
-        },
+    // تحديث الواجهة
+    this.closeCloseDialog();
+    this.renderInvoicePreview(invoice);
+    this.renderInvoiceList();
+    this.updateStats();
+
+    this.showAlert('✅ تم تقفيل السماح بنجاح!', 'success');
+},
 
         // ===== CLOSE PREVIEW =====
         closePreview() {
