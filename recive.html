@@ -683,7 +683,7 @@
     }
 
     /* =========================================================
-       PRODUCT CARDS (موحد مع باقي الصفحات)
+       PRODUCT CARDS - الهيكل الجديد
        ========================================================= */
     .product-card {
       background: white;
@@ -816,7 +816,7 @@
     }
 
     /* =========================================================
-       COLOR ACCORDION (موحد مع باقي الصفحات)
+       COLOR ACCORDION - الهيكل الجديد
        ========================================================= */
     .color-accordion {
       border-top: 1px solid var(--gray-light);
@@ -2099,7 +2099,7 @@
   </div>
 
   <!-- =========================================================
-  JAVASCRIPT
+  JAVASCRIPT - الهيكل الجديد
   ========================================================= -->
   <script>
     (function() {
@@ -2108,7 +2108,7 @@
       // ================================================================
       //  STORAGE VERSION
       // ================================================================
-      const STORAGE_VERSION = 4;
+      const STORAGE_VERSION = 5;
       const STORAGE_VERSION_KEY = 'shopify_storage_version';
 
       const currentVersion = localStorage.getItem(STORAGE_VERSION_KEY);
@@ -2171,7 +2171,7 @@
       } catch (e) { console.warn('⚠️ Firebase init error', e); }
 
       // ================================================================
-      //  UTILITIES
+      //  UTILITIES - الهيكل الجديد
       // ================================================================
       const Utils = {
         cleanText(t) { return t ? t.replace(/\s+/g, ' ').trim() : ''; },
@@ -2195,36 +2195,50 @@
           other.sort();
           return [...std, ...num, ...other];
         },
-        // ===== NEW: Extract items from preparedQuantities =====
-        extractItems(preparedQuantities) {
-          if (!preparedQuantities) return [];
+        // ===== NEW: Extract flat items from new structure =====
+        extractItemsFromInvoice(invoice) {
           const items = [];
-          for (const productId in preparedQuantities) {
-            const product = preparedQuantities[productId];
-            if (!product || !product.variants) continue;
-            for (const variantId in product.variants) {
-              const variant = product.variants[variantId];
-              if (!variant || !variant.sizes) continue;
-              for (const size in variant.sizes) {
-                const qty = variant.sizes[size] || 0;
-                if (qty > 0) {
+          if (!invoice || !invoice.items) return items;
+          
+          invoice.items.forEach(product => {
+            const productName = product.name || 'Unknown';
+            const productSku = product.sku || '';
+            const unitPrice = product.unitPrice || 0;
+            const image = product.image || '';
+            const colorsSizes = product.colorsSizes || {};
+            const preparedQuantities = product.preparedQuantities || {};
+            const receiveQuantities = product.receiveQuantities || {};
+            
+            // Loop through each color
+            for (const color in colorsSizes) {
+              const sizes = colorsSizes[color] || {};
+              const preparedSizes = preparedQuantities[color] || {};
+              const receivedSizes = receiveQuantities[color] || {};
+              
+              // Loop through each size
+              for (const size in sizes) {
+                const preparedQty = preparedSizes[size] || 0;
+                const receivedQty = receivedSizes[size] || 0;
+                
+                // Only add if there's a prepared quantity
+                if (preparedQty > 0) {
                   items.push({
-                    productId: productId,
-                    variantId: variantId,
+                    productId: product.productId || '',
+                    productName: productName,
+                    sku: productSku,
+                    color: color,
                     size: size,
-                    preparedQty: qty,
-                    receivedQty: 0,
-                    name: product.name || 'Unknown',
-                    sku: variant.sku || '',
-                    color: variant.color || 'No Color',
-                    unitPrice: variant.unitPrice || 0,
-                    image: product.image || '',
-                    total: qty * (variant.unitPrice || 0)
+                    preparedQty: preparedQty,
+                    receivedQty: receivedQty,
+                    unitPrice: unitPrice,
+                    image: image,
+                    total: preparedQty * unitPrice
                   });
                 }
               }
             }
-          }
+          });
+          
           return items;
         },
         // ===== Calculate totals from items =====
@@ -2261,13 +2275,11 @@
           return total === 0 ? 0 : Math.round((received / total) * 100);
         },
         getStatus(invoice) {
-          if (!invoice || !invoice.items || !invoice.items.length) return 'pending';
-          const allReceived = invoice.items.every(item => (item.receivedQty || 0) >= (preparedQuantities || 0));
-          const anyReceived = invoice.items.some(item => (item.receivedQty || 0) > 0);
-          const hasShortage = invoice.items.some(item => (item.receivedQty || 0) < (preparedQuantities || 0));
+          if (!invoice || !invoice.flatItems || !invoice.flatItems.length) return 'pending';
+          const allReceived = invoice.flatItems.every(item => (item.receivedQty || 0) >= (item.preparedQty || 0));
+          const anyReceived = invoice.flatItems.some(item => (item.receivedQty || 0) > 0);
           
           if (allReceived) return 'received';
-          if (hasShortage && anyReceived) return 'shortage';
           if (anyReceived) return 'partial';
           return 'pending';
         },
@@ -2298,7 +2310,7 @@
           return invoice && invoice.status === 'closed';
         },
         canReceive(item) {
-          return (preparedQuantities || 0) > 0;
+          return (item.preparedQty || 0) > 0;
         }
       };
 
@@ -2377,7 +2389,7 @@
 
         // ===== INIT =====
         init() {
-          console.log('🚀 Initializing Receiving UI...');
+          console.log('🚀 Initializing Receiving UI (new structure)...');
 
           // Get current user from localStorage
           const userData = Storage.get('currentUser');
@@ -2545,38 +2557,28 @@
             if (data) {
               for (const key in data) {
                 const inv = data[key];
-                // ===== NEW: Filter by userId and prepared status =====
-                // Only show invoices where prepared === true
+                // Filter by prepared status
                 if (inv.prepared !== true) continue;
                 
-                // Only show invoices for current user (if userId matches)
+                // Filter by userId
                 if (this._currentUserId && inv.userId !== this._currentUserId) {
                   console.log(`⏭️ Skipping invoice ${key} (userId: ${inv.userId} !== ${this._currentUserId})`);
                   continue;
                 }
-                // If no userId in invoice and we have a current user, we might want to skip?
-                // But let's keep it if no userId is set (for compatibility)
                 
-                // ===== Extract items from preparedQuantities =====
-                const items = Utils.extractItems(inv.preparedQuantities);
+                // Extract flat items from the new structure
+                const flatItems = Utils.extractItemsFromInvoice(inv);
                 
-                // Load receiveQuantities if exists
-                if (inv.receiveQuantities && items.length > 0) {
-                  items.forEach(item => {
-                    const key = `${item.productId}|${item.variantId}|${item.size}`;
-                    if (inv.receiveQuantities[key] !== undefined) {
-                      item.receivedQty = inv.receiveQuantities[key];
-                    }
-                  });
-                }
+                // Calculate totals
+                const totalPieces = Utils.calculateTotalPrepared(flatItems);
+                const totalValue = flatItems.reduce((sum, item) => sum + (item.unitPrice || 0) * (item.preparedQty || 0), 0);
 
                 this._invoices.push({
                   id: key,
                   ...inv,
-                  items: items,
-                  // Calculate totals
-                  totalPieces: Utils.calculateTotalPrepared(items),
-                  totalValue: items.reduce((sum, item) => sum + (item.unitPrice || 0) * (preparedQuantities || 0), 0),
+                  flatItems: flatItems,
+                  totalPieces: totalPieces,
+                  totalValue: totalValue,
                   createdAt: inv.createdAt || 0
                 });
               }
@@ -2607,8 +2609,8 @@
             if (filter !== 'all' && status !== filter) return false;
             if (search) {
               const branch = (inv.branch || '').toLowerCase();
-              const nameMatch = inv.items && inv.items.some(item => 
-                (item.name || '').toLowerCase().includes(search) ||
+              const nameMatch = inv.flatItems && inv.flatItems.some(item => 
+                (item.productName || '').toLowerCase().includes(search) ||
                 (item.sku || '').toLowerCase().includes(search)
               );
               if (!branch.includes(search) && !nameMatch) return false;
@@ -2640,7 +2642,7 @@
               hour: '2-digit',
               minute: '2-digit'
             });
-            const progress = Utils.getProgress(inv.items);
+            const progress = Utils.getProgress(inv.flatItems);
             const isSelected = this._selectedInvoiceId === inv.id;
 
             html += `
@@ -2650,8 +2652,8 @@
                   <div class="branch"><i class="fas fa-store"></i> ${Utils.escapeHtml(inv.branch || 'Branch not set')}</div>
                   <div class="meta">
                     <span><i class="fas fa-calendar-alt"></i> ${dateStr}</span>
-                    <span><i class="fas fa-boxes"></i> ${inv.items ? inv.items.length : 0} منتج</span>
-                    <span><i class="fas fa-cubes"></i> ${inv.totalPieces || Utils.calculateTotalPrepared(inv.items)} قطعة</span>
+                    <span><i class="fas fa-boxes"></i> ${inv.flatItems ? inv.flatItems.length : 0} منتج</span>
+                    <span><i class="fas fa-cubes"></i> ${inv.totalPieces || 0} قطعة</span>
                     <span><i class="fas fa-money-bill-wave"></i> ${Utils.formatCurrency(inv.totalValue || 0)} LE</span>
                   </div>
                 </div>
@@ -2719,7 +2721,7 @@
           }
         },
 
-        // ===== RENDER INVOICE PREVIEW =====
+        // ===== RENDER INVOICE PREVIEW - الهيكل الجديد =====
         renderInvoicePreview(invoice) {
           const container = this.elements.previewContainer;
           this.elements.previewSection.classList.add('show');
@@ -2731,13 +2733,13 @@
             minute: '2-digit'
           });
           const status = Utils.getStatus(invoice);
-          const progress = Utils.getProgress(invoice.items);
-          const shortage = Utils.calculateShortage(invoice.items);
+          const progress = Utils.getProgress(invoice.flatItems);
+          const shortage = Utils.calculateShortage(invoice.flatItems);
 
           this.elements.previewTitle.innerHTML = `<i class="fas fa-receipt"></i> ${Utils.escapeHtml(branch)}`;
           this.elements.previewMeta.innerHTML = `
             <i class="fas fa-calendar-alt"></i> ${dateStr} | 
-            <i class="fas fa-cubes"></i> ${invoice.totalPieces || Utils.calculateTotalPrepared(invoice.items)} قطعة | 
+            <i class="fas fa-cubes"></i> ${invoice.totalPieces || 0} قطعة | 
             <i class="fas fa-money-bill-wave"></i> ${Utils.formatCurrency(invoice.totalValue || 0)} LE
           `;
           this.elements.previewStatus.textContent = Utils.getStatusText(status);
@@ -2747,7 +2749,7 @@
             this.elements.previewMeta.textContent += ` | <i class="fas fa-exclamation-circle" style="color:var(--danger);"></i> نقص: ${shortage} قطعة`;
           }
 
-          if (!invoice.items || !invoice.items.length) {
+          if (!invoice.flatItems || !invoice.flatItems.length) {
             container.innerHTML = `
               <div class="empty-state">
                 <i class="fas fa-box-open"></i>
@@ -2758,18 +2760,17 @@
             return;
           }
 
-          // Group items by product (name + sku)
+          // Group items by product (productId or name)
           const groups = {};
-          invoice.items.forEach(item => {
-            const key = (item.productId || '') + '|' + (item.variantId || '');
+          invoice.flatItems.forEach(item => {
+            const key = item.productId || item.productName || 'Unknown';
             if (!groups[key]) {
               groups[key] = {
-                name: item.name || 'Unknown',
+                productId: item.productId || '',
+                name: item.productName || 'Unknown',
                 sku: item.sku || '',
                 unitPrice: item.unitPrice || 0,
                 image: item.image || '',
-                productId: item.productId || '',
-                variantId: item.variantId || '',
                 colors: {}
               };
             }
@@ -2777,7 +2778,7 @@
             if (!groups[key].colors[color]) groups[key].colors[color] = [];
             groups[key].colors[color].push({
               size: item.size || 'No Size',
-              preparedQty: preparedQuantities || 0,
+              preparedQty: item.preparedQty || 0,
               receivedQty: item.receivedQty || 0,
               total: item.total || 0
             });
@@ -2835,7 +2836,7 @@
           this.updateBottomBar(invoice);
         },
 
-        // ===== RENDER PREVIEW COLORS =====
+        // ===== RENDER PREVIEW COLORS - الهيكل الجديد =====
         renderPreviewColors(g, productId) {
           let html = '';
           let colorIdx = 0;
@@ -2873,16 +2874,16 @@
                     const disablePlus = received >= prepared || prepared === 0;
                     
                     // Create unique key for this size
-                    const sizeKey = `${g.productId}|${g.variantId}|${s.size}`;
+                    const sizeKey = `${g.productId}|${color}|${s.size}`;
                     
                     return `
                       <div class="size-row">
                         <span class="size-label">${Utils.escapeHtml(s.size)}</span>
                         <div class="qty-control">
-                          <button onclick="window.UI.changeReceiveQty('${productId}', '${color}', '${s.size}', -1, '${g.productId}', '${g.variantId}')" 
+                          <button onclick="window.UI.changeReceiveQty('${productId}', '${color}', '${s.size}', -1, '${g.productId}')" 
                                   ${disableMinus ? 'disabled' : ''}><i class="fas fa-minus"></i></button>
                           <span class="qty-val ${statusClass}">${received}/${prepared}</span>
-                          <button onclick="window.UI.changeReceiveQty('${productId}', '${color}', '${s.size}', 1, '${g.productId}', '${g.variantId}')" 
+                          <button onclick="window.UI.changeReceiveQty('${productId}', '${color}', '${s.size}', 1, '${g.productId}')" 
                                   ${disablePlus ? 'disabled' : ''}><i class="fas fa-plus"></i></button>
                         </div>
                         ${!canReceive ? '<span class="no-prepare"><i class="fas fa-ban"></i> غير متاح للاستلام</span>' : ''}
@@ -2911,18 +2912,18 @@
           if (this._selectedInvoice) this.renderInvoicePreview(this._selectedInvoice);
         },
 
-        // ===== CHANGE RECEIVE QTY =====
-        changeReceiveQty(productId, color, size, delta, productIdReal, variantId) {
-          if (!this._selectedInvoice || !this._selectedInvoice.items) return;
+        // ===== CHANGE RECEIVE QTY - الهيكل الجديد =====
+        changeReceiveQty(productId, color, size, delta, productIdReal) {
+          if (!this._selectedInvoice || !this._selectedInvoice.flatItems) return;
 
           let found = false;
-          this._selectedInvoice.items.forEach(item => {
+          this._selectedInvoice.flatItems.forEach(item => {
             const itemColor = item.color || 'No Color';
             const itemSize = item.size || 'No Size';
             if (itemColor === color && itemSize === size && 
-                item.productId === productIdReal && item.variantId === variantId) {
+                (item.productId === productIdReal || item.productId === '')) {
               const current = item.receivedQty || 0;
-              const max = preparedQuantities || 0;
+              const max = item.preparedQty || 0;
               const newQty = Math.max(0, Math.min(max, current + delta));
               if (newQty !== current) {
                 item.receivedQty = newQty;
@@ -2932,9 +2933,9 @@
           });
 
           if (found) {
-            this._selectedInvoice.totalPieces = Utils.calculateTotalPrepared(this._selectedInvoice.items);
-            this._selectedInvoice.totalValue = this._selectedInvoice.items.reduce(
-              (sum, item) => sum + (item.unitPrice || 0) * (preparedQuantities || 0), 0
+            this._selectedInvoice.totalPieces = Utils.calculateTotalPrepared(this._selectedInvoice.flatItems);
+            this._selectedInvoice.totalValue = this._selectedInvoice.flatItems.reduce(
+              (sum, item) => sum + (item.unitPrice || 0) * (item.preparedQty || 0), 0
             );
             this.saveInvoiceToFirebase(this._selectedInvoice);
             this.renderInvoicePreview(this._selectedInvoice);
@@ -2943,29 +2944,63 @@
           }
         },
 
+        // ===== SAVE TO FIREBASE - الهيكل الجديد =====
         saveInvoiceToFirebase(invoice) {
           if (!database) return;
           const ref = database.ref('invoices/' + invoice.id);
           
-          // Build receiveQuantities object
+          // Build receiveQuantities in the new structure
           const receiveQuantities = {};
-          if (invoice.items) {
-            invoice.items.forEach(item => {
-              const key = `${item.productId}|${item.variantId}|${item.size}`;
-              receiveQuantities[key] = item.receivedQty || 0;
+          
+          if (invoice.flatItems && invoice.flatItems.length > 0) {
+            invoice.flatItems.forEach(item => {
+              const productId = item.productId || '';
+              const color = item.color || 'No Color';
+              const size = item.size || 'No Size';
+              
+              if (!receiveQuantities[productId]) {
+                receiveQuantities[productId] = {};
+              }
+              if (!receiveQuantities[productId][color]) {
+                receiveQuantities[productId][color] = {};
+              }
+              receiveQuantities[productId][color][size] = item.receivedQty || 0;
             });
           }
           
-          // Update only receiveQuantities and status
+          // Also need to update the original items structure
+          const updatedItems = invoice.items ? invoice.items.map(product => {
+            const newProduct = { ...product };
+            // Update receiveQuantities for this product
+            if (newProduct.receiveQuantities) {
+              // Keep existing structure, but we'll override with flat data
+            }
+            return newProduct;
+          }) : [];
+          
+          // Determine if fully received
+          const isFullyReceived = Utils.isFullyReceived(invoice.flatItems);
+          
           const updateData = {
             receiveQuantities: receiveQuantities,
-            status: invoice.status || 'prepared'
+            status: isFullyReceived ? 'closed' : 'prepared',
+            prepared: isFullyReceived ? false : true
           };
           
-          // If fully received, we might want to update status to 'closed'
-          if (Utils.isFullyReceived(invoice.items)) {
-            updateData.status = 'closed';
-            updateData.prepared = false;
+          // Also update each product's receiveQuantities
+          if (invoice.items) {
+            const updatedReceiveQuantities = {};
+            invoice.items.forEach(product => {
+              const pid = product.productId || '';
+              updatedReceiveQuantities[pid] = receiveQuantities[pid] || {};
+            });
+            updateData.items = invoice.items.map(product => {
+              const pid = product.productId || '';
+              return {
+                ...product,
+                receiveQuantities: receiveQuantities[pid] || {}
+              };
+            });
           }
           
           ref.update(updateData, (error) => {
@@ -2974,21 +3009,20 @@
           });
         },
 
-        // ===== OPEN RECEIVE DIALOG =====
+        // ===== OPEN RECEIVE DIALOG - الهيكل الجديد =====
         openReceiveDialog(productKey, productId) {
           if (!this._selectedInvoice) return;
 
           const groups = {};
-          this._selectedInvoice.items.forEach(item => {
-            const key = (item.productId || '') + '|' + (item.variantId || '');
+          this._selectedInvoice.flatItems.forEach(item => {
+            const key = item.productId || item.productName || 'Unknown';
             if (!groups[key]) {
               groups[key] = {
-                name: item.name || 'Unknown',
+                productId: item.productId || '',
+                name: item.productName || 'Unknown',
                 sku: item.sku || '',
                 unitPrice: item.unitPrice || 0,
                 image: item.image || '',
-                productId: item.productId || '',
-                variantId: item.variantId || '',
                 items: []
               };
             }
@@ -3033,7 +3067,7 @@
               return (a.size || '').localeCompare(b.size || '');
             });
             sorted.forEach(item => {
-              const prepared = preparedQuantities || 0;
+              const prepared = item.preparedQty || 0;
               const received = item.receivedQty || 0;
               const canReceive = prepared > 0;
               const isReceived = received >= prepared && prepared > 0;
@@ -3047,8 +3081,8 @@
                   </span>
                   ${!canReceive ? '<span class="no-prepare"><i class="fas fa-ban"></i> غير متاح</span>' : ''}
                   <div style="display:flex;gap:4px;margin-right:auto;">
-                    <button class="btn btn-secondary btn-sm" onclick="window.UI.adjustReceiveQtyFromDialog('${item.color || 'No Color'}', '${item.size || 'No Size'}', -1, '${item.productId}', '${item.variantId}')" ${received <= 0 ? 'disabled' : ''}><i class="fas fa-minus"></i></button>
-                    <button class="btn btn-secondary btn-sm" onclick="window.UI.adjustReceiveQtyFromDialog('${item.color || 'No Color'}', '${item.size || 'No Size'}', 1, '${item.productId}', '${item.variantId}')" ${received >= prepared || prepared === 0 ? 'disabled' : ''}><i class="fas fa-plus"></i></button>
+                    <button class="btn btn-secondary btn-sm" onclick="window.UI.adjustReceiveQtyFromDialog('${item.color || 'No Color'}', '${item.size || 'No Size'}', -1, '${item.productId || ''}')" ${received <= 0 ? 'disabled' : ''}><i class="fas fa-minus"></i></button>
+                    <button class="btn btn-secondary btn-sm" onclick="window.UI.adjustReceiveQtyFromDialog('${item.color || 'No Color'}', '${item.size || 'No Size'}', 1, '${item.productId || ''}')" ${received >= prepared || prepared === 0 ? 'disabled' : ''}><i class="fas fa-plus"></i></button>
                   </div>
                 </div>
               `;
@@ -3060,17 +3094,17 @@
           this.elements.receiveDialog.classList.add('show');
         },
 
-        adjustReceiveQtyFromDialog(color, size, delta, productId, variantId) {
+        adjustReceiveQtyFromDialog(color, size, delta, productId) {
           if (!this._selectedInvoice || !this._pendingReceiveData) return;
 
           let found = false;
-          this._selectedInvoice.items.forEach(item => {
+          this._selectedInvoice.flatItems.forEach(item => {
             const itemColor = item.color || 'No Color';
             const itemSize = item.size || 'No Size';
             if (itemColor === color && itemSize === size && 
-                item.productId === productId && item.variantId === variantId) {
+                (item.productId === productId || item.productId === '')) {
               const current = item.receivedQty || 0;
-              const max = preparedQuantities || 0;
+              const max = item.preparedQty || 0;
               const newQty = Math.max(0, Math.min(max, current + delta));
               if (newQty !== current) {
                 item.receivedQty = newQty;
@@ -3080,9 +3114,9 @@
           });
 
           if (found) {
-            this._selectedInvoice.totalPieces = Utils.calculateTotalPrepared(this._selectedInvoice.items);
-            this._selectedInvoice.totalValue = this._selectedInvoice.items.reduce(
-              (sum, item) => sum + (item.unitPrice || 0) * (preparedQuantities || 0), 0
+            this._selectedInvoice.totalPieces = Utils.calculateTotalPrepared(this._selectedInvoice.flatItems);
+            this._selectedInvoice.totalValue = this._selectedInvoice.flatItems.reduce(
+              (sum, item) => sum + (item.unitPrice || 0) * (item.preparedQty || 0), 0
             );
             this.saveInvoiceToFirebase(this._selectedInvoice);
             
@@ -3104,7 +3138,7 @@
           this.showAlert('✅ تم حفظ الاستلام', 'success');
         },
 
-        // ===== CONFIRM FULL RECEIVE =====
+        // ===== CONFIRM FULL RECEIVE - الهيكل الجديد =====
         confirmFullReceive() {
           if (!this._selectedInvoice) {
             this.showAlert('⚠️ اختر فاتورة أولاً', 'error');
@@ -3117,16 +3151,16 @@
           const invoice = this._selectedInvoice;
           
           // Mark all items as fully received
-          invoice.items.forEach(item => {
-            item.receivedQty = preparedQuantities || 0;
+          invoice.flatItems.forEach(item => {
+            item.receivedQty = item.preparedQty || 0;
           });
           
           invoice.status = 'closed';
           invoice.prepared = false;
           
-          invoice.totalPieces = Utils.calculateTotalPrepared(invoice.items);
-          invoice.totalValue = invoice.items.reduce(
-            (sum, item) => sum + (item.unitPrice || 0) * (preparedQuantities || 0), 0
+          invoice.totalPieces = Utils.calculateTotalPrepared(invoice.flatItems);
+          invoice.totalValue = invoice.flatItems.reduce(
+            (sum, item) => sum + (item.unitPrice || 0) * (item.preparedQty || 0), 0
           );
 
           this.saveInvoiceToFirebase(invoice);
@@ -3146,7 +3180,7 @@
           this._isClosing = false;
         },
 
-        // ===== OPEN SHORTAGE DIALOG =====
+        // ===== OPEN SHORTAGE DIALOG - الهيكل الجديد =====
         openShortageDialog() {
           if (!this._selectedInvoice) {
             this.showAlert('⚠️ اختر فاتورة أولاً', 'error');
@@ -3160,15 +3194,14 @@
           let html = '';
           
           const productMap = {};
-          invoice.items.forEach(item => {
-            const key = (item.productId || '') + '|' + (item.variantId || '');
+          invoice.flatItems.forEach(item => {
+            const key = item.productId || item.productName || 'Unknown';
             if (!productMap[key]) {
               productMap[key] = {
-                name: item.name || 'Unknown',
+                productId: item.productId || '',
+                name: item.productName || 'Unknown',
                 sku: item.sku || '',
                 image: item.image || '',
-                productId: item.productId || '',
-                variantId: item.variantId || '',
                 items: []
               };
             }
@@ -3212,7 +3245,7 @@
               });
               sorted.forEach(item => {
                 const currentReceived = item.receivedQty || 0;
-                const prepared = preparedQuantities || 0;
+                const prepared = item.preparedQty || 0;
                 const shortage = prepared - currentReceived;
                 const itemKey = `${key}|${color}|${item.size}`;
                 this._shortageData[itemKey] = shortage > 0 ? shortage : 0;
@@ -3260,20 +3293,20 @@
           const invoice = this._selectedInvoice;
           let hasShortage = false;
 
-          invoice.items.forEach(item => {
-            const key = `${(item.productId || '')}|${(item.variantId || '')}|${(item.color || 'No Color')}|${(item.size || 'No Size')}`;
+          invoice.flatItems.forEach(item => {
+            const key = `${(item.productId || '')}|${(item.color || 'No Color')}|${(item.size || 'No Size')}`;
             const shortageValue = this._shortageData[key];
             if (shortageValue !== undefined) {
-              const prepared = preparedQuantities || 0;
+              const prepared = item.preparedQty || 0;
               const received = prepared - shortageValue;
               item.receivedQty = Math.max(0, received);
               if (received < prepared) hasShortage = true;
             }
           });
 
-          invoice.totalPieces = Utils.calculateTotalPrepared(invoice.items);
-          invoice.totalValue = invoice.items.reduce(
-            (sum, item) => sum + (item.unitPrice || 0) * (preparedQuantities || 0), 0
+          invoice.totalPieces = Utils.calculateTotalPrepared(invoice.flatItems);
+          invoice.totalValue = invoice.flatItems.reduce(
+            (sum, item) => sum + (item.unitPrice || 0) * (item.preparedQty || 0), 0
           );
 
           this.saveInvoiceToFirebase(invoice);
@@ -3289,7 +3322,7 @@
           }
         },
 
-        // ===== OLD INVOICES =====
+        // ===== OLD INVOICES - الهيكل الجديد =====
         toggleOldOrders() {
           const sec = this.elements.oldOrdersSection;
           if (sec.style.display === 'none') {
@@ -3327,30 +3360,20 @@
             if (data) {
               for (const key in data) {
                 const inv = data[key];
-                // Only show closed invoices (status = 'closed')
+                // Only show closed invoices
                 if (inv.status === 'closed') {
                   // Only show for current user
                   if (this._currentUserId && inv.userId !== this._currentUserId) continue;
                   
-                  // Extract items from preparedQuantities
-                  const items = Utils.extractItems(inv.preparedQuantities);
+                  // Extract flat items
+                  const flatItems = Utils.extractItemsFromInvoice(inv);
                   
-                  // Load receiveQuantities
-                  if (inv.receiveQuantities && items.length > 0) {
-                    items.forEach(item => {
-                      const key2 = `${item.productId}|${item.variantId}|${item.size}`;
-                      if (inv.receiveQuantities[key2] !== undefined) {
-                        item.receivedQty = inv.receiveQuantities[key2];
-                      }
-                    });
-                  }
-
                   this._oldInvoices.push({
                     id: key,
                     ...inv,
-                    items: items,
-                    totalPieces: Utils.calculateTotalPrepared(items),
-                    totalValue: items.reduce((sum, item) => sum + (item.unitPrice || 0) * (preparedQuantities || 0), 0),
+                    flatItems: flatItems,
+                    totalPieces: Utils.calculateTotalPrepared(flatItems),
+                    totalValue: flatItems.reduce((sum, item) => sum + (item.unitPrice || 0) * (item.preparedQty || 0), 0),
                     createdAt: inv.createdAt || 0
                   });
                 }
@@ -3392,20 +3415,20 @@
               hour: '2-digit',
               minute: '2-digit'
             });
-            const totalPrepared = Utils.calculateTotalPrepared(inv.items);
-            const totalReceived = Utils.calculateReceived(inv.items);
-            const totalShortage = Utils.calculateShortage(inv.items);
+            const totalPrepared = Utils.calculateTotalPrepared(inv.flatItems);
+            const totalReceived = Utils.calculateReceived(inv.flatItems);
+            const totalShortage = Utils.calculateShortage(inv.flatItems);
             const status = Utils.getStatus(inv);
             const statusText = Utils.getStatusText(status);
             const statusClass = Utils.getStatusClass(status);
 
             let details = '';
-            if (inv.items && inv.items.length) {
-              const items = inv.items.slice(0, 3);
+            if (inv.flatItems && inv.flatItems.length) {
+              const items = inv.flatItems.slice(0, 3);
               details = items.map(item =>
-                `${item.name} (${item.color||''} ${item.size||''} × ${preparedQuantities||0})`
+                `${item.productName} (${item.color||''} ${item.size||''} × ${item.preparedQty||0})`
               ).join('، ');
-              if (inv.items.length > 3) details += ` ... +${inv.items.length-3} أكثر`;
+              if (inv.flatItems.length > 3) details += ` ... +${inv.flatItems.length-3} أكثر`;
             }
 
             html += `
@@ -3455,7 +3478,7 @@
 
           const container = this.elements.viewOldInvoiceContainer;
           
-          if (!invoice.items || !invoice.items.length) {
+          if (!invoice.flatItems || !invoice.flatItems.length) {
             container.innerHTML = `
               <div class="empty-state" style="padding:20px;">
                 <i class="fas fa-box-open"></i>
@@ -3468,11 +3491,12 @@
 
           // Group by product
           const groups = {};
-          invoice.items.forEach(item => {
-            const key = (item.productId || '') + '|' + (item.variantId || '');
+          invoice.flatItems.forEach(item => {
+            const key = item.productId || item.productName || 'Unknown';
             if (!groups[key]) {
               groups[key] = {
-                name: item.name || 'Unknown',
+                productId: item.productId || '',
+                name: item.productName || 'Unknown',
                 sku: item.sku || '',
                 unitPrice: item.unitPrice || 0,
                 image: item.image || '',
@@ -3483,7 +3507,7 @@
             if (!groups[key].colors[color]) groups[key].colors[color] = [];
             groups[key].colors[color].push({
               size: item.size || 'No Size',
-              preparedQty: preparedQuantities || 0,
+              preparedQty: item.preparedQty || 0,
               receivedQty: item.receivedQty || 0
             });
           });
@@ -3561,25 +3585,25 @@
           const headers = ['#', 'Name', 'Color', 'Size', 'SKU', 'Prepared', 'Received', 'Unit Price', 'Total'];
           const data = [headers];
           
-          if (invoice.items) {
-            invoice.items.forEach((item, i) => {
+          if (invoice.flatItems) {
+            invoice.flatItems.forEach((item, i) => {
               data.push([
                 i + 1,
-                item.name || '',
+                item.productName || '',
                 item.color || '',
                 item.size || '',
                 item.sku || '',
-                preparedQuantities || 0,
+                item.preparedQty || 0,
                 item.receivedQty || 0,
                 item.unitPrice || 0,
-                (item.unitPrice || 0) * (preparedQuantities || 0)
+                (item.unitPrice || 0) * (item.preparedQty || 0)
               ]);
             });
           }
           
-          const totalPrepared = Utils.calculateTotalPrepared(invoice.items);
-          const totalReceived = Utils.calculateReceived(invoice.items);
-          const totalShortage = Utils.calculateShortage(invoice.items);
+          const totalPrepared = Utils.calculateTotalPrepared(invoice.flatItems);
+          const totalReceived = Utils.calculateReceived(invoice.flatItems);
+          const totalShortage = Utils.calculateShortage(invoice.flatItems);
           
           data.push(['', '', '', '', '', 'Total', '', '', '']);
           data.push(['', '', '', '', '', totalPrepared, totalReceived, '', invoice.totalValue || 0]);
@@ -3624,25 +3648,25 @@
               headers
             ];
             
-            if (invoice.items) {
-              invoice.items.forEach((item, i) => {
+            if (invoice.flatItems) {
+              invoice.flatItems.forEach((item, i) => {
                 data.push([
                   i + 1,
-                  item.name || '',
+                  item.productName || '',
                   item.color || '',
                   item.size || '',
                   item.sku || '',
-                  preparedQuantities || 0,
+                  item.preparedQty || 0,
                   item.receivedQty || 0,
                   item.unitPrice || 0,
-                  (item.unitPrice || 0) * (preparedQuantities || 0)
+                  (item.unitPrice || 0) * (item.preparedQty || 0)
                 ]);
               });
             }
             
-            const totalPrepared = Utils.calculateTotalPrepared(invoice.items);
-            const totalReceived = Utils.calculateReceived(invoice.items);
-            const totalShortage = Utils.calculateShortage(invoice.items);
+            const totalPrepared = Utils.calculateTotalPrepared(invoice.flatItems);
+            const totalReceived = Utils.calculateReceived(invoice.flatItems);
+            const totalShortage = Utils.calculateShortage(invoice.flatItems);
             
             data.push(['', '', '', '', '', 'Total', '', '', '']);
             data.push(['', '', '', '', '', totalPrepared, totalReceived, '', invoice.totalValue || 0]);
@@ -3689,7 +3713,7 @@
             const status = Utils.getStatus(inv);
             if (status === 'pending') pending++;
             else if (status === 'received') received++;
-            else if (status === 'shortage' || status === 'partial') shortage++;
+            else if (status === 'partial' || status === 'shortage') shortage++;
           });
 
           this.elements.statTotalInvoices.textContent = total;
@@ -3701,10 +3725,10 @@
         // ===== UPDATE BOTTOM BAR =====
         updateBottomBar(invoice) {
           if (!invoice) return;
-          const items = invoice.items || [];
+          const items = invoice.flatItems || [];
           const totalPrepared = Utils.calculateTotalPrepared(items);
           const receivedPieces = Utils.calculateReceived(items);
-          const products = new Set(items.map(r => r.productId + '|' + r.variantId)).size;
+          const products = new Set(items.map(r => r.productId || r.productName)).size;
           const progress = totalPrepared === 0 ? 0 : Math.round((receivedPieces / totalPrepared) * 100);
           const shortage = Utils.calculateShortage(items);
 
@@ -3750,28 +3774,28 @@
 
       // ===== TOGGLE SIDEBAR =====
       function toggleSidebar() {
-    const sidebar = document.getElementById('sidebar');
-    const mainContent = document.getElementById('mainContent');
+        const sidebar = document.getElementById('sidebar');
+        const mainContent = document.getElementById('mainContent');
 
-    if (window.innerWidth > 992) {
-        sidebar.classList.toggle('hidden');
-        mainContent.classList.toggle('sidebar-hidden');
-    } else {
-        if (sidebar.classList.contains('visible')) {
+        if (window.innerWidth > 992) {
+          sidebar.classList.toggle('hidden');
+          mainContent.classList.toggle('sidebar-hidden');
+        } else {
+          if (sidebar.classList.contains('visible')) {
             sidebar.classList.remove('visible');
             sidebar.classList.add('hidden');
             mainContent.classList.add('sidebar-hidden');
-        } else {
+          } else {
             sidebar.classList.remove('hidden');
             sidebar.classList.add('visible');
             mainContent.classList.remove('sidebar-hidden');
+          }
         }
-    }
 
-    if (window.UI) {
-        window.UI.updateStickyPosition();
-    }
-}
+        if (window.UI) {
+          window.UI.updateStickyPosition();
+        }
+      }
       window.toggleSidebar = toggleSidebar;
 
       // Close sidebar on outside click (mobile)
