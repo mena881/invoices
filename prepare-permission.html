@@ -2841,7 +2841,7 @@ confirmClosePreparation() {
 
     // تقفيل السماح
     invoice.allowprepare = true;
-    invoice.allowClosedAt = firebase.database.ServerValue.TIMESTAMP;
+invoice.closeallowat = firebase.database.ServerValue.TIMESTAMP;
 
     // إعادة حساب الإجماليات
     invoice.totalPieces = Utils.calculateTotalPieces(invoice.items);
