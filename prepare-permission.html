@@ -1964,9 +1964,9 @@
         calculatePrepared(items) {
           let prepared = 0;
           items.forEach(item => {
-            if (item.preparedQuantities) {
-              for (const color in item.preparedQuantities) {
-                const sizes = item.preparedQuantities[color];
+            if (item.allowedQuantities) {
+              for (const color in item.allowedQuantities) {
+                const sizes = item.allowedQuantities[color];
                 for (const size in sizes) {
                   prepared += sizes[size] || 0;
                 }
@@ -2203,17 +2203,17 @@
                 // Only include invoices with createdclosed === true
                 if (inv.createdclosed !== true) continue;
 
-                // Initialize preparedQuantities for items with colorsSizes if not exists
+                // Initialize allowedQuantities for items with colorsSizes if not exists
                 if (inv.items && inv.items.length) {
                   inv.items.forEach(item => {
-                    if (item.colorsSizes && !item.preparedQuantities) {
-                      // Initialize preparedQuantities with zeros
-                      item.preparedQuantities = {};
+                    if (item.colorsSizes && !item.allowedQuantities) {
+                      // Initialize allowedQuantities with zeros
+                      item.allowedQuantities = {};
                       for (const color in item.colorsSizes) {
-                        item.preparedQuantities[color] = {};
+                        item.allowedQuantities[color] = {};
                         const sizes = item.colorsSizes[color];
                         for (const size in sizes) {
-                          item.preparedQuantities[color][size] = 0;
+                          item.allowedQuantities[color][size] = 0;
                         }
                       }
                     }
@@ -2502,12 +2502,12 @@
                 image: item.image || '',
                 id: item.productId || item.id || '',
                 colorsSizes: item.colorsSizes || {},
-                preparedQuantities: item.preparedQuantities || {},
+                allowedQuantities: item.allowedQuantities || {},
                 // store reference to original item for saving
                 _origIndex: index
               };
             } else {
-              // Merge colorsSizes and preparedQuantities if multiple items with same SKU? (unlikely but handle)
+              // Merge colorsSizes and allowedQuantities if multiple items with same SKU? (unlikely but handle)
               if (item.colorsSizes) {
                 for (const color in item.colorsSizes) {
                   if (!groups[sku].colorsSizes[color]) {
@@ -2519,14 +2519,14 @@
                   }
                 }
               }
-              if (item.preparedQuantities) {
-                for (const color in item.preparedQuantities) {
-                  if (!groups[sku].preparedQuantities[color]) {
-                    groups[sku].preparedQuantities[color] = {};
+              if (item.allowedQuantities) {
+                for (const color in item.allowedQuantities) {
+                  if (!groups[sku].allowedQuantities[color]) {
+                    groups[sku].allowedQuantities[color] = {};
                   }
-                  const sizes = item.preparedQuantities[color];
+                  const sizes = item.allowedQuantities[color];
                   for (const size in sizes) {
-                    groups[sku].preparedQuantities[color][size] = sizes[size];
+                    groups[sku].allowedQuantities[color][size] = sizes[size];
                   }
                 }
               }
@@ -2552,8 +2552,8 @@
                 totalQty += sizes[size] || 0;
               }
             }
-            for (const color in g.preparedQuantities) {
-              const sizes = g.preparedQuantities[color];
+            for (const color in g.allowedQuantities) {
+              const sizes = g.allowedQuantities[color];
               for (const size in sizes) {
                 totalPrepared += sizes[size] || 0;
               }
@@ -2608,7 +2608,7 @@
           let colorIdx = 0;
           for (const color of colors) {
             const sizes = g.colorsSizes[color];
-            const preparedSizes = g.preparedQuantities[color] || {};
+            const preparedSizes = g.allowedQuantities[color] || {};
             const colorId = productId + '_color_' + colorIdx;
             if (this._productCardStates[colorId] === undefined) {
               this._productCardStates[colorId] = true;
@@ -2689,17 +2689,17 @@
           let found = false;
           this._selectedInvoice.items.forEach(item => {
             if (item.sku === sku && item.colorsSizes && item.colorsSizes[color] && item.colorsSizes[color][size] !== undefined) {
-              if (!item.preparedQuantities) {
-                item.preparedQuantities = {};
+              if (!item.allowedQuantities) {
+                item.allowedQuantities = {};
               }
-              if (!item.preparedQuantities[color]) {
-                item.preparedQuantities[color] = {};
+              if (!item.allowedQuantities[color]) {
+                item.allowedQuantities[color] = {};
               }
               const max = item.colorsSizes[color][size] || 0;
-              const current = item.preparedQuantities[color][size] || 0;
+              const current = item.allowedQuantities[color][size] || 0;
               const newVal = Math.max(0, Math.min(max, current + delta));
               if (newVal !== current) {
-                item.preparedQuantities[color][size] = newVal;
+                item.allowedQuantities[color][size] = newVal;
                 found = true;
               }
             }
@@ -2725,11 +2725,11 @@
           if (!database) return;
           const ref = database.ref('invoices/' + invoice.id);
           const { id, ...data } = invoice;
-          // Ensure preparedQuantities is saved
+          // Ensure allowedQuantities is saved
           if (data.items) {
             data.items.forEach(item => {
-              if (!item.preparedQuantities) {
-                item.preparedQuantities = {};
+              if (!item.allowedQuantities) {
+                item.allowedQuantities = {};
               }
             });
           }
@@ -2787,7 +2787,7 @@
                   const sizes = item.colorsSizes[color];
                   for (const size in sizes) {
                     total += sizes[size] || 0;
-                    prepared += (item.preparedQuantities && item.preparedQuantities[color] && item.preparedQuantities[color][size]) || 0;
+                    prepared += (item.allowedQuantities && item.allowedQuantities[color] && item.allowedQuantities[color][size]) || 0;
                   }
                 }
                 productMap[key].totalQty += total;
