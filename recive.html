@@ -18,9 +18,12 @@
   <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
 
+  <!-- تضمين ملف usermenu.js -->
+  <script src="usermenu.js"></script>
+
   <style>
     /* =========================================================
-       RESET & BASE
+       RESET & BASE (موحد مع باقي الصفحات)
        ========================================================= */
     :root {
       --primary: #4f46e5;
@@ -75,6 +78,7 @@
       border-radius: 10px;
     }
 
+    /* ========== SIDEBAR ========== */
     .sidebar {
       position: fixed;
       right: 0;
@@ -181,6 +185,7 @@
       color: white;
     }
 
+    /* ========== MAIN CONTENT ========== */
     .main-content {
       margin-right: 280px;
       padding: 20px 25px;
@@ -192,6 +197,9 @@
       margin-right: 0;
     }
 
+    /* =========================================================
+       HEADER (موحد مع باقي الصفحات)
+       ========================================================= */
     .header {
       background: white;
       padding: 16px 24px;
@@ -294,6 +302,9 @@
       background: var(--info-light);
     }
 
+    /* =========================================================
+       CARDS (موحد مع باقي الصفحات)
+       ========================================================= */
     .card {
       background: white;
       border-radius: var(--radius);
@@ -308,6 +319,9 @@
       box-shadow: var(--shadow);
     }
 
+    /* =========================================================
+       BUTTONS (موحد مع باقي الصفحات)
+       ========================================================= */
     .btn {
       padding: 10px 22px;
       border: none;
@@ -394,6 +408,9 @@
       transform: none !important;
     }
 
+    /* =========================================================
+       FILTER SECTION
+       ========================================================= */
     .filter-section {
       display: flex;
       gap: 12px;
@@ -442,6 +459,9 @@
       color: var(--gray);
     }
 
+    /* =========================================================
+       INVOICE LIST
+       ========================================================= */
     .invoice-list-header {
       display: flex;
       justify-content: space-between;
@@ -537,6 +557,9 @@
       flex-wrap: wrap;
     }
 
+    /* =========================================================
+       BADGES (موحد)
+       ========================================================= */
     .badge {
       font-size: 11px;
       font-weight: 600;
@@ -603,6 +626,9 @@
       color: #92400E;
     }
 
+    /* =========================================================
+       PREVIEW CARD
+       ========================================================= */
     .preview-card {
       display: none;
       animation: fadeSlide 0.3s ease;
@@ -644,6 +670,9 @@
       margin-right: auto;
     }
 
+    /* =========================================================
+       ACCORDION CONTROLS
+       ========================================================= */
     .accordion-controls {
       display: flex;
       gap: 8px;
@@ -653,6 +682,9 @@
       border-bottom: 1px solid var(--gray-light);
     }
 
+    /* =========================================================
+       PRODUCT CARDS (موحد مع باقي الصفحات)
+       ========================================================= */
     .product-card {
       background: white;
       border-radius: var(--radius);
@@ -783,6 +815,9 @@
       background: var(--light);
     }
 
+    /* =========================================================
+       COLOR ACCORDION (موحد مع باقي الصفحات)
+       ========================================================= */
     .color-accordion {
       border-top: 1px solid var(--gray-light);
       padding-top: 12px;
@@ -942,6 +977,9 @@
       font-weight: 700;
     }
 
+    /* =========================================================
+       STATISTICS (موحد مع باقي الصفحات)
+       ========================================================= */
     .stats-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
@@ -1012,6 +1050,9 @@
       }
     }
 
+    /* =========================================================
+       STICKY BOTTOM (موحد مع باقي الصفحات)
+       ========================================================= */
     .sticky-bottom-wrapper {
       position: fixed;
       bottom: 0;
@@ -1100,6 +1141,9 @@
       }
     }
 
+    /* =========================================================
+       OLD RECEIVED INVOICES SECTION
+       ========================================================= */
     .old-orders-section {
       margin-top: 24px;
     }
@@ -1259,6 +1303,9 @@
       gap: 6px;
     }
 
+    /* =========================================================
+       DIALOG / MODAL (موحد مع باقي الصفحات)
+       ========================================================= */
     .dialog-overlay {
       display: none;
       position: fixed;
@@ -1332,23 +1379,66 @@
       flex-wrap: wrap;
     }
 
-    .modal-close-btn {
-      position: absolute;
-      top: 15px;
-      left: 20px;
-      background: none;
-      border: none;
-      font-size: 24px;
+    .dialog-box .product-list {
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
+    .dialog-product-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--gray-light);
+    }
+
+    .dialog-product-item:last-child {
+      border-bottom: none;
+    }
+
+    .dialog-product-item img {
+      width: 40px;
+      height: 40px;
+      border-radius: var(--radius-sm);
+      object-fit: cover;
+      border: 1px solid var(--gray-light);
+    }
+
+    .dialog-product-item .info {
+      flex: 1;
+    }
+
+    .dialog-product-item .info .name {
+      font-weight: 500;
+      font-size: 14px;
+      color: var(--dark-secondary);
+    }
+
+    .dialog-product-item .info .details {
+      font-size: 12px;
       color: var(--gray);
-      cursor: pointer;
-      transition: var(--transition);
     }
 
-    .modal-close-btn:hover {
+    .dialog-product-item .qty-info {
+      font-weight: 600;
+      font-size: 14px;
+      min-width: 60px;
+      text-align: center;
+    }
+
+    .dialog-product-item .qty-info.done {
+      color: var(--success);
+    }
+    .dialog-product-item .qty-info.partial {
+      color: var(--warning);
+    }
+    .dialog-product-item .qty-info.shortage {
       color: var(--danger);
-      transform: rotate(90deg);
     }
 
+    /* =========================================================
+       SHORTAGE ITEMS
+       ========================================================= */
     .shortage-item {
       display: flex;
       align-items: center;
@@ -1396,6 +1486,26 @@
       font-size: 13px;
     }
 
+    .modal-close-btn {
+      position: absolute;
+      top: 15px;
+      left: 20px;
+      background: none;
+      border: none;
+      font-size: 24px;
+      color: var(--gray);
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .modal-close-btn:hover {
+      color: var(--danger);
+      transform: rotate(90deg);
+    }
+
+    /* =========================================================
+       PROGRESS BAR
+       ========================================================= */
     .progress-container {
       min-width: 80px;
     }
@@ -1435,6 +1545,9 @@
       background: var(--danger);
     }
 
+    /* =========================================================
+       EMPTY STATE
+       ========================================================= */
     .empty-state {
       text-align: center;
       padding: 48px 20px;
@@ -1458,6 +1571,9 @@
       font-size: 0.95rem;
     }
 
+    /* =========================================================
+       TOAST / ALERT (موحد مع باقي الصفحات)
+       ========================================================= */
     .toast-alert {
       position: fixed;
       bottom: 90px;
@@ -1474,6 +1590,9 @@
       box-shadow: var(--shadow-lg);
     }
 
+    /* =========================================================
+       IMAGE MODAL
+       ========================================================= */
     .image-modal-overlay {
       display: none;
       position: fixed;
@@ -1524,6 +1643,9 @@
       transform: scale(1.05);
     }
 
+    /* =========================================================
+       ANIMATIONS
+       ========================================================= */
     @keyframes fadeSlide {
       from {
         opacity: 0;
@@ -1555,6 +1677,9 @@
       }
     }
 
+    /* =========================================================
+       RESPONSIVE
+       ========================================================= */
     @media (max-width: 992px) {
       .main-content {
         margin-right: 0;
@@ -1697,6 +1822,9 @@
       }
     }
 
+    /* =========================================================
+       UTILITIES
+       ========================================================= */
     .hidden {
       display: none !important;
     }
@@ -1737,6 +1865,9 @@
   <!-- ===== MAIN CONTENT ===== -->
   <div class="main-content" id="mainContent">
 
+    <!-- =========================================================
+    HEADER (موحد مع باقي الصفحات)
+    ========================================================= -->
     <div class="header">
       <div class="header-left">
         <button class="menu-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
@@ -1759,15 +1890,20 @@
       </div>
     </div>
 
+    <!-- =========================================================
+    CONTAINER
+    ========================================================= -->
     <div class="container">
 
+      <!-- FILTERS -->
       <section class="card">
         <div class="filter-section">
           <select id="invoiceFilter">
-            <option value="all">جميع الفواتير الجاهزة</option>
-            <option value="pending">غير مستلمة</option>
-            <option value="partial">استلام جزئي</option>
-            <option value="received">مستلمة</option>
+            <option value="all"><i class="fas fa-list"></i> جميع الفواتير الجاهزة</option>
+            <option value="pending"><i class="fas fa-clock"></i> غير مستلمة</option>
+            <option value="partial"><i class="fas fa-exclamation-triangle"></i> استلام جزئي</option>
+            <option value="received"><i class="fas fa-check-circle"></i> مستلمة</option>
+            <option value="shortage"><i class="fas fa-exclamation-circle"></i> يوجد نقص</option>
           </select>
           <input type="text" class="search-input" id="searchInput" placeholder="🔍 بحث عن فرع أو منتج..." />
           <button class="btn btn-teal" id="loadSelectedBtn">
@@ -1776,6 +1912,7 @@
         </div>
       </section>
 
+      <!-- INVOICE LIST -->
       <section class="card">
         <div class="invoice-list-header">
           <h4><i class="fas fa-file-invoice"></i> الفواتير الجاهزة للاستلام</h4>
@@ -1790,6 +1927,7 @@
         </div>
       </section>
 
+      <!-- INVOICE PREVIEW -->
       <section class="card preview-card" id="previewSection">
         <div class="preview-header">
           <div>
@@ -1799,6 +1937,7 @@
           <span class="badge" id="previewStatus">⏳ جارٍ الاستلام</span>
         </div>
 
+        <!-- ACCORDION CONTROLS -->
         <div class="accordion-controls">
           <button class="btn btn-secondary btn-sm" id="expandAllColorsBtn">
             <i class="fas fa-chevron-down"></i> فتح كل الألوان
@@ -1826,7 +1965,7 @@
             <i class="fas fa-times"></i> إغلاق
           </button>
           <button class="btn btn-warning" id="shortageBtn">
-            <i class="fas fa-exclamation-triangle"></i> تسجيل نقص
+            <i class="fas fa-exclamation-circle"></i> تسجيل نقص
           </button>
           <button class="btn btn-success" id="completeReceiveBtn">
             <i class="fas fa-check-double"></i> تأكيد الاستلام الكامل
@@ -1834,6 +1973,7 @@
         </div>
       </section>
 
+      <!-- STATISTICS (موحد مع باقي الصفحات) -->
       <section class="stats-grid" id="statsGrid">
         <div class="stat-card">
           <div class="stat-label"><i class="fas fa-file-invoice"></i> إجمالي الفواتير الجاهزة</div>
@@ -1844,15 +1984,16 @@
           <div class="stat-value orange" id="statPending">0</div>
         </div>
         <div class="stat-card">
-          <div class="stat-label"><i class="fas fa-check-circle"></i> تم الاستلام</div>
+          <div class="stat-label"><i class="fas fa-check-circle"></i> تم الاستلام ✅</div>
           <div class="stat-value green" id="statReceived">0</div>
         </div>
         <div class="stat-card">
-          <div class="stat-label"><i class="fas fa-exclamation-triangle"></i> استلام جزئي</div>
+          <div class="stat-label"><i class="fas fa-exclamation-circle"></i> يوجد نقص</div>
           <div class="stat-value red" id="statShortage">0</div>
         </div>
       </section>
 
+      <!-- OLD RECEIVED INVOICES -->
       <section class="card old-orders-section" id="oldOrdersSection" style="display:none;">
         <div class="old-orders-header">
           <div>
@@ -1880,6 +2021,7 @@
 
   </div>
 
+  <!-- ===== STICKY BOTTOM (خارج main-content) ===== -->
   <div class="sticky-bottom-wrapper" id="stickyWrapper">
     <div class="sticky-bottom" id="stickyBottom">
       <div class="summary">
@@ -1899,21 +2041,25 @@
     </div>
   </div>
 
+  <!-- =========================================================
+  DIALOGS / MODALS
+  ========================================================= -->
+
   <!-- SHORTAGE DIALOG -->
   <div class="dialog-overlay" id="shortageDialog">
     <div class="dialog-box">
       <button class="modal-close-btn" onclick="window.UI.closeShortageDialog()"><i class="fas fa-times"></i></button>
-      <h3><i class="fas fa-exclamation-triangle" style="color:var(--danger);"></i> تسجيل النقص</h3>
+      <h3><i class="fas fa-exclamation-circle" style="color:var(--danger);"></i> تسجيل النقص</h3>
       <p class="subtitle">حدد الكميات الناقصة لكل منتج ومقاس ولون</p>
       <div id="shortageProductList"></div>
       <div class="dialog-actions">
         <button class="btn btn-secondary" id="shortageDialogCancel"><i class="fas fa-times"></i> إلغاء</button>
-        <button class="btn btn-danger" id="shortageDialogConfirm"><i class="fas fa-exclamation-triangle"></i> تأكيد النقص</button>
+        <button class="btn btn-danger" id="shortageDialogConfirm"><i class="fas fa-exclamation-circle"></i> تأكيد النقص</button>
       </div>
     </div>
   </div>
 
-  <!-- RECEIVE DIALOG -->
+  <!-- RECEIVE DIALOG (for individual product) -->
   <div class="dialog-overlay" id="receiveDialog">
     <div class="dialog-box">
       <button class="modal-close-btn" onclick="window.UI.closeReceiveDialog()"><i class="fas fa-times"></i></button>
@@ -1952,11 +2098,17 @@
     <img id="modalImage" src="" alt="Product" onclick="event.stopPropagation();" />
   </div>
 
+  <!-- =========================================================
+  JAVASCRIPT
+  ========================================================= -->
   <script>
     (function() {
       'use strict';
 
-      const STORAGE_VERSION = 6;
+      // ================================================================
+      //  STORAGE VERSION
+      // ================================================================
+      const STORAGE_VERSION = 5;
       const STORAGE_VERSION_KEY = 'shopify_storage_version';
 
       const currentVersion = localStorage.getItem(STORAGE_VERSION_KEY);
@@ -1974,6 +2126,9 @@
         console.log('✅ Storage cleared and version set to', STORAGE_VERSION);
       }
 
+      // ================================================================
+      //  STORAGE
+      // ================================================================
       const Storage = {
         get(key, fallback = '') {
           try {
@@ -1992,9 +2147,23 @@
         },
         remove(key) {
           try { localStorage.removeItem('shopify_' + key); } catch (e) {}
+        },
+        getCurrentUser() {
+          try {
+            const userData = this.get('currentUser', '');
+            if (userData && typeof userData === 'string') {
+              return JSON.parse(userData);
+            }
+            return userData || null;
+          } catch {
+            return null;
+          }
         }
       };
 
+      // ================================================================
+      //  FIREBASE CONFIG
+      // ================================================================
       const firebaseConfig = {
         apiKey: "AIzaSyC7M4JhDl7KGZdrPj78W0nPqQy2I4P4I6I",
         authDomain: "exams-fab0f.firebaseapp.com",
@@ -2012,6 +2181,9 @@
         console.log('✅ Firebase ready');
       } catch (e) { console.warn('⚠️ Firebase init error', e); }
 
+      // ================================================================
+      //  UTILITIES
+      // ================================================================
       const Utils = {
         cleanText(t) { return t ? t.replace(/\s+/g, ' ').trim() : ''; },
         formatCurrency(v) { return v ? Number(v).toLocaleString('en-EG') : '0'; },
@@ -2034,89 +2206,87 @@
           other.sort();
           return [...std, ...num, ...other];
         },
-
-        extractItemsFromInvoice(invoice) {
-          const items = [];
-          if (!invoice || !invoice.items) return items;
-          
-          invoice.items.forEach(product => {
-            const productId = product.productId || '';
-            const productName = product.name || 'Unknown';
-            const productSku = product.sku || '';
-            const unitPrice = product.unitPrice || 0;
-            const image = product.image || '';
-            const colorsSizes = product.colorsSizes || {};
-            const preparedQuantities = product.preparedQuantities || {};
-            const receiveQuantities = product.receiveQuantities || {};
-            
-            for (const color in colorsSizes) {
-              const sizes = colorsSizes[color] || {};
-              const preparedSizes = preparedQuantities[color] || {};
-              const receivedSizes = receiveQuantities[color] || {};
-              
-              for (const size in sizes) {
-                const preparedQty = preparedSizes[size] || 0;
-                const receivedQty = receivedSizes[size] || 0;
-                
-                if (preparedQty > 0) {
-                  items.push({
-                    productId: productId,
-                    productName: productName,
-                    sku: productSku,
-                    color: color,
-                    size: size,
-                    preparedQty: preparedQty,
-                    receivedQty: receivedQty,
-                    unitPrice: unitPrice,
-                    image: image,
-                    total: preparedQty * unitPrice
-                  });
-                }
-              }
+        getPreparedQty(item) {
+          // Get prepared quantity from preparedQuantities object
+          if (item.preparedQuantities && typeof item.preparedQuantities === 'object') {
+            let total = 0;
+            for (const key in item.preparedQuantities) {
+              total += Number(item.preparedQuantities[key]) || 0;
             }
-          });
-          
-          return items;
+            return total;
+          }
+          return item.preparedQty || 0;
         },
-
-        calculateTotalPrepared(items) { let t = 0;
-          items.forEach(r => { t += r.preparedQty || 0; }); return t; },
-        calculateReceived(items) {
-          let received = 0;
-          items.forEach(r => { received += r.receivedQty || 0; });
-          return received;
+        getReceivedQty(item, userId) {
+          // Get received quantity from receiveQuantities for specific user
+          if (item.receiveQuantities && item.receiveQuantities[userId] !== undefined) {
+            return Number(item.receiveQuantities[userId]) || 0;
+          }
+          return item.receivedQty || 0;
         },
-        calculateShortage(items) {
+        getTotalPrepared(items) {
+          let total = 0;
+          if (items) {
+            items.forEach(item => {
+              total += this.getPreparedQty(item);
+            });
+          }
+          return total;
+        },
+        getTotalReceived(items, userId) {
+          let total = 0;
+          if (items) {
+            items.forEach(item => {
+              total += this.getReceivedQty(item, userId);
+            });
+          }
+          return total;
+        },
+        calculateShortage(items, userId) {
           let shortage = 0;
-          items.forEach(r => {
-            const prepared = r.preparedQty || 0;
-            const received = r.receivedQty || 0;
-            if (received < prepared) shortage += (prepared - received);
-          });
+          if (items) {
+            items.forEach(item => {
+              const prepared = this.getPreparedQty(item);
+              const received = this.getReceivedQty(item, userId);
+              if (received < prepared) shortage += (prepared - received);
+            });
+          }
           return shortage;
         },
-        isFullyReceived(items) {
+        isFullyReceived(items, userId) {
           if (!items || !items.length) return false;
-          return items.every(r => (r.receivedQty || 0) >= (r.preparedQty || 0));
+          return items.every(item => {
+            const prepared = this.getPreparedQty(item);
+            const received = this.getReceivedQty(item, userId);
+            return received >= prepared;
+          });
         },
-        hasShortage(items) {
+        hasShortage(items, userId) {
           if (!items || !items.length) return false;
-          return items.some(r => (r.receivedQty || 0) < (r.preparedQty || 0));
+          return items.some(item => {
+            const prepared = this.getPreparedQty(item);
+            const received = this.getReceivedQty(item, userId);
+            return received < prepared;
+          });
         },
-        getProgress(items) {
+        getProgress(items, userId) {
           if (!items || !items.length) return 0;
           let total = 0,
             received = 0;
-          items.forEach(r => { total += r.preparedQty || 0;
-            received += r.receivedQty || 0; });
+          items.forEach(item => {
+            total += this.getPreparedQty(item);
+            received += this.getReceivedQty(item, userId);
+          });
           return total === 0 ? 0 : Math.round((received / total) * 100);
         },
-        getStatus(invoice) {
-          if (!invoice || !invoice.flatItems || !invoice.flatItems.length) return 'pending';
-          const allReceived = invoice.flatItems.every(item => (item.receivedQty || 0) >= (item.preparedQty || 0));
-          const anyReceived = invoice.flatItems.some(item => (item.receivedQty || 0) > 0);
+        getStatus(invoice, userId) {
+          if (!invoice || !invoice.items || !invoice.items.length) return 'pending';
+          const allReceived = this.isFullyReceived(invoice.items, userId);
+          const anyReceived = invoice.items.some(item => this.getReceivedQty(item, userId) > 0);
+          const hasShortage = this.hasShortage(invoice.items, userId);
           
           if (allReceived) return 'received';
+          if (hasShortage && anyReceived) return 'shortage';
           if (anyReceived) return 'partial';
           return 'pending';
         },
@@ -2125,6 +2295,7 @@
             pending: '⏳ غير مستلمة',
             partial: '⚠️ استلام جزئي',
             received: '✅ مستلمة',
+            shortage: '📉 يوجد نقص',
             closed: '🔒 مغلقة'
           };
           return map[status] || status;
@@ -2134,15 +2305,31 @@
             pending: 'pending',
             partial: 'partial',
             received: 'received',
+            shortage: 'shortage',
             closed: 'closed'
           };
           return map[status] || 'pending';
+        },
+        isPrepared(invoice) {
+          return invoice && invoice.prepared === true;
+        },
+        isClosed(invoice) {
+          return invoice && invoice.status === 'closed';
+        },
+        canReceive(item, userId) {
+          const prepared = this.getPreparedQty(item);
+          const received = this.getReceivedQty(item, userId);
+          return prepared > 0 && received < prepared;
         }
       };
 
+      // ================================================================
+      //  UI CONTROLLER
+      // ================================================================
       const UI = {
         elements: {
           invoiceList: document.getElementById('invoiceList'),
+          emptyInvoiceList: document.getElementById('emptyInvoiceList'),
           invoicesCount: document.getElementById('invoicesCount'),
           filter: document.getElementById('invoiceFilter'),
           searchInput: document.getElementById('searchInput'),
@@ -2205,33 +2392,33 @@
         _oldInvoices: [],
         _viewingOldInvoice: null,
         _currentUser: null,
-        _currentUserId: null,
+        _userId: null,
 
+        // ===== INIT =====
         init() {
           console.log('🚀 Initializing Receiving UI...');
 
-          const userData = Storage.get('currentUser');
-          if (userData) {
-            try {
-              const parsed = typeof userData === 'string' ? JSON.parse(userData) : userData;
-              this._currentUser = parsed;
-              this._currentUserId = parsed.id || null;
-              console.log('👤 Current user:', this._currentUser);
-            } catch (e) {
-              console.warn('⚠️ Could not parse currentUser:', e);
-              this._currentUserId = null;
-            }
+          // Get current user from localStorage
+          const userData = Storage.getCurrentUser();
+          if (userData && userData.id) {
+            this._currentUser = userData;
+            this._userId = userData.id;
+            console.log('✅ Current user:', this._userId);
+          } else {
+            this._userId = 'unknown_user';
+            console.warn('⚠️ No user found in localStorage');
           }
 
           const userNameEl = document.getElementById('currentAdminName');
           if (userNameEl && this._currentUser) {
-            userNameEl.textContent = `مرحباً، ${this._currentUser.fullName || this._currentUser.username || 'مستخدم غير معروف'}`;
+            userNameEl.textContent = `مرحباً، ${this._currentUser.fullName || this._currentUser.username || 'مستخدم'}`;
           }
 
           this.loadInvoices();
           this.loadOldInvoices();
           this.updateStickyPosition();
 
+          // Event listeners
           this.elements.refreshBtn.addEventListener('click', () => this.loadInvoices());
           this.elements.filter.addEventListener('change', () => this.renderInvoiceList());
           this.elements.searchInput.addEventListener('input', () => this.renderInvoiceList());
@@ -2241,39 +2428,46 @@
           this.elements.shortageBtn.addEventListener('click', () => this.openShortageDialog());
           this.elements.receiveSelectedBtn.addEventListener('click', () => this.confirmFullReceive());
 
+          // Accordion controls
           this.elements.expandAllColorsBtn.addEventListener('click', () => this.expandAllColors(true));
           this.elements.collapseAllColorsBtn.addEventListener('click', () => this.expandAllColors(false));
           this.elements.expandAllProductsBtn.addEventListener('click', () => this.expandAllProducts(true));
           this.elements.collapseAllProductsBtn.addEventListener('click', () => this.expandAllProducts(false));
 
+          // Shortage dialog events
           this.elements.shortageDialogCancel.addEventListener('click', () => this.closeShortageDialog());
           this.elements.shortageDialogConfirm.addEventListener('click', () => this.confirmShortage());
           this.elements.shortageDialog.addEventListener('click', (e) => {
             if (e.target === this.elements.shortageDialog) this.closeShortageDialog();
           });
 
+          // Receive dialog events
           this.elements.receiveDialogCancel.addEventListener('click', () => this.closeReceiveDialog());
           this.elements.receiveDialogConfirm.addEventListener('click', () => this.confirmReceiveProduct());
           this.elements.receiveDialog.addEventListener('click', (e) => {
             if (e.target === this.elements.receiveDialog) this.closeReceiveDialog();
           });
 
+          // View old invoice dialog
           this.elements.viewOldInvoiceClose.addEventListener('click', () => this.closeViewOldInvoice());
           this.elements.viewOldInvoiceExport.addEventListener('click', () => this.exportViewingInvoice());
           this.elements.viewOldInvoiceDialog.addEventListener('click', (e) => {
             if (e.target === this.elements.viewOldInvoiceDialog) this.closeViewOldInvoice();
           });
 
+          // Old orders events
           this.elements.showOldOrdersBtn.addEventListener('click', () => this.toggleOldOrders());
           this.elements.refreshOldOrdersBtn.addEventListener('click', () => this.loadOldInvoices());
           this.elements.exportOldOrdersBtn.addEventListener('click', () => this.exportAllOldInvoices());
 
+          // Image modal
           this.elements.imageModal.addEventListener('click', (e) => {
             if (e.target === this.elements.imageModal) this.closeModal();
           });
 
           this.loadFromURL();
 
+          // Load sidebar from usermenu.js
           if (typeof loadLayout === 'function') {
             loadLayout();
           }
@@ -2302,6 +2496,7 @@
           }
         },
 
+        // ===== IMAGE MODAL =====
         openModal(imgSrc) {
           if (!imgSrc) return;
           this.elements.modalImage.src = imgSrc;
@@ -2313,6 +2508,7 @@
           this.elements.modalImage.src = '';
         },
 
+        // ===== ACCORDION CONTROLS =====
         expandAllColors(open) {
           for (const key in this._productCardStates) {
             if (key.includes('_color_')) this._productCardStates[key] = open;
@@ -2327,6 +2523,7 @@
           if (this._selectedInvoice) this.renderInvoicePreview(this._selectedInvoice);
         },
 
+        // ===== LOAD FROM URL =====
         loadFromURL() {
           const params = new URLSearchParams(window.location.search);
           const id = params.get('invoice');
@@ -2342,9 +2539,18 @@
           }
         },
 
+        // ===== LOAD INVOICES =====
         loadInvoices() {
           if (!database) {
             this.showAlert('⚠️ Firebase not ready', 'error');
+            return;
+          }
+
+          if (!this._userId || this._userId === 'unknown_user') {
+            this.showAlert('⚠️ يرجى تسجيل الدخول أولاً', 'error');
+            this.elements.storeStatus.innerHTML = '<i class="fas fa-circle" style="font-size:8px;"></i> غير مسجل';
+            this.elements.storeStatus.style.background = 'var(--danger-light)';
+            this.elements.storeStatus.style.color = 'var(--danger)';
             return;
           }
 
@@ -2359,21 +2565,27 @@
             if (data) {
               for (const key in data) {
                 const inv = data[key];
-                if (inv.prepared !== true) continue;
-                if (this._currentUserId && inv.userId !== this._currentUserId) continue;
-                
-                const flatItems = Utils.extractItemsFromInvoice(inv);
-                const totalPieces = Utils.calculateTotalPrepared(flatItems);
-                const totalValue = flatItems.reduce((sum, item) => sum + (item.unitPrice || 0) * (item.preparedQty || 0), 0);
-
-                this._invoices.push({
-                  id: key,
-                  ...inv,
-                  flatItems: flatItems,
-                  totalPieces: totalPieces,
-                  totalValue: totalValue,
-                  createdAt: inv.createdAt || 0
-                });
+                // Only show invoices that are prepared AND belong to this user
+                if (inv.prepared === true && inv.userId === this._userId) {
+                  // Ensure items array exists
+                  if (inv.items) {
+                    inv.items.forEach(item => {
+                      // Initialize receiveQuantities for this user if not exists
+                      if (!item.receiveQuantities) {
+                        item.receiveQuantities = {};
+                      }
+                      // Ensure preparedQuantities exists
+                      if (!item.preparedQuantities) {
+                        item.preparedQuantities = item.preparedQty ? { default: item.preparedQty } : { default: 0 };
+                      }
+                    });
+                  }
+                  this._invoices.push({
+                    id: key,
+                    ...inv,
+                    createdAt: inv.createdAt || 0
+                  });
+                }
               }
               this._invoices.sort((a, b) => b.createdAt - a.createdAt);
             }
@@ -2392,17 +2604,18 @@
           });
         },
 
+        // ===== RENDER INVOICE LIST =====
         renderInvoiceList() {
           const filter = this.elements.filter.value;
           const search = this.elements.searchInput.value.toLowerCase().trim();
 
           let filtered = this._invoices.filter(inv => {
-            const status = Utils.getStatus(inv);
+            const status = Utils.getStatus(inv, this._userId);
             if (filter !== 'all' && status !== filter) return false;
             if (search) {
               const branch = (inv.branch || '').toLowerCase();
-              const nameMatch = inv.flatItems && inv.flatItems.some(item => 
-                (item.productName || '').toLowerCase().includes(search) ||
+              const nameMatch = inv.items && inv.items.some(item => 
+                (item.name || '').toLowerCase().includes(search) ||
                 (item.sku || '').toLowerCase().includes(search)
               );
               if (!branch.includes(search) && !nameMatch) return false;
@@ -2411,6 +2624,7 @@
           });
 
           this._filteredInvoices = filtered;
+
           const list = this.elements.invoiceList;
 
           if (!filtered.length) {
@@ -2426,15 +2640,17 @@
           }
 
           let html = '';
-          filtered.forEach((inv) => {
-            const status = Utils.getStatus(inv);
+          filtered.forEach((inv, idx) => {
+            const status = Utils.getStatus(inv, this._userId);
             const date = new Date(inv.createdAt);
             const dateStr = date.toLocaleDateString('ar-EG') + ' ' + date.toLocaleTimeString('ar-EG', {
               hour: '2-digit',
               minute: '2-digit'
             });
-            const progress = Utils.getProgress(inv.flatItems);
+            const progress = Utils.getProgress(inv.items, this._userId);
             const isSelected = this._selectedInvoiceId === inv.id;
+            const totalPrepared = Utils.getTotalPrepared(inv.items);
+            const totalReceived = Utils.getTotalReceived(inv.items, this._userId);
 
             html += `
               <div class="invoice-item ${isSelected ? 'selected' : ''}" 
@@ -2443,8 +2659,8 @@
                   <div class="branch"><i class="fas fa-store"></i> ${Utils.escapeHtml(inv.branch || 'Branch not set')}</div>
                   <div class="meta">
                     <span><i class="fas fa-calendar-alt"></i> ${dateStr}</span>
-                    <span><i class="fas fa-boxes"></i> ${inv.flatItems ? inv.flatItems.length : 0} منتج</span>
-                    <span><i class="fas fa-cubes"></i> ${inv.totalPieces || 0} قطعة</span>
+                    <span><i class="fas fa-boxes"></i> ${inv.items ? inv.items.length : 0} منتج</span>
+                    <span><i class="fas fa-cubes"></i> ${totalPrepared} قطعة</span>
                     <span><i class="fas fa-money-bill-wave"></i> ${Utils.formatCurrency(inv.totalValue || 0)} LE</span>
                   </div>
                 </div>
@@ -2471,11 +2687,13 @@
             pending: 'fa-clock',
             partial: 'fa-exclamation-triangle',
             received: 'fa-check-circle',
+            shortage: 'fa-exclamation-circle',
             closed: 'fa-lock'
           };
           return map[status] || 'fa-circle';
         },
 
+        // ===== SELECT INVOICE =====
         selectInvoice(invoiceId) {
           const invoice = this._invoices.find(inv => inv.id === invoiceId);
           if (!invoice) {
@@ -2495,16 +2713,22 @@
         },
 
         loadSelectedInvoice() {
-          const firstItem = this.elements.invoiceList.querySelector('.invoice-item');
-          if (firstItem) {
-            const branch = firstItem.querySelector('.branch')?.textContent?.replace('🏢 ', '') || '';
-            const matched = this._filteredInvoices.find(inv => 
-              (inv.branch || 'Branch not set') === branch
-            );
-            if (matched) this.selectInvoice(matched.id);
+          const selected = document.querySelector('.invoice-item.selected');
+          if (selected) {
+            // Already selected
+          } else {
+            const firstItem = this.elements.invoiceList.querySelector('.invoice-item');
+            if (firstItem) {
+              const branch = firstItem.querySelector('.branch')?.textContent?.replace('🏢 ', '') || '';
+              const matched = this._filteredInvoices.find(inv => 
+                (inv.branch || 'Branch not set') === branch
+              );
+              if (matched) this.selectInvoice(matched.id);
+            }
           }
         },
 
+        // ===== RENDER INVOICE PREVIEW =====
         renderInvoicePreview(invoice) {
           const container = this.elements.previewContainer;
           this.elements.previewSection.classList.add('show');
@@ -2515,24 +2739,27 @@
             hour: '2-digit',
             minute: '2-digit'
           });
-          const status = Utils.getStatus(invoice);
-          const progress = Utils.getProgress(invoice.flatItems);
-          const shortage = Utils.calculateShortage(invoice.flatItems);
+          const status = Utils.getStatus(invoice, this._userId);
+          const progress = Utils.getProgress(invoice.items, this._userId);
+          const shortage = Utils.calculateShortage(invoice.items, this._userId);
+          const totalPrepared = Utils.getTotalPrepared(invoice.items);
+          const totalReceived = Utils.getTotalReceived(invoice.items, this._userId);
 
           this.elements.previewTitle.innerHTML = `<i class="fas fa-receipt"></i> ${Utils.escapeHtml(branch)}`;
           this.elements.previewMeta.innerHTML = `
             <i class="fas fa-calendar-alt"></i> ${dateStr} | 
-            <i class="fas fa-cubes"></i> ${invoice.totalPieces || 0} قطعة | 
+            <i class="fas fa-cubes"></i> ${totalPrepared} قطعة | 
+            <i class="fas fa-check-circle" style="color:var(--success);"></i> المستلم: ${totalReceived} |
             <i class="fas fa-money-bill-wave"></i> ${Utils.formatCurrency(invoice.totalValue || 0)} LE
           `;
           this.elements.previewStatus.textContent = Utils.getStatusText(status);
           this.elements.previewStatus.className = `badge ${status}`;
 
           if (shortage > 0) {
-            this.elements.previewMeta.textContent += ` | <i class="fas fa-exclamation-triangle" style="color:var(--danger);"></i> نقص: ${shortage} قطعة`;
+            this.elements.previewMeta.textContent += ` | <i class="fas fa-exclamation-circle" style="color:var(--danger);"></i> نقص: ${shortage} قطعة`;
           }
 
-          if (!invoice.flatItems || !invoice.flatItems.length) {
+          if (!invoice.items || !invoice.items.length) {
             container.innerHTML = `
               <div class="empty-state">
                 <i class="fas fa-box-open"></i>
@@ -2543,13 +2770,13 @@
             return;
           }
 
+          // Group items by product (name + sku)
           const groups = {};
-          invoice.flatItems.forEach(item => {
-            const key = item.productId || item.productName || 'Unknown';
+          invoice.items.forEach(item => {
+            const key = (item.name || 'Unknown') + '|' + (item.sku || '');
             if (!groups[key]) {
               groups[key] = {
-                productId: item.productId || '',
-                name: item.productName || 'Unknown',
+                name: item.name || 'Unknown',
                 sku: item.sku || '',
                 unitPrice: item.unitPrice || 0,
                 image: item.image || '',
@@ -2558,11 +2785,7 @@
             }
             const color = item.color || 'No Color';
             if (!groups[key].colors[color]) groups[key].colors[color] = [];
-            groups[key].colors[color].push({
-              size: item.size || 'No Size',
-              preparedQty: item.preparedQty || 0,
-              receivedQty: item.receivedQty || 0
-            });
+            groups[key].colors[color].push(item);
           });
 
           let html = '';
@@ -2578,9 +2801,9 @@
             let totalPrepared = 0,
               totalReceived = 0;
             for (const color in g.colors) {
-              g.colors[color].forEach(s => {
-                totalPrepared += s.preparedQty || 0;
-                totalReceived += s.receivedQty || 0;
+              g.colors[color].forEach(item => {
+                totalPrepared += Utils.getPreparedQty(item);
+                totalReceived += Utils.getReceivedQty(item, this._userId);
               });
             }
             const prodProgress = totalPrepared === 0 ? 0 : Math.round((totalReceived / totalPrepared) * 100);
@@ -2617,19 +2840,24 @@
           this.updateBottomBar(invoice);
         },
 
+        // ===== RENDER PREVIEW COLORS =====
         renderPreviewColors(g, productId) {
           let html = '';
           let colorIdx = 0;
           for (const color in g.colors) {
-            const sizes = g.colors[color];
+            const items = g.colors[color];
             const colorId = productId + '_color_' + colorIdx;
             if (this._productCardStates[colorId] === undefined) {
               this._productCardStates[colorId] = true;
             }
             const isColorOpen = this._productCardStates[colorId];
 
-            const totalPrepared = sizes.reduce((sum, s) => sum + s.preparedQty, 0);
-            const totalReceived = sizes.reduce((sum, s) => sum + (s.receivedQty || 0), 0);
+            let totalPrepared = 0,
+              totalReceived = 0;
+            items.forEach(item => {
+              totalPrepared += Utils.getPreparedQty(item);
+              totalReceived += Utils.getReceivedQty(item, this._userId);
+            });
             const colorProgress = totalPrepared === 0 ? 0 : Math.round((totalReceived / totalPrepared) * 100);
             const hasShortage = totalReceived < totalPrepared;
 
@@ -2639,13 +2867,13 @@
                   <span class="chevron-sm ${isColorOpen ? 'open' : ''}"><i class="fas fa-chevron-down"></i></span>
                   <span><i class="fas fa-palette" style="color:var(--primary);"></i> ${Utils.escapeHtml(color)}</span>
                   <span class="color-total">${totalReceived}/${totalPrepared} (${colorProgress}%)</span>
-                  ${hasShortage ? '<span class="shortage-highlight"><i class="fas fa-exclamation-triangle"></i> نقص</span>' : ''}
+                  ${hasShortage ? '<span class="shortage-highlight"><i class="fas fa-exclamation-circle"></i> نقص</span>' : ''}
                 </div>
                 <div class="color-sizes ${isColorOpen ? 'open' : ''}">
-                  ${sizes.map((s) => {
-                    const prepared = s.preparedQty || 0;
-                    const received = s.receivedQty || 0;
-                    const canReceive = prepared > 0;
+                  ${items.map((item) => {
+                    const prepared = Utils.getPreparedQty(item);
+                    const received = Utils.getReceivedQty(item, this._userId);
+                    const canReceive = prepared > 0 && received < prepared;
                     const isReceived = received >= prepared && prepared > 0;
                     const isPartial = received > 0 && received < prepared;
                     const statusClass = canReceive ? (isReceived ? 'received' : isPartial ? 'partial' : 'pending') : 'zero';
@@ -2655,17 +2883,13 @@
                     
                     return `
                       <div class="size-row">
-                        <span class="size-label">${Utils.escapeHtml(s.size)}</span>
+                        <span class="size-label">${Utils.escapeHtml(item.size || 'No Size')}</span>
                         <div class="qty-control">
-                          <button onclick="window.UI.changeReceiveQty('${g.productId}', '${color}', '${s.size}', -1)" 
-                                  ${disableMinus ? 'disabled' : ''}>
-                            <i class="fas fa-minus"></i>
-                          </button>
+                          <button onclick="window.UI.changeReceiveQty('${productId}', '${color}', '${item.size || 'No Size'}', -1)" 
+                                  ${disableMinus ? 'disabled' : ''}><i class="fas fa-minus"></i></button>
                           <span class="qty-val ${statusClass}">${received}/${prepared}</span>
-                          <button onclick="window.UI.changeReceiveQty('${g.productId}', '${color}', '${s.size}', 1)" 
-                                  ${disablePlus ? 'disabled' : ''}>
-                            <i class="fas fa-plus"></i>
-                          </button>
+                          <button onclick="window.UI.changeReceiveQty('${productId}', '${color}', '${item.size || 'No Size'}', 1)" 
+                                  ${disablePlus ? 'disabled' : ''}><i class="fas fa-plus"></i></button>
                         </div>
                         ${!canReceive ? '<span class="no-prepare"><i class="fas fa-ban"></i> غير متاح للاستلام</span>' : ''}
                       </div>
@@ -2679,107 +2903,79 @@
           return html;
         },
 
+        // ===== TOGGLE PRODUCT =====
         toggleProductPreview(productId) {
           const state = this._productCardStates[productId];
           this._productCardStates[productId] = state === false ? true : false;
           if (this._selectedInvoice) this.renderInvoicePreview(this._selectedInvoice);
         },
 
+        // ===== TOGGLE COLOR =====
         toggleColorPreview(colorId) {
           const state = this._productCardStates[colorId];
           this._productCardStates[colorId] = state === false ? true : false;
           if (this._selectedInvoice) this.renderInvoicePreview(this._selectedInvoice);
         },
 
+        // ===== CHANGE RECEIVE QTY =====
         changeReceiveQty(productId, color, size, delta) {
-          if (!this._selectedInvoice || !this._selectedInvoice.flatItems) {
-            console.warn('No invoice selected or no flatItems');
-            return;
-          }
+          if (!this._selectedInvoice || !this._selectedInvoice.items) return;
 
           let found = false;
-          this._selectedInvoice.flatItems.forEach(item => {
-            if (item.productId === productId && 
-                item.color === color && 
-                item.size === size) {
-              const current = item.receivedQty || 0;
-              const max = item.preparedQty || 0;
-              const newQty = Math.max(0, Math.min(max, current + delta));
+          this._selectedInvoice.items.forEach(item => {
+            const itemColor = item.color || 'No Color';
+            const itemSize = item.size || 'No Size';
+            if (itemColor === color && itemSize === size) {
+              const prepared = Utils.getPreparedQty(item);
+              const current = Utils.getReceivedQty(item, this._userId);
+              const newQty = Math.max(0, Math.min(prepared, current + delta));
               if (newQty !== current) {
-                item.receivedQty = newQty;
+                // Update receiveQuantities for this user
+                if (!item.receiveQuantities) {
+                  item.receiveQuantities = {};
+                }
+                item.receiveQuantities[this._userId] = newQty;
                 found = true;
-                console.log(`✅ Updated ${productId} ${color} ${size}: ${current} → ${newQty}`);
               }
             }
           });
 
           if (found) {
-            this._selectedInvoice.totalPieces = Utils.calculateTotalPrepared(this._selectedInvoice.flatItems);
-            this._selectedInvoice.totalValue = this._selectedInvoice.flatItems.reduce(
-              (sum, item) => sum + (item.unitPrice || 0) * (item.preparedQty || 0), 0
-            );
             this.saveInvoiceToFirebase(this._selectedInvoice);
             this.renderInvoicePreview(this._selectedInvoice);
             this.renderInvoiceList();
             this.updateStats();
-          } else {
-            console.warn('⚠️ No item found to update:', productId, color, size);
           }
         },
 
         saveInvoiceToFirebase(invoice) {
           if (!database) return;
           const ref = database.ref('invoices/' + invoice.id);
-          
-          // Build receiveQuantities in the same structure as preparedQuantities
-          const receiveQuantities = {};
-          
-          // Group by productId
-          invoice.flatItems.forEach(item => {
-            const pid = item.productId || '';
-            if (!receiveQuantities[pid]) {
-              receiveQuantities[pid] = {};
-            }
-            if (!receiveQuantities[pid][item.color]) {
-              receiveQuantities[pid][item.color] = {};
-            }
-            receiveQuantities[pid][item.color][item.size] = item.receivedQty || 0;
-          });
-
-          // Also update each product's receiveQuantities in the items array
-          const updatedItems = invoice.items ? invoice.items.map(product => {
-            const pid = product.productId || '';
-            return {
-              ...product,
-              receiveQuantities: receiveQuantities[pid] || {}
-            };
-          }) : [];
-
-          const isFullyReceived = Utils.isFullyReceived(invoice.flatItems);
-          
-          const updateData = {
-            receiveQuantities: receiveQuantities,
-            items: updatedItems,
-            status: isFullyReceived ? 'closed' : 'prepared',
-            prepared: isFullyReceived ? false : true
-          };
-          
-          ref.update(updateData, (error) => {
+          const { id, ...data } = invoice;
+          if (data.items) {
+            data.items.forEach(item => {
+              if (!item.receiveQuantities) item.receiveQuantities = {};
+              if (!item.preparedQuantities) {
+                item.preparedQuantities = item.preparedQty ? { default: item.preparedQty } : { default: 0 };
+              }
+            });
+          }
+          ref.update(data, (error) => {
             if (error) console.error('❌ Save error:', error);
-            else console.log('✅ Invoice updated with receiveQuantities:', receiveQuantities);
+            else console.log('✅ Invoice updated');
           });
         },
 
+        // ===== OPEN RECEIVE DIALOG =====
         openReceiveDialog(productKey, productId) {
           if (!this._selectedInvoice) return;
 
           const groups = {};
-          this._selectedInvoice.flatItems.forEach(item => {
-            const key = item.productId || item.productName || 'Unknown';
+          this._selectedInvoice.items.forEach(item => {
+            const key = (item.name || 'Unknown') + '|' + (item.sku || '');
             if (!groups[key]) {
               groups[key] = {
-                productId: item.productId || '',
-                name: item.productName || 'Unknown',
+                name: item.name || 'Unknown',
                 sku: item.sku || '',
                 unitPrice: item.unitPrice || 0,
                 image: item.image || '',
@@ -2827,22 +3023,21 @@
               return (a.size || '').localeCompare(b.size || '');
             });
             sorted.forEach(item => {
-              const prepared = item.preparedQty || 0;
-              const received = item.receivedQty || 0;
-              const canReceive = prepared > 0;
-              const isReceived = received >= prepared && prepared > 0;
+              const prepared = Utils.getPreparedQty(item);
+              const received = Utils.getReceivedQty(item, this._userId);
+              const canReceive = prepared > 0 && received < prepared;
               
               detailsHtml += `
                 <div style="display:flex;align-items:center;gap:12px;padding:4px 0;font-size:14px;flex-wrap:wrap;">
                   <span style="min-width:50px;font-weight:500;color:var(--dark-secondary);">${Utils.escapeHtml(item.size || 'No Size')}</span>
                   <span style="color:var(--gray);"><i class="fas fa-cube"></i> المتاح: ${prepared}</span>
-                  <span style="color:${isReceived ? 'var(--success)' : 'var(--warning)'};">
-                    <i class="fas ${isReceived ? 'fa-check-circle' : 'fa-clock'}"></i> المستلم: ${received}
+                  <span style="color:${received >= prepared ? 'var(--success)' : 'var(--warning)'};">
+                    <i class="fas ${received >= prepared ? 'fa-check-circle' : 'fa-clock'}"></i> المستلم: ${received}
                   </span>
                   ${!canReceive ? '<span class="no-prepare"><i class="fas fa-ban"></i> غير متاح</span>' : ''}
                   <div style="display:flex;gap:4px;margin-right:auto;">
-                    <button class="btn btn-secondary btn-sm" onclick="window.UI.adjustReceiveQtyFromDialog('${item.productId}', '${item.color || 'No Color'}', '${item.size || 'No Size'}', -1)" ${received <= 0 ? 'disabled' : ''}><i class="fas fa-minus"></i></button>
-                    <button class="btn btn-secondary btn-sm" onclick="window.UI.adjustReceiveQtyFromDialog('${item.productId}', '${item.color || 'No Color'}', '${item.size || 'No Size'}', 1)" ${received >= prepared || prepared === 0 ? 'disabled' : ''}><i class="fas fa-plus"></i></button>
+                    <button class="btn btn-secondary btn-sm" onclick="window.UI.adjustReceiveQtyFromDialog('${item.color || 'No Color'}', '${item.size || 'No Size'}', -1)" ${received <= 0 ? 'disabled' : ''}><i class="fas fa-minus"></i></button>
+                    <button class="btn btn-secondary btn-sm" onclick="window.UI.adjustReceiveQtyFromDialog('${item.color || 'No Color'}', '${item.size || 'No Size'}', 1)" ${received >= prepared || prepared === 0 ? 'disabled' : ''}><i class="fas fa-plus"></i></button>
                   </div>
                 </div>
               `;
@@ -2854,33 +3049,32 @@
           this.elements.receiveDialog.classList.add('show');
         },
 
-        adjustReceiveQtyFromDialog(productId, color, size, delta) {
+        adjustReceiveQtyFromDialog(color, size, delta) {
           if (!this._selectedInvoice || !this._pendingReceiveData) return;
 
           let found = false;
-          this._selectedInvoice.flatItems.forEach(item => {
-            if (item.productId === productId && 
-                item.color === color && 
-                item.size === size) {
-              const current = item.receivedQty || 0;
-              const max = item.preparedQty || 0;
-              const newQty = Math.max(0, Math.min(max, current + delta));
+          this._selectedInvoice.items.forEach(item => {
+            const itemColor = item.color || 'No Color';
+            const itemSize = item.size || 'No Size';
+            if (itemColor === color && itemSize === size) {
+              const prepared = Utils.getPreparedQty(item);
+              const current = Utils.getReceivedQty(item, this._userId);
+              const newQty = Math.max(0, Math.min(prepared, current + delta));
               if (newQty !== current) {
-                item.receivedQty = newQty;
+                if (!item.receiveQuantities) {
+                  item.receiveQuantities = {};
+                }
+                item.receiveQuantities[this._userId] = newQty;
                 found = true;
               }
             }
           });
 
           if (found) {
-            this._selectedInvoice.totalPieces = Utils.calculateTotalPrepared(this._selectedInvoice.flatItems);
-            this._selectedInvoice.totalValue = this._selectedInvoice.flatItems.reduce(
-              (sum, item) => sum + (item.unitPrice || 0) * (item.preparedQty || 0), 0
-            );
             this.saveInvoiceToFirebase(this._selectedInvoice);
             
-            const { productKey, productId: pId } = this._pendingReceiveData;
-            this.openReceiveDialog(productKey, pId);
+            const { productKey, productId } = this._pendingReceiveData;
+            this.openReceiveDialog(productKey, productId);
             this.renderInvoicePreview(this._selectedInvoice);
             this.renderInvoiceList();
             this.updateStats();
@@ -2897,6 +3091,7 @@
           this.showAlert('✅ تم حفظ الاستلام', 'success');
         },
 
+        // ===== CONFIRM FULL RECEIVE =====
         confirmFullReceive() {
           if (!this._selectedInvoice) {
             this.showAlert('⚠️ اختر فاتورة أولاً', 'error');
@@ -2908,17 +3103,21 @@
 
           const invoice = this._selectedInvoice;
           
-          invoice.flatItems.forEach(item => {
-            item.receivedQty = item.preparedQty || 0;
-          });
-          
+          // Mark all items as fully received for this user
+          if (invoice.items) {
+            invoice.items.forEach(item => {
+              const prepared = Utils.getPreparedQty(item);
+              if (!item.receiveQuantities) {
+                item.receiveQuantities = {};
+              }
+              item.receiveQuantities[this._userId] = prepared;
+            });
+          }
+
           invoice.status = 'closed';
-          invoice.prepared = false;
           
-          invoice.totalPieces = Utils.calculateTotalPrepared(invoice.flatItems);
-          invoice.totalValue = invoice.flatItems.reduce(
-            (sum, item) => sum + (item.unitPrice || 0) * (item.preparedQty || 0), 0
-          );
+          // Keep prepared flag but set to false to indicate it's been received
+          invoice.prepared = false;
 
           this.saveInvoiceToFirebase(invoice);
           
@@ -2937,6 +3136,7 @@
           this._isClosing = false;
         },
 
+        // ===== OPEN SHORTAGE DIALOG =====
         openShortageDialog() {
           if (!this._selectedInvoice) {
             this.showAlert('⚠️ اختر فاتورة أولاً', 'error');
@@ -2950,12 +3150,11 @@
           let html = '';
           
           const productMap = {};
-          invoice.flatItems.forEach(item => {
-            const key = item.productId || item.productName || 'Unknown';
+          invoice.items.forEach(item => {
+            const key = (item.name || 'Unknown') + '|' + (item.sku || '');
             if (!productMap[key]) {
               productMap[key] = {
-                productId: item.productId || '',
-                name: item.productName || 'Unknown',
+                name: item.name || 'Unknown',
                 sku: item.sku || '',
                 image: item.image || '',
                 items: []
@@ -3000,9 +3199,9 @@
                 return (a.size || '').localeCompare(b.size || '');
               });
               sorted.forEach(item => {
-                const currentReceived = item.receivedQty || 0;
-                const prepared = item.preparedQty || 0;
-                const shortage = prepared - currentReceived;
+                const prepared = Utils.getPreparedQty(item);
+                const received = Utils.getReceivedQty(item, this._userId);
+                const shortage = prepared - received;
                 const itemKey = `${key}|${color}|${item.size}`;
                 this._shortageData[itemKey] = shortage > 0 ? shortage : 0;
 
@@ -3010,9 +3209,9 @@
                   <div class="shortage-item">
                     <span class="label">${Utils.escapeHtml(item.size || 'No Size')}</span>
                     <span class="qty-display"><i class="fas fa-cube"></i> المتاح: ${prepared}</span>
-                    <span class="qty-display"><i class="fas fa-check-circle" style="color:var(--success);"></i> المستلم: ${currentReceived}</span>
+                    <span class="qty-display"><i class="fas fa-check-circle" style="color:var(--success);"></i> المستلم: ${received}</span>
                     <span style="font-weight:600;color:${shortage > 0 ? 'var(--danger)' : 'var(--success)'};">
-                      ${shortage > 0 ? '<i class="fas fa-exclamation-triangle"></i> النقص: ' + shortage : '<i class="fas fa-check-circle"></i> مكتمل'}
+                      ${shortage > 0 ? '<i class="fas fa-exclamation-circle"></i> النقص: ' + shortage : '<i class="fas fa-check-circle"></i> مكتمل'}
                     </span>
                     ${shortage > 0 ? `
                       <input type="number" class="shortage-input" 
@@ -3047,21 +3246,21 @@
           if (!this._selectedInvoice) return;
 
           const invoice = this._selectedInvoice;
+          let hasShortage = false;
 
-          invoice.flatItems.forEach(item => {
-            const key = `${(item.productId || '')}|${(item.color || 'No Color')}|${(item.size || 'No Size')}`;
+          invoice.items.forEach(item => {
+            const key = `${(item.name || 'Unknown')}|${(item.sku || '')}|${(item.color || 'No Color')}|${(item.size || 'No Size')}`;
             const shortageValue = this._shortageData[key];
             if (shortageValue !== undefined) {
-              const prepared = item.preparedQty || 0;
+              const prepared = Utils.getPreparedQty(item);
               const received = prepared - shortageValue;
-              item.receivedQty = Math.max(0, received);
+              if (!item.receiveQuantities) {
+                item.receiveQuantities = {};
+              }
+              item.receiveQuantities[this._userId] = Math.max(0, received);
+              if (received < prepared) hasShortage = true;
             }
           });
-
-          invoice.totalPieces = Utils.calculateTotalPrepared(invoice.flatItems);
-          invoice.totalValue = invoice.flatItems.reduce(
-            (sum, item) => sum + (item.unitPrice || 0) * (item.preparedQty || 0), 0
-          );
 
           this.saveInvoiceToFirebase(invoice);
           this.closeShortageDialog();
@@ -3069,9 +3268,14 @@
           this.renderInvoiceList();
           this.updateStats();
           
-          this.showAlert('📉 تم تسجيل النقص بنجاح', 'warning');
+          if (hasShortage) {
+            this.showAlert('📉 تم تسجيل النقص بنجاح', 'warning');
+          } else {
+            this.showAlert('✅ تم تحديث الكميات بنجاح', 'success');
+          }
         },
 
+        // ===== OLD INVOICES =====
         toggleOldOrders() {
           const sec = this.elements.oldOrdersSection;
           if (sec.style.display === 'none') {
@@ -3109,17 +3313,21 @@
             if (data) {
               for (const key in data) {
                 const inv = data[key];
-                if (inv.status === 'closed') {
-                  if (this._currentUserId && inv.userId !== this._currentUserId) continue;
-                  
-                  const flatItems = Utils.extractItemsFromInvoice(inv);
-                  
+                // Only show closed invoices that belong to this user
+                if (inv.status === 'closed' && inv.userId === this._userId) {
+                  if (inv.items) {
+                    inv.items.forEach(item => {
+                      if (!item.receiveQuantities) {
+                        item.receiveQuantities = {};
+                      }
+                      if (!item.preparedQuantities) {
+                        item.preparedQuantities = item.preparedQty ? { default: item.preparedQty } : { default: 0 };
+                      }
+                    });
+                  }
                   this._oldInvoices.push({
                     id: key,
                     ...inv,
-                    flatItems: flatItems,
-                    totalPieces: Utils.calculateTotalPrepared(flatItems),
-                    totalValue: flatItems.reduce((sum, item) => sum + (item.unitPrice || 0) * (item.preparedQty || 0), 0),
                     createdAt: inv.createdAt || 0
                   });
                 }
@@ -3161,20 +3369,20 @@
               hour: '2-digit',
               minute: '2-digit'
             });
-            const totalPrepared = Utils.calculateTotalPrepared(inv.flatItems);
-            const totalReceived = Utils.calculateReceived(inv.flatItems);
-            const totalShortage = Utils.calculateShortage(inv.flatItems);
-            const status = Utils.getStatus(inv);
+            const totalPrepared = Utils.getTotalPrepared(inv.items);
+            const totalReceived = Utils.getTotalReceived(inv.items, this._userId);
+            const totalShortage = Utils.calculateShortage(inv.items, this._userId);
+            const status = Utils.getStatus(inv, this._userId);
             const statusText = Utils.getStatusText(status);
             const statusClass = Utils.getStatusClass(status);
 
             let details = '';
-            if (inv.flatItems && inv.flatItems.length) {
-              const items = inv.flatItems.slice(0, 3);
+            if (inv.items && inv.items.length) {
+              const items = inv.items.slice(0, 3);
               details = items.map(item =>
-                `${item.productName} (${item.color||''} ${item.size||''} × ${item.preparedQty||0})`
+                `${item.name} (${item.color||''} ${item.size||''} × ${Utils.getPreparedQty(item)})`
               ).join('، ');
-              if (inv.flatItems.length > 3) details += ` ... +${inv.flatItems.length-3} أكثر`;
+              if (inv.items.length > 3) details += ` ... +${inv.items.length-3} أكثر`;
             }
 
             html += `
@@ -3184,7 +3392,7 @@
                 <span class="order-date"><i class="fas fa-calendar-alt"></i> ${dateStr}</span>
                 <span class="order-pieces"><i class="fas fa-cubes"></i> ${totalPrepared}</span>
                 <span class="order-received"><i class="fas fa-check-circle"></i> ${totalReceived}</span>
-                ${totalShortage > 0 ? `<span class="order-shortage"><i class="fas fa-exclamation-triangle"></i> ${totalShortage}</span>` : ''}
+                ${totalShortage > 0 ? `<span class="order-shortage"><i class="fas fa-exclamation-circle"></i> ${totalShortage}</span>` : ''}
                 <span class="order-value"><i class="fas fa-money-bill-wave"></i> ${Utils.formatCurrency(inv.totalValue || 0)}</span>
                 <span class="order-status">
                   <span class="badge-sm ${statusClass}">${statusText}</span>
@@ -3224,7 +3432,7 @@
 
           const container = this.elements.viewOldInvoiceContainer;
           
-          if (!invoice.flatItems || !invoice.flatItems.length) {
+          if (!invoice.items || !invoice.items.length) {
             container.innerHTML = `
               <div class="empty-state" style="padding:20px;">
                 <i class="fas fa-box-open"></i>
@@ -3235,13 +3443,13 @@
             return;
           }
 
+          // Group by product
           const groups = {};
-          invoice.flatItems.forEach(item => {
-            const key = item.productId || item.productName || 'Unknown';
+          invoice.items.forEach(item => {
+            const key = (item.name || 'Unknown') + '|' + (item.sku || '');
             if (!groups[key]) {
               groups[key] = {
-                productId: item.productId || '',
-                name: item.productName || 'Unknown',
+                name: item.name || 'Unknown',
                 sku: item.sku || '',
                 unitPrice: item.unitPrice || 0,
                 image: item.image || '',
@@ -3250,11 +3458,7 @@
             }
             const color = item.color || 'No Color';
             if (!groups[key].colors[color]) groups[key].colors[color] = [];
-            groups[key].colors[color].push({
-              size: item.size || 'No Size',
-              preparedQty: item.preparedQty || 0,
-              receivedQty: item.receivedQty || 0
-            });
+            groups[key].colors[color].push(item);
           });
 
           let html = '';
@@ -3263,9 +3467,9 @@
             let totalPrepared = 0,
               totalReceived = 0;
             for (const color in g.colors) {
-              g.colors[color].forEach(s => {
-                totalPrepared += s.preparedQty || 0;
-                totalReceived += s.receivedQty || 0;
+              g.colors[color].forEach(item => {
+                totalPrepared += Utils.getPreparedQty(item);
+                totalReceived += Utils.getReceivedQty(item, this._userId);
               });
             }
             const isDone = totalPrepared > 0 && totalReceived >= totalPrepared;
@@ -3291,14 +3495,16 @@
                     <i class="fas fa-palette" style="color:var(--primary);"></i> ${Utils.escapeHtml(color)}
                   </div>
               `;
-              g.colors[color].forEach(s => {
-                const isComplete = s.preparedQty > 0 && s.receivedQty >= s.preparedQty;
+              g.colors[color].forEach(item => {
+                const prepared = Utils.getPreparedQty(item);
+                const received = Utils.getReceivedQty(item, this._userId);
+                const isComplete = prepared > 0 && received >= prepared;
                 html += `
                   <div style="display:flex;gap:12px;padding:2px 0;font-size:13px;flex-wrap:wrap;">
-                    <span style="font-weight:500;min-width:40px;color:var(--dark-secondary);">${Utils.escapeHtml(s.size)}</span>
+                    <span style="font-weight:500;min-width:40px;color:var(--dark-secondary);">${Utils.escapeHtml(item.size || 'No Size')}</span>
                     <span style="color:${isComplete ? 'var(--success)' : 'var(--danger)'};">
-                      <i class="fas ${isComplete ? 'fa-check-circle' : 'fa-exclamation-triangle'}"></i>
-                      ${s.receivedQty}/${s.preparedQty}
+                      <i class="fas ${isComplete ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i>
+                      ${received}/${prepared}
                     </span>
                   </div>
                 `;
@@ -3330,25 +3536,25 @@
           const headers = ['#', 'Name', 'Color', 'Size', 'SKU', 'Prepared', 'Received', 'Unit Price', 'Total'];
           const data = [headers];
           
-          if (invoice.flatItems) {
-            invoice.flatItems.forEach((item, i) => {
+          if (invoice.items) {
+            invoice.items.forEach((item, i) => {
               data.push([
                 i + 1,
-                item.productName || '',
+                item.name || '',
                 item.color || '',
                 item.size || '',
                 item.sku || '',
-                item.preparedQty || 0,
-                item.receivedQty || 0,
+                Utils.getPreparedQty(item),
+                Utils.getReceivedQty(item, this._userId),
                 item.unitPrice || 0,
-                (item.unitPrice || 0) * (item.preparedQty || 0)
+                (item.unitPrice || 0) * Utils.getPreparedQty(item)
               ]);
             });
           }
           
-          const totalPrepared = Utils.calculateTotalPrepared(invoice.flatItems);
-          const totalReceived = Utils.calculateReceived(invoice.flatItems);
-          const totalShortage = Utils.calculateShortage(invoice.flatItems);
+          const totalPrepared = Utils.getTotalPrepared(invoice.items);
+          const totalReceived = Utils.getTotalReceived(invoice.items, this._userId);
+          const totalShortage = Utils.calculateShortage(invoice.items, this._userId);
           
           data.push(['', '', '', '', '', 'Total', '', '', '']);
           data.push(['', '', '', '', '', totalPrepared, totalReceived, '', invoice.totalValue || 0]);
@@ -3388,30 +3594,30 @@
             const data = [
               [`Invoice: ${invoice.branch || 'Branch'}`],
               [`Date: ${new Date(invoice.createdAt).toLocaleDateString('ar-EG')}`],
-              [`Status: ${Utils.getStatusText(Utils.getStatus(invoice))}`],
+              [`Status: ${Utils.getStatusText(Utils.getStatus(invoice, this._userId))}`],
               [],
               headers
             ];
             
-            if (invoice.flatItems) {
-              invoice.flatItems.forEach((item, i) => {
+            if (invoice.items) {
+              invoice.items.forEach((item, i) => {
                 data.push([
                   i + 1,
-                  item.productName || '',
+                  item.name || '',
                   item.color || '',
                   item.size || '',
                   item.sku || '',
-                  item.preparedQty || 0,
-                  item.receivedQty || 0,
+                  Utils.getPreparedQty(item),
+                  Utils.getReceivedQty(item, this._userId),
                   item.unitPrice || 0,
-                  (item.unitPrice || 0) * (item.preparedQty || 0)
+                  (item.unitPrice || 0) * Utils.getPreparedQty(item)
                 ]);
               });
             }
             
-            const totalPrepared = Utils.calculateTotalPrepared(invoice.flatItems);
-            const totalReceived = Utils.calculateReceived(invoice.flatItems);
-            const totalShortage = Utils.calculateShortage(invoice.flatItems);
+            const totalPrepared = Utils.getTotalPrepared(invoice.items);
+            const totalReceived = Utils.getTotalReceived(invoice.items, this._userId);
+            const totalShortage = Utils.calculateShortage(invoice.items, this._userId);
             
             data.push(['', '', '', '', '', 'Total', '', '', '']);
             data.push(['', '', '', '', '', totalPrepared, totalReceived, '', invoice.totalValue || 0]);
@@ -3434,6 +3640,7 @@
           this.showAlert(`✅ تم تصدير ${this._oldInvoices.length} فاتورة`, 'success');
         },
 
+        // ===== CLOSE PREVIEW =====
         closePreview() {
           this.elements.previewSection.classList.remove('show');
           this._selectedInvoice = null;
@@ -3446,33 +3653,35 @@
           this.updateStats();
         },
 
+        // ===== UPDATE STATS =====
         updateStats() {
           const total = this._invoices.length;
           let pending = 0,
             received = 0,
-            partial = 0;
+            shortage = 0;
 
           this._invoices.forEach(inv => {
-            const status = Utils.getStatus(inv);
+            const status = Utils.getStatus(inv, this._userId);
             if (status === 'pending') pending++;
             else if (status === 'received') received++;
-            else if (status === 'partial') partial++;
+            else if (status === 'shortage' || status === 'partial') shortage++;
           });
 
           this.elements.statTotalInvoices.textContent = total;
           this.elements.statPending.textContent = pending;
           this.elements.statReceived.textContent = received;
-          this.elements.statShortage.textContent = partial;
+          this.elements.statShortage.textContent = shortage;
         },
 
+        // ===== UPDATE BOTTOM BAR =====
         updateBottomBar(invoice) {
           if (!invoice) return;
-          const items = invoice.flatItems || [];
-          const totalPrepared = Utils.calculateTotalPrepared(items);
-          const receivedPieces = Utils.calculateReceived(items);
-          const products = new Set(items.map(r => r.productId || r.productName)).size;
+          const items = invoice.items || [];
+          const totalPrepared = Utils.getTotalPrepared(items);
+          const receivedPieces = Utils.getTotalReceived(items, this._userId);
+          const products = new Set(items.map(r => r.name + '|' + r.sku)).size;
           const progress = totalPrepared === 0 ? 0 : Math.round((receivedPieces / totalPrepared) * 100);
-          const shortage = Utils.calculateShortage(items);
+          const shortage = Utils.calculateShortage(items, this._userId);
 
           this.elements.bottomProducts.textContent = products;
           this.elements.bottomPieces.textContent = totalPrepared;
@@ -3480,10 +3689,11 @@
           this.elements.bottomPercent.textContent = progress + '%';
           
           if (shortage > 0) {
-            this.elements.bottomPercent.textContent += ` <i class="fas fa-exclamation-triangle" style="color:var(--danger);"></i> نقص: ${shortage}`;
+            this.elements.bottomPercent.textContent += ` <i class="fas fa-exclamation-circle" style="color:var(--danger);"></i> نقص: ${shortage}`;
           }
         },
 
+        // ===== SHOW ALERT =====
         showAlert(msg, type = 'info') {
           const existing = document.querySelector('.toast-alert');
           if (existing) existing.remove();
@@ -3508,10 +3718,12 @@
         }
       };
 
+      // ===== GLOBAL EXPOSURE =====
       window.UI = UI;
       window.openModal = function(img) { if (window.UI) window.UI.openModal(img); };
       window.closeModal = function() { if (window.UI) window.UI.closeModal(); };
 
+      // ===== TOGGLE SIDEBAR =====
       function toggleSidebar() {
         const sidebar = document.getElementById('sidebar');
         const mainContent = document.getElementById('mainContent');
@@ -3537,6 +3749,7 @@
       }
       window.toggleSidebar = toggleSidebar;
 
+      // Close sidebar on outside click (mobile)
       document.addEventListener('click', function(event) {
         const sidebar = document.getElementById('sidebar');
         const menuToggle = document.querySelector('.menu-toggle');
@@ -3561,6 +3774,7 @@
         }
       });
 
+      // Handle window resize
       window.addEventListener('resize', function() {
         const sidebar = document.getElementById('sidebar');
         const mainContent = document.getElementById('mainContent');
@@ -3580,6 +3794,9 @@
         }
       });
 
+      // ================================================================
+      //  BOOT
+      // ================================================================
       document.addEventListener('DOMContentLoaded', () => {
         UI.init();
       });
