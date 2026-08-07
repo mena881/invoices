@@ -67,8 +67,8 @@
         }
 
         ::-webkit-scrollbar {
-            width: 4px;
-            height: 4px;
+            width: 6px;
+            height: 6px;
         }
         ::-webkit-scrollbar-track {
             background: #e2e8f0;
@@ -188,7 +188,7 @@
         /* ========== MAIN CONTENT ========== */
         .main-content {
             margin-right: 280px;
-            padding: 15px 20px;
+            padding: 20px 25px;
             transition: margin-right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             min-height: 100vh;
             position: relative;
@@ -202,32 +202,32 @@
            ========================================================= */
         .header {
             background: white;
-            padding: 14px 18px;
+            padding: 16px 24px;
             border-radius: var(--radius);
             box-shadow: var(--shadow-sm);
-            margin-bottom: 18px;
+            margin-bottom: 25px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
-            gap: 10px;
+            gap: 12px;
             border: 1px solid rgba(0, 0, 0, 0.04);
         }
 
         .header-left {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 15px;
         }
 
         .menu-toggle {
             background: var(--dark-secondary);
             border: none;
             color: white;
-            font-size: 16px;
+            font-size: 18px;
             cursor: pointer;
-            padding: 8px 12px;
-            border-radius: 10px;
+            padding: 10px 14px;
+            border-radius: 12px;
             transition: var(--transition);
         }
         .menu-toggle:hover {
@@ -235,49 +235,49 @@
         }
 
         .header h1 {
-            font-size: 18px;
+            font-size: 22px;
             color: var(--dark-secondary);
             font-weight: 700;
         }
         .header h1 i {
             color: var(--primary);
-            margin-left: 8px;
+            margin-left: 10px;
         }
 
         .header-actions {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 12px;
             flex-wrap: wrap;
         }
 
         .user-info {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 12px;
             background: var(--light);
-            padding: 4px 12px 4px 16px;
+            padding: 6px 16px 6px 20px;
             border-radius: 40px;
             border: 1px solid var(--gray-light);
         }
         .user-info i {
-            font-size: 18px;
+            font-size: 22px;
             color: var(--primary);
         }
         .user-info span {
             font-weight: 600;
             color: var(--dark-secondary);
-            font-size: 12px;
+            font-size: 14px;
         }
 
         .status-badge {
-            padding: 3px 12px;
+            padding: 4px 14px;
             border-radius: 30px;
-            font-size: 11px;
+            font-size: 12px;
             font-weight: 600;
             display: inline-flex;
             align-items: center;
-            gap: 4px;
+            gap: 6px;
             background: var(--success-light);
             color: var(--success);
         }
@@ -285,16 +285,16 @@
         .btn-ghost-header {
             background: var(--light);
             border: 1px solid var(--gray-light);
-            padding: 6px 12px;
+            padding: 8px 16px;
             border-radius: 40px;
             cursor: pointer;
-            font-size: 12px;
+            font-size: 13px;
             font-weight: 600;
             color: var(--dark-secondary);
             transition: var(--transition);
             display: inline-flex;
             align-items: center;
-            gap: 4px;
+            gap: 6px;
         }
         .btn-ghost-header:hover {
             border-color: var(--primary);
@@ -311,8 +311,8 @@
             box-shadow: var(--shadow-sm);
             border: 1px solid rgba(0, 0, 0, 0.04);
             transition: all 0.2s;
-            padding: 16px 18px;
-            margin-bottom: 18px;
+            padding: 22px 24px;
+            margin-bottom: 25px;
         }
 
         .card:hover {
@@ -323,16 +323,16 @@
            BUTTONS (موحد مع باقي الصفحات)
            ========================================================= */
         .btn {
-            padding: 8px 16px;
+            padding: 10px 22px;
             border: none;
             border-radius: 40px;
             cursor: pointer;
-            font-size: 13px;
+            font-size: 14px;
             font-weight: 600;
             transition: var(--transition);
             display: inline-flex;
             align-items: center;
-            gap: 6px;
+            gap: 8px;
             text-decoration: none;
             font-family: inherit;
         }
@@ -386,8 +386,8 @@
         }
 
         .btn-sm {
-            padding: 5px 12px;
-            font-size: 11px;
+            padding: 6px 16px;
+            font-size: 12px;
             border-radius: 40px;
         }
 
@@ -396,16 +396,16 @@
            ========================================================= */
         .floating-group {
             position: relative;
-            margin-bottom: 6px;
+            margin-bottom: 8px;
         }
 
         .floating-group input,
         .floating-group select {
             width: 100%;
-            padding: 14px 12px 6px;
+            padding: 16px 14px 8px;
             border: 2px solid var(--gray-light);
             border-radius: var(--radius-sm);
-            font-size: 13px;
+            font-size: 16px;  /* أكبر قليلاً للفون */
             background: white;
             transition: var(--transition);
             outline: none;
@@ -418,19 +418,19 @@
         .floating-group input:focus,
         .floating-group select:focus {
             border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
         }
 
         .floating-group label {
             position: absolute;
-            top: 12px;
-            right: 12px;
-            font-size: 13px;
+            top: 14px;
+            right: 14px;
+            font-size: 14px;
             color: var(--gray);
             pointer-events: none;
             transition: all 0.2s;
             background: white;
-            padding: 0 4px;
+            padding: 0 6px;
             font-weight: 500;
         }
 
@@ -438,8 +438,8 @@
         .floating-group input:not(:placeholder-shown)+label,
         .floating-group select:focus+label,
         .floating-group select:not([value=""]):not([value=""])+label {
-            top: 2px;
-            font-size: 10px;
+            top: 4px;
+            font-size: 11px;
             color: var(--primary);
             font-weight: 600;
         }
@@ -448,36 +448,40 @@
             opacity: 0;
         }
 
-        .floating-group select option {
-            font-size: 13px;
-        }
-
         .product-info-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
+            grid-template-columns: 1fr 1fr 1fr auto auto;
+            gap: 12px;
             align-items: end;
         }
 
+        .product-info-grid .floating-group {
+            margin-bottom: 0;
+        }
+
         .product-info-grid .btn {
-            height: 44px;
-            padding: 0 16px;
+            height: 52px;
+            padding: 0 20px;
             white-space: nowrap;
             border-radius: 40px;
-            font-size: 12px;
-            justify-content: center;
+            font-size: 13px;
         }
 
-        .product-info-grid .full-width {
-            grid-column: 1 / -1;
-        }
-
-        .product-info-grid .btn-success {
-            grid-column: 1 / 2;
-        }
-
-        .product-info-grid .btn-primary {
-            grid-column: 2 / 3;
+        @media (max-width: 780px) {
+            .product-info-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 10px;
+            }
+            .product-info-grid .btn {
+                grid-column: 1 / -1;
+                height: 48px;
+                font-size: 14px;
+            }
+            .floating-group input,
+            .floating-group select {
+                font-size: 15px;
+                padding: 14px 12px 8px;
+            }
         }
 
         @media (max-width: 480px) {
@@ -486,17 +490,19 @@
                 gap: 8px;
             }
             .product-info-grid .btn {
-                grid-column: 1 !important;
-                height: 40px;
-                font-size: 12px;
-            }
-            .product-info-grid .full-width {
                 grid-column: 1;
+                height: 46px;
+                font-size: 14px;
+            }
+            .floating-group input,
+            .floating-group select {
+                font-size: 15px;
+                padding: 14px 10px 8px;
             }
         }
 
         /* =========================================================
-           PREVIEW - تحسينات للفون
+           PREVIEW
            ========================================================= */
         .preview-card {
             display: none;
@@ -509,14 +515,13 @@
 
         .preview-content {
             display: flex;
-            gap: 16px;
+            gap: 24px;
             align-items: flex-start;
-            flex-wrap: wrap;
         }
 
         .preview-content img {
-            width: 70px;
-            height: 70px;
+            width: 100px;
+            height: 100px;
             border-radius: var(--radius-sm);
             object-fit: cover;
             border: 1px solid var(--gray-light);
@@ -532,20 +537,19 @@
         .preview-content .info {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 2px 16px;
+            gap: 4px 24px;
             flex: 1;
-            font-size: 12px;
         }
 
         .preview-content .info .field {
-            padding: 2px 0;
+            font-size: 14px;
+            padding: 4px 0;
         }
 
         .preview-content .info .field strong {
             color: var(--gray);
             font-weight: 500;
-            margin-left: 4px;
-            font-size: 11px;
+            margin-left: 6px;
         }
 
         @media (max-width: 640px) {
@@ -567,18 +571,18 @@
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
-            gap: 8px;
-            margin-bottom: 12px;
+            gap: 12px;
+            margin-bottom: 16px;
         }
 
         .invoice-header-actions .left-actions {
             display: flex;
-            gap: 6px;
+            gap: 8px;
             flex-wrap: wrap;
         }
 
         /* =========================================================
-           PRODUCT CARDS - هيكل جديد
+           PRODUCT CARDS (موديل جديد - كل منتج في بطاقة واحدة)
            ========================================================= */
         .product-card {
             background: white;
@@ -586,7 +590,7 @@
             border: 1px solid var(--gray-light);
             overflow: hidden;
             transition: var(--transition);
-            margin-bottom: 10px;
+            margin-bottom: 12px;
             box-shadow: var(--shadow-sm);
         }
 
@@ -598,11 +602,12 @@
         .product-card-header {
             display: flex;
             align-items: center;
-            gap: 12px;
-            padding: 12px 16px;
+            gap: 16px;
+            padding: 16px 20px;
             cursor: pointer;
             user-select: none;
             transition: var(--transition);
+            flex-wrap: wrap;
         }
 
         .product-card-header:hover {
@@ -610,8 +615,8 @@
         }
 
         .product-card-header .thumb {
-            width: 50px;
-            height: 50px;
+            width: 60px;
+            height: 60px;
             border-radius: var(--radius-sm);
             object-fit: cover;
             border: 1px solid var(--gray-light);
@@ -629,41 +634,42 @@
             display: flex;
             flex-wrap: wrap;
             align-items: center;
-            gap: 4px 12px;
+            gap: 6px 18px;
+            min-width: 150px;
         }
 
         .product-card-header .meta .name {
             font-weight: 600;
-            font-size: 14px;
+            font-size: 15px;
             color: var(--dark-secondary);
         }
 
         .product-card-header .meta .sku {
-            font-size: 11px;
+            font-size: 12px;
             color: var(--gray);
             background: var(--light);
-            padding: 1px 10px;
+            padding: 2px 12px;
             border-radius: 30px;
         }
 
         .product-card-header .meta .price {
             font-weight: 600;
             color: var(--primary);
-            font-size: 13px;
+            font-size: 14px;
         }
 
         .product-card-header .meta .total-pieces {
             font-weight: 600;
             color: var(--success);
-            font-size: 12px;
+            font-size: 13px;
             background: var(--success-light);
-            padding: 1px 10px;
+            padding: 2px 12px;
             border-radius: 30px;
         }
 
         .product-card-header .chevron {
             margin-right: auto;
-            font-size: 16px;
+            font-size: 18px;
             color: var(--gray);
             transition: transform 0.3s ease;
         }
@@ -673,7 +679,7 @@
         }
 
         .product-card-body {
-            padding: 0 16px 16px;
+            padding: 0 20px 20px;
             display: none;
             animation: fadeSlide 0.25s ease;
         }
@@ -682,113 +688,65 @@
             display: block;
         }
 
-        .color-accordion {
+        /* عرض الألوان والمقاسات بشكل مبسط */
+        .color-size-block {
             border-top: 1px solid var(--gray-light);
-            padding-top: 10px;
-            margin-top: 4px;
+            padding: 12px 0 8px;
         }
 
-        .color-accordion:first-child {
+        .color-size-block:first-child {
             border-top: none;
-            padding-top: 0;
+            padding-top: 4px;
         }
 
-        .color-header {
+        .color-size-block .color-name {
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--dark-secondary);
             display: flex;
             align-items: center;
             gap: 8px;
-            padding: 6px 0;
-            cursor: pointer;
-            user-select: none;
-            transition: var(--transition);
-            font-weight: 500;
-            font-size: 13px;
+            margin-bottom: 6px;
         }
 
-        .color-header:hover {
+        .color-size-block .color-name i {
             color: var(--primary);
         }
 
-        .color-header .chevron-sm {
-            font-size: 13px;
-            color: var(--gray);
-            transition: transform 0.3s ease;
+        .color-size-block .size-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px 16px;
+            padding-right: 24px;
         }
 
-        .color-header .chevron-sm.open {
-            transform: rotate(180deg);
-        }
-
-        .color-header .color-total {
-            font-size: 11px;
-            color: var(--gray);
-            margin-right: auto;
-            background: var(--light);
-            padding: 1px 12px;
-            border-radius: 30px;
-        }
-
-        .color-header .delete-color-btn {
-            background: var(--danger-light);
-            color: var(--danger);
-            border: none;
-            border-radius: 50%;
-            width: 24px;
-            height: 24px;
-            font-size: 10px;
-            cursor: pointer;
-            transition: var(--transition);
+        .color-size-block .size-item {
             display: flex;
             align-items: center;
-            justify-content: center;
-            margin-right: 2px;
-        }
-        .color-header .delete-color-btn:hover {
-            background: var(--danger);
-            color: white;
-            transform: scale(1.1);
+            gap: 6px;
+            font-size: 14px;
         }
 
-        .color-sizes {
-            display: none;
-            padding-right: 20px;
-            padding-bottom: 6px;
-            animation: fadeSlide 0.2s ease;
-        }
-
-        .color-sizes.open {
-            display: block;
-        }
-
-        .size-row {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 4px 0;
-            font-size: 13px;
-        }
-
-        .size-row .size-label {
-            min-width: 35px;
+        .color-size-block .size-item .size-label {
             font-weight: 500;
             color: var(--dark-secondary);
-            font-size: 12px;
+            min-width: 30px;
         }
 
-        .size-row .qty-control {
+        .color-size-block .size-item .qty-control {
             display: flex;
             align-items: center;
             gap: 3px;
         }
 
-        .size-row .qty-control button {
-            width: 26px;
-            height: 26px;
+        .color-size-block .size-item .qty-control button {
+            width: 28px;
+            height: 28px;
             border: 1px solid var(--gray-light);
             border-radius: 40px;
             background: white;
             cursor: pointer;
-            font-size: 13px;
+            font-size: 14px;
             font-weight: 600;
             transition: var(--transition);
             display: flex;
@@ -798,17 +756,17 @@
             color: var(--dark-secondary);
         }
 
-        .size-row .qty-control button:hover {
+        .color-size-block .size-item .qty-control button:hover {
             background: var(--light);
             border-color: var(--primary);
             color: var(--primary);
         }
 
-        .size-row .qty-control button:active {
+        .color-size-block .size-item .qty-control button:active {
             transform: scale(0.92);
         }
 
-        .size-row .qty-control .qty-val {
+        .color-size-block .size-item .qty-control .qty-val {
             min-width: 28px;
             text-align: center;
             font-weight: 600;
@@ -816,29 +774,24 @@
             color: var(--dark-secondary);
         }
 
-        .size-row.zero-qty .qty-val {
+        .color-size-block .size-item.zero-qty .qty-val {
             color: #bcc8db;
             opacity: 0.6;
         }
 
-        .size-row.zero-qty .size-label {
+        .color-size-block .size-item.zero-qty .size-label {
             color: #bcc8db;
             opacity: 0.6;
         }
 
         .product-card-footer {
-            padding: 10px 16px 12px;
+            padding: 12px 20px 16px;
             border-top: 1px solid var(--gray-light);
             display: flex;
             justify-content: flex-end;
-            gap: 6px;
+            gap: 8px;
             flex-wrap: wrap;
             background: var(--light);
-        }
-
-        .product-card-footer .btn-sm {
-            font-size: 11px;
-            padding: 4px 12px;
         }
 
         /* =========================================================
@@ -847,14 +800,14 @@
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 12px;
-            margin-bottom: 18px;
+            gap: 16px;
+            margin-bottom: 25px;
         }
 
         .stat-card {
             background: white;
             border-radius: var(--radius);
-            padding: 14px 16px;
+            padding: 18px 20px;
             box-shadow: var(--shadow-sm);
             border: 1px solid rgba(0, 0, 0, 0.04);
             transition: var(--transition);
@@ -862,12 +815,12 @@
         }
 
         .stat-card:hover {
-            transform: translateY(-2px);
+            transform: translateY(-3px);
             box-shadow: var(--shadow);
         }
 
         .stat-card .stat-label {
-            font-size: 10px;
+            font-size: 12px;
             color: var(--gray);
             font-weight: 500;
             text-transform: uppercase;
@@ -875,10 +828,10 @@
         }
 
         .stat-card .stat-value {
-            font-size: 22px;
+            font-size: 28px;
             font-weight: 700;
             color: var(--dark-secondary);
-            margin-top: 2px;
+            margin-top: 4px;
         }
 
         .stat-card .stat-value.green {
@@ -894,26 +847,16 @@
         @media (max-width: 768px) {
             .stats-grid {
                 grid-template-columns: 1fr 1fr;
-                gap: 8px;
+                gap: 12px;
             }
             .stat-card .stat-value {
-                font-size: 18px;
-            }
-            .stat-card {
-                padding: 10px 12px;
+                font-size: 22px;
             }
         }
 
         @media (max-width: 480px) {
             .stats-grid {
-                grid-template-columns: 1fr 1fr;
-                gap: 6px;
-            }
-            .stat-card .stat-value {
-                font-size: 16px;
-            }
-            .stat-card .stat-label {
-                font-size: 9px;
+                grid-template-columns: 1fr;
             }
         }
 
@@ -926,28 +869,28 @@
             left: 0;
             right: 0;
             z-index: 100;
-            padding: 0 20px;
+            padding: 0 25px;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .sticky-bottom-wrapper.sidebar-hidden {
-            padding-right: 20px;
+            padding-right: 25px;
         }
 
         .sticky-bottom-wrapper:not(.sidebar-hidden) {
-            padding-right: 300px;
+            padding-right: 305px;
         }
 
         .sticky-bottom {
             background: white;
             border-top: 1px solid var(--gray-light);
-            padding: 10px 18px;
+            padding: 12px 24px;
             box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.05);
             display: flex;
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
-            gap: 8px;
+            gap: 12px;
             backdrop-filter: blur(12px);
             background: rgba(255, 255, 255, 0.95);
             border-radius: var(--radius) var(--radius) 0 0;
@@ -956,15 +899,15 @@
 
         .sticky-bottom .summary {
             display: flex;
-            gap: 16px;
+            gap: 24px;
             flex-wrap: wrap;
-            font-size: 12px;
+            font-size: 14px;
         }
 
         .sticky-bottom .summary .item {
             display: flex;
             align-items: center;
-            gap: 4px;
+            gap: 6px;
             color: var(--gray);
         }
 
@@ -975,29 +918,22 @@
 
         .sticky-bottom .actions {
             display: flex;
-            gap: 8px;
+            gap: 10px;
             flex-wrap: wrap;
-        }
-
-        .sticky-bottom .actions .btn {
-            font-size: 12px;
-            padding: 6px 14px;
         }
 
         @media (max-width: 768px) {
             .sticky-bottom-wrapper {
-                padding: 0 10px !important;
+                padding: 0 15px !important;
             }
             .sticky-bottom {
                 flex-direction: column;
                 align-items: stretch;
-                padding: 10px 14px;
+                padding: 12px 16px;
                 border-radius: var(--radius-sm) var(--radius-sm) 0 0;
             }
             .sticky-bottom .summary {
                 justify-content: center;
-                gap: 10px;
-                font-size: 11px;
             }
             .sticky-bottom .actions {
                 justify-content: center;
@@ -1006,12 +942,12 @@
 
         @media (max-width: 480px) {
             .sticky-bottom .summary {
-                gap: 6px;
-                font-size: 10px;
+                gap: 12px;
+                font-size: 12px;
             }
             .sticky-bottom .actions .btn {
-                font-size: 11px;
-                padding: 5px 12px;
+                font-size: 13px;
+                padding: 8px 16px;
             }
         }
 
@@ -1030,7 +966,7 @@
             z-index: 9999;
             justify-content: center;
             align-items: center;
-            padding: 16px;
+            padding: 20px;
             animation: modalFadeIn 0.3s ease;
             cursor: pointer;
         }
@@ -1052,9 +988,9 @@
 
         .dialog-box {
             background: white;
-            padding: 24px 28px;
-            border-radius: 20px;
-            max-width: 560px;
+            padding: 30px 35px;
+            border-radius: 24px;
+            max-width: 600px;
             width: 100%;
             box-shadow: var(--shadow-lg);
             cursor: default;
@@ -1064,47 +1000,46 @@
         }
 
         .dialog-box h3 {
-            font-size: 18px;
+            font-size: 20px;
             font-weight: 700;
             color: var(--dark-secondary);
             display: flex;
             align-items: center;
-            gap: 8px;
-            margin-bottom: 10px;
+            gap: 10px;
+            margin-bottom: 12px;
         }
 
         .dialog-box p {
             color: var(--gray);
-            margin-bottom: 12px;
-            font-size: 13px;
+            margin-bottom: 16px;
+            font-size: 14px;
         }
 
         .dialog-box .dialog-actions {
             display: flex;
-            gap: 8px;
+            gap: 10px;
             justify-content: flex-end;
-            margin-top: 12px;
+            margin-top: 16px;
             flex-wrap: wrap;
         }
 
         .dialog-box .options {
             display: flex;
             flex-direction: column;
-            gap: 6px;
-            margin: 12px 0;
+            gap: 8px;
+            margin: 16px 0;
         }
 
         .dialog-box .options label {
             display: flex;
             align-items: center;
-            gap: 8px;
-            padding: 8px 12px;
+            gap: 10px;
+            padding: 10px 14px;
             border: 1px solid var(--gray-light);
             border-radius: var(--radius-sm);
             cursor: pointer;
             transition: var(--transition);
             font-weight: 500;
-            font-size: 13px;
         }
 
         .dialog-box .options label:hover {
@@ -1114,17 +1049,17 @@
 
         .dialog-box .options label input[type="radio"] {
             accent-color: var(--primary);
-            width: 16px;
-            height: 16px;
+            width: 18px;
+            height: 18px;
         }
 
         .modal-close-btn {
             position: absolute;
-            top: 12px;
-            left: 16px;
+            top: 15px;
+            left: 20px;
             background: none;
             border: none;
-            font-size: 20px;
+            font-size: 24px;
             color: var(--gray);
             cursor: pointer;
             transition: var(--transition);
@@ -1139,20 +1074,19 @@
            OLD ORDERS
            ========================================================= */
         .old-orders-list {
-            max-height: 350px;
+            max-height: 400px;
             overflow-y: auto;
         }
 
         .old-order-item {
             display: flex;
             align-items: center;
-            gap: 8px;
-            padding: 8px 10px;
+            gap: 12px;
+            padding: 10px 12px;
             border-bottom: 1px solid var(--gray-light);
             flex-wrap: wrap;
             transition: background 0.2s;
             cursor: pointer;
-            font-size: 12px;
         }
 
         .old-order-item:hover {
@@ -1161,48 +1095,50 @@
 
         .old-order-item .order-number {
             font-weight: 600;
-            min-width: 25px;
+            min-width: 30px;
             color: var(--primary);
-            font-size: 12px;
         }
 
         .old-order-item .order-branch {
-            min-width: 60px;
+            min-width: 80px;
             font-weight: 500;
             color: var(--dark-secondary);
-            font-size: 12px;
         }
 
         .old-order-item .order-date {
-            font-size: 11px;
+            font-size: 12px;
             color: var(--gray);
-            min-width: 90px;
+            min-width: 120px;
         }
 
         .old-order-item .order-pieces {
             font-weight: 600;
-            min-width: 40px;
+            min-width: 60px;
             color: var(--dark-secondary);
-            font-size: 12px;
         }
 
         .old-order-item .order-value {
             font-weight: 600;
             color: var(--primary);
-            min-width: 60px;
-            font-size: 12px;
+            min-width: 80px;
         }
 
-        .old-order-item .order-details {
+        .old-order-item .order-url {
             font-size: 11px;
             color: var(--gray);
             flex: 1;
             min-width: 80px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            direction: ltr;
         }
 
-        .old-order-item .btn-sm {
-            font-size: 10px;
-            padding: 3px 10px;
+        .old-order-item .order-details {
+            font-size: 12px;
+            color: var(--gray);
+            flex: 2;
+            min-width: 100px;
         }
 
         /* =========================================================
@@ -1210,19 +1146,19 @@
            ========================================================= */
         .empty-state {
             text-align: center;
-            padding: 32px 16px;
+            padding: 48px 20px;
             color: var(--gray);
         }
 
         .empty-state i {
-            font-size: 2.2rem;
+            font-size: 2.8rem;
             color: var(--primary);
             opacity: 0.4;
-            margin-bottom: 8px;
+            margin-bottom: 12px;
         }
 
         .empty-state p {
-            font-size: 0.9rem;
+            font-size: 0.95rem;
         }
 
         /* =========================================================
@@ -1230,13 +1166,13 @@
            ========================================================= */
         .toast-alert {
             position: fixed;
-            bottom: 80px;
+            bottom: 90px;
             left: 50%;
             transform: translateX(-50%);
-            padding: 10px 20px;
+            padding: 12px 24px;
             border-radius: var(--radius-sm);
             font-weight: 500;
-            font-size: 13px;
+            font-size: 14px;
             z-index: 9999;
             animation: fadeSlide 0.3s ease;
             max-width: 90vw;
@@ -1259,7 +1195,7 @@
             z-index: 99999;
             justify-content: center;
             align-items: center;
-            padding: 16px;
+            padding: 20px;
             cursor: pointer;
         }
 
@@ -1269,21 +1205,21 @@
 
         .image-modal-overlay img {
             max-width: 95%;
-            max-height: 80vh;
+            max-height: 85vh;
             border-radius: var(--radius-sm);
             object-fit: contain;
         }
 
         .image-modal-overlay .close-btn {
             position: absolute;
-            top: 16px;
-            left: 16px;
+            top: 20px;
+            left: 20px;
             background: rgba(255, 255, 255, 0.15);
             border: none;
             color: #fff;
-            font-size: 20px;
-            width: 38px;
-            height: 38px;
+            font-size: 24px;
+            width: 44px;
+            height: 44px;
             border-radius: 50%;
             cursor: pointer;
             transition: var(--transition);
@@ -1301,39 +1237,36 @@
            INVOICE PREVIEW
            ========================================================= */
         .invoice-preview-box {
-            max-height: 50vh;
+            max-height: 60vh;
             overflow-y: auto;
             background: var(--light);
             border-radius: var(--radius-sm);
-            padding: 12px;
-            margin: 10px 0;
+            padding: 16px;
+            margin: 12px 0;
             border: 1px solid var(--gray-light);
-            font-size: 12px;
+            font-size: 13px;
         }
 
         .invoice-preview-box .preview-item {
             display: flex;
-            gap: 6px;
-            padding: 3px 0;
+            gap: 8px;
+            padding: 4px 0;
             border-bottom: 1px dashed var(--gray-light);
         }
 
         .invoice-preview-box .preview-item .preview-label {
-            min-width: 80px;
+            min-width: 100px;
             color: var(--gray);
-            font-size: 12px;
         }
 
         .invoice-preview-box .preview-item .preview-value {
             font-weight: 500;
             color: var(--dark-secondary);
-            font-size: 12px;
         }
 
         .invoice-preview-box .preview-sku {
             color: var(--primary);
             font-weight: 600;
-            font-size: 11px;
         }
 
         /* =========================================================
@@ -1341,18 +1274,18 @@
            ========================================================= */
         .duplicate-product-preview {
             display: flex;
-            gap: 12px;
+            gap: 16px;
             align-items: center;
-            padding: 10px;
+            padding: 12px;
             background: var(--light);
             border-radius: var(--radius-sm);
-            margin: 6px 0;
+            margin: 8px 0;
             border: 1px solid var(--gray-light);
         }
 
         .duplicate-product-preview img {
-            width: 40px;
-            height: 40px;
+            width: 50px;
+            height: 50px;
             border-radius: var(--radius-sm);
             object-fit: cover;
             border: 1px solid var(--gray-light);
@@ -1364,12 +1297,12 @@
 
         .duplicate-product-preview .info .name {
             font-weight: 600;
-            font-size: 13px;
+            font-size: 14px;
             color: var(--dark-secondary);
         }
 
         .duplicate-product-preview .info .details {
-            font-size: 11px;
+            font-size: 12px;
             color: var(--gray);
         }
 
@@ -1379,7 +1312,7 @@
         @keyframes fadeSlide {
             from {
                 opacity: 0;
-                transform: translateY(-4px);
+                transform: translateY(-6px);
             }
             to {
                 opacity: 1;
@@ -1393,7 +1326,6 @@
         @media (max-width: 992px) {
             .main-content {
                 margin-right: 0;
-                padding: 12px 14px;
             }
             .sidebar {
                 transform: translateX(100%);
@@ -1405,135 +1337,110 @@
                 transform: translateX(100%);
             }
             .sticky-bottom-wrapper:not(.sidebar-hidden) {
-                padding-right: 10px !important;
+                padding-right: 15px !important;
             }
         }
 
         @media (max-width: 768px) {
             .main-content {
-                padding: 10px 12px;
+                padding: 16px 12px;
             }
             .header {
-                padding: 10px 14px;
-                flex-direction: column;
-                align-items: stretch;
-                gap: 8px;
-            }
-            .header-left {
-                justify-content: space-between;
+                padding: 12px 16px;
             }
             .header h1 {
-                font-size: 16px;
+                font-size: 17px;
             }
             .card {
-                padding: 12px 14px;
-                border-radius: 12px;
+                padding: 16px 14px;
             }
             .product-card-header {
-                padding: 10px 12px;
-                flex-wrap: wrap;
-                gap: 6px;
+                padding: 12px 14px;
+                gap: 10px;
             }
             .product-card-header .meta {
-                width: 100%;
+                gap: 4px 12px;
+            }
+            .product-card-header .meta .name {
+                font-size: 14px;
             }
             .product-card-body {
-                padding: 0 12px 12px;
+                padding: 0 14px 16px;
             }
             .invoice-header-actions {
                 flex-direction: column;
                 align-items: stretch;
-                gap: 6px;
             }
             .invoice-header-actions .left-actions {
                 justify-content: center;
             }
             .dialog-box {
-                padding: 18px 16px;
+                padding: 24px 16px;
             }
             .old-order-item {
                 flex-direction: column;
                 align-items: stretch;
-                gap: 3px;
+                gap: 4px;
+            }
+            .old-order-item .order-url {
+                white-space: normal;
             }
             .toast-alert {
-                bottom: 70px;
+                bottom: 80px;
                 font-size: 12px;
-                padding: 8px 16px;
+                padding: 10px 16px;
                 max-width: 95vw;
+            }
+            .sticky-bottom .summary {
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+            .color-size-block .size-grid {
+                gap: 6px 12px;
+            }
+            .color-size-block .size-item {
+                font-size: 13px;
+            }
+            .color-size-block .size-item .qty-control button {
+                width: 26px;
+                height: 26px;
+                font-size: 12px;
             }
         }
 
         @media (max-width: 480px) {
-            .main-content {
-                padding: 8px 8px;
-            }
             .stats-grid {
-                grid-template-columns: 1fr 1fr;
-                gap: 4px;
-            }
-            .stat-card {
-                padding: 8px 6px;
-                border-radius: 10px;
+                grid-template-columns: 1fr;
             }
             .stat-card .stat-value {
+                font-size: 20px;
+            }
+            .preview-content .info {
+                grid-template-columns: 1fr;
+            }
+            .product-info-grid {
+                gap: 6px;
+            }
+            .product-info-grid .btn {
+                height: 44px;
+                font-size: 13px;
+                padding: 0 16px;
+            }
+            .floating-group input,
+            .floating-group select {
                 font-size: 14px;
+                padding: 12px 10px 8px;
             }
-            .stat-card .stat-label {
-                font-size: 8px;
-            }
-            .header h1 {
-                font-size: 14px;
-            }
-            .user-info span {
-                font-size: 10px;
-            }
-            .user-info i {
-                font-size: 14px;
-            }
-            .card {
-                padding: 10px 10px;
-                border-radius: 10px;
-                margin-bottom: 10px;
-            }
-            .product-card-header .thumb {
-                width: 40px;
-                height: 40px;
-            }
-            .product-card-header .meta .name {
+            .floating-group label {
                 font-size: 12px;
+                top: 12px;
             }
-            .product-card-header .meta .price {
-                font-size: 11px;
-            }
-            .product-card-header .meta .total-pieces {
+            .floating-group input:focus+label,
+            .floating-group input:not(:placeholder-shown)+label,
+            .floating-group select:focus+label,
+            .floating-group select:not([value=""]):not([value=""])+label {
+                top: 3px;
                 font-size: 10px;
-            }
-            .color-header {
-                font-size: 12px;
-            }
-            .size-row {
-                font-size: 11px;
-            }
-            .size-row .qty-control button {
-                width: 22px;
-                height: 22px;
-                font-size: 11px;
-            }
-            .size-row .qty-control .qty-val {
-                font-size: 12px;
-                min-width: 22px;
-            }
-            .sticky-bottom {
-                padding: 8px 10px;
-            }
-            .sticky-bottom .summary {
-                font-size: 9px;
-                gap: 4px;
-            }
-            .sticky-bottom .actions .btn {
-                font-size: 10px;
-                padding: 4px 10px;
             }
         }
 
@@ -1649,12 +1556,6 @@
             <section class="card">
                 <div class="invoice-header-actions">
                     <div class="left-actions">
-                        <button class="btn btn-secondary btn-sm" id="expandAllColors">
-                            <i class="fas fa-chevron-down"></i> فتح الألوان
-                        </button>
-                        <button class="btn btn-secondary btn-sm" id="collapseAllColors">
-                            <i class="fas fa-chevron-left"></i> غلق الألوان
-                        </button>
                         <button class="btn btn-secondary btn-sm" id="expandAllProducts">
                             <i class="fas fa-chevron-down"></i> فتح الكل
                         </button>
@@ -1662,7 +1563,7 @@
                             <i class="fas fa-chevron-left"></i> غلق الكل
                         </button>
                     </div>
-                    <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                    <div style="display:flex;gap:8px;flex-wrap:wrap;">
                         <button class="btn btn-danger btn-sm" id="clearAllBtn">
                             <i class="fas fa-trash"></i> مسح الكل
                         </button>
@@ -1701,13 +1602,13 @@
 
             <!-- OLD ORDERS -->
             <section class="card" id="oldOrdersSection" style="display:none;">
-                <div class="section-header" style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px;margin-bottom:10px;">
-                    <h4 style="font-size:16px;font-weight:700;color:var(--dark-secondary);">
+                <div class="section-header" style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:12px;">
+                    <h4 style="font-size:18px;font-weight:700;color:var(--dark-secondary);">
                         <i class="fas fa-history" style="color:var(--primary);"></i> الفواتير السابقة
                     </h4>
-                    <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;">
-                        <span class="btn-ghost-header" style="padding:3px 10px;font-size:11px;background:var(--light);border:1px solid var(--gray-light);border-radius:40px;color:var(--dark-secondary);" id="oldOrdersCount">0 فاتورة</span>
-                        <button class="btn-ghost-header" style="padding:3px 10px;font-size:11px;" id="refreshOldOrdersBtn">
+                    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+                        <span class="btn-ghost-header" style="padding:4px 14px;font-size:12px;background:var(--light);border:1px solid var(--gray-light);border-radius:40px;color:var(--dark-secondary);" id="oldOrdersCount">0 فاتورة</span>
+                        <button class="btn-ghost-header" style="padding:4px 14px;font-size:12px;" id="refreshOldOrdersBtn">
                             <i class="fas fa-sync-alt"></i> تحديث
                         </button>
                         <button class="btn btn-primary btn-sm" id="exportAllOldOrdersBtn">
@@ -1716,7 +1617,7 @@
                     </div>
                 </div>
                 <div class="old-orders-list" id="oldOrdersList">
-                    <div style="text-align:center;padding:16px;color:var(--gray);font-size:13px;">اضغط على "تحديث" لتحميل الفواتير</div>
+                    <div style="text-align:center;padding:20px;color:var(--gray);">اضغط على "تحديث" لتحميل الفواتير</div>
                 </div>
             </section>
 
@@ -1799,7 +1700,7 @@
 
         <!-- INVOICE PREVIEW DIALOG -->
         <div class="dialog-overlay" id="invoicePreviewDialog">
-            <div class="dialog-box" style="max-width: 650px;">
+            <div class="dialog-box" style="max-width: 700px;">
                 <button class="modal-close-btn" onclick="document.getElementById('invoicePreviewDialog').classList.remove('show')"><i class="fas fa-times"></i></button>
                 <h3><i class="fas fa-file-invoice" style="color:var(--primary);"></i> تفاصيل الفاتورة</h3>
                 <div id="invoicePreviewContent"></div>
@@ -1996,49 +1897,37 @@
                 getNonZeroRows(rows) {
                     return rows.filter(row => {
                         let total = 0;
-                        if (row.sizes && typeof row.sizes === 'object') {
-                            Object.values(row.sizes).forEach(v => total += v || 0);
-                        } else if (row.qty) {
-                            total = row.qty;
+                        if (row.sizes) {
+                            for (const size in row.sizes) {
+                                total += row.sizes[size] || 0;
+                            }
                         }
                         return total > 0;
                     });
                 },
                 calculateTotalPieces(rows) {
                     let t = 0;
-                    rows.forEach(row => {
-                        if (row.sizes && typeof row.sizes === 'object') {
-                            Object.values(row.sizes).forEach(v => t += v || 0);
-                        } else {
-                            t += row.qty || 0;
+                    rows.forEach(r => {
+                        if (r.sizes) {
+                            for (const size in r.sizes) {
+                                t += r.sizes[size] || 0;
+                            }
                         }
                     });
                     return t;
                 },
                 calculateTotalValue(rows) {
                     let t = 0;
-                    rows.forEach(row => {
-                        const qty = row.qty || 0;
-                        const sizeQty = row.sizes && typeof row.sizes === 'object' ?
-                            Object.values(row.sizes).reduce((a, b) => a + (b || 0), 0) :
-                            qty;
-                        t += (row.unitPrice || 0) * sizeQty;
+                    rows.forEach(r => {
+                        let totalQty = 0;
+                        if (r.sizes) {
+                            for (const size in r.sizes) {
+                                totalQty += r.sizes[size] || 0;
+                            }
+                        }
+                        t += totalQty * (r.unitPrice || 0);
                     });
                     return t;
-                },
-
-                // الحصول على userId الحالي
-                getCurrentUserId() {
-                    try {
-                        const userData = Storage.get('userData', null);
-                        if (userData && userData.id) return userData.id;
-                        const userDataStr = Storage.get('userData', '');
-                        if (userDataStr) {
-                            const parsed = typeof userDataStr === 'string' ? JSON.parse(userDataStr) : userDataStr;
-                            if (parsed && parsed.id) return parsed.id;
-                        }
-                        return Storage.get('userId', null);
-                    } catch { return Storage.get('userId', null); }
                 },
 
                 loadCurrentTable(callback) {
@@ -2046,21 +1935,13 @@
                         if (callback) callback(null);
                         return;
                     }
-                    const userId = this.getCurrentUserId();
-                    if (!userId) {
-                        console.warn('⚠️ No userId found, loading from localStorage only');
-                        const saved = Storage.get('tableData', []);
-                        if (callback) callback(Array.isArray(saved) ? saved : null);
-                        return;
-                    }
-                    const path = 'users/' + userId + '/currentTable';
-                    database.ref(path).once('value', (snapshot) => {
+                    database.ref('currentTable').once('value', (snapshot) => {
                         const data = snapshot.val();
                         if (data && data.data && Array.isArray(data.data)) {
-                            console.log('✅ تم تحميل currentTable للمستخدم:', data.data.length, 'عنصر');
+                            console.log('✅ تم تحميل currentTable:', data.data.length, 'عنصر');
                             if (callback) callback(data.data);
                         } else {
-                            console.log('ℹ️ لا توجد بيانات في currentTable للمستخدم');
+                            console.log('ℹ️ لا توجد بيانات في currentTable');
                             if (callback) callback(null);
                         }
                     }, (error) => {
@@ -2074,15 +1955,7 @@
                         if (callback) callback('Firebase not ready');
                         return;
                     }
-                    const userId = this.getCurrentUserId();
-                    if (!userId) {
-                        console.warn('⚠️ No userId, saving to localStorage only');
-                        Storage.set('tableData', tableData);
-                        if (callback) callback(null);
-                        return;
-                    }
-                    const path = 'users/' + userId + '/currentTable';
-                    database.ref(path).set({
+                    database.ref('currentTable').set({
                         data: tableData,
                         updatedAt: firebase.database.ServerValue.TIMESTAMP
                     }, (error) => {
@@ -2090,97 +1963,89 @@
                             console.error('❌ خطأ في حفظ currentTable:', error);
                             if (callback) callback(error);
                         } else {
-                            console.log('✅ تم حفظ currentTable للمستخدم:', tableData.length, 'عنصر');
+                            console.log('✅ تم حفظ currentTable:', tableData.length, 'عنصر');
                             if (callback) callback(null);
                         }
                     });
                 },
 
-                saveInvoiceToFirebase(branchName, tableData, productUrl, callback) {
+                saveInvoiceToFirebase(branchName, tableData, productUrl, userId, callback) {
                     if (!database) {
                         if (callback) callback('⚠️ Firebase not ready');
                         return;
                     }
-                    const userId = this.getCurrentUserId();
-                    if (!userId) {
-                        if (callback) callback('⚠️ No userId found');
-                        return;
-                    }
-
                     const nonZeroRows = this.getNonZeroRows(tableData);
+                    const totalPieces = this.calculateTotalPieces(nonZeroRows);
+                    const totalValue = this.calculateTotalValue(nonZeroRows);
+
                     const invoice = {
                         branch: branchName || 'Branch not set',
-                        totalPieces: this.calculateTotalPieces(nonZeroRows),
-                        totalValue: this.calculateTotalValue(nonZeroRows),
+                        totalPieces: totalPieces,
+                        totalValue: totalValue,
                         itemsCount: nonZeroRows.length,
                         productUrl: productUrl || '',
+                        userId: userId || 'unknown',
                         items: nonZeroRows.map(row => ({
                             name: row.name,
                             color: row.color || '',
-                            sizes: row.sizes || {},
                             sku: row.sku || '',
                             unitPrice: row.unitPrice || 0,
+                            sizes: row.sizes || {},
                             image: row.image || '',
                             productId: row.productId || ''
                         })),
                         createdAt: firebase.database.ServerValue.TIMESTAMP,
-                        createdBy: userId,
-                        userId: userId
+                        createdBy: 'مستخدم'
                     };
-                    const ref = database.ref('users/' + userId + '/invoices').push();
+                    const ref = database.ref('invoices').push();
                     ref.set(invoice, (error) => {
                         if (error) {
                             console.error('❌ Firebase save error:', error);
                             if (callback) callback('❌ فشل الحفظ: ' + error.message);
                         } else {
-                            console.log('✅ Invoice saved for user:', userId);
+                            console.log('✅ Invoice saved');
                             if (callback) callback(null, ref.key);
                         }
                     });
                 },
 
-                loadOldInvoices(callback) {
+                loadOldInvoices(userId, callback) {
                     if (!database) {
                         if (callback) callback([]);
                         return;
                     }
-                    const userId = this.getCurrentUserId();
-                    if (!userId) {
-                        console.warn('⚠️ No userId, loading from localStorage');
-                        const saved = Storage.get('oldInvoices', []);
-                        if (callback) callback(Array.isArray(saved) ? saved : []);
-                        return;
-                    }
                     const oneMonthAgo = Date.now() - (30 * 24 * 60 * 60 * 1000);
-                    database.ref('users/' + userId + '/invoices')
-                        .orderByChild('createdAt')
-                        .startAt(oneMonthAgo)
-                        .once('value', (snapshot) => {
-                            const data = snapshot.val();
-                            if (!data) {
-                                if (callback) callback([]);
-                                return;
-                            }
-                            const invoices = [];
-                            for (const key in data) {
-                                const inv = data[key];
+                    const query = database.ref('invoices')
+                        .orderByChild('userId')
+                        .equalTo(userId)
+                        .limitToLast(100);
+
+                    query.once('value', (snapshot) => {
+                        const data = snapshot.val();
+                        if (!data) {
+                            if (callback) callback([]);
+                            return;
+                        }
+                        const invoices = [];
+                        for (const key in data) {
+                            const inv = data[key];
+                            // تحقق من التاريخ
+                            if (inv.createdAt && inv.createdAt >= oneMonthAgo) {
                                 invoices.push({ id: key, ...inv, createdAt: inv.createdAt || 0 });
                             }
-                            invoices.sort((a, b) => b.createdAt - a.createdAt);
-                            Storage.set('oldInvoices', invoices);
-                            if (callback) callback(invoices);
-                        }, (error) => {
-                            console.error('❌ Error loading invoices:', error);
-                            if (callback) callback([]);
-                        });
+                        }
+                        invoices.sort((a, b) => b.createdAt - a.createdAt);
+                        if (callback) callback(invoices);
+                    }, (error) => {
+                        console.error('❌ Error loading invoices:', error);
+                        if (callback) callback([]);
+                    });
                 },
 
                 cleanOldInvoices() {
                     if (!database) return;
-                    const userId = this.getCurrentUserId();
-                    if (!userId) return;
                     const oneMonthAgo = Date.now() - (30 * 24 * 60 * 60 * 1000);
-                    database.ref('users/' + userId + '/invoices').once('value', (snapshot) => {
+                    database.ref('invoices').once('value', (snapshot) => {
                         const invoices = snapshot.val();
                         if (!invoices) return;
                         const updates = {};
@@ -2192,7 +2057,7 @@
                             }
                         }
                         if (count > 0) {
-                            database.ref('users/' + userId + '/invoices').update(updates, (error) => {
+                            database.ref('invoices').update(updates, (error) => {
                                 if (!error) console.log(`✅ Cleaned ${count} old invoices`);
                             });
                         }
@@ -2201,27 +2066,17 @@
 
                 exportSingleInvoice(invoice) {
                     const wb = XLSX.utils.book_new();
-                    const headers = ['#', 'Name', 'Color', 'Size', 'Qty', 'Unit Price', 'Total'];
+                    const headers = ['#', 'Name', 'Color', 'SKU', 'Unit Price', 'Sizes (qty)'];
                     const data = [headers];
-                    let idx = 1;
-                    invoice.items.forEach((item) => {
-                        if (item.sizes && typeof item.sizes === 'object') {
-                            Object.entries(item.sizes).forEach(([size, qty]) => {
-                                if (qty > 0) {
-                                    data.push([idx++, item.name || '', item.color || '', size,
-                                        qty,
-                                        item.unitPrice || 0,
-                                        (item.unitPrice || 0) * qty
-                                    ]);
-                                }
-                            });
-                        } else {
-                            data.push([idx++, item.name || '', item.color || '', '—', item.qty || 0,
-                                item.unitPrice || 0, item.total || 0
-                            ]);
-                        }
+                    invoice.items.forEach((item, i) => {
+                        const sizeStr = Object.entries(item.sizes || {})
+                            .map(([size, qty]) => `${size}:${qty}`).join(' | ');
+                        data.push([i + 1, item.name || '', item.color || '', item.sku || '',
+                            item.unitPrice || 0, sizeStr
+                        ]);
                     });
-                    data.push(['', '', '', '', invoice.totalPieces || 0, '', invoice.totalValue || 0]);
+                    data.push(['', '', '', '', '', `Total Pieces: ${invoice.totalPieces || 0}`]);
+                    data.push(['', '', '', '', '', `Total Value: ${invoice.totalValue || 0} LE`]);
                     const ws = XLSX.utils.aoa_to_sheet(data);
                     XLSX.utils.book_append_sheet(wb, ws, 'Invoice');
                     const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
@@ -2237,31 +2092,23 @@
                 exportAllInvoices(invoices) {
                     const wb = XLSX.utils.book_new();
                     invoices.forEach((invoice, idx) => {
-                        const headers = ['#', 'Name', 'Color', 'Size', 'Qty', 'Unit Price', 'Total'];
+                        const headers = ['#', 'Name', 'Color', 'SKU', 'Unit Price', 'Sizes (qty)'];
                         const data = [
                             [`Invoice: ${invoice.branch || 'Branch not set'}`],
                             [`Date: ${new Date(invoice.createdAt).toLocaleDateString('ar-EG')}`],
+                            [`URL: ${invoice.productUrl || '—'}`],
                             [],
                             headers
                         ];
-                        let rowIdx = 1;
-                        invoice.items.forEach((item) => {
-                            if (item.sizes && typeof item.sizes === 'object') {
-                                Object.entries(item.sizes).forEach(([size, qty]) => {
-                                    if (qty > 0) {
-                                        data.push([rowIdx++, item.name || '', item.color || '',
-                                            size,
-                                            qty,
-                                            item.unitPrice || 0,
-                                            (item.unitPrice || 0) * qty
-                                        ]);
-                                    }
-                                });
-                            }
+                        invoice.items.forEach((item, i) => {
+                            const sizeStr = Object.entries(item.sizes || {})
+                                .map(([size, qty]) => `${size}:${qty}`).join(' | ');
+                            data.push([i + 1, item.name || '', item.color || '', item.sku || '',
+                                item.unitPrice || 0, sizeStr
+                            ]);
                         });
-                        data.push(['', '', '', '', invoice.totalPieces || 0, '', invoice
-                            .totalValue || 0
-                        ]);
+                        data.push(['', '', '', '', '', `Total Pieces: ${invoice.totalPieces || 0}`]);
+                        data.push(['', '', '', '', '', `Total Value: ${invoice.totalValue || 0} LE`]);
                         const ws = XLSX.utils.aoa_to_sheet(data);
                         const sheetName = `Invoice_${idx+1}`.slice(0, 31);
                         XLSX.utils.book_append_sheet(wb, ws, sheetName);
@@ -2389,40 +2236,63 @@
             };
 
             // ================================================================
-            //  EXCEL GENERATOR - محدث للهيكل الجديد
+            //  EXCEL GENERATOR
             // ================================================================
             const ExcelGenerator = {
-                // توليد الصفوف للتصدير من الهيكل الجديد (منتج واحد مع مقاسات)
-                generateRowsFromProduct(product, seriesQty, userSku) {
+                generateRows(product, seriesQty, userSku) {
                     const rows = [];
-                    const colors = product.colors.length ? product.colors : [''];
-                    const sizes = product.sizes.length ? product.sizes : [''];
-                    colors.forEach(color => {
-                        const sizeObj = {};
-                        sizes.forEach(size => {
-                            sizeObj[size] = seriesQty;
+                    if (product.variants && product.variants.length) {
+                        product.variants.forEach(v => {
+                            const { color, size } = Utils.getVariantDetails(v, product.colors, product
+                                .sizes);
+                            let p = product.price;
+                            if (v.compare_at_price && v.compare_at_price > 0) p = Utils.centsToCurrency(v
+                                .compare_at_price);
+                            else if (v.price) p = Utils.centsToCurrency(v.price);
+                            rows.push({
+                                name: product.name,
+                                color: color || '',
+                                size: size || '',
+                                sku: userSku || v.sku || product.sku || '',
+                                qty: seriesQty,
+                                unitPrice: p,
+                                total: seriesQty * p,
+                                image: product.mainImage || (product.images && product.images.length ?
+                                    product.images[0] : ''),
+                                productId: product.productId || ''
+                            });
                         });
-                        rows.push({
-                            name: product.name,
-                            color: color,
-                            sizes: sizeObj,
-                            sku: userSku || product.sku || '',
-                            unitPrice: product.price,
-                            image: product.mainImage || (product.images && product.images.length ?
-                                product.images[0] : ''),
-                            productId: product.productId || ''
+                    } else {
+                        const colors = product.colors.length ? product.colors : [''];
+                        const sizes = product.sizes.length ? product.sizes : [''];
+                        colors.forEach(color => {
+                            sizes.forEach(size => {
+                                rows.push({
+                                    name: product.name,
+                                    color: color,
+                                    size: size,
+                                    sku: userSku || product.sku || '',
+                                    qty: seriesQty,
+                                    unitPrice: product.price,
+                                    total: seriesQty * product.price,
+                                    image: product.mainImage || (product.images && product
+                                        .images.length ? product.images[0] : ''),
+                                    productId: product.productId || ''
+                                });
+                            });
                         });
-                    });
+                    }
                     return rows;
                 },
 
-                // تحويل البيانات القديمة (صفوف متعددة) إلى الهيكل الجديد
-                convertToNewStructure(tableData) {
-                    const groups = {};
-                    tableData.forEach(row => {
-                        const key = row.name + '|' + row.sku + '|' + (row.color || '');
-                        if (!groups[key]) {
-                            groups[key] = {
+                // تحويل الصفوف إلى هيكل جديد (كل منتج في سطر واحد مع sizes)
+                convertToProductStructure(rows) {
+                    const productMap = new Map();
+
+                    rows.forEach(row => {
+                        const key = row.name + '|' + row.sku + '|' + row.color + '|' + row.productId;
+                        if (!productMap.has(key)) {
+                            productMap.set(key, {
                                 name: row.name,
                                 color: row.color || '',
                                 sku: row.sku || '',
@@ -2430,101 +2300,79 @@
                                 image: row.image || '',
                                 productId: row.productId || '',
                                 sizes: {}
-                            };
+                            });
                         }
+                        const product = productMap.get(key);
                         const size = row.size || 'No Size';
-                        groups[key].sizes[size] = (groups[key].sizes[size] || 0) + (row.qty || 0);
+                        product.sizes[size] = (product.sizes[size] || 0) + (row.qty || 0);
                     });
-                    return Object.values(groups);
+
+                    return Array.from(productMap.values());
                 },
 
                 fromTableData(tableData, mode) {
-                    // تحويل البيانات أولاً إلى الهيكل الجديد
+                    const wb = XLSX.utils.book_new();
+                    const filteredData = Utils.getNonZeroRows(tableData);
+                    const productData = this.convertToProductStructure(filteredData);
+
                     let data = [];
-                    const converted = this.convertToNewStructure(tableData);
 
                     if (mode === 'detail' || mode === 'rows') {
                         data = [
-                            ['#', 'Name', 'Color', 'Size', 'SKU', 'Qty', 'Unit Price', 'Total']
+                            ['#', 'Name', 'Color', 'SKU', 'Unit Price', 'Sizes (qty)']
                         ];
-                        let idx = 1;
-                        converted.forEach(item => {
-                            Object.entries(item.sizes).forEach(([size, qty]) => {
-                                if (qty > 0) {
-                                    data.push([idx++, item.name, item.color || '—', size, item
-                                        .sku,
-                                        qty, item.unitPrice, item.unitPrice * qty
-                                    ]);
-                                }
-                            });
+                        productData.forEach((p, i) => {
+                            const sizeStr = Object.entries(p.sizes || {})
+                                .map(([size, qty]) => `${size}:${qty}`).join(' | ');
+                            data.push([i + 1, p.name, p.color, p.sku, p.unitPrice, sizeStr]);
                         });
                     } else if (mode === 'summary') {
-                        data = [
-                            ['Name', 'Colors', 'Sizes', 'SKU', 'Total Pieces', 'Unit Price', 'Total']
-                        ];
-                        const summarized = {};
-                        converted.forEach(item => {
-                            const key = item.name + '|' + item.sku;
-                            if (!summarized[key]) {
-                                summarized[key] = {
-                                    name: item.name,
-                                    sku: item.sku,
+                        const map = new Map();
+                        productData.forEach(p => {
+                            const key = p.name + '|' + p.sku;
+                            if (!map.has(key)) {
+                                map.set(key, {
+                                    name: p.name,
+                                    sku: p.sku,
+                                    unitPrice: p.unitPrice,
                                     colors: new Set(),
-                                    sizes: new Set(),
-                                    unitPrice: item.unitPrice,
                                     totalQty: 0
-                                };
+                                });
                             }
-                            const s = summarized[key];
-                            if (item.color) s.colors.add(item.color);
-                            Object.keys(item.sizes).forEach(sz => s.sizes.add(sz));
-                            Object.values(item.sizes).forEach(qty => s.totalQty += qty || 0);
+                            const s = map.get(key);
+                            if (p.color) s.colors.add(p.color);
+                            for (const size in p.sizes) {
+                                s.totalQty += p.sizes[size];
+                            }
                         });
-                        for (const key in summarized) {
-                            const s = summarized[key];
-                            const colors = [...s.colors].filter(c => c && c !== '—').join(', ') || '—';
-                            const sizes = [...s.sizes].filter(sz => sz && sz !== 'No Size').join(', ') ||
-                            '—';
-                            data.push([s.name, colors, sizes, s.sku, s.totalQty, s.unitPrice, s
-                                .totalQty * s.unitPrice
-                            ]);
+                        data = [
+                            ['Name', 'Colors', 'SKU', 'Total Pieces', 'Unit Price']
+                        ];
+                        for (const [key, s] of map) {
+                            const colors = [...s.colors].filter(c => c).join(', ') || '—';
+                            data.push([s.name, colors, s.sku, s.totalQty, s.unitPrice]);
                         }
                     } else if (mode === 'colorSummary') {
                         data = [
-                            ['Name', 'SKU', 'Color', 'Sizes', 'Total Pieces', 'Unit Price', 'Total']
+                            ['Name', 'SKU', 'Color', 'Sizes (qty)', 'Unit Price']
                         ];
-                        converted.forEach(item => {
-                            const sizes = Object.keys(item.sizes).filter(sz => item.sizes[sz] > 0)
-                                .join(', ') || '—';
-                            const totalQty = Object.values(item.sizes).reduce((a, b) => a + (b || 0),
-                            0);
-                            data.push([item.name, item.sku, item.color || '—', sizes, totalQty, item
-                                .unitPrice,
-                                totalQty * item.unitPrice
-                            ]);
+                        productData.forEach(p => {
+                            const sizeStr = Object.entries(p.sizes || {})
+                                .map(([size, qty]) => `${size}:${qty}`).join(' | ');
+                            data.push([p.name, p.sku, p.color || '—', sizeStr, p.unitPrice]);
                         });
                     } else if (mode === 'system') {
                         data = [
-                            ['المنتج', 'باركود', 'توتال الكمية', 'سعر البيع', 'التصنيف',
-                                'اللون و الكمية الخرجت من كل مقاس'
-                            ]
+                            ['المنتج', 'باركود', 'سعر البيع', 'اللون', 'المقاسات (الكمية)']
                         ];
-                        converted.forEach(item => {
-                            const totalQty = Object.values(item.sizes).reduce((a, b) => a + (b ||
-                            0), 0);
-                            const sizeStr = Object.entries(item.sizes)
-                                .filter(([sz, qty]) => qty > 0)
-                                .map(([sz, qty]) => `${qty}${sz}`)
-                                .join(' - ');
-                            const colorLabel = item.color || 'No Color';
-                            data.push([item.name, item.sku, totalQty, item.unitPrice, '',
-                                `${colorLabel}: ${sizeStr}`
-                            ]);
+                        productData.forEach(p => {
+                            const sizeStr = Object.entries(p.sizes || {})
+                                .map(([size, qty]) => `${qty}${size}`).join(' - ');
+                            data.push([p.name, p.sku, p.unitPrice, p.color || '—', sizeStr]);
                         });
                     }
 
                     const ws = XLSX.utils.aoa_to_sheet(data);
-                    const wb = XLSX.utils.book_new();
                     XLSX.utils.book_append_sheet(wb, ws, 'Invoice');
                     return wb;
                 }
@@ -2568,8 +2416,6 @@
                     oldOrdersCount: document.getElementById('oldOrdersCount'),
                     refreshOldOrdersBtn: document.getElementById('refreshOldOrdersBtn'),
                     exportAllOldOrdersBtn: document.getElementById('exportAllOldOrdersBtn'),
-                    expandAllColors: document.getElementById('expandAllColors'),
-                    collapseAllColors: document.getElementById('collapseAllColors'),
                     expandAllProducts: document.getElementById('expandAllProducts'),
                     collapseAllProducts: document.getElementById('collapseAllProducts'),
                     imageModal: document.getElementById('imageModal'),
@@ -2599,48 +2445,96 @@
                 _isLoadingFromFirebase: false,
                 _previewInvoiceIndex: -1,
                 _currentUser: 'مستخدم غير معروف',
-                _userId: null,
+                _userId: 'unknown',
 
                 init() {
                     console.log('🚀 Initializing Create Order UI...');
 
-                    // قراءة userId
-                    this._userId = Utils.getCurrentUserId();
-                    console.log('🔑 Current User ID:', this._userId);
+                    // جلب بيانات المستخدم من currentUser
+                    const currentUserStr = Storage.get('currentUser', null);
+                    if (currentUserStr) {
+                        try {
+                            const userData = JSON.parse(currentUserStr);
+                            if (userData && userData.fullName) {
+                                this._currentUser = userData.fullName;
+                            }
+                            if (userData && userData.id) {
+                                this._userId = userData.id;
+                            }
+                            console.log('👤 User loaded:', this._currentUser, 'ID:', this._userId);
+                        } catch (e) {
+                            console.warn('⚠️ Failed to parse currentUser:', e);
+                        }
+                    } else {
+                        // محاولة قراءة من localStorage مباشرة
+                        try {
+                            const raw = localStorage.getItem('shopify_currentUser');
+                            if (raw) {
+                                const userData = JSON.parse(raw);
+                                if (userData && userData.fullName) {
+                                    this._currentUser = userData.fullName;
+                                }
+                                if (userData && userData.id) {
+                                    this._userId = userData.id;
+                                }
+                            }
+                        } catch (e) {}
+                    }
 
-                    this._currentUser = Storage.get('userName', 'مستخدم غير معروف');
                     const userNameEl = document.getElementById('currentAdminName');
                     if (userNameEl) {
                         userNameEl.textContent = `مرحباً، ${this._currentUser}`;
                     }
 
-                    // استعادة الفرع المحفوظ
+                    this.elements.url.value = Storage.get('url', '');
+                    this.elements.series.value = Storage.get('series', '1');
                     const savedBranch = Storage.get('branch', '');
                     if (savedBranch) {
                         this.elements.branch.value = savedBranch;
                     }
-
-                    this.elements.url.value = Storage.get('url', '');
-                    this.elements.series.value = Storage.get('series', '1');
                     this.updateStickyPosition();
 
+                    // تحميل البيانات من Firebase حسب المستخدم
                     this._isLoadingFromFirebase = true;
                     Utils.loadCurrentTable((data) => {
                         this._isLoadingFromFirebase = false;
                         if (data && Array.isArray(data) && data.length > 0) {
-                            console.log('📥 Loading data from currentTable:', data.length, 'items');
-                            this._tableData = data;
-                            Storage.set('tableData', data);
-                            this.renderInvoice();
-                            this.showAlert('✅ تم تحميل البيانات من السحابة', 'success');
+                            // فلترة البيانات حسب المستخدم
+                            const userData = data.filter(item => item.userId === this._userId);
+                            if (userData.length > 0) {
+                                console.log('📥 Loading data for user:', this._userId, userData.length, 'items');
+                                this._tableData = userData;
+                                Storage.set('tableData', userData);
+                                this.renderInvoice();
+                                this.showAlert('✅ تم تحميل البيانات من السحابة', 'success');
+                            } else {
+                                const saved = Storage.get('tableData', []);
+                                if (Array.isArray(saved) && saved.length) {
+                                    // فلترة المحفوظات حسب المستخدم
+                                    const savedUserData = saved.filter(item => item.userId === this._userId);
+                                    if (savedUserData.length > 0) {
+                                        this._tableData = savedUserData;
+                                    } else {
+                                        this._tableData = [];
+                                    }
+                                    this.renderInvoice();
+                                    Utils.saveCurrentTable(this._tableData);
+                                } else {
+                                    this._tableData = [];
+                                    this.renderInvoice();
+                                }
+                            }
                         } else {
                             const saved = Storage.get('tableData', []);
                             if (Array.isArray(saved) && saved.length) {
-                                this._tableData = saved;
-                                this.renderInvoice();
-                                if (this._userId) {
-                                    Utils.saveCurrentTable(this._tableData);
+                                const savedUserData = saved.filter(item => item.userId === this._userId);
+                                if (savedUserData.length > 0) {
+                                    this._tableData = savedUserData;
+                                } else {
+                                    this._tableData = [];
                                 }
+                                this.renderInvoice();
+                                Utils.saveCurrentTable(this._tableData);
                             } else {
                                 this._tableData = [];
                                 this.renderInvoice();
@@ -2688,7 +2582,7 @@
                     });
 
                     this.elements.fetchBtn.addEventListener('click', () => this.handleFetch(false));
-                    this.elements.addBtn.addEventListener('click', () => this.handleAdd());
+                    this.elements.addBtn.addEventListener('click', () => this.handleAddWithDuplicateCheck());
 
                     this.elements.closeInvoiceBtn.addEventListener('click', () => this.closeFullInvoice());
                     this.elements.exportDialogBtn.addEventListener('click', () => this.openExportDialog());
@@ -2711,12 +2605,6 @@
                     this.elements.refreshOldOrdersBtn.addEventListener('click', () => this.loadOldInvoices());
                     this.elements.exportAllOldOrdersBtn.addEventListener('click', () => this.exportAllInvoices());
 
-                    this.elements.expandAllColors.addEventListener('click', () => {
-                        this.expandAllColors(true);
-                    });
-                    this.elements.collapseAllColors.addEventListener('click', () => {
-                        this.expandAllColors(false);
-                    });
                     this.elements.expandAllProducts.addEventListener('click', () => {
                         this.expandAllProducts(true);
                     });
@@ -2745,15 +2633,18 @@
                     document.addEventListener('keydown', (e) => {
                         if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
                             e.preventDefault();
-                            this.handleAdd();
+                            this.handleAddWithDuplicateCheck();
                         }
                     });
 
                     this._syncTimer = setInterval(() => {
                         if (this._isDirty && this._tableData.length > 0 && !this._isLoadingFromFirebase) {
-                            if (this._userId) {
-                                Utils.saveCurrentTable(this._tableData);
-                            }
+                            // إضافة userId قبل الحفظ
+                            const dataToSave = this._tableData.map(item => ({
+                                ...item,
+                                userId: this._userId
+                            }));
+                            Utils.saveCurrentTable(dataToSave);
                             this._isDirty = false;
                         }
                     }, 2000);
@@ -2773,16 +2664,16 @@
 
                     if (isMobile) {
                         wrapper.classList.add('sidebar-hidden');
-                        wrapper.style.paddingRight = '10px';
-                        wrapper.style.paddingLeft = '10px';
+                        wrapper.style.paddingRight = '15px';
+                        wrapper.style.paddingLeft = '15px';
                     } else if (isHidden) {
                         wrapper.classList.add('sidebar-hidden');
-                        wrapper.style.paddingRight = '20px';
-                        wrapper.style.paddingLeft = '20px';
+                        wrapper.style.paddingRight = '25px';
+                        wrapper.style.paddingLeft = '25px';
                     } else {
                         wrapper.classList.remove('sidebar-hidden');
-                        wrapper.style.paddingRight = '300px';
-                        wrapper.style.paddingLeft = '20px';
+                        wrapper.style.paddingRight = '305px';
+                        wrapper.style.paddingLeft = '25px';
                     }
                 },
 
@@ -2856,8 +2747,7 @@
                     }
                 },
 
-                // دالة الإضافة الجديدة - تضيف المنتج ككائن واحد مع المقاسات
-                handleAdd() {
+                handleAddWithDuplicateCheck() {
                     if (!this._lastProduct) {
                         this.showAlert('⚠️ لا توجد بيانات منتج. قم بجلب منتج أولاً.', 'error');
                         return;
@@ -2868,115 +2758,108 @@
                         return;
                     }
 
-                    const product = this._lastProduct;
-                    const sku = product.sku || '';
                     const branch = this.elements.branch.value;
                     if (!branch) {
                         this.showAlert('⚠️ الرجاء اختيار الفرع', 'error');
                         return;
                     }
 
-                    // التحقق من وجود المنتج في الجدول
-                    const existingIndex = this._tableData.findIndex(row =>
-                        row.name === product.name && row.sku === sku
+                    const product = this._lastProduct;
+                    const sku = product.sku || '';
+
+                    // التحقق من وجود المنتج في الجدول (بنفس الاسم وال SKU واللون)
+                    const existingProduct = this._tableData.find(item =>
+                        item.name === product.name &&
+                        item.sku === sku &&
+                        item.color === (product.colors[0] || '')
                     );
 
-                    if (existingIndex !== -1) {
-                        // المنتج موجود - عرض رسالة مكرر
-                        this._pendingAddData = { product, seriesQty, sku };
+                    // إذا كان هناك لون واحد فقط، نستخدمه
+                    const color = product.colors.length > 0 ? product.colors[0] : '';
+
+                    if (existingProduct) {
+                        this._pendingAddData = { product, seriesQty, sku, color };
                         const img = product.mainImage || product.image || (product.images && product.images
                             .length ? product.images[0] : '');
                         this.elements.dupImg.src = img || '';
                         this.elements.dupName.textContent = product.name;
 
                         let currentQty = 0;
-                        const existing = this._tableData[existingIndex];
-                        if (existing.sizes && typeof existing.sizes === 'object') {
-                            Object.values(existing.sizes).forEach(v => currentQty += v || 0);
-                        } else {
-                            currentQty = existing.qty || 0;
+                        if (existingProduct.sizes) {
+                            for (const size in existingProduct.sizes) {
+                                currentQty += existingProduct.sizes[size] || 0;
+                            }
                         }
                         this.elements.dupDetails.textContent =
                             `SKU: ${sku || '—'} | الكمية الحالية: ${currentQty}`;
                         this.elements.duplicateDialog.classList.add('show');
                     } else {
-                        this.addProductToTable(product, seriesQty, sku);
+                        this.addProductToTable(product, seriesQty, sku, color);
                     }
                 },
 
                 confirmAddDuplicate() {
                     if (this._pendingAddData) {
-                        const { product, seriesQty, sku } = this._pendingAddData;
-                        // إضافة الكمية للمنتج الموجود
-                        const existingIndex = this._tableData.findIndex(row =>
-                            row.name === product.name && row.sku === sku
-                        );
-                        if (existingIndex !== -1) {
-                            const existing = this._tableData[existingIndex];
-                            if (existing.sizes && typeof existing.sizes === 'object') {
-                                // إضافة الكمية لكل مقاس
-                                const colors = product.colors.length ? product.colors : [''];
-                                const sizes = product.sizes.length ? product.sizes : [''];
-                                colors.forEach(color => {
-                                    sizes.forEach(size => {
-                                        const sizeKey = size || 'No Size';
-                                        existing.sizes[sizeKey] = (existing.sizes[sizeKey] ||
-                                            0) + seriesQty;
-                                    });
-                                });
-                            } else {
-                                existing.qty = (existing.qty || 0) + seriesQty;
-                            }
-                        }
-                        this.renderInvoice();
-                        this.saveAll();
-                        this.markDirty();
-                        this.showAlert(`✅ تم إضافة الكمية للمنتج`, 'success');
+                        const { product, seriesQty, sku, color } = this._pendingAddData;
+                        this.addProductToTable(product, seriesQty, sku, color);
                         this.closeDuplicateDialog();
-                        this.clearProductInputs();
                     }
                 },
 
-                addProductToTable(product, seriesQty, sku) {
-                    const colors = product.colors.length ? product.colors : [''];
-                    const sizes = product.sizes.length ? product.sizes : [''];
+                closeDuplicateDialog() {
+                    this.elements.duplicateDialog.classList.remove('show');
+                    this._pendingAddData = null;
+                },
 
-                    // لكل لون، نضيف كائن واحد يحتوي على جميع المقاسات
-                    colors.forEach(color => {
-                        const sizeObj = {};
-                        sizes.forEach(size => {
-                            const sizeKey = size || 'No Size';
-                            sizeObj[sizeKey] = seriesQty;
-                        });
+                addProductToTable(product, seriesQty, sku, color) {
+                    // إنشاء صفوف مؤقتة ثم دمجها في هيكل واحد
+                    const tempRows = ExcelGenerator.generateRows(product, seriesQty, sku);
 
-                        // التحقق من وجود نفس اللون لنفس المنتج
-                        const existingIndex = this._tableData.findIndex(row =>
-                            row.name === product.name &&
-                            row.sku === sku &&
-                            row.color === color
+                    // تجميع حسب اللون
+                    const colorMap = new Map();
+                    tempRows.forEach(row => {
+                        const rowColor = row.color || color || '';
+                        const key = row.name + '|' + row.sku + '|' + rowColor + '|' + row.productId;
+                        if (!colorMap.has(key)) {
+                            colorMap.set(key, {
+                                name: row.name,
+                                color: rowColor,
+                                sku: row.sku || '',
+                                unitPrice: row.unitPrice || 0,
+                                image: row.image || '',
+                                productId: row.productId || '',
+                                sizes: {}
+                            });
+                        }
+                        const item = colorMap.get(key);
+                        const size = row.size || 'No Size';
+                        item.sizes[size] = (item.sizes[size] || 0) + (row.qty || 0);
+                    });
+
+                    // دمج مع الجدول الحالي
+                    const newProducts = Array.from(colorMap.values());
+
+                    newProducts.forEach(newProduct => {
+                        const existing = this._tableData.find(item =>
+                            item.name === newProduct.name &&
+                            item.sku === newProduct.sku &&
+                            item.color === newProduct.color
                         );
 
-                        if (existingIndex !== -1) {
-                            // إضافة الكميات للمقاسات الموجودة
-                            const existing = this._tableData[existingIndex];
-                            if (existing.sizes && typeof existing.sizes === 'object') {
-                                sizes.forEach(size => {
-                                    const sizeKey = size || 'No Size';
-                                    existing.sizes[sizeKey] = (existing.sizes[sizeKey] ||
-                                        0) + seriesQty;
-                                });
+                        if (existing) {
+                            // دمج المقاسات
+                            for (const size in newProduct.sizes) {
+                                existing.sizes[size] = (existing.sizes[size] || 0) + newProduct.sizes[size];
+                            }
+                            // تحديث السعر إذا تغير
+                            if (newProduct.unitPrice > 0) {
+                                existing.unitPrice = newProduct.unitPrice;
                             }
                         } else {
-                            // إضافة منتج جديد
+                            // إضافة منتج جديد مع userId
                             this._tableData.push({
-                                name: product.name,
-                                color: color || '',
-                                sku: sku || '',
-                                unitPrice: product.price || 0,
-                                image: product.mainImage || (product.images && product.images
-                                    .length ? product.images[0] : ''),
-                                productId: product.productId || '',
-                                sizes: sizeObj
+                                ...newProduct,
+                                userId: this._userId
                             });
                         }
                     });
@@ -2984,11 +2867,8 @@
                     this.renderInvoice();
                     this.saveAll();
                     this.markDirty();
-                    this.showAlert(`✅ تم إضافة المنتج ${product.name}`, 'success');
-                    this.clearProductInputs();
-                },
+                    this.showAlert(`✅ تم إضافة ${newProducts.length} منتج`, 'success');
 
-                clearProductInputs() {
                     this.elements.url.value = '';
                     this.elements.series.value = '1';
                     this._lastProduct = null;
@@ -3009,18 +2889,25 @@
                         this.renderInvoice();
                         this.saveAll();
                         this.markDirty();
-                        if (this._userId) {
-                            Utils.saveCurrentTable([]);
-                        }
+                        Utils.saveCurrentTable([]);
                         this.showAlert('🗑️ تم مسح جميع البيانات', 'info');
                     }
                 },
 
-                // عرض الفاتورة بالهيكل الجديد
                 renderInvoice() {
                     const container = this.elements.invoiceContainer;
 
-                    if (!this._tableData.length) {
+                    const nonZeroData = this._tableData.filter(item => {
+                        let total = 0;
+                        if (item.sizes) {
+                            for (const size in item.sizes) {
+                                total += item.sizes[size] || 0;
+                            }
+                        }
+                        return total > 0;
+                    });
+
+                    if (!nonZeroData.length) {
                         container.innerHTML = `
                             <div class="empty-state">
                                 <i class="fas fa-box-open"></i>
@@ -3034,70 +2921,65 @@
                     let html = '';
                     let productIdx = 0;
 
-                    // تجميع المنتجات حسب الاسم و SKU
-                    const productGroups = {};
-                    this._tableData.forEach(row => {
-                        const key = row.name + '|' + row.sku;
-                        if (!productGroups[key]) {
-                            productGroups[key] = {
-                                name: row.name,
-                                sku: row.sku,
-                                unitPrice: row.unitPrice,
-                                image: row.image,
-                                productId: row.productId,
-                                colors: [],
-                                totalPieces: 0
-                            };
-                        }
-                        // إضافة اللون إذا لم يكن موجوداً
-                        const colorExists = productGroups[key].colors.some(c => c.color === row.color);
-                        if (!colorExists) {
-                            productGroups[key].colors.push({
-                                color: row.color || 'No Color',
-                                sizes: { ...row.sizes }
-                            });
-                        } else {
-                            // دمج المقاسات إذا كان اللون موجوداً
-                            const colorIdx = productGroups[key].colors.findIndex(c => c.color === row.color);
-                            if (colorIdx !== -1) {
-                                Object.entries(row.sizes || {}).forEach(([size, qty]) => {
-                                    productGroups[key].colors[colorIdx].sizes[size] = (productGroups[
-                                        key].colors[colorIdx].sizes[size] || 0) + qty;
-                                });
-                            }
-                        }
-                        // حساب إجمالي القطع
-                        let total = 0;
-                        Object.values(row.sizes || {}).forEach(v => total += v || 0);
-                        productGroups[key].totalPieces += total;
-                    });
-
-                    for (const key in productGroups) {
-                        const g = productGroups[key];
+                    for (const item of nonZeroData) {
                         const productId = 'prod_' + productIdx;
 
-                        if (this._productCardStates[productId] === undefined) {
-                            this._productCardStates[productId] = false;
+                        // حساب إجمالي القطع
+                        let totalPieces = 0;
+                        if (item.sizes) {
+                            for (const size in item.sizes) {
+                                totalPieces += item.sizes[size] || 0;
+                            }
                         }
-                        const isProductOpen = this._productCardStates[productId];
+
+                        // افتراضي: المنتج مفتوح
+                        if (this._productCardStates[productId] === undefined) {
+                            this._productCardStates[productId] = true;
+                        }
+                        const isOpen = this._productCardStates[productId];
 
                         html += `
                             <div class="product-card" data-product-id="${productId}">
                                 <div class="product-card-header" onclick="window.UI.toggleProduct('${productId}')">
-                                    <img class="thumb" src="${g.image || ''}" alt="${this.escapeHtml(g.name)}" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2250%22 height=%2250%22/%3E'" onclick="event.stopPropagation();window.openModal('${g.image || ''}')" />
+                                    <img class="thumb" src="${item.image || ''}" alt="${this.escapeHtml(item.name)}" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2260%22 height=%2260%22/%3E'" onclick="event.stopPropagation();window.openModal('${item.image || ''}')" />
                                     <div class="meta">
-                                        <span class="name">${this.escapeHtml(g.name)}</span>
-                                        <span class="sku">SKU: ${this.escapeHtml(g.sku)}</span>
-                                        <span class="price">${Utils.formatCurrency(g.unitPrice)} LE</span>
-                                        <span class="total-pieces"><i class="fas fa-boxes"></i> ${g.totalPieces}</span>
+                                        <span class="name">${this.escapeHtml(item.name)}</span>
+                                        <span class="sku">SKU: ${this.escapeHtml(item.sku)}</span>
+                                        <span class="price">${Utils.formatCurrency(item.unitPrice)} LE</span>
+                                        <span class="total-pieces"><i class="fas fa-boxes"></i> ${totalPieces}</span>
+                                        ${item.color ? `<span style="font-size:12px;color:var(--gray);"><i class="fas fa-palette"></i> ${this.escapeHtml(item.color)}</span>` : ''}
                                     </div>
-                                    <span class="chevron ${isProductOpen ? 'open' : ''}"><i class="fas fa-chevron-down"></i></span>
+                                    <span class="chevron ${isOpen ? 'open' : ''}"><i class="fas fa-chevron-down"></i></span>
                                 </div>
-                                <div class="product-card-body ${isProductOpen ? 'open' : ''}">
-                                    ${this.renderColorsNew(g, productId)}
+                                <div class="product-card-body ${isOpen ? 'open' : ''}">
+                                    <div class="color-size-block">
+                                        <div class="color-name">
+                                            <i class="fas fa-palette"></i> ${item.color ? this.escapeHtml(item.color) : 'بدون لون'}
+                                        </div>
+                                        <div class="size-grid">
+                                            ${Object.entries(item.sizes || {}).map(([size, qty]) => {
+                                                const isZero = qty === 0;
+                                                const escapedSize = this.escapeHtml(size);
+                                                return `
+                                                    <div class="size-item ${isZero ? 'zero-qty' : ''}" data-product="${productId}" data-size="${escapedSize}">
+                                                        <span class="size-label">${escapedSize}</span>
+                                                        <div class="qty-control">
+                                                            <button onclick='window.UI.changeQty(${JSON.stringify(productId)}, ${JSON.stringify(escapedSize)}, -1)'>
+                                                                <i class="fas fa-minus"></i>
+                                                            </button>
+                                                            <span class="qty-val">${qty}</span>
+                                                            <button onclick='window.UI.changeQty(${JSON.stringify(productId)}, ${JSON.stringify(escapedSize)}, 1)'>
+                                                                <i class="fas fa-plus"></i>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                `;
+                                            }).join('')}
+                                        </div>
+                                    </div>
                                 </div>
                                 <div class="product-card-footer">
-                                    <button class="btn btn-danger btn-sm" onclick='window.UI.deleteProduct(${JSON.stringify(key)})'>
+                                    <button class="btn btn-danger btn-sm" onclick='window.UI.deleteProduct(${JSON.stringify(productId)})'>
                                         <i class="fas fa-trash"></i> حذف المنتج
                                     </button>
                                 </div>
@@ -3111,162 +2993,127 @@
                     this.saveAll();
                 },
 
-                // عرض الألوان والمقاسات بالهيكل الجديد
-                renderColorsNew(g, productId) {
-                    let html = '';
-                    let colorIdx = 0;
-
-                    for (const colorData of g.colors) {
-                        const color = colorData.color;
-                        const sizes = colorData.sizes || {};
-                        const colorId = productId + '_color_' + colorIdx;
-
-                        if (this._productCardStates[colorId] === undefined) {
-                            this._productCardStates[colorId] = true;
-                        }
-                        const isColorOpen = this._productCardStates[colorId];
-
-                        const totalQty = Object.values(sizes).reduce((a, b) => a + (b || 0), 0);
-                        const escapedColor = this.escapeHtml(color);
-                        const escapedSku = this.escapeHtml(g.sku);
-                        const escapedName = this.escapeHtml(g.name);
-
-                        // ترتيب المقاسات
-                        const sizeKeys = Object.keys(sizes).filter(s => sizes[s] > 0);
-                        const sortedSizeKeys = Utils.sortSizes(sizeKeys);
-
-                        html += `
-                            <div class="color-accordion">
-                                <div class="color-header" onclick="window.UI.toggleColor('${colorId}')">
-                                    <span class="chevron-sm ${isColorOpen ? 'open' : ''}"><i class="fas fa-chevron-down"></i></span>
-                                    <span><i class="fas fa-palette" style="color:var(--primary);"></i> ${escapedColor}</span>
-                                    <span class="color-total">${totalQty} قطعة</span>
-                                    <button class="delete-color-btn" onclick="event.stopPropagation();window.UI.deleteColor(${JSON.stringify(productId)}, ${JSON.stringify(color)}, ${JSON.stringify(g.sku)}, ${JSON.stringify(g.name)})" title="حذف اللون">
-                                        <i class="fas fa-times"></i>
-                                    </button>
-                                </div>
-                                <div class="color-sizes ${isColorOpen ? 'open' : ''}">
-                                    ${sortedSizeKeys.map(size => {
-                                        const qty = sizes[size] || 0;
-                                        const isZero = qty === 0;
-                                        const escapedSize = this.escapeHtml(size);
-                                        return `
-                                            <div class="size-row ${isZero ? 'zero-qty' : ''}" data-product="${productId}" data-color="${color}" data-size="${size}" data-sku="${g.sku}" data-name="${g.name}">
-                                                <span class="size-label">${escapedSize}</span>
-                                                <div class="qty-control">
-                                                    <button onclick='window.UI.changeQtyNew(${JSON.stringify(productId)}, ${JSON.stringify(color)}, ${JSON.stringify(size)}, -1, ${JSON.stringify(g.sku)}, ${JSON.stringify(g.name)})'>
-                                                        <i class="fas fa-minus"></i>
-                                                    </button>
-                                                    <span class="qty-val">${qty}</span>
-                                                    <button onclick='window.UI.changeQtyNew(${JSON.stringify(productId)}, ${JSON.stringify(color)}, ${JSON.stringify(size)}, 1, ${JSON.stringify(g.sku)}, ${JSON.stringify(g.name)})'>
-                                                        <i class="fas fa-plus"></i>
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        `;
-                                    }).join('')}
-                                </div>
-                            </div>
-                        `;
-                        colorIdx++;
-                    }
-                    return html;
-                },
-
-                // تغيير الكمية في الهيكل الجديد
-                changeQtyNew(productId, color, size, delta, sku, name) {
-                    let foundIndex = -1;
-                    for (let i = 0; i < this._tableData.length; i++) {
-                        const row = this._tableData[i];
-                        if (row.name === name && row.sku === sku && row.color === color) {
-                            foundIndex = i;
-                            break;
-                        }
-                    }
-
-                    if (foundIndex !== -1) {
-                        const row = this._tableData[foundIndex];
-                        if (row.sizes && typeof row.sizes === 'object') {
-                            const currentQty = row.sizes[size] || 0;
-                            const newQty = Math.max(0, currentQty + delta);
-                            if (newQty === 0) {
-                                delete row.sizes[size];
-                            } else {
-                                row.sizes[size] = newQty;
-                            }
-                            // إذا لم يتبقى أي مقاسات، نحذف اللون
-                            const hasAnyQty = Object.values(row.sizes).some(v => v > 0);
-                            if (!hasAnyQty) {
-                                this._tableData.splice(foundIndex, 1);
-                            }
-                        } else {
-                            // دعم للبيانات القديمة
-                            const currentQty = row.qty || 0;
-                            const newQty = Math.max(0, currentQty + delta);
-                            row.qty = newQty;
-                        }
-                        this.renderInvoice();
-                        this.saveAll();
-                        this.markDirty();
-                    }
-                },
-
-                deleteColor(productId, color, sku, name) {
-                    const colorName = color || 'No Color';
-                    if (!confirm(`هل أنت متأكد من حذف اللون "${colorName}"؟`)) return;
-
-                    this._tableData = this._tableData.filter(row => {
-                        const rowColor = row.color || 'No Color';
-                        return !(row.name === name && row.sku === sku && rowColor === colorName);
-                    });
-
-                    this.renderInvoice();
-                    this.saveAll();
-                    this.markDirty();
-                    this.showAlert(`🗑️ تم حذف اللون ${colorName}`, 'info');
-                },
-
-                deleteProduct(key) {
-                    const [name, sku] = key.split('|');
-                    this._tableData = this._tableData.filter(row => !(row.name === name && row.sku === sku));
-                    this.renderInvoice();
-                    this.saveAll();
-                    this.markDirty();
-                    this.showAlert('🗑️ تم حذف المنتج', 'info');
-                },
-
                 toggleProduct(productId) {
                     const state = this._productCardStates[productId];
                     this._productCardStates[productId] = state === false ? true : false;
                     this.renderInvoice();
                 },
 
-                toggleColor(colorId) {
-                    const state = this._productCardStates[colorId];
-                    this._productCardStates[colorId] = state === false ? true : false;
-                    this.renderInvoice();
-                },
-
-                expandAllColors(open) {
-                    for (const key in this._productCardStates) {
-                        if (key.includes('_color_')) this._productCardStates[key] = open;
-                    }
-                    this.renderInvoice();
-                },
-
                 expandAllProducts(open) {
                     for (const key in this._productCardStates) {
-                        if (!key.includes('_color_')) this._productCardStates[key] = open;
+                        this._productCardStates[key] = open;
                     }
                     this.renderInvoice();
+                },
+
+                changeQty(productId, size, delta) {
+                    // العثور على المنتج في البيانات
+                    const products = this._tableData.filter(item => {
+                        let total = 0;
+                        if (item.sizes) {
+                            for (const s in item.sizes) {
+                                total += item.sizes[s] || 0;
+                            }
+                        }
+                        return total > 0;
+                    });
+
+                    // العثور على المؤشر بناءً على الترتيب في العرض
+                    const productIndex = products.findIndex((item, idx) => 'prod_' + idx === productId);
+
+                    if (productIndex === -1) {
+                        console.warn('⚠️ Product not found:', productId);
+                        return;
+                    }
+
+                    const item = this._tableData.find((it, idx) => {
+                        const pIdx = products.indexOf(it);
+                        return pIdx === productIndex;
+                    });
+
+                    if (!item || !item.sizes) {
+                        console.warn('⚠️ Item or sizes not found');
+                        return;
+                    }
+
+                    const currentQty = item.sizes[size] || 0;
+                    const newQty = Math.max(0, currentQty + delta);
+                    item.sizes[size] = newQty;
+
+                    // إذا أصبحت كل الكميات صفر، نزيل المنتج
+                    let total = 0;
+                    for (const s in item.sizes) {
+                        total += item.sizes[s] || 0;
+                    }
+
+                    if (total === 0) {
+                        // حذف المنتج من الجدول
+                        const idx = this._tableData.indexOf(item);
+                        if (idx !== -1) {
+                            this._tableData.splice(idx, 1);
+                        }
+                    }
+
+                    this.renderInvoice();
+                    this.saveAll();
+                    this.markDirty();
+                },
+
+                deleteProduct(productId) {
+                    const products = this._tableData.filter(item => {
+                        let total = 0;
+                        if (item.sizes) {
+                            for (const s in item.sizes) {
+                                total += item.sizes[s] || 0;
+                            }
+                        }
+                        return total > 0;
+                    });
+
+                    const productIndex = products.findIndex((item, idx) => 'prod_' + idx === productId);
+
+                    if (productIndex === -1) {
+                        this.showAlert('⚠️ المنتج غير موجود', 'error');
+                        return;
+                    }
+
+                    const item = this._tableData.find((it, idx) => {
+                        const pIdx = products.indexOf(it);
+                        return pIdx === productIndex;
+                    });
+
+                    if (!item) {
+                        this.showAlert('⚠️ المنتج غير موجود', 'error');
+                        return;
+                    }
+
+                    if (!confirm(`هل أنت متأكد من حذف المنتج "${item.name}"؟`)) return;
+
+                    const idx = this._tableData.indexOf(item);
+                    if (idx !== -1) {
+                        this._tableData.splice(idx, 1);
+                    }
+
+                    this.renderInvoice();
+                    this.saveAll();
+                    this.markDirty();
+                    this.showAlert('🗑️ تم حذف المنتج', 'info');
                 },
 
                 updateStats() {
-                    const nonZeroRows = Utils.getNonZeroRows(this._tableData);
-                    const pieces = Utils.calculateTotalPieces(nonZeroRows);
-                    const value = Utils.calculateTotalValue(nonZeroRows);
-                    const products = nonZeroRows.length ? new Set(nonZeroRows.map(r => r.name + '|' + r.sku))
-                        .size : 0;
+                    const nonZeroData = this._tableData.filter(item => {
+                        let total = 0;
+                        if (item.sizes) {
+                            for (const size in item.sizes) {
+                                total += item.sizes[size] || 0;
+                            }
+                        }
+                        return total > 0;
+                    });
+
+                    const pieces = Utils.calculateTotalPieces(nonZeroData);
+                    const value = Utils.calculateTotalValue(nonZeroData);
+                    const products = nonZeroData.length;
 
                     this.elements.statCurrentOrder.textContent = products;
                     this.elements.statTotalPieces.textContent = pieces;
@@ -3277,19 +3124,29 @@
                 },
 
                 closeFullInvoice() {
-                    const nonZeroRows = Utils.getNonZeroRows(this._tableData);
-                    if (!nonZeroRows.length) {
+                    const nonZeroData = this._tableData.filter(item => {
+                        let total = 0;
+                        if (item.sizes) {
+                            for (const size in item.sizes) {
+                                total += item.sizes[size] || 0;
+                            }
+                        }
+                        return total > 0;
+                    });
+
+                    if (!nonZeroData.length) {
                         this.showAlert('⚠️ لا توجد كميات لإقفال الفاتورة', 'error');
                         return;
                     }
+
                     const branchName = this.elements.branch.value.trim() || 'Branch not set';
                     const productUrl = this._lastProductUrl || this.elements.url.value.trim() || '';
 
-                    if (!confirm(`هل أنت متأكد من تقفيل الفاتورة؟\nالفرع: ${branchName}\nالقطع: ${Utils.calculateTotalPieces(nonZeroRows)}\nالقيمة: ${Utils.formatCurrency(Utils.calculateTotalValue(nonZeroRows))} LE`)) {
+                    if (!confirm(`هل أنت متأكد من تقفيل الفاتورة؟\nالفرع: ${branchName}\nالقطع: ${Utils.calculateTotalPieces(nonZeroData)}\nالقيمة: ${Utils.formatCurrency(Utils.calculateTotalValue(nonZeroData))} LE`)) {
                         return;
                     }
 
-                    Utils.saveInvoiceToFirebase(branchName, nonZeroRows, productUrl, (error, key) => {
+                    Utils.saveInvoiceToFirebase(branchName, nonZeroData, productUrl, this._userId, (error, key) => {
                         if (error) {
                             this.showAlert('❌ ' + error, 'error');
                             return;
@@ -3297,16 +3154,23 @@
                         this._tableData = [];
                         this.renderInvoice();
                         this.saveAll();
-                        if (this._userId) {
-                            Utils.saveCurrentTable([]);
-                        }
+                        Utils.saveCurrentTable([]);
                         this.showAlert(`✅ تم تقفيل الفاتورة (ID: ${key})`, 'success');
                     });
                 },
 
                 openExportDialog() {
-                    const nonZeroRows = Utils.getNonZeroRows(this._tableData);
-                    if (!nonZeroRows.length) {
+                    const nonZeroData = this._tableData.filter(item => {
+                        let total = 0;
+                        if (item.sizes) {
+                            for (const size in item.sizes) {
+                                total += item.sizes[size] || 0;
+                            }
+                        }
+                        return total > 0;
+                    });
+
+                    if (!nonZeroData.length) {
                         this.showAlert('⚠️ لا توجد كميات لتصديرها', 'error');
                         return;
                     }
@@ -3321,7 +3185,17 @@
                     const format = document.querySelector('input[name="exportFormat"]:checked')?.value || 'detail';
                     this.closeExportDialog();
 
-                    const wb = ExcelGenerator.fromTableData(this._tableData, format);
+                    const nonZeroData = this._tableData.filter(item => {
+                        let total = 0;
+                        if (item.sizes) {
+                            for (const size in item.sizes) {
+                                total += item.sizes[size] || 0;
+                            }
+                        }
+                        return total > 0;
+                    });
+
+                    const wb = ExcelGenerator.fromTableData(nonZeroData, format);
                     const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
                     const blob = new Blob([wbout], { type: 'application/octet-stream' });
                     const link = document.createElement('a');
@@ -3346,15 +3220,13 @@
                     this.elements.dialogExport.onclick = () => {
                         const format = document.querySelector('input[name="exportFormat"]:checked')?.value || 'detail';
                         this.closeExportDialog();
-                        // تحويل بيانات الفاتورة إلى الهيكل الجديد
                         const tableData = invoice.items.map(item => ({
                             name: item.name,
                             color: item.color || '',
-                            sizes: item.sizes || {},
                             sku: item.sku || '',
                             unitPrice: item.unitPrice || 0,
-                            image: item.image || '',
-                            productId: item.productId || ''
+                            sizes: item.sizes || {},
+                            image: item.image || ''
                         }));
                         const wb = ExcelGenerator.fromTableData(tableData, format);
                         const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
@@ -3396,12 +3268,12 @@
                 loadOldInvoices() {
                     const list = this.elements.oldOrdersList;
                     list.innerHTML =
-                        `<div style="text-align:center;padding:16px;color:var(--gray);font-size:13px;"><i class="fas fa-spinner fa-spin"></i> جاري التحميل...</div>`;
-                    Utils.loadOldInvoices((invoices) => {
+                        `<div style="text-align:center;padding:20px;color:var(--gray);"><i class="fas fa-spinner fa-spin"></i> جاري التحميل...</div>`;
+                    Utils.loadOldInvoices(this._userId, (invoices) => {
                         this._oldInvoices = invoices;
                         if (!invoices || !invoices.length) {
                             list.innerHTML =
-                                `<div style="text-align:center;padding:16px;color:var(--gray);font-size:13px;">لا توجد فواتير سابقة</div>`;
+                                `<div style="text-align:center;padding:20px;color:var(--gray);">لا توجد فواتير سابقة</div>`;
                             this.elements.oldOrdersCount.textContent = '0 فاتورة';
                             this.elements.statTodayOrders.textContent = '0';
                             return;
@@ -3414,25 +3286,22 @@
                             let details = '';
                             if (inv.items && inv.items.length) {
                                 const items = inv.items.slice(0, 3);
-                                details = items.map(item => {
-                                    let sizesStr = '';
-                                    if (item.sizes && typeof item.sizes === 'object') {
-                                        sizesStr = Object.entries(item.sizes)
-                                            .filter(([sz, qty]) => qty > 0)
-                                            .map(([sz, qty]) => `${sz}:${qty}`)
-                                            .join(' ');
-                                    }
-                                    return `${item.name} (${item.color||''} ${sizesStr})`;
-                                }).join('، ');
+                                details = items.map(item =>
+                                    `${item.name} (${item.color||''} - ${Object.entries(item.sizes||{}).map(([s,q]) => `${s}:${q}`).join(' ')})`
+                                ).join('، ');
                                 if (inv.items.length > 3) details += ` ... +${inv.items.length-3} أكثر`;
                             }
+                            const urlDisplay = inv.productUrl ?
+                                `<span class="order-url" title="${this.escapeHtml(inv.productUrl)}">${this.escapeHtml(inv.productUrl.substring(0, 50))}...</span>` :
+                                '—';
                             html += `
                                 <div class="old-order-item" onclick="window.UI.showInvoicePreview(${idx})">
                                     <span class="order-number">#${idx+1}</span>
                                     <span class="order-branch">${this.escapeHtml(inv.branch||'الفرع')}</span>
                                     <span class="order-date"><i class="far fa-calendar-alt"></i> ${dateStr}</span>
-                                    <span class="order-pieces">${inv.totalPieces||0}</span>
+                                    <span class="order-pieces">${inv.totalPieces||0} قطعة</span>
                                     <span class="order-value">${Utils.formatCurrency(inv.totalValue||0)} LE</span>
+                                    ${urlDisplay}
                                     <span class="order-details">${details||'—'}</span>
                                     <button class="btn btn-secondary btn-sm" onclick="event.stopPropagation();window.UI.exportSingleOldInvoice(${idx})">
                                         <i class="fas fa-file-excel"></i>
@@ -3455,17 +3324,12 @@
                     let itemsHtml = '';
                     if (inv.items && inv.items.length) {
                         inv.items.forEach(item => {
-                            let sizesStr = '';
-                            if (item.sizes && typeof item.sizes === 'object') {
-                                sizesStr = Object.entries(item.sizes)
-                                    .filter(([sz, qty]) => qty > 0)
-                                    .map(([sz, qty]) => `${sz}: ${qty}`)
-                                    .join('، ');
-                            }
+                            const sizeStr = Object.entries(item.sizes || {})
+                                .map(([size, qty]) => `${size}:${qty}`).join(' | ');
                             itemsHtml += `
                                 <div class="preview-item">
                                     <span class="preview-label">${this.escapeHtml(item.name)}</span>
-                                    <span class="preview-value">${this.escapeHtml(item.color||'')} ${sizesStr}</span>
+                                    <span class="preview-value">${this.escapeHtml(item.color||'')} ${sizeStr}</span>
                                     <span class="preview-sku">SKU: ${this.escapeHtml(item.sku||'')}</span>
                                     <span class="preview-value">${Utils.formatCurrency(item.unitPrice)} LE</span>
                                 </div>
@@ -3474,13 +3338,14 @@
                     }
 
                     container.innerHTML = `
-                        <div style="margin-bottom:6px;"><strong>الفرع:</strong> ${this.escapeHtml(inv.branch||'—')}</div>
-                        <div style="margin-bottom:6px;"><strong>التاريخ:</strong> ${new Date(inv.createdAt).toLocaleString('ar-EG')}</div>
-                        <div style="margin-bottom:6px;"><strong>القطع:</strong> ${inv.totalPieces||0}</div>
-                        <div style="margin-bottom:10px;"><strong>القيمة:</strong> ${Utils.formatCurrency(inv.totalValue||0)} LE</div>
-                        <div style="border-top:1px solid var(--gray-light);padding-top:10px;">
+                        <div style="margin-bottom:8px;"><strong>الفرع:</strong> ${this.escapeHtml(inv.branch||'—')}</div>
+                        <div style="margin-bottom:8px;"><strong>التاريخ:</strong> ${new Date(inv.createdAt).toLocaleString('ar-EG')}</div>
+                        <div style="margin-bottom:8px;"><strong>القطع:</strong> ${inv.totalPieces||0}</div>
+                        <div style="margin-bottom:12px;"><strong>القيمة:</strong> ${Utils.formatCurrency(inv.totalValue||0)} LE</div>
+                        ${inv.productUrl ? `<div style="margin-bottom:12px;"><strong>الرابط:</strong> <span style="direction:ltr;display:inline-block;font-size:12px;color:var(--gray);word-break:break-all;">${this.escapeHtml(inv.productUrl)}</span></div>` : ''}
+                        <div style="border-top:1px solid var(--gray-light);padding-top:12px;">
                             <strong>المنتجات:</strong>
-                            <div style="margin-top:6px;">${itemsHtml}</div>
+                            <div style="margin-top:8px;">${itemsHtml}</div>
                         </div>
                     `;
                     this.elements.invoicePreviewDialog.classList.add('show');
@@ -3521,7 +3386,7 @@
                     const c = colors[type] || colors.info;
                     div.style.cssText = `
                         background:${c.bg};color:${c.color};border:1px solid ${c.border};
-                        padding:10px 18px;border-radius:var(--radius-sm);font-weight:500;font-size:13px;
+                        padding:12px 24px;border-radius:var(--radius-sm);font-weight:500;font-size:14px;
                         z-index:9999;animation:fadeSlide 0.3s ease;
                         max-width:90vw;text-align:center;box-shadow:var(--shadow-lg);
                     `;
@@ -3531,11 +3396,16 @@
                 },
 
                 saveAll() {
-                    Storage.set('tableData', this._tableData);
+                    // إضافة userId قبل الحفظ
+                    const dataToSave = this._tableData.map(item => ({
+                        ...item,
+                        userId: this._userId
+                    }));
+                    Storage.set('tableData', dataToSave);
                     Storage.set('branch', this.elements.branch.value);
                     Storage.set('cardStates', this._productCardStates);
-                    if (!this._isLoadingFromFirebase && this._userId) {
-                        Utils.saveCurrentTable(this._tableData);
+                    if (!this._isLoadingFromFirebase) {
+                        Utils.saveCurrentTable(dataToSave);
                     }
                 },
 
