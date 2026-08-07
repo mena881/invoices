@@ -2539,18 +2539,24 @@
                     const preparedQty = item.preparedQty || 0;
                     return `
                       <div class="size-row">
-                        <span class="size-label">${Utils.escapeHtml(item.size)}</span>
-                        <div class="qty-control">
-                          <button onclick="window.UI.changePrepareQty('${uniqueKey}', -1)"><i class="fas fa-minus"></i></button>
-                          <span class="qty-val ${statusClass}">${preparedQty}/${allowedQty}</span>
-                          <button onclick="window.UI.changePrepareQty('${uniqueKey}', 1)"><i class="fas fa-plus"></i></button>
-                        </div>
-                        <span class="allowed-label">مسموح: ${allowedQty}</span>
-                      </div>
-                    `;
-                  }).join('')}
-                </div>
-              </div>
+    <span class="size-label">${Utils.escapeHtml(item.size)}</span>
+
+    <div class="qty-control">
+        <button onclick="window.UI.changePrepareQty('${uniqueKey}', -1)">
+            <i class="fas fa-minus"></i>
+        </button>
+
+        <span class="qty-val ${statusClass}">${preparedQty}/${allowedQty}</span>
+
+        <button onclick="window.UI.changePrepareQty('${uniqueKey}', 1)">
+            <i class="fas fa-plus"></i>
+        </button>
+    </div>
+</div>
+`;
+}).join('')}
+</div>
+</div>
             `;
             colorIdx++;
           }
