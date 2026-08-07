@@ -2030,54 +2030,84 @@
                 console.warn('⚠️ Firebase init error', e);
             }
 
-            // ================================================================
-            //  STORAGE
-            // ================================================================
-            const Storage = {
-                get(key, fallback = '') {
-                    try {
-                        const fullKey = 'shopify_' + key;
-                        const v = localStorage.getItem(fullKey);
-                        if (v === null) return fallback;
-                        try { return JSON.parse(v); } catch { return v; }
-                    } catch { return fallback; }
-                },
-                set(key, value) {
-                    try {
-                        const fullKey = 'shopify_' + key;
-                        localStorage.setItem(fullKey, typeof value === 'object' ? JSON.stringify(value) : String(
-                            value));
-                    } catch {}
-                },
-                remove(key) {
-                    try { localStorage.removeItem('shopify_' + key); } catch {}
-                },
-                clear() {
-                    try {
-                        const keys = [];
-                        for (let i = 0; i < localStorage.length; i++) {
-                            const key = localStorage.key(i);
-                            if (key && key.startsWith('shopify_')) keys.push(key);
-                        }
-                        keys.forEach(k => localStorage.removeItem(k));
-                    } catch {}
-                },
-                getUser() {
-                    try {
-                        const raw = this.get('userData');
-                        if (raw && typeof raw === 'object') return raw;
-                        return null;
-                    } catch { return null; }
-                },
-                getUserId() {
-                    const user = this.getUser();
-                    return user ? (user.username || user.id || 'unknown') : 'unknown';
-                },
-                getUserName() {
-                    const user = this.getUser();
-                    return user ? (user.fullName || user.username || 'مستخدم') : 'مستخدم';
+// ================================================================
+//  STORAGE
+// ================================================================
+const Storage = {
+    get(key, fallback = '') {
+        try {
+            const fullKey = 'shopify_' + key;
+            const v = localStorage.getItem(fullKey);
+            if (v === null) return fallback;
+            try {
+                return JSON.parse(v);
+            } catch {
+                return v;
+            }
+        } catch {
+            return fallback;
+        }
+    },
+
+    set(key, value) {
+        try {
+            const fullKey = 'shopify_' + key;
+            localStorage.setItem(
+                fullKey,
+                typeof value === 'object' ? JSON.stringify(value) : String(value)
+            );
+        } catch {}
+    },
+
+    remove(key) {
+        try {
+            localStorage.removeItem('shopify_' + key);
+        } catch {}
+    },
+
+    clear() {
+        try {
+            const keys = [];
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key && key.startsWith('shopify_')) {
+                    keys.push(key);
                 }
-            };
+            }
+            keys.forEach(k => localStorage.removeItem(k));
+        } catch {}
+    },
+
+    getUser() {
+        try {
+            // الأول نحاول نقرأ currentUser
+            const currentUser = JSON.parse(localStorage.getItem("currentUser") || "null");
+            if (currentUser && typeof currentUser === "object") {
+                return currentUser;
+            }
+
+            // لو مش موجود نرجع للطريقة القديمة
+            const raw = this.get("userData");
+            if (raw && typeof raw === "object") {
+                return raw;
+            }
+
+            return null;
+        } catch {
+            return null;
+        }
+    },
+
+    getUserId() {
+        const user = this.getUser();
+        return user ? (user.id || user.username || "unknown") : "unknown";
+    },
+
+    getUserName() {
+        const user = this.getUser();
+        return user ? (user.fullName || user.username || "مستخدم") : "مستخدم";
+    }
+};
 
             // ================================================================
             //  UTILITIES
