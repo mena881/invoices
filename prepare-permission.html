@@ -1915,6 +1915,57 @@
           other.sort();
           return [...std, ...num, ...other];
         },
+        // ===== تحويل colorsSizes إلى مصفوفة items قابلة للاستخدام =====
+        extractItemsFromColorsSizes(invoice) {
+          if (!invoice.colorsSizes || typeof invoice.colorsSizes !== 'object') return [];
+          const items = [];
+          for (const color in invoice.colorsSizes) {
+            const sizesObj = invoice.colorsSizes[color];
+            if (typeof sizesObj === 'object') {
+              for (const sizeKey in sizesObj) {
+                let val = sizesObj[sizeKey];
+                let qty = 0,
+                  allowed = 0;
+                if (typeof val === 'object' && val !== null) {
+                  qty = val.qty || 0;
+                  allowed = val.allowed || 0;
+                } else {
+                  qty = Number(val) || 0;
+                  allowed = 0; // default 0
+                }
+                // نضيف عنصر
+                items.push({
+                  color: color,
+                  size: sizeKey, // قد يكون مثل "PREPAREDFROM(M)"
+                  qty: qty,
+                  allowedQty: allowed,
+                  total: 0, // ليس لدينا سعر
+                  unitPrice: 0,
+                  name: invoice.productName || 'Product',
+                  sku: invoice.sku || 'N/A',
+                  image: invoice.image || '',
+                  productId: invoice.productId || '',
+                  uniqueKey: `${color}|${sizeKey}`
+                });
+              }
+            }
+          }
+          return items;
+        },
+        // ===== تحويل items إلى colorsSizes =====
+        convertItemsToColorsSizes(items) {
+          const colorsSizes = {};
+          items.forEach(item => {
+            const color = item.color || 'No Color';
+            const size = item.size || 'No Size';
+            if (!colorsSizes[color]) colorsSizes[color] = {};
+            colorsSizes[color][size] = {
+              qty: item.qty || 0,
+              allowed: item.allowedQty || 0
+            };
+          });
+          return colorsSizes;
+        },
         calculateTotalPieces(items) { let t = 0;
           items.forEach(r => { t += r.qty || 0; }); return t; },
         calculateTotalValue(items) { let t = 0;
@@ -1952,15 +2003,11 @@
         },
         // ===== دالة توليد روابط المنتج باستخدام productId و storeName =====
         getProductLinks(product) {
-          const storeName = 'sparkle-pjs'; // غيّر حسب اسم متجرك
+          const storeName = 'sparkle-pjs';
           const productId = product.id || '';
           const productTitle = product.name || '';
-          
-          // رابط المنتج مع ?link_source=search
           const productUrl = `https://admin.shopify.com/store/${storeName}/products/${productId}?link_source=search`;
-          // رابط البحث عن الطلبات
           const ordersUrl = `https://admin.shopify.com/store/${storeName}/orders?query=${encodeURIComponent(productTitle)}`;
-          
           return { productUrl, ordersUrl };
         }
       };
@@ -2020,7 +2067,6 @@
         init() {
           console.log('🚀 Initializing Allow Preparation UI...');
 
-          // Get current user name from localStorage
           this._currentUser = Storage.get('userName', 'مستخدم غير معروف');
           const userNameEl = document.getElementById('currentAdminName');
           if (userNameEl) {
@@ -2055,7 +2101,6 @@
 
           this.loadFromURL();
 
-          // Load sidebar from usermenu.js
           if (typeof loadLayout === 'function') {
             loadLayout();
           }
@@ -2145,33 +2190,35 @@
             if (data) {
               for (const key in data) {
                 const inv = data[key];
-                if (inv.items) {
-                  inv.items.forEach(item => {
-                    if (item.allowedQty === undefined) item.allowedQty = 0;
-                  });
-                }
-                
-                if (inv.allowIsClosed === undefined) {
-                  if (inv.isClosed === true) {
-                    inv.allowIsClosed = true;
+                // ===== التعديل: عرض الفواتير التي لديها createdclosed = true فقط =====
+                if (inv.createdclosed === true) {
+                  // تأكد من وجود colorsSizes
+                  if (inv.colorsSizes && typeof inv.colorsSizes === 'object') {
+                    // تحويل colorsSizes إلى items مؤقتًا للحسابات
+                    const items = Utils.extractItemsFromColorsSizes(inv);
+                    inv.items = items; // نضعها مؤقتًا للاستخدام في باقي الدوال
+                    inv.totalPieces = Utils.calculateTotalPieces(items);
+                    inv.totalValue = Utils.calculateTotalValue(items);
                   } else {
+                    // إذا لم يكن هناك colorsSizes، نضع items فارغة
+                    inv.items = [];
+                    inv.totalPieces = 0;
+                    inv.totalValue = 0;
+                  }
+
+                  if (inv.allowIsClosed === undefined) {
                     inv.allowIsClosed = false;
                   }
-                }
-                
-                if (!inv.status) {
-                  if (inv.allowIsClosed === true) {
-                    inv.status = 'allow_closed';
-                  } else {
-                    inv.status = 'pending';
+                  if (!inv.status) {
+                    inv.status = inv.allowIsClosed ? 'allow_closed' : 'pending';
                   }
+                  // نضيف الفاتورة للقائمة
+                  this._invoices.push({
+                    id: key,
+                    ...inv,
+                    createdAt: inv.createdAt || 0
+                  });
                 }
-                
-                this._invoices.push({
-                  id: key,
-                  ...inv,
-                  createdAt: inv.createdAt || 0
-                });
               }
               this._invoices.sort((a, b) => b.createdAt - a.createdAt);
             }
@@ -2180,7 +2227,7 @@
             this.elements.storeStatus.innerHTML = '<i class="fas fa-circle" style="font-size:8px;"></i> جاهز';
             this.elements.storeStatus.style.background = 'var(--success-light)';
             this.elements.storeStatus.style.color = 'var(--success)';
-            this.showAlert(`✅ تم تحميل ${this._invoices.length} فاتورة`, 'success');
+            this.showAlert(`✅ تم تحميل ${this._invoices.length} فاتورة (مقفلة)`, 'success');
 
             this.loadFromURL();
           }, (error) => {
@@ -2195,29 +2242,13 @@
         // ===== GET INVOICE STATUS =====
         getInvoiceStatus(invoice) {
           if (!invoice || !invoice.items || !invoice.items.length) {
-            if (invoice && invoice.allowIsClosed === true) {
-              return 'allow_closed';
-            }
-            return invoice && invoice.status === 'allow_closed' ? 'allow_closed' : 'pending';
+            return invoice && invoice.allowIsClosed ? 'allow_closed' : 'pending';
           }
-
-          if (invoice.allowIsClosed === true) {
-            return 'allow_closed';
-          }
-
-          if (invoice.status === 'allow_closed') {
-            return 'allow_closed';
-          }
-
+          if (invoice.allowIsClosed === true) return 'allow_closed';
           const allAllowed = invoice.items.every(item => (item.allowedQty || 0) >= (item.qty || 0));
           const anyAllowed = invoice.items.some(item => (item.allowedQty || 0) > 0);
-
-          if (allAllowed) {
-            return 'allowed';
-          }
-          if (anyAllowed) {
-            return 'partial';
-          }
+          if (allAllowed) return 'allowed';
+          if (anyAllowed) return 'partial';
           return 'pending';
         },
 
@@ -2269,8 +2300,8 @@
             list.innerHTML = `
               <div class="empty-state">
                 <i class="fas ${this._invoices.length ? 'fa-search' : 'fa-inbox'}"></i>
-                <h3>${this._invoices.length ? 'لا توجد نتائج مطابقة' : 'لا توجد فواتير'}</h3>
-                <p>${this._invoices.length ? 'حاول تغيير الفلتر أو البحث' : 'انتظر حتى يتم تقفيل الفواتير من صفحة إنشاء الأوردرات'}</p>
+                <h3>${this._invoices.length ? 'لا توجد نتائج مطابقة' : 'لا توجد فواتير مقفلة'}</h3>
+                <p>${this._invoices.length ? 'حاول تغيير الفلتر أو البحث' : 'لا توجد فواتير مكتملة بعد'}</p>
               </div>
             `;
             this.elements.invoicesCount.textContent = `${filtered.length} فاتورة`;
@@ -2297,8 +2328,7 @@
                   <div class="meta">
                     <span><i class="fas fa-calendar-alt"></i> ${dateStr}</span>
                     <span><i class="fas fa-boxes"></i> ${inv.items ? inv.items.length : 0} منتج</span>
-                    <span><i class="fas fa-cubes"></i> ${inv.totalPieces || Utils.calculateTotalPieces(inv.items)} قطعة</span>
-                    <span><i class="fas fa-money-bill-wave"></i> ${Utils.formatCurrency(inv.totalValue || Utils.calculateTotalValue(inv.items))} LE</span>
+                    <span><i class="fas fa-cubes"></i> ${inv.totalPieces || 0} قطعة</span>
                   </div>
                 </div>
                 <div class="stats">
@@ -2375,8 +2405,7 @@
           this.elements.previewTitle.innerHTML = `<i class="fas fa-receipt"></i> ${Utils.escapeHtml(branch)}`;
           this.elements.previewMeta.innerHTML = `
             <i class="fas fa-calendar-alt"></i> ${dateStr} | 
-            <i class="fas fa-cubes"></i> ${invoice.totalPieces || Utils.calculateTotalPieces(invoice.items)} قطعة | 
-            <i class="fas fa-money-bill-wave"></i> ${Utils.formatCurrency(invoice.totalValue || Utils.calculateTotalValue(invoice.items))} LE
+            <i class="fas fa-cubes"></i> ${invoice.totalPieces || 0} قطعة
           `;
           this.elements.previewStatus.textContent = isClosed ? '🔒 مقفلة السماح' : this.getStatusText(status);
           this.elements.previewStatus.className = `badge ${isClosed ? 'closed' : status}`;
@@ -2425,7 +2454,14 @@
           this.elements.closePreparationBtn.style.display = 'inline-flex';
           this.elements.closePreparationStickyBtn.style.display = 'inline-flex';
 
-          if (!invoice.items || !invoice.items.length) {
+          // ===== استخدام items المستخرجة من colorsSizes (أو items العادية) =====
+          let items = invoice.items || [];
+          if (!items.length && invoice.colorsSizes) {
+            items = Utils.extractItemsFromColorsSizes(invoice);
+            invoice.items = items; // تحديث للاستخدام اللاحق
+          }
+
+          if (!items.length) {
             container.innerHTML = `
               <div class="empty-state">
                 <i class="fas fa-box-open"></i>
@@ -2436,19 +2472,17 @@
             return;
           }
 
-          // ============================================================
-          // تجميع المنتجات حسب الـ SKU مع الاحتفاظ بالعناصر الفريدة
-          // ============================================================
+          // تجميع المنتجات حسب الـ SKU (نستخدم SKU موحد)
           const groups = {};
-          invoice.items.forEach(item => {
+          items.forEach(item => {
             const sku = item.sku || 'Unknown';
             if (!groups[sku]) {
               groups[sku] = {
                 sku: sku,
-                name: item.name || 'Unknown',
+                name: item.name || 'Product',
                 unitPrice: item.unitPrice || 0,
                 image: item.image || '',
-                id: item.productId || item.id || '',
+                id: item.productId || '',
                 items: []
               };
             }
@@ -2481,7 +2515,6 @@
             const prodProgress = totalQty === 0 ? 0 : Math.round((totalAllowed / totalQty) * 100);
             const isDone = prodProgress === 100;
 
-            // ===== توليد روابط المنتج باستخدام productId =====
             const links = Utils.getProductLinks({
               id: g.id,
               name: g.name
@@ -2599,6 +2632,7 @@
             return;
           }
 
+          // البحث عن العنصر في items
           const item = this._selectedInvoice.items.find(it => {
             const sku = it.sku || 'Unknown';
             const color = it.color || 'No Color';
@@ -2618,6 +2652,24 @@
           if (newQty !== current) {
             item.allowedQty = newQty;
 
+            // تحديث colorsSizes في الفاتورة الأصلية
+            if (this._selectedInvoice.colorsSizes) {
+              const color = item.color || 'No Color';
+              const size = item.size || 'No Size';
+              if (this._selectedInvoice.colorsSizes[color] && this._selectedInvoice.colorsSizes[color][size]) {
+                if (typeof this._selectedInvoice.colorsSizes[color][size] === 'object') {
+                  this._selectedInvoice.colorsSizes[color][size].allowed = newQty;
+                } else {
+                  // إذا كانت القيمة عددية، نحولها لكائن
+                  this._selectedInvoice.colorsSizes[color][size] = {
+                    qty: max,
+                    allowed: newQty
+                  };
+                }
+              }
+            }
+
+            // تحديث الإحصائيات
             this._selectedInvoice.totalPieces = Utils.calculateTotalPieces(this._selectedInvoice.items);
             this._selectedInvoice.totalValue = Utils.calculateTotalValue(this._selectedInvoice.items);
 
@@ -2633,10 +2685,19 @@
           if (!database) return;
           const ref = database.ref('invoices/' + invoice.id);
           const { id, ...data } = invoice;
-          if (data.items) {
-            data.items.forEach(item => {
-              if (item.allowedQty === undefined) item.allowedQty = 0;
-            });
+          // لا نحفظ items لأنها مشتقة من colorsSizes
+          delete data.items;
+          // نتأكد من حفظ colorsSizes
+          if (data.colorsSizes) {
+            // نضمن أن كل مقاس له الكائن المناسب
+            for (const color in data.colorsSizes) {
+              for (const size in data.colorsSizes[color]) {
+                const val = data.colorsSizes[color][size];
+                if (typeof val !== 'object' || val === null) {
+                  data.colorsSizes[color][size] = { qty: Number(val) || 0, allowed: 0 };
+                }
+              }
+            }
           }
           ref.update(data, (error) => {
             if (error) console.error('❌ Save error:', error);
@@ -2658,9 +2719,10 @@
             return;
           }
 
-          const totalPieces = Utils.calculateTotalPieces(invoice.items);
-          const allowedPieces = Utils.calculateAllowed(invoice.items);
-          const remainingPieces = Utils.calculateRemaining(invoice.items);
+          const items = invoice.items || [];
+          const totalPieces = Utils.calculateTotalPieces(items);
+          const allowedPieces = Utils.calculateAllowed(items);
+          const remainingPieces = Utils.calculateRemaining(items);
 
           this.elements.closeTotalPieces.textContent = totalPieces;
           this.elements.closeAllowedPieces.textContent = allowedPieces;
@@ -2669,9 +2731,9 @@
           const list = this.elements.closeProductList;
           let html = '';
 
-          if (invoice.items && invoice.items.length) {
+          if (items.length) {
             const productMap = {};
-            invoice.items.forEach(item => {
+            items.forEach(item => {
               const key = (item.name || 'Unknown') + '|' + (item.sku || '');
               if (!productMap[key]) {
                 productMap[key] = {
@@ -2819,31 +2881,30 @@
 
       // ===== TOGGLE SIDEBAR =====
       function toggleSidebar() {
-    const sidebar = document.getElementById('sidebar');
-    const mainContent = document.getElementById('mainContent');
+        const sidebar = document.getElementById('sidebar');
+        const mainContent = document.getElementById('mainContent');
 
-    if (window.innerWidth > 992) {
-        sidebar.classList.toggle('hidden');
-        mainContent.classList.toggle('sidebar-hidden');
-    } else {
-        if (sidebar.classList.contains('visible')) {
+        if (window.innerWidth > 992) {
+          sidebar.classList.toggle('hidden');
+          mainContent.classList.toggle('sidebar-hidden');
+        } else {
+          if (sidebar.classList.contains('visible')) {
             sidebar.classList.remove('visible');
             sidebar.classList.add('hidden');
             mainContent.classList.add('sidebar-hidden');
-        } else {
+          } else {
             sidebar.classList.remove('hidden');
             sidebar.classList.add('visible');
             mainContent.classList.remove('sidebar-hidden');
+          }
         }
-    }
 
-    if (window.UI) {
-        window.UI.updateStickyPosition();
-    }
-}
+        if (window.UI) {
+          window.UI.updateStickyPosition();
+        }
+      }
       window.toggleSidebar = toggleSidebar;
 
-      // Close sidebar on outside click (mobile)
       document.addEventListener('click', function(event) {
         const sidebar = document.getElementById('sidebar');
         const menuToggle = document.querySelector('.menu-toggle');
@@ -2868,7 +2929,6 @@
         }
       });
 
-      // Handle window resize
       window.addEventListener('resize', function() {
         const sidebar = document.getElementById('sidebar');
         const mainContent = document.getElementById('mainContent');
@@ -2898,4 +2958,4 @@
     })();
   </script>
 </body>
-</html> 
+</html>
