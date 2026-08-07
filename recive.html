@@ -2195,59 +2195,76 @@
           other.sort();
           return [...std, ...num, ...other];
         },
-        // Modified: use preparedQuantities instead of preparedQty
-        calculateTotalPrepared(items) { 
-          let t = 0;
-          if (items) {
-            items.forEach(r => { 
-              t += (r.preparedQuantities || 0); 
-            });
+        // ===== NEW: Extract items from preparedQuantities =====
+        extractItems(preparedQuantities) {
+          if (!preparedQuantities) return [];
+          const items = [];
+          for (const productId in preparedQuantities) {
+            const product = preparedQuantities[productId];
+            if (!product || !product.variants) continue;
+            for (const variantId in product.variants) {
+              const variant = product.variants[variantId];
+              if (!variant || !variant.sizes) continue;
+              for (const size in variant.sizes) {
+                const qty = variant.sizes[size] || 0;
+                if (qty > 0) {
+                  items.push({
+                    productId: productId,
+                    variantId: variantId,
+                    size: size,
+                    preparedQty: qty,
+                    receivedQty: 0,
+                    name: product.name || 'Unknown',
+                    sku: variant.sku || '',
+                    color: variant.color || 'No Color',
+                    unitPrice: variant.unitPrice || 0,
+                    image: product.image || '',
+                    total: qty * (variant.unitPrice || 0)
+                  });
+                }
+              }
+            }
           }
-          return t; 
+          return items;
         },
+        // ===== Calculate totals from items =====
+        calculateTotalPrepared(items) { let t = 0;
+          items.forEach(r => { t += r.preparedQty || 0; }); return t; },
         calculateReceived(items) {
           let received = 0;
-          if (items) {
-            items.forEach(r => { 
-              received += (r.receivedQty || 0); 
-            });
-          }
+          items.forEach(r => { received += r.receivedQty || 0; });
           return received;
         },
         calculateShortage(items) {
           let shortage = 0;
-          if (items) {
-            items.forEach(r => {
-              const prepared = r.preparedQuantities || 0;
-              const received = r.receivedQty || 0;
-              if (received < prepared) shortage += (prepared - received);
-            });
-          }
+          items.forEach(r => {
+            const prepared = r.preparedQty || 0;
+            const received = r.receivedQty || 0;
+            if (received < prepared) shortage += (prepared - received);
+          });
           return shortage;
         },
         isFullyReceived(items) {
           if (!items || !items.length) return false;
-          return items.every(r => (r.receivedQty || 0) >= (r.preparedQuantities || 0));
+          return items.every(r => (r.receivedQty || 0) >= (r.preparedQty || 0));
         },
         hasShortage(items) {
           if (!items || !items.length) return false;
-          return items.some(r => (r.receivedQty || 0) < (r.preparedQuantities || 0));
+          return items.some(r => (r.receivedQty || 0) < (r.preparedQty || 0));
         },
         getProgress(items) {
           if (!items || !items.length) return 0;
           let total = 0,
             received = 0;
-          items.forEach(r => { 
-            total += r.preparedQuantities || 0;
-            received += r.receivedQty || 0; 
-          });
+          items.forEach(r => { total += r.preparedQty || 0;
+            received += r.receivedQty || 0; });
           return total === 0 ? 0 : Math.round((received / total) * 100);
         },
         getStatus(invoice) {
           if (!invoice || !invoice.items || !invoice.items.length) return 'pending';
-          const allReceived = invoice.items.every(item => (item.receivedQty || 0) >= (item.preparedQuantities || 0));
+          const allReceived = invoice.items.every(item => (item.receivedQty || 0) >= (item.preparedQty || 0));
           const anyReceived = invoice.items.some(item => (item.receivedQty || 0) > 0);
-          const hasShortage = invoice.items.some(item => (item.receivedQty || 0) < (item.preparedQuantities || 0));
+          const hasShortage = invoice.items.some(item => (item.receivedQty || 0) < (item.preparedQty || 0));
           
           if (allReceived) return 'received';
           if (hasShortage && anyReceived) return 'shortage';
@@ -2281,7 +2298,7 @@
           return invoice && invoice.status === 'closed';
         },
         canReceive(item) {
-          return (item.preparedQuantities || 0) > 0;
+          return (item.preparedQty || 0) > 0;
         }
       };
 
@@ -2355,7 +2372,7 @@
         _isClosing: false,
         _oldInvoices: [],
         _viewingOldInvoice: null,
-        _currentUser: 'مستخدم غير معروف',
+        _currentUser: null,
         _currentUserId: null,
 
         // ===== INIT =====
@@ -2363,27 +2380,26 @@
           console.log('🚀 Initializing Receiving UI...');
 
           // Get current user from localStorage
-          const userData = Storage.get('currentUser', null);
+          const userData = Storage.get('currentUser');
           if (userData) {
             try {
               const parsed = typeof userData === 'string' ? JSON.parse(userData) : userData;
-              this._currentUser = parsed.fullName || parsed.username || 'مستخدم غير معروف';
+              this._currentUser = parsed;
               this._currentUserId = parsed.id || null;
-              console.log('✅ Current user:', this._currentUser, 'ID:', this._currentUserId);
+              console.log('👤 Current user:', this._currentUser);
             } catch (e) {
-              console.warn('⚠️ Failed to parse user data:', e);
-              this._currentUser = 'مستخدم غير معروف';
+              console.warn('⚠️ Could not parse currentUser:', e);
               this._currentUserId = null;
             }
-          } else {
-            console.warn('⚠️ No user data found in localStorage');
-            this._currentUser = 'مستخدم غير معروف';
-            this._currentUserId = null;
           }
 
           const userNameEl = document.getElementById('currentAdminName');
-          if (userNameEl) {
-            userNameEl.textContent = `مرحباً، ${this._currentUser}`;
+          if (userNameEl && this._currentUser) {
+            userNameEl.textContent = `مرحباً، ${this._currentUser.fullName || this._currentUser.username || 'مستخدم غير معروف'}`;
+          }
+
+          if (!this._currentUserId) {
+            console.warn('⚠️ No userId found. Only invoices without userId will be shown?');
           }
 
           this.loadInvoices();
@@ -2511,22 +2527,10 @@
           }
         },
 
-        // ===== LOAD INVOICES (Modified) =====
+        // ===== LOAD INVOICES =====
         loadInvoices() {
           if (!database) {
             this.showAlert('⚠️ Firebase not ready', 'error');
-            return;
-          }
-
-          if (!this._currentUserId) {
-            this.showAlert('⚠️ لم يتم تسجيل الدخول، يرجى تسجيل الدخول أولاً', 'error');
-            this.elements.invoiceList.innerHTML = `
-              <div class="empty-state">
-                <i class="fas fa-user-lock"></i>
-                <h3>غير مسجل الدخول</h3>
-                <p>يرجى تسجيل الدخول لعرض الفواتير المخصصة لك</p>
-              </div>
-            `;
             return;
           }
 
@@ -2541,21 +2545,40 @@
             if (data) {
               for (const key in data) {
                 const inv = data[key];
-                // Filter: must have prepared: true AND userId matches current user
-                if (inv.prepared === true && inv.userId === this._currentUserId) {
-                  // Initialize items with preparedQuantities
-                  if (inv.items) {
-                    inv.items.forEach(item => {
-                      if (item.receivedQty === undefined) item.receivedQty = 0;
-                      if (item.preparedQuantities === undefined) item.preparedQuantities = 0;
-                    });
-                  }
-                  this._invoices.push({
-                    id: key,
-                    ...inv,
-                    createdAt: inv.createdAt || 0
+                // ===== NEW: Filter by userId and prepared status =====
+                // Only show invoices where prepared === true
+                if (inv.prepared !== true) continue;
+                
+                // Only show invoices for current user (if userId matches)
+                if (this._currentUserId && inv.userId !== this._currentUserId) {
+                  console.log(`⏭️ Skipping invoice ${key} (userId: ${inv.userId} !== ${this._currentUserId})`);
+                  continue;
+                }
+                // If no userId in invoice and we have a current user, we might want to skip?
+                // But let's keep it if no userId is set (for compatibility)
+                
+                // ===== Extract items from preparedQuantities =====
+                const items = Utils.extractItems(inv.preparedQuantities);
+                
+                // Load receiveQuantities if exists
+                if (inv.receiveQuantities && items.length > 0) {
+                  items.forEach(item => {
+                    const key = `${item.productId}|${item.variantId}|${item.size}`;
+                    if (inv.receiveQuantities[key] !== undefined) {
+                      item.receivedQty = inv.receiveQuantities[key];
+                    }
                   });
                 }
+
+                this._invoices.push({
+                  id: key,
+                  ...inv,
+                  items: items,
+                  // Calculate totals
+                  totalPieces: Utils.calculateTotalPrepared(items),
+                  totalValue: items.reduce((sum, item) => sum + (item.unitPrice || 0) * (item.preparedQty || 0), 0),
+                  createdAt: inv.createdAt || 0
+                });
               }
               this._invoices.sort((a, b) => b.createdAt - a.createdAt);
             }
@@ -2696,7 +2719,7 @@
           }
         },
 
-        // ===== RENDER INVOICE PREVIEW (Modified) =====
+        // ===== RENDER INVOICE PREVIEW =====
         renderInvoicePreview(invoice) {
           const container = this.elements.previewContainer;
           this.elements.previewSection.classList.add('show');
@@ -2738,13 +2761,15 @@
           // Group items by product (name + sku)
           const groups = {};
           invoice.items.forEach(item => {
-            const key = (item.name || 'Unknown') + '|' + (item.sku || '');
+            const key = (item.productId || '') + '|' + (item.variantId || '');
             if (!groups[key]) {
               groups[key] = {
                 name: item.name || 'Unknown',
                 sku: item.sku || '',
                 unitPrice: item.unitPrice || 0,
                 image: item.image || '',
+                productId: item.productId || '',
+                variantId: item.variantId || '',
                 colors: {}
               };
             }
@@ -2752,10 +2777,9 @@
             if (!groups[key].colors[color]) groups[key].colors[color] = [];
             groups[key].colors[color].push({
               size: item.size || 'No Size',
-              preparedQuantities: item.preparedQuantities || 0,
-              qty: item.qty || 0,
-              total: item.total || 0,
-              receivedQty: item.receivedQty || 0
+              preparedQty: item.preparedQty || 0,
+              receivedQty: item.receivedQty || 0,
+              total: item.total || 0
             });
           });
 
@@ -2773,7 +2797,7 @@
               totalReceived = 0;
             for (const color in g.colors) {
               g.colors[color].forEach(s => {
-                totalPrepared += s.preparedQuantities || 0;
+                totalPrepared += s.preparedQty || 0;
                 totalReceived += s.receivedQty || 0;
               });
             }
@@ -2811,7 +2835,7 @@
           this.updateBottomBar(invoice);
         },
 
-        // ===== RENDER PREVIEW COLORS (Modified) =====
+        // ===== RENDER PREVIEW COLORS =====
         renderPreviewColors(g, productId) {
           let html = '';
           let colorIdx = 0;
@@ -2823,7 +2847,7 @@
             }
             const isColorOpen = this._productCardStates[colorId];
 
-            const totalPrepared = sizes.reduce((sum, s) => sum + (s.preparedQuantities || 0), 0);
+            const totalPrepared = sizes.reduce((sum, s) => sum + s.preparedQty, 0);
             const totalReceived = sizes.reduce((sum, s) => sum + (s.receivedQty || 0), 0);
             const colorProgress = totalPrepared === 0 ? 0 : Math.round((totalReceived / totalPrepared) * 100);
             const hasShortage = totalReceived < totalPrepared;
@@ -2838,7 +2862,7 @@
                 </div>
                 <div class="color-sizes ${isColorOpen ? 'open' : ''}">
                   ${sizes.map((s, idx) => {
-                    const prepared = s.preparedQuantities || 0;
+                    const prepared = s.preparedQty || 0;
                     const received = s.receivedQty || 0;
                     const canReceive = prepared > 0;
                     const isReceived = received >= prepared && prepared > 0;
@@ -2848,14 +2872,17 @@
                     const disableMinus = received <= 0;
                     const disablePlus = received >= prepared || prepared === 0;
                     
+                    // Create unique key for this size
+                    const sizeKey = `${g.productId}|${g.variantId}|${s.size}`;
+                    
                     return `
                       <div class="size-row">
                         <span class="size-label">${Utils.escapeHtml(s.size)}</span>
                         <div class="qty-control">
-                          <button onclick="window.UI.changeReceiveQty('${productId}', '${color}', '${s.size}', -1)" 
+                          <button onclick="window.UI.changeReceiveQty('${productId}', '${color}', '${s.size}', -1, '${g.productId}', '${g.variantId}')" 
                                   ${disableMinus ? 'disabled' : ''}><i class="fas fa-minus"></i></button>
                           <span class="qty-val ${statusClass}">${received}/${prepared}</span>
-                          <button onclick="window.UI.changeReceiveQty('${productId}', '${color}', '${s.size}', 1)" 
+                          <button onclick="window.UI.changeReceiveQty('${productId}', '${color}', '${s.size}', 1, '${g.productId}', '${g.variantId}')" 
                                   ${disablePlus ? 'disabled' : ''}><i class="fas fa-plus"></i></button>
                         </div>
                         ${!canReceive ? '<span class="no-prepare"><i class="fas fa-ban"></i> غير متاح للاستلام</span>' : ''}
@@ -2884,17 +2911,18 @@
           if (this._selectedInvoice) this.renderInvoicePreview(this._selectedInvoice);
         },
 
-        // ===== CHANGE RECEIVE QTY (Modified) =====
-        changeReceiveQty(productId, color, size, delta) {
+        // ===== CHANGE RECEIVE QTY =====
+        changeReceiveQty(productId, color, size, delta, productIdReal, variantId) {
           if (!this._selectedInvoice || !this._selectedInvoice.items) return;
 
           let found = false;
           this._selectedInvoice.items.forEach(item => {
             const itemColor = item.color || 'No Color';
             const itemSize = item.size || 'No Size';
-            if (itemColor === color && itemSize === size) {
+            if (itemColor === color && itemSize === size && 
+                item.productId === productIdReal && item.variantId === variantId) {
               const current = item.receivedQty || 0;
-              const max = item.preparedQuantities || 0;
+              const max = item.preparedQty || 0;
               const newQty = Math.max(0, Math.min(max, current + delta));
               if (newQty !== current) {
                 item.receivedQty = newQty;
@@ -2905,7 +2933,9 @@
 
           if (found) {
             this._selectedInvoice.totalPieces = Utils.calculateTotalPrepared(this._selectedInvoice.items);
-            this._selectedInvoice.totalValue = this.calculateTotalValue(this._selectedInvoice.items);
+            this._selectedInvoice.totalValue = this._selectedInvoice.items.reduce(
+              (sum, item) => sum + (item.unitPrice || 0) * (item.preparedQty || 0), 0
+            );
             this.saveInvoiceToFirebase(this._selectedInvoice);
             this.renderInvoicePreview(this._selectedInvoice);
             this.renderInvoiceList();
@@ -2913,45 +2943,52 @@
           }
         },
 
-        calculateTotalValue(items) {
-          let total = 0;
-          if (items) {
-            items.forEach(item => {
-              total += (item.unitPrice || 0) * (item.preparedQuantities || 0);
-            });
-          }
-          return total;
-        },
-
         saveInvoiceToFirebase(invoice) {
           if (!database) return;
           const ref = database.ref('invoices/' + invoice.id);
-          const { id, ...data } = invoice;
-          if (data.items) {
-            data.items.forEach(item => {
-              if (item.receivedQty === undefined) item.receivedQty = 0;
-              if (item.preparedQuantities === undefined) item.preparedQuantities = 0;
+          
+          // Build receiveQuantities object
+          const receiveQuantities = {};
+          if (invoice.items) {
+            invoice.items.forEach(item => {
+              const key = `${item.productId}|${item.variantId}|${item.size}`;
+              receiveQuantities[key] = item.receivedQty || 0;
             });
           }
-          ref.update(data, (error) => {
+          
+          // Update only receiveQuantities and status
+          const updateData = {
+            receiveQuantities: receiveQuantities,
+            status: invoice.status || 'prepared'
+          };
+          
+          // If fully received, we might want to update status to 'closed'
+          if (Utils.isFullyReceived(invoice.items)) {
+            updateData.status = 'closed';
+            updateData.prepared = false;
+          }
+          
+          ref.update(updateData, (error) => {
             if (error) console.error('❌ Save error:', error);
             else console.log('✅ Invoice updated');
           });
         },
 
-        // ===== OPEN RECEIVE DIALOG (Modified) =====
+        // ===== OPEN RECEIVE DIALOG =====
         openReceiveDialog(productKey, productId) {
           if (!this._selectedInvoice) return;
 
           const groups = {};
           this._selectedInvoice.items.forEach(item => {
-            const key = (item.name || 'Unknown') + '|' + (item.sku || '');
+            const key = (item.productId || '') + '|' + (item.variantId || '');
             if (!groups[key]) {
               groups[key] = {
                 name: item.name || 'Unknown',
                 sku: item.sku || '',
                 unitPrice: item.unitPrice || 0,
                 image: item.image || '',
+                productId: item.productId || '',
+                variantId: item.variantId || '',
                 items: []
               };
             }
@@ -2996,7 +3033,7 @@
               return (a.size || '').localeCompare(b.size || '');
             });
             sorted.forEach(item => {
-              const prepared = item.preparedQuantities || 0;
+              const prepared = item.preparedQty || 0;
               const received = item.receivedQty || 0;
               const canReceive = prepared > 0;
               const isReceived = received >= prepared && prepared > 0;
@@ -3010,8 +3047,8 @@
                   </span>
                   ${!canReceive ? '<span class="no-prepare"><i class="fas fa-ban"></i> غير متاح</span>' : ''}
                   <div style="display:flex;gap:4px;margin-right:auto;">
-                    <button class="btn btn-secondary btn-sm" onclick="window.UI.adjustReceiveQtyFromDialog('${item.color || 'No Color'}', '${item.size || 'No Size'}', -1)" ${received <= 0 ? 'disabled' : ''}><i class="fas fa-minus"></i></button>
-                    <button class="btn btn-secondary btn-sm" onclick="window.UI.adjustReceiveQtyFromDialog('${item.color || 'No Color'}', '${item.size || 'No Size'}', 1)" ${received >= prepared || prepared === 0 ? 'disabled' : ''}><i class="fas fa-plus"></i></button>
+                    <button class="btn btn-secondary btn-sm" onclick="window.UI.adjustReceiveQtyFromDialog('${item.color || 'No Color'}', '${item.size || 'No Size'}', -1, '${item.productId}', '${item.variantId}')" ${received <= 0 ? 'disabled' : ''}><i class="fas fa-minus"></i></button>
+                    <button class="btn btn-secondary btn-sm" onclick="window.UI.adjustReceiveQtyFromDialog('${item.color || 'No Color'}', '${item.size || 'No Size'}', 1, '${item.productId}', '${item.variantId}')" ${received >= prepared || prepared === 0 ? 'disabled' : ''}><i class="fas fa-plus"></i></button>
                   </div>
                 </div>
               `;
@@ -3023,16 +3060,17 @@
           this.elements.receiveDialog.classList.add('show');
         },
 
-        adjustReceiveQtyFromDialog(color, size, delta) {
+        adjustReceiveQtyFromDialog(color, size, delta, productId, variantId) {
           if (!this._selectedInvoice || !this._pendingReceiveData) return;
 
           let found = false;
           this._selectedInvoice.items.forEach(item => {
             const itemColor = item.color || 'No Color';
             const itemSize = item.size || 'No Size';
-            if (itemColor === color && itemSize === size) {
+            if (itemColor === color && itemSize === size && 
+                item.productId === productId && item.variantId === variantId) {
               const current = item.receivedQty || 0;
-              const max = item.preparedQuantities || 0;
+              const max = item.preparedQty || 0;
               const newQty = Math.max(0, Math.min(max, current + delta));
               if (newQty !== current) {
                 item.receivedQty = newQty;
@@ -3043,11 +3081,13 @@
 
           if (found) {
             this._selectedInvoice.totalPieces = Utils.calculateTotalPrepared(this._selectedInvoice.items);
-            this._selectedInvoice.totalValue = this.calculateTotalValue(this._selectedInvoice.items);
+            this._selectedInvoice.totalValue = this._selectedInvoice.items.reduce(
+              (sum, item) => sum + (item.unitPrice || 0) * (item.preparedQty || 0), 0
+            );
             this.saveInvoiceToFirebase(this._selectedInvoice);
             
-            const { productKey, productId } = this._pendingReceiveData;
-            this.openReceiveDialog(productKey, productId);
+            const { productKey, productId: pId } = this._pendingReceiveData;
+            this.openReceiveDialog(productKey, pId);
             this.renderInvoicePreview(this._selectedInvoice);
             this.renderInvoiceList();
             this.updateStats();
@@ -3064,7 +3104,7 @@
           this.showAlert('✅ تم حفظ الاستلام', 'success');
         },
 
-        // ===== CONFIRM FULL RECEIVE (Modified) =====
+        // ===== CONFIRM FULL RECEIVE =====
         confirmFullReceive() {
           if (!this._selectedInvoice) {
             this.showAlert('⚠️ اختر فاتورة أولاً', 'error');
@@ -3076,12 +3116,18 @@
 
           const invoice = this._selectedInvoice;
           
-          // Update status to closed
+          // Mark all items as fully received
+          invoice.items.forEach(item => {
+            item.receivedQty = item.preparedQty || 0;
+          });
+          
           invoice.status = 'closed';
-          invoice.prepared = false; // Set prepared to false when closed
+          invoice.prepared = false;
           
           invoice.totalPieces = Utils.calculateTotalPrepared(invoice.items);
-          invoice.totalValue = this.calculateTotalValue(invoice.items);
+          invoice.totalValue = invoice.items.reduce(
+            (sum, item) => sum + (item.unitPrice || 0) * (item.preparedQty || 0), 0
+          );
 
           this.saveInvoiceToFirebase(invoice);
           
@@ -3100,7 +3146,7 @@
           this._isClosing = false;
         },
 
-        // ===== OPEN SHORTAGE DIALOG (Modified) =====
+        // ===== OPEN SHORTAGE DIALOG =====
         openShortageDialog() {
           if (!this._selectedInvoice) {
             this.showAlert('⚠️ اختر فاتورة أولاً', 'error');
@@ -3115,12 +3161,14 @@
           
           const productMap = {};
           invoice.items.forEach(item => {
-            const key = (item.name || 'Unknown') + '|' + (item.sku || '');
+            const key = (item.productId || '') + '|' + (item.variantId || '');
             if (!productMap[key]) {
               productMap[key] = {
                 name: item.name || 'Unknown',
                 sku: item.sku || '',
                 image: item.image || '',
+                productId: item.productId || '',
+                variantId: item.variantId || '',
                 items: []
               };
             }
@@ -3164,7 +3212,7 @@
               });
               sorted.forEach(item => {
                 const currentReceived = item.receivedQty || 0;
-                const prepared = item.preparedQuantities || 0;
+                const prepared = item.preparedQty || 0;
                 const shortage = prepared - currentReceived;
                 const itemKey = `${key}|${color}|${item.size}`;
                 this._shortageData[itemKey] = shortage > 0 ? shortage : 0;
@@ -3213,10 +3261,10 @@
           let hasShortage = false;
 
           invoice.items.forEach(item => {
-            const key = `${(item.name || 'Unknown')}|${(item.sku || '')}|${(item.color || 'No Color')}|${(item.size || 'No Size')}`;
+            const key = `${(item.productId || '')}|${(item.variantId || '')}|${(item.color || 'No Color')}|${(item.size || 'No Size')}`;
             const shortageValue = this._shortageData[key];
             if (shortageValue !== undefined) {
-              const prepared = item.preparedQuantities || 0;
+              const prepared = item.preparedQty || 0;
               const received = prepared - shortageValue;
               item.receivedQty = Math.max(0, received);
               if (received < prepared) hasShortage = true;
@@ -3224,7 +3272,9 @@
           });
 
           invoice.totalPieces = Utils.calculateTotalPrepared(invoice.items);
-          invoice.totalValue = this.calculateTotalValue(invoice.items);
+          invoice.totalValue = invoice.items.reduce(
+            (sum, item) => sum + (item.unitPrice || 0) * (item.preparedQty || 0), 0
+          );
 
           this.saveInvoiceToFirebase(invoice);
           this.closeShortageDialog();
@@ -3239,7 +3289,7 @@
           }
         },
 
-        // ===== OLD INVOICES (Modified) =====
+        // ===== OLD INVOICES =====
         toggleOldOrders() {
           const sec = this.elements.oldOrdersSection;
           if (sec.style.display === 'none') {
@@ -3263,17 +3313,6 @@
             return;
           }
 
-          if (!this._currentUserId) {
-            this.elements.oldOrdersList.innerHTML = `
-              <div class="empty-state" style="padding:20px;">
-                <i class="fas fa-user-lock"></i>
-                <h3>غير مسجل الدخول</h3>
-                <p>يرجى تسجيل الدخول لعرض فواتيرك المستلمة</p>
-              </div>
-            `;
-            return;
-          }
-
           this.elements.oldOrdersList.innerHTML = `
             <div class="empty-state" style="padding:20px;">
               <i class="fas fa-spinner fa-spin" style="font-size:1.5rem;"></i>
@@ -3288,17 +3327,30 @@
             if (data) {
               for (const key in data) {
                 const inv = data[key];
-                // Only show closed invoices that belong to this user
-                if (inv.status === 'closed' && inv.userId === this._currentUserId) {
-                  if (inv.items) {
-                    inv.items.forEach(item => {
-                      if (item.receivedQty === undefined) item.receivedQty = 0;
-                      if (item.preparedQuantities === undefined) item.preparedQuantities = 0;
+                // Only show closed invoices (status = 'closed')
+                if (inv.status === 'closed') {
+                  // Only show for current user
+                  if (this._currentUserId && inv.userId !== this._currentUserId) continue;
+                  
+                  // Extract items from preparedQuantities
+                  const items = Utils.extractItems(inv.preparedQuantities);
+                  
+                  // Load receiveQuantities
+                  if (inv.receiveQuantities && items.length > 0) {
+                    items.forEach(item => {
+                      const key2 = `${item.productId}|${item.variantId}|${item.size}`;
+                      if (inv.receiveQuantities[key2] !== undefined) {
+                        item.receivedQty = inv.receiveQuantities[key2];
+                      }
                     });
                   }
+
                   this._oldInvoices.push({
                     id: key,
                     ...inv,
+                    items: items,
+                    totalPieces: Utils.calculateTotalPrepared(items),
+                    totalValue: items.reduce((sum, item) => sum + (item.unitPrice || 0) * (item.preparedQty || 0), 0),
                     createdAt: inv.createdAt || 0
                   });
                 }
@@ -3351,7 +3403,7 @@
             if (inv.items && inv.items.length) {
               const items = inv.items.slice(0, 3);
               details = items.map(item =>
-                `${item.name} (${item.color||''} ${item.size||''} × ${item.preparedQuantities||0})`
+                `${item.name} (${item.color||''} ${item.size||''} × ${item.preparedQty||0})`
               ).join('، ');
               if (inv.items.length > 3) details += ` ... +${inv.items.length-3} أكثر`;
             }
@@ -3417,7 +3469,7 @@
           // Group by product
           const groups = {};
           invoice.items.forEach(item => {
-            const key = (item.name || 'Unknown') + '|' + (item.sku || '');
+            const key = (item.productId || '') + '|' + (item.variantId || '');
             if (!groups[key]) {
               groups[key] = {
                 name: item.name || 'Unknown',
@@ -3431,7 +3483,7 @@
             if (!groups[key].colors[color]) groups[key].colors[color] = [];
             groups[key].colors[color].push({
               size: item.size || 'No Size',
-              preparedQuantities: item.preparedQuantities || 0,
+              preparedQty: item.preparedQty || 0,
               receivedQty: item.receivedQty || 0
             });
           });
@@ -3443,7 +3495,7 @@
               totalReceived = 0;
             for (const color in g.colors) {
               g.colors[color].forEach(s => {
-                totalPrepared += s.preparedQuantities || 0;
+                totalPrepared += s.preparedQty || 0;
                 totalReceived += s.receivedQty || 0;
               });
             }
@@ -3471,13 +3523,13 @@
                   </div>
               `;
               g.colors[color].forEach(s => {
-                const isComplete = s.preparedQuantities > 0 && s.receivedQty >= s.preparedQuantities;
+                const isComplete = s.preparedQty > 0 && s.receivedQty >= s.preparedQty;
                 html += `
                   <div style="display:flex;gap:12px;padding:2px 0;font-size:13px;flex-wrap:wrap;">
                     <span style="font-weight:500;min-width:40px;color:var(--dark-secondary);">${Utils.escapeHtml(s.size)}</span>
                     <span style="color:${isComplete ? 'var(--success)' : 'var(--danger)'};">
                       <i class="fas ${isComplete ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i>
-                      ${s.receivedQty}/${s.preparedQuantities}
+                      ${s.receivedQty}/${s.preparedQty}
                     </span>
                   </div>
                 `;
@@ -3517,10 +3569,10 @@
                 item.color || '',
                 item.size || '',
                 item.sku || '',
-                item.preparedQuantities || 0,
+                item.preparedQty || 0,
                 item.receivedQty || 0,
                 item.unitPrice || 0,
-                (item.unitPrice || 0) * (item.preparedQuantities || 0)
+                (item.unitPrice || 0) * (item.preparedQty || 0)
               ]);
             });
           }
@@ -3580,10 +3632,10 @@
                   item.color || '',
                   item.size || '',
                   item.sku || '',
-                  item.preparedQuantities || 0,
+                  item.preparedQty || 0,
                   item.receivedQty || 0,
                   item.unitPrice || 0,
-                  (item.unitPrice || 0) * (item.preparedQuantities || 0)
+                  (item.unitPrice || 0) * (item.preparedQty || 0)
                 ]);
               });
             }
@@ -3652,7 +3704,7 @@
           const items = invoice.items || [];
           const totalPrepared = Utils.calculateTotalPrepared(items);
           const receivedPieces = Utils.calculateReceived(items);
-          const products = new Set(items.map(r => r.name + '|' + r.sku)).size;
+          const products = new Set(items.map(r => r.productId + '|' + r.variantId)).size;
           const progress = totalPrepared === 0 ? 0 : Math.round((receivedPieces / totalPrepared) * 100);
           const shortage = Utils.calculateShortage(items);
 
@@ -3698,28 +3750,28 @@
 
       // ===== TOGGLE SIDEBAR =====
       function toggleSidebar() {
-        const sidebar = document.getElementById('sidebar');
-        const mainContent = document.getElementById('mainContent');
+    const sidebar = document.getElementById('sidebar');
+    const mainContent = document.getElementById('mainContent');
 
-        if (window.innerWidth > 992) {
-          sidebar.classList.toggle('hidden');
-          mainContent.classList.toggle('sidebar-hidden');
-        } else {
-          if (sidebar.classList.contains('visible')) {
+    if (window.innerWidth > 992) {
+        sidebar.classList.toggle('hidden');
+        mainContent.classList.toggle('sidebar-hidden');
+    } else {
+        if (sidebar.classList.contains('visible')) {
             sidebar.classList.remove('visible');
             sidebar.classList.add('hidden');
             mainContent.classList.add('sidebar-hidden');
-          } else {
+        } else {
             sidebar.classList.remove('hidden');
             sidebar.classList.add('visible');
             mainContent.classList.remove('sidebar-hidden');
-          }
         }
+    }
 
-        if (window.UI) {
-          window.UI.updateStickyPosition();
-        }
-      }
+    if (window.UI) {
+        window.UI.updateStickyPosition();
+    }
+}
       window.toggleSidebar = toggleSidebar;
 
       // Close sidebar on outside click (mobile)
