@@ -1768,7 +1768,7 @@
       <div class="summary">
         <span class="item"><i class="fas fa-boxes"></i> المنتجات: <strong id="bottomProducts">0</strong></span>
         <span class="item"><i class="fas fa-cubes"></i> القطع: <strong id="bottomPieces">0</strong></span>
-        <span class="item"><i class="fas fa-check-circle" style="color:var(--primary);"></i> المسموح: <strong id="bottomAllowed">0</strong></span>
+        <span class="item"><i class="fas fa-check-circle" style="color:var(--primary);"></i> المجهز: <strong id="bottomAllowed">0</strong></span>
         <span class="item" id="bottomProgress" style="display:flex;align-items:center;gap:8px;">
           <span style="font-size:12px;color:var(--gray);">التقدم:</span>
           <span style="font-weight:700;color:var(--dark-secondary);" id="bottomPercent">0%</span>
@@ -1791,11 +1791,11 @@
     <div class="dialog-box">
       <button class="modal-close-btn" onclick="window.UI.closeCloseDialog()"><i class="fas fa-times"></i></button>
       <h3><i class="fas fa-lock" style="color:var(--warning);"></i> تقفيل السماح</h3>
-      <p class="subtitle">سيتم تقفيل الفاتورة بالكميات المسموح بها حالياً. الكميات غير المسموح بها ستبقى 0.</p>
+      <p class="subtitle">سيتم تقفيل الفاتورة بالكميات المجهزة حالياً. الكميات غير المجهزة ستبقى 0.</p>
 
       <div class="dialog-info-box">
         <span class="item"><i class="fas fa-cubes"></i> إجمالي القطع: <strong id="closeTotalPieces">0</strong></span>
-        <span class="item"><i class="fas fa-check-circle" style="color:var(--primary);"></i> المسموح: <strong class="green" id="closeAllowedPieces">0</strong></span>
+        <span class="item"><i class="fas fa-check-circle" style="color:var(--primary);"></i> المجهز: <strong class="green" id="closeAllowedPieces">0</strong></span>
         <span class="item"><i class="fas fa-hourglass-half" style="color:var(--danger);"></i> المتبقية: <strong class="danger" id="closeRemainingPieces">0</strong></span>
       </div>
 
@@ -1915,93 +1915,97 @@
           other.sort();
           return [...std, ...num, ...other];
         },
-        // ===== تحويل colorsSizes إلى مصفوفة items قابلة للاستخدام =====
-        extractItemsFromColorsSizes(invoice) {
-          if (!invoice.colorsSizes || typeof invoice.colorsSizes !== 'object') return [];
-          const items = [];
-          for (const color in invoice.colorsSizes) {
-            const sizesObj = invoice.colorsSizes[color];
-            if (typeof sizesObj === 'object') {
-              for (const sizeKey in sizesObj) {
-                let val = sizesObj[sizeKey];
-                let qty = 0,
-                  allowed = 0;
-                if (typeof val === 'object' && val !== null) {
-                  qty = val.qty || 0;
-                  allowed = val.allowed || 0;
-                } else {
-                  qty = Number(val) || 0;
-                  allowed = 0; // default 0
-                }
-                // نضيف عنصر
-                items.push({
-                  color: color,
-                  size: sizeKey, // قد يكون مثل "PREPAREDFROM(M)"
-                  qty: qty,
-                  allowedQty: allowed,
-                  total: 0, // ليس لدينا سعر
-                  unitPrice: 0,
-                  name: invoice.productName || 'Product',
-                  sku: invoice.sku || 'N/A',
-                  image: invoice.image || '',
-                  productId: invoice.productId || '',
-                  uniqueKey: `${color}|${sizeKey}`
-                });
-              }
-            }
-          }
-          return items;
-        },
-        // ===== تحويل items إلى colorsSizes =====
-        convertItemsToColorsSizes(items) {
-          const colorsSizes = {};
+        // Calculate total pieces from items (supports both old and new structures)
+        calculateTotalPieces(items) {
+          let total = 0;
           items.forEach(item => {
-            const color = item.color || 'No Color';
-            const size = item.size || 'No Size';
-            if (!colorsSizes[color]) colorsSizes[color] = {};
-            colorsSizes[color][size] = {
-              qty: item.qty || 0,
-              allowed: item.allowedQty || 0
-            };
+            if (item.colorsSizes) {
+              // New structure: colorsSizes object
+              for (const color in item.colorsSizes) {
+                const sizes = item.colorsSizes[color];
+                for (const size in sizes) {
+                  total += sizes[size] || 0;
+                }
+              }
+            } else if (item.qty !== undefined) {
+              total += item.qty || 0;
+            }
           });
-          return colorsSizes;
+          return total;
         },
-        calculateTotalPieces(items) { let t = 0;
-          items.forEach(r => { t += r.qty || 0; }); return t; },
-        calculateTotalValue(items) { let t = 0;
-          items.forEach(r => { t += r.total || 0; }); return t; },
-        calculateAllowed(items) {
-          let allowed = 0;
-          items.forEach(r => { allowed += r.allowedQty || 0; });
-          return allowed;
+        // Calculate total value from items
+        calculateTotalValue(items) {
+          let total = 0;
+          items.forEach(item => {
+            if (item.colorsSizes) {
+              // For new structure, use totalValue if present else sum unitPrice * pieces
+              if (item.totalValue) {
+                total += item.totalValue || 0;
+              } else {
+                const unitPrice = item.unitPrice || 0;
+                let pieces = 0;
+                for (const color in item.colorsSizes) {
+                  const sizes = item.colorsSizes[color];
+                  for (const size in sizes) {
+                    pieces += sizes[size] || 0;
+                  }
+                }
+                total += unitPrice * pieces;
+              }
+            } else if (item.total !== undefined) {
+              total += item.total || 0;
+            } else if (item.qty !== undefined && item.unitPrice !== undefined) {
+              total += (item.qty || 0) * (item.unitPrice || 0);
+            }
+          });
+          return total;
         },
+        // Calculate prepared (allowed) pieces from items
+        calculatePrepared(items) {
+          let prepared = 0;
+          items.forEach(item => {
+            if (item.preparedQuantities) {
+              for (const color in item.preparedQuantities) {
+                const sizes = item.preparedQuantities[color];
+                for (const size in sizes) {
+                  prepared += sizes[size] || 0;
+                }
+              }
+            } else if (item.allowedQty !== undefined) {
+              prepared += item.allowedQty || 0;
+            }
+          });
+          return prepared;
+        },
+        // Calculate remaining pieces (total - prepared)
         calculateRemaining(items) {
-          let remaining = 0;
-          items.forEach(r => { remaining += (r.qty || 0) - (r.allowedQty || 0); });
-          return remaining;
+          const total = this.calculateTotalPieces(items);
+          const prepared = this.calculatePrepared(items);
+          return total - prepared;
         },
-        isFullyAllowed(items) {
-          if (!items || !items.length) return false;
-          return items.every(r => (r.allowedQty || 0) >= (r.qty || 0));
+        // Check if fully prepared
+        isFullyPrepared(items) {
+          const total = this.calculateTotalPieces(items);
+          const prepared = this.calculatePrepared(items);
+          return total > 0 && prepared >= total;
         },
-        isPartiallyAllowed(items) {
-          if (!items || !items.length) return false;
-          const hasAllowed = items.some(r => (r.allowedQty || 0) > 0);
-          const hasUnallowed = items.some(r => (r.allowedQty || 0) < (r.qty || 0));
-          return hasAllowed && hasUnallowed;
+        // Check if partially prepared
+        isPartiallyPrepared(items) {
+          const total = this.calculateTotalPieces(items);
+          const prepared = this.calculatePrepared(items);
+          return prepared > 0 && prepared < total;
         },
+        // Get progress percentage
         getProgress(items) {
-          if (!items || !items.length) return 0;
-          let total = 0,
-            allowed = 0;
-          items.forEach(r => { total += r.qty || 0;
-            allowed += r.allowedQty || 0; });
-          return total === 0 ? 0 : Math.round((allowed / total) * 100);
+          const total = this.calculateTotalPieces(items);
+          const prepared = this.calculatePrepared(items);
+          return total === 0 ? 0 : Math.round((prepared / total) * 100);
         },
+        // Check if invoice is closed for preparation
         isAllowClosed(invoice) {
-          return invoice && invoice.allowIsClosed === true;
+          return invoice && (invoice.allowprepare === true || invoice.allowIsClosed === true);
         },
-        // ===== دالة توليد روابط المنتج باستخدام productId و storeName =====
+        // Get product links
         getProductLinks(product) {
           const storeName = 'sparkle-pjs';
           const productId = product.id || '';
@@ -2009,6 +2013,10 @@
           const productUrl = `https://admin.shopify.com/store/${storeName}/products/${productId}?link_source=search`;
           const ordersUrl = `https://admin.shopify.com/store/${storeName}/orders?query=${encodeURIComponent(productTitle)}`;
           return { productUrl, ordersUrl };
+        },
+        // Check if invoice has new structure (colorsSizes)
+        hasColorsSizes(items) {
+          return items && items.some(item => item.colorsSizes && typeof item.colorsSizes === 'object');
         }
       };
 
@@ -2067,6 +2075,7 @@
         init() {
           console.log('🚀 Initializing Allow Preparation UI...');
 
+          // Get current user name from localStorage
           this._currentUser = Storage.get('userName', 'مستخدم غير معروف');
           const userNameEl = document.getElementById('currentAdminName');
           if (userNameEl) {
@@ -2101,6 +2110,7 @@
 
           this.loadFromURL();
 
+          // Load sidebar from usermenu.js
           if (typeof loadLayout === 'function') {
             loadLayout();
           }
@@ -2183,42 +2193,38 @@
           this.elements.storeStatus.style.background = 'var(--warning-light)';
           this.elements.storeStatus.style.color = 'var(--warning)';
 
-          const oneMonthAgo = Date.now() - (30 * 24 * 60 * 60 * 1000);
-          database.ref('invoices').orderByChild('createdAt').startAt(oneMonthAgo).once('value', (snapshot) => {
+          // Load from invoices node
+          database.ref('invoices').once('value', (snapshot) => {
             const data = snapshot.val();
             this._invoices = [];
             if (data) {
               for (const key in data) {
                 const inv = data[key];
-                // ===== التعديل: عرض الفواتير التي لديها createdclosed = true فقط =====
-                if (inv.createdclosed === true) {
-                  // تأكد من وجود colorsSizes
-                  if (inv.colorsSizes && typeof inv.colorsSizes === 'object') {
-                    // تحويل colorsSizes إلى items مؤقتًا للحسابات
-                    const items = Utils.extractItemsFromColorsSizes(inv);
-                    inv.items = items; // نضعها مؤقتًا للاستخدام في باقي الدوال
-                    inv.totalPieces = Utils.calculateTotalPieces(items);
-                    inv.totalValue = Utils.calculateTotalValue(items);
-                  } else {
-                    // إذا لم يكن هناك colorsSizes، نضع items فارغة
-                    inv.items = [];
-                    inv.totalPieces = 0;
-                    inv.totalValue = 0;
-                  }
+                // Only include invoices with createdclosed === true
+                if (inv.createdclosed !== true) continue;
 
-                  if (inv.allowIsClosed === undefined) {
-                    inv.allowIsClosed = false;
-                  }
-                  if (!inv.status) {
-                    inv.status = inv.allowIsClosed ? 'allow_closed' : 'pending';
-                  }
-                  // نضيف الفاتورة للقائمة
-                  this._invoices.push({
-                    id: key,
-                    ...inv,
-                    createdAt: inv.createdAt || 0
+                // Initialize preparedQuantities for items with colorsSizes if not exists
+                if (inv.items && inv.items.length) {
+                  inv.items.forEach(item => {
+                    if (item.colorsSizes && !item.preparedQuantities) {
+                      // Initialize preparedQuantities with zeros
+                      item.preparedQuantities = {};
+                      for (const color in item.colorsSizes) {
+                        item.preparedQuantities[color] = {};
+                        const sizes = item.colorsSizes[color];
+                        for (const size in sizes) {
+                          item.preparedQuantities[color][size] = 0;
+                        }
+                      }
+                    }
                   });
                 }
+
+                this._invoices.push({
+                  id: key,
+                  ...inv,
+                  createdAt: inv.createdAt || 0
+                });
               }
               this._invoices.sort((a, b) => b.createdAt - a.createdAt);
             }
@@ -2227,7 +2233,7 @@
             this.elements.storeStatus.innerHTML = '<i class="fas fa-circle" style="font-size:8px;"></i> جاهز';
             this.elements.storeStatus.style.background = 'var(--success-light)';
             this.elements.storeStatus.style.color = 'var(--success)';
-            this.showAlert(`✅ تم تحميل ${this._invoices.length} فاتورة (مقفلة)`, 'success');
+            this.showAlert(`✅ تم تحميل ${this._invoices.length} فاتورة`, 'success');
 
             this.loadFromURL();
           }, (error) => {
@@ -2242,14 +2248,23 @@
         // ===== GET INVOICE STATUS =====
         getInvoiceStatus(invoice) {
           if (!invoice || !invoice.items || !invoice.items.length) {
-            return invoice && invoice.allowIsClosed ? 'allow_closed' : 'pending';
+            if (invoice && Utils.isAllowClosed(invoice)) {
+              return 'allow_closed';
+            }
+            return 'pending';
           }
-          if (invoice.allowIsClosed === true) return 'allow_closed';
-          const allAllowed = invoice.items.every(item => (item.allowedQty || 0) >= (item.qty || 0));
-          const anyAllowed = invoice.items.some(item => (item.allowedQty || 0) > 0);
-          if (allAllowed) return 'allowed';
-          if (anyAllowed) return 'partial';
-          return 'pending';
+
+          if (Utils.isAllowClosed(invoice)) {
+            return 'allow_closed';
+          }
+
+          const total = Utils.calculateTotalPieces(invoice.items);
+          const prepared = Utils.calculatePrepared(invoice.items);
+
+          if (total === 0) return 'pending';
+          if (prepared === 0) return 'pending';
+          if (prepared >= total) return 'allowed';
+          return 'partial';
         },
 
         getStatusText(status) {
@@ -2300,8 +2315,8 @@
             list.innerHTML = `
               <div class="empty-state">
                 <i class="fas ${this._invoices.length ? 'fa-search' : 'fa-inbox'}"></i>
-                <h3>${this._invoices.length ? 'لا توجد نتائج مطابقة' : 'لا توجد فواتير مقفلة'}</h3>
-                <p>${this._invoices.length ? 'حاول تغيير الفلتر أو البحث' : 'لا توجد فواتير مكتملة بعد'}</p>
+                <h3>${this._invoices.length ? 'لا توجد نتائج مطابقة' : 'لا توجد فواتير'}</h3>
+                <p>${this._invoices.length ? 'حاول تغيير الفلتر أو البحث' : 'لا توجد فواتير مخصصة للتحضير'}</p>
               </div>
             `;
             this.elements.invoicesCount.textContent = `${filtered.length} فاتورة`;
@@ -2318,6 +2333,8 @@
               minute: '2-digit'
             });
             const progress = Utils.getProgress(inv.items);
+            const totalPieces = Utils.calculateTotalPieces(inv.items);
+            const prepared = Utils.calculatePrepared(inv.items);
             const isSelected = this._selectedInvoiceId === inv.id;
 
             html += `
@@ -2328,7 +2345,8 @@
                   <div class="meta">
                     <span><i class="fas fa-calendar-alt"></i> ${dateStr}</span>
                     <span><i class="fas fa-boxes"></i> ${inv.items ? inv.items.length : 0} منتج</span>
-                    <span><i class="fas fa-cubes"></i> ${inv.totalPieces || 0} قطعة</span>
+                    <span><i class="fas fa-cubes"></i> ${totalPieces} قطعة</span>
+                    <span><i class="fas fa-money-bill-wave"></i> ${Utils.formatCurrency(Utils.calculateTotalValue(inv.items))} LE</span>
                   </div>
                 </div>
                 <div class="stats">
@@ -2401,11 +2419,16 @@
           const status = this.getInvoiceStatus(invoice);
           const progress = Utils.getProgress(invoice.items);
           const isClosed = Utils.isAllowClosed(invoice);
+          const totalPieces = Utils.calculateTotalPieces(invoice.items);
+          const totalValue = Utils.calculateTotalValue(invoice.items);
+          const prepared = Utils.calculatePrepared(invoice.items);
 
           this.elements.previewTitle.innerHTML = `<i class="fas fa-receipt"></i> ${Utils.escapeHtml(branch)}`;
           this.elements.previewMeta.innerHTML = `
             <i class="fas fa-calendar-alt"></i> ${dateStr} | 
-            <i class="fas fa-cubes"></i> ${invoice.totalPieces || 0} قطعة
+            <i class="fas fa-cubes"></i> ${totalPieces} قطعة | 
+            <i class="fas fa-money-bill-wave"></i> ${Utils.formatCurrency(totalValue)} LE |
+            <i class="fas fa-check-circle"></i> المجهز: ${prepared}
           `;
           this.elements.previewStatus.textContent = isClosed ? '🔒 مقفلة السماح' : this.getStatusText(status);
           this.elements.previewStatus.className = `badge ${isClosed ? 'closed' : status}`;
@@ -2428,11 +2451,11 @@
                   <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;max-width:400px;margin:0 auto;">
                     <div>
                       <div style="font-size:12px;color:var(--gray);">إجمالي القطع</div>
-                      <div style="font-size:24px;font-weight:700;color:var(--dark-secondary);">${Utils.calculateTotalPieces(invoice.items)}</div>
+                      <div style="font-size:24px;font-weight:700;color:var(--dark-secondary);">${totalPieces}</div>
                     </div>
                     <div>
-                      <div style="font-size:12px;color:var(--gray);">المسموح</div>
-                      <div style="font-size:24px;font-weight:700;color:var(--success);">${Utils.calculateAllowed(invoice.items)}</div>
+                      <div style="font-size:12px;color:var(--gray);">المجهز</div>
+                      <div style="font-size:24px;font-weight:700;color:var(--success);">${prepared}</div>
                     </div>
                     <div>
                       <div style="font-size:12px;color:var(--gray);">نسبة السماح</div>
@@ -2441,7 +2464,7 @@
                   </div>
                 </div>
                 <div style="margin-top:12px;font-size:13px;color:var(--gray);">
-                  <i class="fas fa-clock"></i> تم التقفيل في: ${new Date().toLocaleString('ar-EG')}
+                  <i class="fas fa-clock"></i> تم التقفيل في: ${new Date(invoice.closedAt || Date.now()).toLocaleString('ar-EG')}
                 </div>
               </div>
             `;
@@ -2454,14 +2477,7 @@
           this.elements.closePreparationBtn.style.display = 'inline-flex';
           this.elements.closePreparationStickyBtn.style.display = 'inline-flex';
 
-          // ===== استخدام items المستخرجة من colorsSizes (أو items العادية) =====
-          let items = invoice.items || [];
-          if (!items.length && invoice.colorsSizes) {
-            items = Utils.extractItemsFromColorsSizes(invoice);
-            invoice.items = items; // تحديث للاستخدام اللاحق
-          }
-
-          if (!items.length) {
+          if (!invoice.items || !invoice.items.length) {
             container.innerHTML = `
               <div class="empty-state">
                 <i class="fas fa-box-open"></i>
@@ -2472,28 +2488,49 @@
             return;
           }
 
-          // تجميع المنتجات حسب الـ SKU (نستخدم SKU موحد)
+          // ============================================================
+          // تجميع المنتجات حسب SKU مع الاحتفاظ بالعناصر الفريدة
+          // ============================================================
           const groups = {};
-          items.forEach(item => {
+          invoice.items.forEach((item, index) => {
             const sku = item.sku || 'Unknown';
             if (!groups[sku]) {
               groups[sku] = {
                 sku: sku,
-                name: item.name || 'Product',
+                name: item.name || 'Unknown',
                 unitPrice: item.unitPrice || 0,
                 image: item.image || '',
-                id: item.productId || '',
-                items: []
+                id: item.productId || item.id || '',
+                colorsSizes: item.colorsSizes || {},
+                preparedQuantities: item.preparedQuantities || {},
+                // store reference to original item for saving
+                _origIndex: index
               };
+            } else {
+              // Merge colorsSizes and preparedQuantities if multiple items with same SKU? (unlikely but handle)
+              if (item.colorsSizes) {
+                for (const color in item.colorsSizes) {
+                  if (!groups[sku].colorsSizes[color]) {
+                    groups[sku].colorsSizes[color] = {};
+                  }
+                  const sizes = item.colorsSizes[color];
+                  for (const size in sizes) {
+                    groups[sku].colorsSizes[color][size] = sizes[size];
+                  }
+                }
+              }
+              if (item.preparedQuantities) {
+                for (const color in item.preparedQuantities) {
+                  if (!groups[sku].preparedQuantities[color]) {
+                    groups[sku].preparedQuantities[color] = {};
+                  }
+                  const sizes = item.preparedQuantities[color];
+                  for (const size in sizes) {
+                    groups[sku].preparedQuantities[color][size] = sizes[size];
+                  }
+                }
+              }
             }
-            groups[sku].items.push({
-              color: item.color || 'No Color',
-              size: item.size || 'No Size',
-              qty: item.qty || 0,
-              total: item.total || 0,
-              allowedQty: item.allowedQty || 0,
-              uniqueKey: `${sku}|${item.color || 'No Color'}|${item.size || 'No Size'}`
-            });
           });
 
           let html = '';
@@ -2506,15 +2543,25 @@
             }
             const isOpen = this._productCardStates[productId];
 
+            // Calculate totals for this product
             let totalQty = 0,
-              totalAllowed = 0;
-            g.items.forEach(item => {
-              totalQty += item.qty || 0;
-              totalAllowed += item.allowedQty || 0;
-            });
-            const prodProgress = totalQty === 0 ? 0 : Math.round((totalAllowed / totalQty) * 100);
+              totalPrepared = 0;
+            for (const color in g.colorsSizes) {
+              const sizes = g.colorsSizes[color];
+              for (const size in sizes) {
+                totalQty += sizes[size] || 0;
+              }
+            }
+            for (const color in g.preparedQuantities) {
+              const sizes = g.preparedQuantities[color];
+              for (const size in sizes) {
+                totalPrepared += sizes[size] || 0;
+              }
+            }
+            const prodProgress = totalQty === 0 ? 0 : Math.round((totalPrepared / totalQty) * 100);
             const isDone = prodProgress === 100;
 
+            // Generate product links
             const links = Utils.getProductLinks({
               id: g.id,
               name: g.name
@@ -2555,48 +2602,49 @@
         // ===== RENDER PREVIEW COLORS =====
         renderPreviewColors(g, productId) {
           let html = '';
-          const colorMap = {};
-          g.items.forEach(item => {
-            const color = item.color;
-            if (!colorMap[color]) {
-              colorMap[color] = [];
-            }
-            colorMap[color].push(item);
-          });
+          const colors = Object.keys(g.colorsSizes);
+          if (!colors.length) return '<div class="text-muted">لا توجد ألوان</div>';
 
           let colorIdx = 0;
-          for (const color in colorMap) {
-            const colorItems = colorMap[color];
+          for (const color of colors) {
+            const sizes = g.colorsSizes[color];
+            const preparedSizes = g.preparedQuantities[color] || {};
             const colorId = productId + '_color_' + colorIdx;
             if (this._productCardStates[colorId] === undefined) {
               this._productCardStates[colorId] = true;
             }
             const isColorOpen = this._productCardStates[colorId];
 
-            const totalQty = colorItems.reduce((sum, item) => sum + item.qty, 0);
-            const totalAllowed = colorItems.reduce((sum, item) => sum + (item.allowedQty || 0), 0);
-            const colorProgress = totalQty === 0 ? 0 : Math.round((totalAllowed / totalQty) * 100);
+            let totalQty = 0,
+              totalPrepared = 0;
+            for (const size in sizes) {
+              totalQty += sizes[size] || 0;
+              totalPrepared += preparedSizes[size] || 0;
+            }
+            const colorProgress = totalQty === 0 ? 0 : Math.round((totalPrepared / totalQty) * 100);
 
             html += `
               <div class="color-accordion">
                 <div class="color-header" onclick="window.UI.toggleColorPreview('${colorId}')">
                   <span class="chevron-sm ${isColorOpen ? 'open' : ''}"><i class="fas fa-chevron-down"></i></span>
                   <span><i class="fas fa-palette" style="color:var(--primary);"></i> ${Utils.escapeHtml(color)}</span>
-                  <span class="color-total">${totalAllowed}/${totalQty} (${colorProgress}%)</span>
+                  <span class="color-total">${totalPrepared}/${totalQty} (${colorProgress}%)</span>
                 </div>
                 <div class="color-sizes ${isColorOpen ? 'open' : ''}">
-                  ${colorItems.map((item) => {
-                    const isAllowed = (item.allowedQty || 0) >= (item.qty || 0);
-                    const isPartial = (item.allowedQty || 0) > 0 && (item.allowedQty || 0) < (item.qty || 0);
+                  ${Object.keys(sizes).map((size) => {
+                    const qty = sizes[size] || 0;
+                    const prepared = preparedSizes[size] || 0;
+                    const isAllowed = prepared >= qty;
+                    const isPartial = prepared > 0 && prepared < qty;
                     const statusClass = isAllowed ? 'allowed' : isPartial ? 'partial' : 'pending';
-                    const uniqueKey = item.uniqueKey;
+                    const uniqueKey = `${g.sku}|${color}|${size}`;
                     return `
                       <div class="size-row">
-                        <span class="size-label">${Utils.escapeHtml(item.size)}</span>
+                        <span class="size-label">${Utils.escapeHtml(size)}</span>
                         <div class="qty-control">
-                          <button onclick="window.UI.changeAllowedQty('${uniqueKey}', -1)"><i class="fas fa-minus"></i></button>
-                          <span class="qty-val ${statusClass}">${item.allowedQty || 0}/${item.qty || 0}</span>
-                          <button onclick="window.UI.changeAllowedQty('${uniqueKey}', 1)"><i class="fas fa-plus"></i></button>
+                          <button onclick="window.UI.changePreparedQty('${uniqueKey}', -1)"><i class="fas fa-minus"></i></button>
+                          <span class="qty-val ${statusClass}">${prepared}/${qty}</span>
+                          <button onclick="window.UI.changePreparedQty('${uniqueKey}', 1)"><i class="fas fa-plus"></i></button>
                         </div>
                       </div>
                     `;
@@ -2623,61 +2671,53 @@
           if (this._selectedInvoice) this.renderInvoicePreview(this._selectedInvoice);
         },
 
-        // ===== CHANGE ALLOWED QTY =====
-        changeAllowedQty(uniqueKey, delta) {
+        // ===== CHANGE PREPARED QTY =====
+        changePreparedQty(uniqueKey, delta) {
           if (!this._selectedInvoice || !this._selectedInvoice.items) return;
 
-          if (this._selectedInvoice.allowIsClosed === true) {
+          if (Utils.isAllowClosed(this._selectedInvoice)) {
             this.showAlert('⚠️ لا يمكن تعديل كميات فاتورة مقفلة السماح', 'error');
             return;
           }
 
-          // البحث عن العنصر في items
-          const item = this._selectedInvoice.items.find(it => {
-            const sku = it.sku || 'Unknown';
-            const color = it.color || 'No Color';
-            const size = it.size || 'No Size';
-            return `${sku}|${color}|${size}` === uniqueKey;
+          // Find the item and the specific color/size
+          const parts = uniqueKey.split('|');
+          const sku = parts[0];
+          const color = parts[1];
+          const size = parts[2];
+
+          let found = false;
+          this._selectedInvoice.items.forEach(item => {
+            if (item.sku === sku && item.colorsSizes && item.colorsSizes[color] && item.colorsSizes[color][size] !== undefined) {
+              if (!item.preparedQuantities) {
+                item.preparedQuantities = {};
+              }
+              if (!item.preparedQuantities[color]) {
+                item.preparedQuantities[color] = {};
+              }
+              const max = item.colorsSizes[color][size] || 0;
+              const current = item.preparedQuantities[color][size] || 0;
+              const newVal = Math.max(0, Math.min(max, current + delta));
+              if (newVal !== current) {
+                item.preparedQuantities[color][size] = newVal;
+                found = true;
+              }
+            }
           });
 
-          if (!item) {
+          if (!found) {
             console.warn('⚠️ العنصر غير موجود:', uniqueKey);
             return;
           }
 
-          const current = item.allowedQty || 0;
-          const max = item.qty || 0;
-          const newQty = Math.max(0, Math.min(max, current + delta));
+          // Update totals
+          this._selectedInvoice.totalPieces = Utils.calculateTotalPieces(this._selectedInvoice.items);
+          this._selectedInvoice.totalValue = Utils.calculateTotalValue(this._selectedInvoice.items);
 
-          if (newQty !== current) {
-            item.allowedQty = newQty;
-
-            // تحديث colorsSizes في الفاتورة الأصلية
-            if (this._selectedInvoice.colorsSizes) {
-              const color = item.color || 'No Color';
-              const size = item.size || 'No Size';
-              if (this._selectedInvoice.colorsSizes[color] && this._selectedInvoice.colorsSizes[color][size]) {
-                if (typeof this._selectedInvoice.colorsSizes[color][size] === 'object') {
-                  this._selectedInvoice.colorsSizes[color][size].allowed = newQty;
-                } else {
-                  // إذا كانت القيمة عددية، نحولها لكائن
-                  this._selectedInvoice.colorsSizes[color][size] = {
-                    qty: max,
-                    allowed: newQty
-                  };
-                }
-              }
-            }
-
-            // تحديث الإحصائيات
-            this._selectedInvoice.totalPieces = Utils.calculateTotalPieces(this._selectedInvoice.items);
-            this._selectedInvoice.totalValue = Utils.calculateTotalValue(this._selectedInvoice.items);
-
-            this.saveInvoiceToFirebase(this._selectedInvoice);
-            this.renderInvoicePreview(this._selectedInvoice);
-            this.renderInvoiceList();
-            this.updateStats();
-          }
+          this.saveInvoiceToFirebase(this._selectedInvoice);
+          this.renderInvoicePreview(this._selectedInvoice);
+          this.renderInvoiceList();
+          this.updateStats();
         },
 
         // ===== SAVE INVOICE TO FIREBASE =====
@@ -2685,19 +2725,13 @@
           if (!database) return;
           const ref = database.ref('invoices/' + invoice.id);
           const { id, ...data } = invoice;
-          // لا نحفظ items لأنها مشتقة من colorsSizes
-          delete data.items;
-          // نتأكد من حفظ colorsSizes
-          if (data.colorsSizes) {
-            // نضمن أن كل مقاس له الكائن المناسب
-            for (const color in data.colorsSizes) {
-              for (const size in data.colorsSizes[color]) {
-                const val = data.colorsSizes[color][size];
-                if (typeof val !== 'object' || val === null) {
-                  data.colorsSizes[color][size] = { qty: Number(val) || 0, allowed: 0 };
-                }
+          // Ensure preparedQuantities is saved
+          if (data.items) {
+            data.items.forEach(item => {
+              if (!item.preparedQuantities) {
+                item.preparedQuantities = {};
               }
-            }
+            });
           }
           ref.update(data, (error) => {
             if (error) console.error('❌ Save error:', error);
@@ -2714,45 +2748,62 @@
 
           const invoice = this._selectedInvoice;
 
-          if (invoice.allowIsClosed === true) {
+          if (Utils.isAllowClosed(invoice)) {
             this.showAlert('🔒 هذه الفاتورة مقفلة السماح بالفعل', 'info');
             return;
           }
 
-          const items = invoice.items || [];
-          const totalPieces = Utils.calculateTotalPieces(items);
-          const allowedPieces = Utils.calculateAllowed(items);
-          const remainingPieces = Utils.calculateRemaining(items);
+          const totalPieces = Utils.calculateTotalPieces(invoice.items);
+          const preparedPieces = Utils.calculatePrepared(invoice.items);
+          const remainingPieces = Utils.calculateRemaining(invoice.items);
 
           this.elements.closeTotalPieces.textContent = totalPieces;
-          this.elements.closeAllowedPieces.textContent = allowedPieces;
+          this.elements.closeAllowedPieces.textContent = preparedPieces;
           this.elements.closeRemainingPieces.textContent = remainingPieces;
 
           const list = this.elements.closeProductList;
           let html = '';
 
-          if (items.length) {
+          if (invoice.items && invoice.items.length) {
+            // Group by product for dialog
             const productMap = {};
-            items.forEach(item => {
+            invoice.items.forEach(item => {
               const key = (item.name || 'Unknown') + '|' + (item.sku || '');
               if (!productMap[key]) {
                 productMap[key] = {
                   name: item.name || 'Unknown',
                   sku: item.sku || '',
                   totalQty: 0,
-                  allowedQty: 0,
+                  preparedQty: 0,
                   remainingQty: 0,
                   image: item.image || ''
                 };
               }
-              productMap[key].totalQty += item.qty || 0;
-              productMap[key].allowedQty += item.allowedQty || 0;
-              productMap[key].remainingQty += (item.qty || 0) - (item.allowedQty || 0);
+              // Calculate totals from colorsSizes or qty
+              if (item.colorsSizes) {
+                let total = 0,
+                  prepared = 0;
+                for (const color in item.colorsSizes) {
+                  const sizes = item.colorsSizes[color];
+                  for (const size in sizes) {
+                    total += sizes[size] || 0;
+                    prepared += (item.preparedQuantities && item.preparedQuantities[color] && item.preparedQuantities[color][size]) || 0;
+                  }
+                }
+                productMap[key].totalQty += total;
+                productMap[key].preparedQty += prepared;
+                productMap[key].remainingQty += (total - prepared);
+              } else {
+                // Old structure
+                productMap[key].totalQty += item.qty || 0;
+                productMap[key].preparedQty += item.allowedQty || 0;
+                productMap[key].remainingQty += (item.qty || 0) - (item.allowedQty || 0);
+              }
             });
 
             for (const key in productMap) {
               const p = productMap[key];
-              const isDone = p.allowedQty >= p.totalQty;
+              const isDone = p.preparedQty >= p.totalQty;
               const hasRemaining = p.remainingQty > 0;
 
               html += `
@@ -2764,7 +2815,7 @@
                   </div>
                   <div class="qty-info ${isDone ? 'done' : hasRemaining ? 'partial' : ''}">
                     <i class="fas ${isDone ? 'fa-check-circle' : hasRemaining ? 'fa-exclamation-triangle' : 'fa-circle'}"></i>
-                    ${p.allowedQty} / ${p.totalQty}
+                    ${p.preparedQty} / ${p.totalQty}
                     ${hasRemaining ? `⏳ ${p.remainingQty}` : ''}
                   </div>
                 </div>
@@ -2787,7 +2838,8 @@
 
           const invoice = this._selectedInvoice;
 
-          invoice.allowIsClosed = true;
+          invoice.allowprepare = true;
+          invoice.closedAt = Date.now();
           invoice.status = 'allow_closed';
           invoice.totalPieces = Utils.calculateTotalPieces(invoice.items);
           invoice.totalValue = Utils.calculateTotalValue(invoice.items);
@@ -2840,13 +2892,14 @@
           if (!invoice) return;
           const items = invoice.items || [];
           const totalPieces = Utils.calculateTotalPieces(items);
-          const allowedPieces = Utils.calculateAllowed(items);
-          const products = new Set(items.map(r => r.name + '|' + r.sku)).size;
-          const progress = totalPieces === 0 ? 0 : Math.round((allowedPieces / totalPieces) * 100);
+          const preparedPieces = Utils.calculatePrepared(items);
+          // Count distinct products
+          const products = new Set(items.map(item => item.sku || item.name)).size;
+          const progress = totalPieces === 0 ? 0 : Math.round((preparedPieces / totalPieces) * 100);
 
           this.elements.bottomProducts.textContent = products;
           this.elements.bottomPieces.textContent = totalPieces;
-          this.elements.bottomAllowed.textContent = allowedPieces;
+          this.elements.bottomAllowed.textContent = preparedPieces;
           this.elements.bottomPercent.textContent = progress + '%';
         },
 
@@ -2905,6 +2958,7 @@
       }
       window.toggleSidebar = toggleSidebar;
 
+      // Close sidebar on outside click (mobile)
       document.addEventListener('click', function(event) {
         const sidebar = document.getElementById('sidebar');
         const menuToggle = document.querySelector('.menu-toggle');
@@ -2929,6 +2983,7 @@
         }
       });
 
+      // Handle window resize
       window.addEventListener('resize', function() {
         const sidebar = document.getElementById('sidebar');
         const mainContent = document.getElementById('mainContent');
