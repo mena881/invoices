@@ -1854,44 +1854,79 @@
           other.sort();
           return [...std, ...num, ...other];
         },
-        calculateTotalPieces(items) { let t = 0;
-          items.forEach(r => { t += r.qty || 0; }); return t; },
-        calculateTotalValue(items) { let t = 0;
-          items.forEach(r => { t += r.total || 0; }); return t; },
-        calculatePrepared(items) {
-          let prepared = 0;
-          items.forEach(r => { prepared += r.preparedQty || 0; });
-          return prepared;
+
+        // ===== حساب الكميات بناءً على الهيكل الجديد =====
+        // استخراج الكميات المسموحة من allowedQuantities
+        getAllowedQuantities(item) {
+          if (item && item.allowedQuantities) {
+            return item.allowedQuantities;
+          }
+          return null;
         },
-        calculateRemaining(items) {
-          let remaining = 0;
-          items.forEach(r => { remaining += (r.qty || 0) - (r.preparedQty || 0); });
-          return remaining;
+
+        // استخراج الكميات المحضرة من preparedQuantities
+        getPreparedQuantities(item) {
+          if (item && item.preparedQuantities) {
+            return item.preparedQuantities;
+          }
+          return null;
         },
-        isFullyPrepared(items) {
-          if (!items || !items.length) return false;
-          return items.every(r => (r.preparedQty || 0) >= (r.qty || 0));
+
+        // حساب إجمالي الكميات المسموحة من allowedQuantities
+        calculateAllowedTotal(allowedQuantities) {
+          if (!allowedQuantities) return 0;
+          let total = 0;
+          for (const color in allowedQuantities) {
+            const sizes = allowedQuantities[color];
+            for (const size in sizes) {
+              total += sizes[size] || 0;
+            }
+          }
+          return total;
         },
-        isPartiallyPrepared(items) {
-          if (!items || !items.length) return false;
-          const hasPrepared = items.some(r => (r.preparedQty || 0) > 0);
-          const hasUnprepared = items.some(r => (r.preparedQty || 0) < (r.qty || 0));
-          return hasPrepared && hasUnprepared;
+
+        // حساب إجمالي الكميات المحضرة من preparedQuantities
+        calculatePreparedTotal(preparedQuantities) {
+          if (!preparedQuantities) return 0;
+          let total = 0;
+          for (const color in preparedQuantities) {
+            const sizes = preparedQuantities[color];
+            for (const size in sizes) {
+              total += sizes[size] || 0;
+            }
+          }
+          return total;
         },
-        getProgress(items) {
-          if (!items || !items.length) return 0;
-          let total = 0,
-            prepared = 0;
-          items.forEach(r => { total += r.qty || 0;
-            prepared += r.preparedQty || 0; });
-          return total === 0 ? 0 : Math.round((prepared / total) * 100);
+
+        // حساب التقدم بناءً على allowed vs prepared
+        calculateProgress(allowedQuantities, preparedQuantities) {
+          const allowed = this.calculateAllowedTotal(allowedQuantities);
+          const prepared = this.calculatePreparedTotal(preparedQuantities);
+          if (allowed === 0) return 0;
+          return Math.round((prepared / allowed) * 100);
         },
+
+        // التحقق من اكتمال التحضير
+        isFullyPreparedV2(allowedQuantities, preparedQuantities) {
+          const allowed = this.calculateAllowedTotal(allowedQuantities);
+          const prepared = this.calculatePreparedTotal(preparedQuantities);
+          return allowed > 0 && prepared >= allowed;
+        },
+
+        // التحقق من تحضير جزئي
+        isPartiallyPreparedV2(allowedQuantities, preparedQuantities) {
+          const allowed = this.calculateAllowedTotal(allowedQuantities);
+          const prepared = this.calculatePreparedTotal(preparedQuantities);
+          return allowed > 0 && prepared > 0 && prepared < allowed;
+        },
+
         isInvoiceClosed(invoice) {
-          return invoice && (invoice.status === 'prepared' || invoice.isClosed === true);
+          return invoice && (invoice.status === 'prepared' || invoice.isClosed === true || invoice.createdclosed === true);
         },
-        // التحقق من أن الفاتورة مسموح بها
+
         isInvoiceAllowed(invoice) {
-          return invoice && invoice.status === 'allow_closed';
+          // التحقق من وجود allowprepare أو allowIsClosed أو status === 'allow_closed'
+          return invoice && (invoice.allowprepare === true || invoice.allowIsClosed === true || invoice.status === 'allow_closed');
         }
       };
 
@@ -1947,7 +1982,7 @@
 
         // ===== INIT =====
         init() {
-          console.log('🚀 Initializing Preparation UI...');
+          console.log('🚀 Initializing Preparation UI V2...');
 
           // Get current user name from localStorage
           this._currentUser = Storage.get('userName', 'مستخدم غير معروف');
@@ -2074,12 +2109,24 @@
             if (data) {
               for (const key in data) {
                 const inv = data[key];
-                // 🔥 فقط الفواتير التي حالتها "allow_closed" (مسموح بالتحضير)
-                if (inv.status !== 'allow_closed') continue;
-                
+                // 🔥 الفواتير المسموح بالتحضير: allowprepare === true أو allowIsClosed === true أو status === 'allow_closed'
+                if (inv.allowprepare !== true && inv.allowIsClosed !== true && inv.status !== 'allow_closed') continue;
+
+                // إذا كانت الفاتورة مقفلة (createdclosed === true) نتخطاها
+                if (inv.createdclosed === true || inv.isClosed === true) continue;
+
+                // التأكد من وجود items
                 if (inv.items) {
+                  // التأكد من أن كل item يحتوي على allowedQuantities و preparedQuantities
                   inv.items.forEach(item => {
-                    if (item.preparedQty === undefined) item.preparedQty = 0;
+                    if (!item.allowedQuantities) {
+                      // إذا لم يكن موجوداً، نحاول إنشاءه من الكميات القديمة
+                      item.allowedQuantities = {};
+                      item.preparedQuantities = {};
+                    }
+                    if (!item.preparedQuantities) {
+                      item.preparedQuantities = {};
+                    }
                   });
                 }
                 this._invoices.push({
@@ -2107,25 +2154,33 @@
           });
         },
 
-        // ===== GET INVOICE STATUS =====
+        // ===== GET INVOICE STATUS (V2) =====
         getInvoiceStatus(invoice) {
           if (!invoice || !invoice.items || !invoice.items.length) {
             return 'pending';
           }
 
-          if (invoice.isClosed === true || invoice.status === 'prepared') {
+          if (Utils.isInvoiceClosed(invoice)) {
             return 'prepared';
           }
 
-          const allPrepared = invoice.items.every(item => (item.preparedQty || 0) >= (item.qty || 0));
-          const anyPrepared = invoice.items.some(item => (item.preparedQty || 0) > 0);
+          let allPrepared = true;
+          let anyPrepared = false;
+          let totalAllowed = 0;
+          let totalPrepared = 0;
 
-          if (allPrepared) {
-            return 'prepared';
-          }
-          if (anyPrepared) {
-            return 'partial';
-          }
+          invoice.items.forEach(item => {
+            const allowed = Utils.calculateAllowedTotal(item.allowedQuantities);
+            const prepared = Utils.calculatePreparedTotal(item.preparedQuantities);
+            totalAllowed += allowed;
+            totalPrepared += prepared;
+            if (prepared > 0) anyPrepared = true;
+            if (prepared < allowed) allPrepared = false;
+          });
+
+          if (totalAllowed === 0) return 'pending';
+          if (allPrepared && totalPrepared >= totalAllowed) return 'prepared';
+          if (anyPrepared) return 'partial';
           return 'pending';
         },
 
@@ -2194,7 +2249,17 @@
               hour: '2-digit',
               minute: '2-digit'
             });
-            const progress = Utils.getProgress(inv.items);
+
+            // حساب التقدم باستخدام allowedQuantities و preparedQuantities
+            let totalAllowed = 0;
+            let totalPrepared = 0;
+            if (inv.items) {
+              inv.items.forEach(item => {
+                totalAllowed += Utils.calculateAllowedTotal(item.allowedQuantities);
+                totalPrepared += Utils.calculatePreparedTotal(item.preparedQuantities);
+              });
+            }
+            const progress = totalAllowed === 0 ? 0 : Math.round((totalPrepared / totalAllowed) * 100);
             const isSelected = this._selectedInvoiceId === inv.id;
 
             html += `
@@ -2205,8 +2270,8 @@
                   <div class="meta">
                     <span><i class="fas fa-calendar-alt"></i> ${dateStr}</span>
                     <span><i class="fas fa-boxes"></i> ${inv.items ? inv.items.length : 0} منتج</span>
-                    <span><i class="fas fa-cubes"></i> ${inv.totalPieces || Utils.calculateTotalPieces(inv.items)} قطعة</span>
-                    <span><i class="fas fa-money-bill-wave"></i> ${Utils.formatCurrency(inv.totalValue || Utils.calculateTotalValue(inv.items))} LE</span>
+                    <span><i class="fas fa-cubes"></i> ${totalAllowed} قطعة</span>
+                    <span><i class="fas fa-money-bill-wave"></i> ${Utils.formatCurrency(inv.totalValue || 0)} LE</span>
                   </div>
                 </div>
                 <div class="stats">
@@ -2271,7 +2336,7 @@
           window.history.pushState({}, '', url);
         },
 
-        // ===== RENDER INVOICE PREVIEW =====
+        // ===== RENDER INVOICE PREVIEW (V2) =====
         renderInvoicePreview(invoice) {
           const container = this.elements.previewContainer;
           this.elements.previewSection.classList.add('show');
@@ -2283,14 +2348,24 @@
             minute: '2-digit'
           });
           const status = this.getInvoiceStatus(invoice);
-          const progress = Utils.getProgress(invoice.items);
           const isClosed = Utils.isInvoiceClosed(invoice);
+
+          // حساب إجمالي القطع المسموحة والمحضرة
+          let totalAllowed = 0;
+          let totalPrepared = 0;
+          if (invoice.items) {
+            invoice.items.forEach(item => {
+              totalAllowed += Utils.calculateAllowedTotal(item.allowedQuantities);
+              totalPrepared += Utils.calculatePreparedTotal(item.preparedQuantities);
+            });
+          }
+          const progress = totalAllowed === 0 ? 0 : Math.round((totalPrepared / totalAllowed) * 100);
 
           this.elements.previewTitle.innerHTML = `<i class="fas fa-receipt"></i> ${Utils.escapeHtml(branch)}`;
           this.elements.previewMeta.innerHTML = `
             <i class="fas fa-calendar-alt"></i> ${dateStr} | 
-            <i class="fas fa-cubes"></i> ${invoice.totalPieces || Utils.calculateTotalPieces(invoice.items)} قطعة | 
-            <i class="fas fa-money-bill-wave"></i> ${Utils.formatCurrency(invoice.totalValue || Utils.calculateTotalValue(invoice.items))} LE
+            <i class="fas fa-cubes"></i> ${totalAllowed} قطعة مسموحة | 
+            <i class="fas fa-money-bill-wave"></i> ${Utils.formatCurrency(invoice.totalValue || 0)} LE
           `;
           this.elements.previewStatus.textContent = isClosed ? '🔒 مقفلة' : '✅ مسموح بالتحضير';
           this.elements.previewStatus.className = `badge ${isClosed ? 'closed' : 'allow_closed'}`;
@@ -2302,7 +2377,7 @@
                 <h3 style="color:var(--dark-secondary);">هذه الفاتورة مقفلة</h3>
                 <p style="color:var(--gray);margin-top:8px;">لا يمكن تعديل الكميات بعد التقفيل</p>
                 <div style="margin-top:12px;font-size:14px;color:var(--dark-secondary);">
-                  تم تحضير ${Utils.calculatePrepared(invoice.items)} من ${Utils.calculateTotalPieces(invoice.items)} قطعة
+                  تم تحضير ${totalPrepared} من ${totalAllowed} قطعة
                 </div>
                 <div style="margin-top:8px;font-size:13px;color:var(--gray);">
                   الحالة: ${invoice.status || 'prepared'}
@@ -2331,7 +2406,7 @@
           }
 
           // ============================================================
-          // 🔥 تجميع المنتجات حسب SKU مع الاحتفاظ بالكمية المسموحة
+          // 🔥 تجميع المنتجات حسب SKU مع الاحتفاظ بالكميات المسموحة والمحضرة
           // ============================================================
           const groups = {};
           invoice.items.forEach(item => {
@@ -2345,15 +2420,47 @@
                 items: []
               };
             }
-            groups[sku].items.push({
-              color: item.color || 'No Color',
-              size: item.size || 'No Size',
-              qty: item.qty || 0,
-              allowedQty: item.allowedQty !== undefined ? item.allowedQty : (item.qty || 0), // 🔥 الكمية المسموحة
-              total: item.total || 0,
-              preparedQty: item.preparedQty || 0,
-              uniqueKey: `${sku}|${item.color || 'No Color'}|${item.size || 'No Size'}`
-            });
+
+            // استخراج الألوان والمقاسات من allowedQuantities
+            const allowedQuantities = item.allowedQuantities || {};
+            const preparedQuantities = item.preparedQuantities || {};
+
+            // دمج الألوان من allowedQuantities
+            for (const color in allowedQuantities) {
+              const sizes = allowedQuantities[color];
+              for (const size in sizes) {
+                const allowedQty = sizes[size] || 0;
+                if (allowedQty === 0) continue;
+
+                const preparedQty = (preparedQuantities[color] && preparedQuantities[color][size]) || 0;
+
+                groups[sku].items.push({
+                  color: color,
+                  size: size,
+                  allowedQty: allowedQty,
+                  preparedQty: preparedQty,
+                  uniqueKey: `${sku}|${color}|${size}`
+                });
+              }
+            }
+
+            // إذا لم يكن هناك allowedQuantities، نضيف البيانات القديمة
+            if (Object.keys(allowedQuantities).length === 0) {
+              // استخدام البيانات القديمة من qty و preparedQty
+              const color = item.color || 'No Color';
+              const size = item.size || 'No Size';
+              const qty = item.qty || 0;
+              const preparedQty = item.preparedQty || 0;
+              if (qty > 0) {
+                groups[sku].items.push({
+                  color: color,
+                  size: size,
+                  allowedQty: qty,
+                  preparedQty: preparedQty,
+                  uniqueKey: `${sku}|${color}|${size}`
+                });
+              }
+            }
           });
 
           let html = '';
@@ -2366,13 +2473,13 @@
             }
             const isOpen = this._productCardStates[productId];
 
-            let totalQty = 0,
+            let totalAllowed = 0,
               totalPrepared = 0;
             g.items.forEach(item => {
-              totalQty += item.qty || 0;
+              totalAllowed += item.allowedQty || 0;
               totalPrepared += item.preparedQty || 0;
             });
-            const prodProgress = totalQty === 0 ? 0 : Math.round((totalPrepared / totalQty) * 100);
+            const prodProgress = totalAllowed === 0 ? 0 : Math.round((totalPrepared / totalAllowed) * 100);
             const isDone = prodProgress === 100;
 
             html += `
@@ -2399,7 +2506,7 @@
           this.updateBottomBar(invoice);
         },
 
-        // ===== RENDER PREVIEW COLORS =====
+        // ===== RENDER PREVIEW COLORS (V2) =====
         renderPreviewColors(g, productId) {
           let html = '';
           const colorMap = {};
@@ -2414,14 +2521,12 @@
           let colorIdx = 0;
           for (const color in colorMap) {
             const colorItems = colorMap[color];
-            
-            // 🔥 تصفية العناصر اللي الكمية المسموحة فيها 0 أو الكمية الكلية 0
+
+            // تصفية العناصر اللي الكمية المسموحة فيها 0
             const filteredItems = colorItems.filter(item => {
-              const allowedQty = item.allowedQty !== undefined ? item.allowedQty : (item.qty || 0);
-              return allowedQty > 0 && (item.qty || 0) > 0;
+              return (item.allowedQty || 0) > 0;
             });
 
-            // لو مفيش عناصر بعد التصفية، نتخطى هذا اللون
             if (filteredItems.length === 0) continue;
 
             const colorId = productId + '_color_' + colorIdx;
@@ -2430,30 +2535,31 @@
             }
             const isColorOpen = this._productCardStates[colorId];
 
-            const totalQty = filteredItems.reduce((sum, item) => sum + item.qty, 0);
+            const totalAllowed = filteredItems.reduce((sum, item) => sum + (item.allowedQty || 0), 0);
             const totalPrepared = filteredItems.reduce((sum, item) => sum + (item.preparedQty || 0), 0);
-            const colorProgress = totalQty === 0 ? 0 : Math.round((totalPrepared / totalQty) * 100);
+            const colorProgress = totalAllowed === 0 ? 0 : Math.round((totalPrepared / totalAllowed) * 100);
 
             html += `
               <div class="color-accordion">
                 <div class="color-header" onclick="window.UI.toggleColorPreview('${colorId}')">
                   <span class="chevron-sm ${isColorOpen ? 'open' : ''}"><i class="fas fa-chevron-down"></i></span>
                   <span><i class="fas fa-palette" style="color:var(--primary);"></i> ${Utils.escapeHtml(color)}</span>
-                  <span class="color-total">${totalPrepared}/${totalQty} (${colorProgress}%)</span>
+                  <span class="color-total">${totalPrepared}/${totalAllowed} (${colorProgress}%)</span>
                 </div>
                 <div class="color-sizes ${isColorOpen ? 'open' : ''}">
                   ${filteredItems.map((item) => {
-                    const isPrepared = (item.preparedQty || 0) >= (item.qty || 0);
-                    const isPartial = (item.preparedQty || 0) > 0 && (item.preparedQty || 0) < (item.qty || 0);
+                    const isPrepared = (item.preparedQty || 0) >= (item.allowedQty || 0);
+                    const isPartial = (item.preparedQty || 0) > 0 && (item.preparedQty || 0) < (item.allowedQty || 0);
                     const statusClass = isPrepared ? 'prepared' : isPartial ? 'partial' : 'pending';
                     const uniqueKey = item.uniqueKey;
-                    const allowedQty = item.allowedQty !== undefined ? item.allowedQty : item.qty;
+                    const allowedQty = item.allowedQty || 0;
+                    const preparedQty = item.preparedQty || 0;
                     return `
                       <div class="size-row">
                         <span class="size-label">${Utils.escapeHtml(item.size)}</span>
                         <div class="qty-control">
                           <button onclick="window.UI.changePrepareQty('${uniqueKey}', -1)"><i class="fas fa-minus"></i></button>
-                          <span class="qty-val ${statusClass}">${item.preparedQty || 0}/${item.qty || 0}</span>
+                          <span class="qty-val ${statusClass}">${preparedQty}/${allowedQty}</span>
                           <button onclick="window.UI.changePrepareQty('${uniqueKey}', 1)"><i class="fas fa-plus"></i></button>
                         </div>
                         <span class="allowed-label">مسموح: ${allowedQty}</span>
@@ -2482,7 +2588,7 @@
           if (this._selectedInvoice) this.renderInvoicePreview(this._selectedInvoice);
         },
 
-        // ===== CHANGE PREPARE QTY (مع احترام الكمية المسموحة) =====
+        // ===== CHANGE PREPARE QTY (V2 - مع احترام الكمية المسموحة) =====
         changePrepareQty(uniqueKey, delta) {
           if (!this._selectedInvoice || !this._selectedInvoice.items) return;
 
@@ -2491,34 +2597,85 @@
             return;
           }
 
-          const item = this._selectedInvoice.items.find(it => {
-            const sku = it.sku || 'Unknown';
-            const color = it.color || 'No Color';
-            const size = it.size || 'No Size';
-            return `${sku}|${color}|${size}` === uniqueKey;
-          });
+          // البحث عن العنصر في الفاتورة
+          let targetItem = null;
+          let targetColor = null;
+          let targetSize = null;
 
-          if (!item) {
+          for (const item of this._selectedInvoice.items) {
+            // التحقق من allowedQuantities
+            if (item.allowedQuantities) {
+              for (const color in item.allowedQuantities) {
+                const sizes = item.allowedQuantities[color];
+                for (const size in sizes) {
+                  const sku = item.sku || 'Unknown';
+                  const key = `${sku}|${color}|${size}`;
+                  if (key === uniqueKey) {
+                    targetItem = item;
+                    targetColor = color;
+                    targetSize = size;
+                    break;
+                  }
+                }
+                if (targetItem) break;
+              }
+            }
+
+            // إذا لم نجد، نبحث في البيانات القديمة
+            if (!targetItem) {
+              const sku = item.sku || 'Unknown';
+              const color = item.color || 'No Color';
+              const size = item.size || 'No Size';
+              const key = `${sku}|${color}|${size}`;
+              if (key === uniqueKey) {
+                targetItem = item;
+                targetColor = color;
+                targetSize = size;
+                break;
+              }
+            }
+            if (targetItem) break;
+          }
+
+          if (!targetItem) {
             console.warn('⚠️ العنصر غير موجود:', uniqueKey);
             return;
           }
 
-          const current = item.preparedQty || 0;
-          // 🔥 الحد الأقصى هو الكمية المسموحة وليس الكمية الكلية
-          const maxAllowed = item.allowedQty !== undefined ? item.allowedQty : (item.qty || 0);
-          const newQty = Math.max(0, Math.min(maxAllowed, current + delta));
+          // تحديث الكمية المحضرة
+          if (targetItem.allowedQuantities && targetItem.allowedQuantities[targetColor] && targetItem.allowedQuantities[targetColor][targetSize] !== undefined) {
+            // الهيكل الجديد
+            const maxAllowed = targetItem.allowedQuantities[targetColor][targetSize] || 0;
 
-          if (newQty !== current) {
-            item.preparedQty = newQty;
+            if (!targetItem.preparedQuantities) {
+              targetItem.preparedQuantities = {};
+            }
+            if (!targetItem.preparedQuantities[targetColor]) {
+              targetItem.preparedQuantities[targetColor] = {};
+            }
 
-            this._selectedInvoice.totalPieces = Utils.calculateTotalPieces(this._selectedInvoice.items);
-            this._selectedInvoice.totalValue = Utils.calculateTotalValue(this._selectedInvoice.items);
+            const current = targetItem.preparedQuantities[targetColor][targetSize] || 0;
+            const newQty = Math.max(0, Math.min(maxAllowed, current + delta));
 
-            this.saveInvoiceToFirebase(this._selectedInvoice);
-            this.renderInvoicePreview(this._selectedInvoice);
-            this.renderInvoiceList();
-            this.updateStats();
+            if (newQty !== current) {
+              targetItem.preparedQuantities[targetColor][targetSize] = newQty;
+            }
+          } else {
+            // الهيكل القديم (qty / preparedQty)
+            const maxAllowed = targetItem.qty || 0;
+            const current = targetItem.preparedQty || 0;
+            const newQty = Math.max(0, Math.min(maxAllowed, current + delta));
+
+            if (newQty !== current) {
+              targetItem.preparedQty = newQty;
+            }
           }
+
+          // حفظ الفاتورة
+          this.saveInvoiceToFirebase(this._selectedInvoice);
+          this.renderInvoicePreview(this._selectedInvoice);
+          this.renderInvoiceList();
+          this.updateStats();
         },
 
         // ===== SAVE INVOICE TO FIREBASE =====
@@ -2526,9 +2683,22 @@
           if (!database) return;
           const ref = database.ref('invoices/' + invoice.id);
           const { id, ...data } = invoice;
+          // التأكد من وجود preparedQuantities
           if (data.items) {
             data.items.forEach(item => {
-              if (item.preparedQty === undefined) item.preparedQty = 0;
+              if (!item.preparedQuantities) {
+                item.preparedQuantities = {};
+              }
+              // التأكد من أن preparedQty متوافق مع preparedQuantities
+              if (item.preparedQty !== undefined && !Object.keys(item.preparedQuantities).length) {
+                // إذا كان هناك preparedQty ولكن لا يوجد preparedQuantities، نحولها
+                const color = item.color || 'No Color';
+                const size = item.size || 'No Size';
+                if (!item.preparedQuantities[color]) {
+                  item.preparedQuantities[color] = {};
+                }
+                item.preparedQuantities[color][size] = item.preparedQty;
+              }
             });
           }
           ref.update(data, (error) => {
@@ -2551,13 +2721,19 @@
             return;
           }
 
-          const totalPieces = Utils.calculateTotalPieces(invoice.items);
-          const preparedPieces = Utils.calculatePrepared(invoice.items);
-          const remainingPieces = Utils.calculateRemaining(invoice.items);
+          let totalAllowed = 0;
+          let totalPrepared = 0;
+          if (invoice.items) {
+            invoice.items.forEach(item => {
+              totalAllowed += Utils.calculateAllowedTotal(item.allowedQuantities) || (item.qty || 0);
+              totalPrepared += Utils.calculatePreparedTotal(item.preparedQuantities) || (item.preparedQty || 0);
+            });
+          }
+          const remaining = Math.max(0, totalAllowed - totalPrepared);
 
-          this.elements.closeTotalPieces.textContent = totalPieces;
-          this.elements.closePreparedPieces.textContent = preparedPieces;
-          this.elements.closeRemainingPieces.textContent = remainingPieces;
+          this.elements.closeTotalPieces.textContent = totalAllowed;
+          this.elements.closePreparedPieces.textContent = totalPrepared;
+          this.elements.closeRemainingPieces.textContent = remaining;
 
           const list = this.elements.closeProductList;
           let html = '';
@@ -2570,21 +2746,23 @@
                 productMap[key] = {
                   name: item.name || 'Unknown',
                   sku: item.sku || '',
-                  totalQty: 0,
-                  preparedQty: 0,
-                  remainingQty: 0,
+                  totalAllowed: 0,
+                  totalPrepared: 0,
+                  remaining: 0,
                   image: item.image || ''
                 };
               }
-              productMap[key].totalQty += item.qty || 0;
-              productMap[key].preparedQty += item.preparedQty || 0;
-              productMap[key].remainingQty += (item.qty || 0) - (item.preparedQty || 0);
+              const allowed = Utils.calculateAllowedTotal(item.allowedQuantities) || (item.qty || 0);
+              const prepared = Utils.calculatePreparedTotal(item.preparedQuantities) || (item.preparedQty || 0);
+              productMap[key].totalAllowed += allowed;
+              productMap[key].totalPrepared += prepared;
+              productMap[key].remaining += (allowed - prepared);
             });
 
             for (const key in productMap) {
               const p = productMap[key];
-              const isDone = p.preparedQty >= p.totalQty;
-              const hasRemaining = p.remainingQty > 0;
+              const isDone = p.totalPrepared >= p.totalAllowed;
+              const hasRemaining = p.remaining > 0;
 
               html += `
                 <div class="dialog-product-item">
@@ -2595,8 +2773,8 @@
                   </div>
                   <div class="qty-info ${isDone ? 'done' : hasRemaining ? 'partial' : ''}">
                     <i class="fas ${isDone ? 'fa-check-circle' : hasRemaining ? 'fa-exclamation-triangle' : 'fa-circle'}"></i>
-                    ${p.preparedQty} / ${p.totalQty}
-                    ${hasRemaining ? `⏳ ${p.remainingQty}` : ''}
+                    ${p.totalPrepared} / ${p.totalAllowed}
+                    ${hasRemaining ? `⏳ ${p.remaining}` : ''}
                   </div>
                 </div>
               `;
@@ -2618,10 +2796,24 @@
 
           const invoice = this._selectedInvoice;
 
+          invoice.createdclosed = true;
           invoice.isClosed = true;
           invoice.status = 'prepared';
-          invoice.totalPieces = Utils.calculateTotalPieces(invoice.items);
-          invoice.totalValue = Utils.calculateTotalValue(invoice.items);
+          invoice.closedAt = Date.now();
+
+          // حساب القيم الإجمالية
+          let totalAllowed = 0;
+          let totalPrepared = 0;
+          if (invoice.items) {
+            invoice.items.forEach(item => {
+              const allowed = Utils.calculateAllowedTotal(item.allowedQuantities) || (item.qty || 0);
+              const prepared = Utils.calculatePreparedTotal(item.preparedQuantities) || (item.preparedQty || 0);
+              totalAllowed += allowed;
+              totalPrepared += prepared;
+            });
+          }
+          invoice.totalPieces = totalAllowed;
+          invoice.totalValue = totalAllowed * (invoice.items && invoice.items[0] ? invoice.items[0].unitPrice : 0); // تقريبي
 
           this.saveInvoiceToFirebase(invoice);
           this.closeCloseDialog();
@@ -2666,18 +2858,28 @@
           this.elements.statPrepared.textContent = prepared;
         },
 
-        // ===== UPDATE BOTTOM BAR =====
+        // ===== UPDATE BOTTOM BAR (V2) =====
         updateBottomBar(invoice) {
           if (!invoice) return;
           const items = invoice.items || [];
-          const totalPieces = Utils.calculateTotalPieces(items);
-          const preparedPieces = Utils.calculatePrepared(items);
-          const products = new Set(items.map(r => r.name + '|' + r.sku)).size;
-          const progress = totalPieces === 0 ? 0 : Math.round((preparedPieces / totalPieces) * 100);
 
-          this.elements.bottomProducts.textContent = products;
-          this.elements.bottomPieces.textContent = totalPieces;
-          this.elements.bottomPrepared.textContent = preparedPieces;
+          let totalAllowed = 0;
+          let totalPrepared = 0;
+          const productSet = new Set();
+
+          items.forEach(item => {
+            const allowed = Utils.calculateAllowedTotal(item.allowedQuantities) || (item.qty || 0);
+            const prepared = Utils.calculatePreparedTotal(item.preparedQuantities) || (item.preparedQty || 0);
+            totalAllowed += allowed;
+            totalPrepared += prepared;
+            productSet.add(item.name + '|' + item.sku);
+          });
+
+          const progress = totalAllowed === 0 ? 0 : Math.round((totalPrepared / totalAllowed) * 100);
+
+          this.elements.bottomProducts.textContent = productSet.size;
+          this.elements.bottomPieces.textContent = totalAllowed;
+          this.elements.bottomPrepared.textContent = totalPrepared;
           this.elements.bottomPercent.textContent = progress + '%';
         },
 
