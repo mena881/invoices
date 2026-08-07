@@ -3339,6 +3339,8 @@ const Storage = {
                 },
 
                 deleteColor(productId, color, sku, name) {
+                        console.log("DELETE CLICKED", productId, color, sku, name);
+
                     // Find the product entry
                     let targetIndex = -1;
                     for (let i = 0; i < this._tableData.length; i++) {
