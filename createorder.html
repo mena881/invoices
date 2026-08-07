@@ -1452,25 +1452,6 @@
         }
 
         /* =========================================================
-           ZERO QUANTITY CONFIRM DIALOG
-           ========================================================= */
-        .zero-qty-dialog .color-preview {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 10px 14px;
-            background: var(--warning-light);
-            border-radius: var(--radius-sm);
-            border: 1px solid var(--warning);
-            margin: 12px 0;
-        }
-
-        .zero-qty-dialog .color-preview i {
-            color: var(--warning);
-            font-size: 20px;
-        }
-
-        /* =========================================================
            ANIMATIONS
            ========================================================= */
         @keyframes fadeSlide {
@@ -1976,23 +1957,6 @@
             </div>
         </div>
 
-        <!-- ZERO QUANTITY CONFIRM DIALOG -->
-        <div class="dialog-overlay" id="zeroQtyDialog">
-            <div class="dialog-box zero-qty-dialog">
-                <button class="modal-close-btn" onclick="window.UI.closeZeroQtyDialog()"><i class="fas fa-times"></i></button>
-                <h3><i class="fas fa-exclamation-circle" style="color:var(--warning);"></i> كمية صفرية</h3>
-                <p>هذا المنتج/اللون ليس له كميات محددة. ماذا تريد أن تفعل؟</p>
-                <div class="color-preview" id="zeroQtyPreview">
-                    <i class="fas fa-palette"></i>
-                    <span id="zeroQtyLabel">المنتج: —</span>
-                </div>
-                <div class="dialog-actions">
-                    <button class="btn btn-secondary" id="zeroQtyCancel"><i class="fas fa-times"></i> إلغاء</button>
-                    <button class="btn btn-danger" id="zeroQtyDelete"><i class="fas fa-trash"></i> حذف هذا اللون</button>
-                </div>
-            </div>
-        </div>
-
         <!-- IMAGE MODAL -->
         <div class="image-modal-overlay" id="imageModal" onclick="closeModal()">
             <button class="close-btn" onclick="event.stopPropagation();closeModal();"><i class="fas fa-times"></i></button>
@@ -2030,7 +1994,7 @@
                 console.warn('⚠️ Firebase init error', e);
             }
 
-// ================================================================
+            // ================================================================
 //  STORAGE
 // ================================================================
 const Storage = {
@@ -2868,10 +2832,6 @@ const Storage = {
                     closeInvoicePreview: document.getElementById('closeInvoicePreview'),
                     exportInvoicePreviewBtn: document.getElementById('exportInvoicePreviewBtn'),
                     stickyWrapper: document.getElementById('stickyWrapper'),
-                    zeroQtyDialog: document.getElementById('zeroQtyDialog'),
-                    zeroQtyLabel: document.getElementById('zeroQtyLabel'),
-                    zeroQtyCancel: document.getElementById('zeroQtyCancel'),
-                    zeroQtyDelete: document.getElementById('zeroQtyDelete'),
                 },
                 _lastProduct: null,
                 _lastProductUrl: '',
@@ -2886,10 +2846,9 @@ const Storage = {
                 _previewInvoiceIndex: -1,
                 _currentUser: 'مستخدم غير معروف',
                 _currentUserId: 'unknown',
-                _zeroQtyTarget: null, // for zero qty dialog
 
                 init() {
-                    console.log('🚀 Initializing Create Order UI (v2)...');
+                    console.log('🚀 Initializing Create Order UI (v3)...');
 
                     this._currentUser = Storage.getUserName();
                     this._currentUserId = Storage.getUserId();
@@ -2992,9 +2951,6 @@ const Storage = {
                     this.elements.duplicateDialog.addEventListener('click', (e) => {
                         if (e.target === this.elements.duplicateDialog) this.closeDuplicateDialog();
                     });
-                    this.elements.zeroQtyDialog.addEventListener('click', (e) => {
-                        if (e.target === this.elements.zeroQtyDialog) this.closeZeroQtyDialog();
-                    });
 
                     this.elements.showOldOrdersBtn.addEventListener('click', () => this.toggleOldOrders());
                     this.elements.refreshOldOrdersBtn.addEventListener('click', () => this.loadOldInvoices());
@@ -3030,10 +2986,6 @@ const Storage = {
                             this.openExportOldInvoice(inv);
                         }
                     });
-
-                    // Zero qty dialog
-                    this.elements.zeroQtyCancel.addEventListener('click', () => this.closeZeroQtyDialog());
-                    this.elements.zeroQtyDelete.addEventListener('click', () => this.confirmZeroQtyDelete());
 
                     // Keyboard shortcut
                     document.addEventListener('keydown', (e) => {
@@ -3277,13 +3229,36 @@ const Storage = {
                         return;
                     }
 
+                    // Group by product (name+sku)
+                    const groups = {};
+                    this._tableData.forEach(entry => {
+                        const key = entry.name + '|' + entry.sku;
+                        if (!groups[key]) {
+                            groups[key] = {
+                                name: entry.name,
+                                sku: entry.sku,
+                                unitPrice: entry.unitPrice,
+                                image: entry.image,
+                                productId: entry.productId,
+                                colors: []
+                            };
+                        }
+                        groups[key].colors.push(entry);
+                    });
+
                     let html = '';
                     let productIdx = 0;
+                    const groupKeys = Object.keys(groups);
 
-                    for (const product of this._tableData) {
+                    for (const key of groupKeys) {
+                        const product = groups[key];
                         const productId = 'prod_' + productIdx;
-                        const totalPieces = Utils.getTotalPieces(product.sizes);
-                        const totalValue = totalPieces * product.unitPrice;
+
+                        // Calculate total pieces across all colors
+                        let totalPieces = 0;
+                        product.colors.forEach(c => {
+                            totalPieces += Utils.getTotalPieces(c.sizes);
+                        });
 
                         // Product card state: default closed
                         if (this._productCardStates[productId] === undefined) {
@@ -3324,70 +3299,80 @@ const Storage = {
                 },
 
                 renderProductColors(product, productId) {
-                    // Each product has a single color (or empty string)
-                    const color = product.color || 'No Color';
-                    const sizes = product.sizes || {};
-                    const colorId = productId + '_color_0';
+                    // Each product has a list of colors (entries)
+                    let html = '';
+                    let colorIdx = 0;
 
-                    if (this._productCardStates[colorId] === undefined) {
-                        this._productCardStates[colorId] = true;
-                    }
-                    const isColorOpen = this._productCardStates[colorId];
+                    for (const entry of product.colors) {
+                        const color = entry.color || 'No Color';
+                        const sizes = entry.sizes || {};
+                        const colorId = productId + '_color_' + colorIdx;
 
-                    const totalQty = Utils.getTotalPieces(sizes);
+                        if (this._productCardStates[colorId] === undefined) {
+                            this._productCardStates[colorId] = true;
+                        }
+                        const isColorOpen = this._productCardStates[colorId];
 
-                    let sizeHtml = '';
-                    const sizeKeys = Object.keys(sizes);
-                    if (sizeKeys.length === 0) {
-                        sizeHtml = `<div style="color:var(--gray);font-size:13px;padding:8px 0;">لا توجد مقاسات</div>`;
-                    } else {
-                        sizeKeys.forEach(size => {
-                            const qty = sizes[size] || 0;
-                            const isZero = qty === 0;
-                            const escapedSize = this.escapeHtml(size);
-                            const escapedColor = this.escapeHtml(product.color || '');
-                            const escapedSku = this.escapeHtml(product.sku);
-                            const escapedName = this.escapeHtml(product.name);
+                        const totalQty = Utils.getTotalPieces(sizes);
 
-                            sizeHtml += `
-                                <div class="size-row ${isZero ? 'zero-qty' : ''}" data-product="${productId}" data-color="${product.color || ''}" data-size="${size}" data-sku="${product.sku}" data-name="${product.name}">
-                                    <span class="size-label">${escapedSize}</span>
-                                    <div class="qty-control">
-                                        <button onclick='window.UI.changeQty(${JSON.stringify(productId)}, ${JSON.stringify(product.color || '')}, ${JSON.stringify(size)}, -1, ${JSON.stringify(product.sku)}, ${JSON.stringify(product.name)})'>
-                                            <i class="fas fa-minus"></i>
-                                        </button>
-                                        <span class="qty-val">${qty}</span>
-                                        <button onclick='window.UI.changeQty(${JSON.stringify(productId)}, ${JSON.stringify(product.color || '')}, ${JSON.stringify(size)}, 1, ${JSON.stringify(product.sku)}, ${JSON.stringify(product.name)})'>
-                                            <i class="fas fa-plus"></i>
-                                        </button>
+                        let sizeHtml = '';
+                        const sizeKeys = Object.keys(sizes);
+                        if (sizeKeys.length === 0) {
+                            sizeHtml = `<div style="color:var(--gray);font-size:13px;padding:8px 0;">لا توجد مقاسات</div>`;
+                        } else {
+                            // Sort sizes according to natural order (maybe use Utils.sortSizes)
+                            const sortedSizes = Utils.sortSizes(sizeKeys);
+                            sortedSizes.forEach(size => {
+                                const qty = sizes[size] || 0;
+                                const isZero = qty === 0;
+                                const escapedSize = this.escapeHtml(size);
+                                const escapedColor = this.escapeHtml(entry.color || '');
+                                const escapedSku = this.escapeHtml(entry.sku);
+                                const escapedName = this.escapeHtml(entry.name);
+
+                                sizeHtml += `
+                                    <div class="size-row ${isZero ? 'zero-qty' : ''}" data-product="${productId}" data-color="${entry.color || ''}" data-size="${size}" data-sku="${entry.sku}" data-name="${entry.name}">
+                                        <span class="size-label">${escapedSize}</span>
+                                        <div class="qty-control">
+                                            <button onclick='window.UI.changeQty(${JSON.stringify(productId)}, ${JSON.stringify(entry.color || '')}, ${JSON.stringify(size)}, -1, ${JSON.stringify(entry.sku)}, ${JSON.stringify(entry.name)})'>
+                                                <i class="fas fa-minus"></i>
+                                            </button>
+                                            <span class="qty-val">${qty}</span>
+                                            <button onclick='window.UI.changeQty(${JSON.stringify(productId)}, ${JSON.stringify(entry.color || '')}, ${JSON.stringify(size)}, 1, ${JSON.stringify(entry.sku)}, ${JSON.stringify(entry.name)})'>
+                                                <i class="fas fa-plus"></i>
+                                            </button>
+                                        </div>
                                     </div>
+                                `;
+                            });
+                        }
+
+                        const colorLabel = entry.color || 'بدون لون';
+                        const escapedColorLabel = this.escapeHtml(colorLabel);
+
+                        html += `
+                            <div class="color-accordion">
+                                <div class="color-header" onclick="window.UI.toggleColor('${colorId}')">
+                                    <span class="chevron-sm ${isColorOpen ? 'open' : ''}"><i class="fas fa-chevron-down"></i></span>
+                                    <span><i class="fas fa-palette" style="color:var(--primary);"></i> ${escapedColorLabel}</span>
+                                    <span class="color-total">${totalQty} قطعة</span>
+                                    <button class="delete-color-btn" onclick="event.stopPropagation();window.UI.deleteColor(${JSON.stringify(productId)}, ${JSON.stringify(entry.color || '')}, ${JSON.stringify(entry.sku)}, ${JSON.stringify(entry.name)})" title="حذف اللون">
+                                        <i class="fas fa-times"></i>
+                                    </button>
                                 </div>
-                            `;
-                        });
+                                <div class="color-sizes ${isColorOpen ? 'open' : ''}">
+                                    ${sizeHtml}
+                                </div>
+                            </div>
+                        `;
+                        colorIdx++;
                     }
 
-                    const colorLabel = product.color || 'بدون لون';
-                    const escapedColorLabel = this.escapeHtml(colorLabel);
-
-                    return `
-                        <div class="color-accordion">
-                            <div class="color-header" onclick="window.UI.toggleColor('${colorId}')">
-                                <span class="chevron-sm ${isColorOpen ? 'open' : ''}"><i class="fas fa-chevron-down"></i></span>
-                                <span><i class="fas fa-palette" style="color:var(--primary);"></i> ${escapedColorLabel}</span>
-                                <span class="color-total">${totalQty} قطعة</span>
-                                <button class="delete-color-btn" onclick="event.stopPropagation();window.UI.deleteColor(${JSON.stringify(productId)}, ${JSON.stringify(product.color || '')}, ${JSON.stringify(product.sku)}, ${JSON.stringify(product.name)})" title="حذف اللون">
-                                    <i class="fas fa-times"></i>
-                                </button>
-                            </div>
-                            <div class="color-sizes ${isColorOpen ? 'open' : ''}">
-                                ${sizeHtml}
-                            </div>
-                        </div>
-                    `;
+                    return html;
                 },
 
                 deleteColor(productId, color, sku, name) {
-                    // Find the product in table
+                    // Find the product entry in _tableData that matches name, sku, color
                     const colorName = color || '';
                     let targetIndex = -1;
                     for (let i = 0; i < this._tableData.length; i++) {
@@ -3403,7 +3388,6 @@ const Storage = {
                         return;
                     }
 
-                    // Check if this color has any positive quantity
                     const product = this._tableData[targetIndex];
                     const totalQty = Utils.getTotalPieces(product.sizes);
 
@@ -3447,7 +3431,7 @@ const Storage = {
                 },
 
                 changeQty(productId, color, size, delta, sku, name) {
-                    // Find the product entry
+                    // Find the product entry in _tableData
                     const colorName = color || '';
                     let targetIndex = -1;
                     for (let i = 0; i < this._tableData.length; i++) {
@@ -3467,87 +3451,59 @@ const Storage = {
                     const currentQty = product.sizes[size] || 0;
                     const newQty = Math.max(0, currentQty + delta);
 
-                    // If newQty is 0, we might want to ask user if they want to delete this color
-                    if (newQty === 0 && currentQty > 0) {
-                        // Check if all sizes in this color are zero after this change
-                        const tempSizes = { ...product.sizes };
-                        tempSizes[size] = 0;
-                        const totalAfter = Utils.getTotalPieces(tempSizes);
-                        if (totalAfter === 0) {
-                            // All sizes are zero - ask user
-                            this._zeroQtyTarget = {
-                                productId: productId,
-                                color: colorName,
-                                sku: sku,
-                                name: name,
-                                size: size,
-                                targetIndex: targetIndex
-                            };
-                            this.elements.zeroQtyLabel.textContent =
-                                `المنتج: ${name} | اللون: ${colorName || 'بدون لون'} | المقاس: ${size}`;
-                            this.elements.zeroQtyDialog.classList.add('show');
-                            return;
-                        }
-                    }
-
-                    // Update quantity
-                    if (newQty === 0) {
-                        delete product.sizes[size];
-                    } else {
-                        product.sizes[size] = newQty;
-                    }
+                    // Update quantity (keep zero)
+                    product.sizes[size] = newQty;
 
                     // Recalculate totals
                     product.totalPieces = Utils.getTotalPieces(product.sizes);
                     product.totalValue = product.totalPieces * product.unitPrice;
 
-                    // If totalPieces is 0, remove the entire product
-                    if (product.totalPieces === 0) {
-                        this._tableData.splice(targetIndex, 1);
-                        this.renderInvoice();
-                        this.saveAll();
-                        this.markDirty();
-                        this.showAlert('🗑️ تم حذف المنتج (جميع الكميات صفر)', 'info');
-                        return;
-                    }
-
+                    // If totalPieces is 0, we keep the product (with zeros) — no auto-delete
                     this.renderInvoice();
                     this.saveAll();
                     this.markDirty();
-                },
-
-                confirmZeroQtyDelete() {
-                    if (this._zeroQtyTarget) {
-                        const { targetIndex, productId, color, sku, name } = this._zeroQtyTarget;
-                        // Remove the entire color (product entry)
-                        this._tableData.splice(targetIndex, 1);
-                        this.renderInvoice();
-                        this.saveAll();
-                        this.markDirty();
-                        this.showAlert(`🗑️ تم حذف اللون ${color || 'بدون لون'}`, 'info');
-                        this.closeZeroQtyDialog();
-                    }
-                },
-
-                closeZeroQtyDialog() {
-                    this.elements.zeroQtyDialog.classList.remove('show');
-                    this._zeroQtyTarget = null;
                 },
 
                 deleteProduct(productId) {
-                    // Find product by index from productId
+                    // Find product by index from productId (based on grouping)
                     const idx = parseInt(productId.replace('prod_', ''));
-                    if (isNaN(idx) || idx >= this._tableData.length) {
+                    if (isNaN(idx)) {
                         this.showAlert('⚠️ لم يتم العثور على المنتج', 'error');
                         return;
                     }
-                    const name = this._tableData[idx].name;
-                    if (!confirm(`هل أنت متأكد من حذف المنتج "${name}"؟`)) return;
-                    this._tableData.splice(idx, 1);
+
+                    // Since we group, we need to find the product key by iterating groups again
+                    const groups = {};
+                    this._tableData.forEach(entry => {
+                        const key = entry.name + '|' + entry.sku;
+                        if (!groups[key]) {
+                            groups[key] = {
+                                name: entry.name,
+                                sku: entry.sku,
+                                colors: []
+                            };
+                        }
+                        groups[key].colors.push(entry);
+                    });
+                    const groupKeys = Object.keys(groups);
+                    if (idx >= groupKeys.length) {
+                        this.showAlert('⚠️ لم يتم العثور على المنتج', 'error');
+                        return;
+                    }
+                    const productKey = groupKeys[idx];
+                    const productName = groups[productKey].name;
+
+                    if (!confirm(`هل أنت متأكد من حذف المنتج "${productName}"؟`)) return;
+
+                    // Remove all entries with that product key
+                    this._tableData = this._tableData.filter(entry => {
+                        return !(entry.name === groups[productKey].name && entry.sku === groups[productKey].sku);
+                    });
+
                     this.renderInvoice();
                     this.saveAll();
                     this.markDirty();
-                    this.showAlert(`🗑️ تم حذف المنتج ${name}`, 'info');
+                    this.showAlert(`🗑️ تم حذف المنتج ${productName}`, 'info');
                 },
 
                 updateStats() {
