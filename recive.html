@@ -2262,9 +2262,9 @@
         },
         getStatus(invoice) {
           if (!invoice || !invoice.items || !invoice.items.length) return 'pending';
-          const allReceived = invoice.items.every(item => (item.receivedQty || 0) >= (item.preparedQty || 0));
+          const allReceived = invoice.items.every(item => (item.receivedQty || 0) >= (preparedQuantities || 0));
           const anyReceived = invoice.items.some(item => (item.receivedQty || 0) > 0);
-          const hasShortage = invoice.items.some(item => (item.receivedQty || 0) < (item.preparedQty || 0));
+          const hasShortage = invoice.items.some(item => (item.receivedQty || 0) < (preparedQuantities || 0));
           
           if (allReceived) return 'received';
           if (hasShortage && anyReceived) return 'shortage';
@@ -2298,7 +2298,7 @@
           return invoice && invoice.status === 'closed';
         },
         canReceive(item) {
-          return (item.preparedQty || 0) > 0;
+          return (preparedQuantities || 0) > 0;
         }
       };
 
@@ -2576,7 +2576,7 @@
                   items: items,
                   // Calculate totals
                   totalPieces: Utils.calculateTotalPrepared(items),
-                  totalValue: items.reduce((sum, item) => sum + (item.unitPrice || 0) * (item.preparedQty || 0), 0),
+                  totalValue: items.reduce((sum, item) => sum + (item.unitPrice || 0) * (preparedQuantities || 0), 0),
                   createdAt: inv.createdAt || 0
                 });
               }
@@ -2777,7 +2777,7 @@
             if (!groups[key].colors[color]) groups[key].colors[color] = [];
             groups[key].colors[color].push({
               size: item.size || 'No Size',
-              preparedQty: item.preparedQty || 0,
+              preparedQty: preparedQuantities || 0,
               receivedQty: item.receivedQty || 0,
               total: item.total || 0
             });
@@ -2922,7 +2922,7 @@
             if (itemColor === color && itemSize === size && 
                 item.productId === productIdReal && item.variantId === variantId) {
               const current = item.receivedQty || 0;
-              const max = item.preparedQty || 0;
+              const max = preparedQuantities || 0;
               const newQty = Math.max(0, Math.min(max, current + delta));
               if (newQty !== current) {
                 item.receivedQty = newQty;
@@ -2934,7 +2934,7 @@
           if (found) {
             this._selectedInvoice.totalPieces = Utils.calculateTotalPrepared(this._selectedInvoice.items);
             this._selectedInvoice.totalValue = this._selectedInvoice.items.reduce(
-              (sum, item) => sum + (item.unitPrice || 0) * (item.preparedQty || 0), 0
+              (sum, item) => sum + (item.unitPrice || 0) * (preparedQuantities || 0), 0
             );
             this.saveInvoiceToFirebase(this._selectedInvoice);
             this.renderInvoicePreview(this._selectedInvoice);
@@ -3033,7 +3033,7 @@
               return (a.size || '').localeCompare(b.size || '');
             });
             sorted.forEach(item => {
-              const prepared = item.preparedQty || 0;
+              const prepared = preparedQuantities || 0;
               const received = item.receivedQty || 0;
               const canReceive = prepared > 0;
               const isReceived = received >= prepared && prepared > 0;
@@ -3070,7 +3070,7 @@
             if (itemColor === color && itemSize === size && 
                 item.productId === productId && item.variantId === variantId) {
               const current = item.receivedQty || 0;
-              const max = item.preparedQty || 0;
+              const max = preparedQuantities || 0;
               const newQty = Math.max(0, Math.min(max, current + delta));
               if (newQty !== current) {
                 item.receivedQty = newQty;
@@ -3082,7 +3082,7 @@
           if (found) {
             this._selectedInvoice.totalPieces = Utils.calculateTotalPrepared(this._selectedInvoice.items);
             this._selectedInvoice.totalValue = this._selectedInvoice.items.reduce(
-              (sum, item) => sum + (item.unitPrice || 0) * (item.preparedQty || 0), 0
+              (sum, item) => sum + (item.unitPrice || 0) * (preparedQuantities || 0), 0
             );
             this.saveInvoiceToFirebase(this._selectedInvoice);
             
@@ -3118,7 +3118,7 @@
           
           // Mark all items as fully received
           invoice.items.forEach(item => {
-            item.receivedQty = item.preparedQty || 0;
+            item.receivedQty = preparedQuantities || 0;
           });
           
           invoice.status = 'closed';
@@ -3126,7 +3126,7 @@
           
           invoice.totalPieces = Utils.calculateTotalPrepared(invoice.items);
           invoice.totalValue = invoice.items.reduce(
-            (sum, item) => sum + (item.unitPrice || 0) * (item.preparedQty || 0), 0
+            (sum, item) => sum + (item.unitPrice || 0) * (preparedQuantities || 0), 0
           );
 
           this.saveInvoiceToFirebase(invoice);
@@ -3212,7 +3212,7 @@
               });
               sorted.forEach(item => {
                 const currentReceived = item.receivedQty || 0;
-                const prepared = item.preparedQty || 0;
+                const prepared = preparedQuantities || 0;
                 const shortage = prepared - currentReceived;
                 const itemKey = `${key}|${color}|${item.size}`;
                 this._shortageData[itemKey] = shortage > 0 ? shortage : 0;
@@ -3264,7 +3264,7 @@
             const key = `${(item.productId || '')}|${(item.variantId || '')}|${(item.color || 'No Color')}|${(item.size || 'No Size')}`;
             const shortageValue = this._shortageData[key];
             if (shortageValue !== undefined) {
-              const prepared = item.preparedQty || 0;
+              const prepared = preparedQuantities || 0;
               const received = prepared - shortageValue;
               item.receivedQty = Math.max(0, received);
               if (received < prepared) hasShortage = true;
@@ -3273,7 +3273,7 @@
 
           invoice.totalPieces = Utils.calculateTotalPrepared(invoice.items);
           invoice.totalValue = invoice.items.reduce(
-            (sum, item) => sum + (item.unitPrice || 0) * (item.preparedQty || 0), 0
+            (sum, item) => sum + (item.unitPrice || 0) * (preparedQuantities || 0), 0
           );
 
           this.saveInvoiceToFirebase(invoice);
@@ -3350,7 +3350,7 @@
                     ...inv,
                     items: items,
                     totalPieces: Utils.calculateTotalPrepared(items),
-                    totalValue: items.reduce((sum, item) => sum + (item.unitPrice || 0) * (item.preparedQty || 0), 0),
+                    totalValue: items.reduce((sum, item) => sum + (item.unitPrice || 0) * (preparedQuantities || 0), 0),
                     createdAt: inv.createdAt || 0
                   });
                 }
@@ -3403,7 +3403,7 @@
             if (inv.items && inv.items.length) {
               const items = inv.items.slice(0, 3);
               details = items.map(item =>
-                `${item.name} (${item.color||''} ${item.size||''} × ${item.preparedQty||0})`
+                `${item.name} (${item.color||''} ${item.size||''} × ${preparedQuantities||0})`
               ).join('، ');
               if (inv.items.length > 3) details += ` ... +${inv.items.length-3} أكثر`;
             }
@@ -3483,7 +3483,7 @@
             if (!groups[key].colors[color]) groups[key].colors[color] = [];
             groups[key].colors[color].push({
               size: item.size || 'No Size',
-              preparedQty: item.preparedQty || 0,
+              preparedQty: preparedQuantities || 0,
               receivedQty: item.receivedQty || 0
             });
           });
@@ -3569,10 +3569,10 @@
                 item.color || '',
                 item.size || '',
                 item.sku || '',
-                item.preparedQty || 0,
+                preparedQuantities || 0,
                 item.receivedQty || 0,
                 item.unitPrice || 0,
-                (item.unitPrice || 0) * (item.preparedQty || 0)
+                (item.unitPrice || 0) * (preparedQuantities || 0)
               ]);
             });
           }
@@ -3632,10 +3632,10 @@
                   item.color || '',
                   item.size || '',
                   item.sku || '',
-                  item.preparedQty || 0,
+                  preparedQuantities || 0,
                   item.receivedQty || 0,
                   item.unitPrice || 0,
-                  (item.unitPrice || 0) * (item.preparedQty || 0)
+                  (item.unitPrice || 0) * (preparedQuantities || 0)
                 ]);
               });
             }
