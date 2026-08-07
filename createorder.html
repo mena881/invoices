@@ -2254,49 +2254,51 @@ const Storage = {
 
                 // Save invoice with user info (new structure)
                 saveInvoiceToFirebase(branchName, tableData, productUrl, callback) {
-                    if (!database) {
-                        if (callback) callback('⚠️ Firebase not ready');
-                        return;
-                    }
-                    const userId = Storage.getUserId();
-                    const userName = Storage.getUserName();
+    if (!database) {
+        if (callback) callback('⚠️ Firebase not ready');
+        return;
+    }
+    const userId = Storage.getUserId();
+    const userName = Storage.getUserName();
 
-                    // Filter out products with zero total pieces
-                    const filtered = tableData.filter(p => this.getTotalPieces(p.colorsSizes) > 0);
+    // Filter out products with zero total pieces
+    const filtered = tableData.filter(p => this.getTotalPieces(p.colorsSizes) > 0);
 
-                    const invoice = {
-                        branch: branchName || 'Branch not set',
-                        totalPieces: filtered.reduce((s, p) => s + this.getTotalPieces(p.colorsSizes), 0),
-                        totalValue: filtered.reduce((s, p) => s + this.getTotalValue(p), 0),
-                        itemsCount: filtered.length,
-                        productUrl: productUrl || '',
-                        userId: userId,
-                        userName: userName,
-                        items: filtered.map(p => ({
-                            name: p.name,
-                            sku: p.sku || '',
-                            unitPrice: p.unitPrice || 0,
-                            image: p.image || '',
-                            productId: p.productId || '',
-                            colorsSizes: p.colorsSizes || {},
-                            totalPieces: Utils.getTotalPieces(p.colorsSizes),
-                            totalValue: Utils.getTotalValue(p)
-                        })),
-                        createdAt: firebase.database.ServerValue.TIMESTAMP,
-                        createdBy: userName || 'مستخدم'
-                    };
+    const invoice = {
+        branch: branchName || 'Branch not set',
+        totalPieces: filtered.reduce((s, p) => s + this.getTotalPieces(p.colorsSizes), 0),
+        totalValue: filtered.reduce((s, p) => s + this.getTotalValue(p), 0),
+        itemsCount: filtered.length,
+        productUrl: productUrl || '',
+        userId: userId,
+        userName: userName,
+        items: filtered.map(p => ({
+            name: p.name,
+            sku: p.sku || '',
+            unitPrice: p.unitPrice || 0,
+            image: p.image || '',
+            productId: p.productId || '',
+            colorsSizes: p.colorsSizes || {},
+            totalPieces: Utils.getTotalPieces(p.colorsSizes),
+            totalValue: Utils.getTotalValue(p)
+        })),
+        createdAt: firebase.database.ServerValue.TIMESTAMP,
+        createdBy: userName || 'مستخدم',
+        createdclosed: true,   // <--- إضافة هذا الحقل
+        closedAt: firebase.database.ServerValue.TIMESTAMP // اختياري
+    };
 
-                    const ref = database.ref('invoices').push();
-                    ref.set(invoice, (error) => {
-                        if (error) {
-                            console.error('❌ Firebase save error:', error);
-                            if (callback) callback('❌ فشل الحفظ: ' + error.message);
-                        } else {
-                            console.log('✅ Invoice saved for user:', userId);
-                            if (callback) callback(null, ref.key);
-                        }
-                    });
-                },
+    const ref = database.ref('invoices').push();
+    ref.set(invoice, (error) => {
+        if (error) {
+            console.error('❌ Firebase save error:', error);
+            if (callback) callback('❌ فشل الحفظ: ' + error.message);
+        } else {
+            console.log('✅ Invoice saved for user:', userId);
+            if (callback) callback(null, ref.key);
+        }
+    });
+}
 
                 // Load old invoices for current user
                 loadOldInvoices(callback) {
