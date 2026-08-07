@@ -2289,16 +2289,17 @@ const Storage = {
     };
 
     const ref = database.ref('invoices').push();
-    ref.set(invoice, (error) => {
-        if (error) {
-            console.error('❌ Firebase save error:', error);
-            if (callback) callback('❌ فشل الحفظ: ' + error.message);
-        } else {
-            console.log('✅ Invoice saved for user:', userId);
-            if (callback) callback(null, ref.key);
-        }
-    });
-}
+
+ref.set(invoice, (error) => {
+    if (error) {
+        console.error('❌ Firebase save error:', error);
+        if (callback) callback('❌ فشل الحفظ: ' + error.message);
+    } else {
+        console.log('✅ Invoice saved for user:', userId);
+        if (callback) callback(null, ref.key);
+    }
+});
+},
 
                 // Load old invoices for current user
                 loadOldInvoices(callback) {
