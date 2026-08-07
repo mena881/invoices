@@ -3321,8 +3321,8 @@ const Storage = {
                                     <span class="chevron-sm ${isColorOpen ? 'open' : ''}"><i class="fas fa-chevron-down"></i></span>
                                     <span><i class="fas fa-palette" style="color:var(--primary);"></i> ${escapedColorLabel}</span>
                                     <span class="color-total">${totalQty} قطعة</span>
-                                    <button class="delete-color-btn"
-    onclick="event.preventDefault(); event.stopPropagation(); window.UI.deleteColor(${JSON.stringify(productId)}, ${JSON.stringify(color)}, ${JSON.stringify(product.sku)}, ${JSON.stringify(product.name)}); return false;"
+                                    <<button class="delete-color-btn"
+    onclick="event.stopPropagation();window.UI.deleteColor(${JSON.stringify(productId)}, ${JSON.stringify(color)}, ${JSON.stringify(product.sku)}, ${JSON.stringify(product.name)})"
     title="حذف اللون">
     <i class="fas fa-times"></i>
 </button>
@@ -3339,7 +3339,6 @@ const Storage = {
                 },
 
                 deleteColor(productId, color, sku, name) {
-                        console.log("DELETE CLICKED", productId, color, sku, name);
 
                     // Find the product entry
                     let targetIndex = -1;
