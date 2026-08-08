@@ -398,6 +398,120 @@
         }
 
         /* =========================================================
+           MULTI-BRANCH CONTROLS
+           ========================================================= */
+        .multi-branch-controls {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 16px;
+            background: var(--light);
+            padding: 12px 18px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--gray-light);
+        }
+
+        .multi-branch-controls label {
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            color: var(--dark-secondary);
+        }
+
+        .multi-branch-controls input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--primary);
+            cursor: pointer;
+        }
+
+        .branch-checkboxes {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px 16px;
+        }
+
+        .branch-checkboxes label {
+            font-weight: 500;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            color: var(--dark-secondary);
+        }
+
+        .branch-checkboxes input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            accent-color: var(--primary);
+            cursor: pointer;
+        }
+
+        /* =========================================================
+           TABS
+           ========================================================= */
+        .tabs-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            border-bottom: 2px solid var(--gray-light);
+            margin-bottom: 20px;
+            background: white;
+            border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+            padding: 0 8px;
+        }
+
+        .tab-btn {
+            padding: 10px 20px;
+            background: transparent;
+            border: none;
+            border-bottom: 3px solid transparent;
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--gray);
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: inherit;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            white-space: nowrap;
+        }
+
+        .tab-btn:hover {
+            color: var(--dark-secondary);
+            background: var(--light);
+        }
+
+        .tab-btn.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+            background: transparent;
+        }
+
+        .tab-btn .tab-badge {
+            background: var(--primary-light);
+            color: white;
+            font-size: 10px;
+            padding: 2px 8px;
+            border-radius: 30px;
+            margin-right: 4px;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* =========================================================
            FORM — responsive for mobile
            ========================================================= */
         .floating-group {
@@ -1560,6 +1674,25 @@
                 font-size: 10px;
                 padding: 3px 10px;
             }
+            .multi-branch-controls {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 10px;
+            }
+            .branch-checkboxes {
+                justify-content: center;
+            }
+            .tabs-container {
+                overflow-x: auto;
+                flex-wrap: nowrap;
+                gap: 0;
+                padding: 0 4px;
+            }
+            .tab-btn {
+                padding: 8px 12px;
+                font-size: 12px;
+                white-space: nowrap;
+            }
         }
 
         @media (max-width: 480px) {
@@ -1676,6 +1809,16 @@
                 font-size: 12px;
                 padding: 8px 10px;
             }
+            .branch-checkboxes {
+                gap: 4px 10px;
+            }
+            .branch-checkboxes label {
+                font-size: 12px;
+            }
+            .tab-btn {
+                padding: 6px 10px;
+                font-size: 11px;
+            }
         }
 
         /* =========================================================
@@ -1710,217 +1853,6 @@
         }
         .text-center {
             text-align: center;
-        }
-
-        /* =========================================================
-           MULTI-BRANCH SPECIFIC
-           ========================================================= */
-        .branch-tabs {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-bottom: 20px;
-            border-bottom: 1px solid var(--gray-light);
-            padding-bottom: 8px;
-        }
-
-        .branch-tab {
-            padding: 8px 18px;
-            border-radius: 40px;
-            font-weight: 600;
-            font-size: 14px;
-            cursor: pointer;
-            background: var(--light);
-            border: 1px solid var(--gray-light);
-            color: var(--dark-secondary);
-            transition: var(--transition);
-        }
-
-        .branch-tab.active {
-            background: var(--primary);
-            color: white;
-            border-color: var(--primary);
-        }
-
-        .branch-tab:hover:not(.active) {
-            background: var(--info-light);
-            border-color: var(--primary-light);
-        }
-
-        .branch-tab .tab-close {
-            margin-right: 6px;
-            font-size: 12px;
-            opacity: 0.6;
-            cursor: pointer;
-        }
-
-        .branch-tab .tab-close:hover {
-            opacity: 1;
-            color: var(--danger);
-        }
-
-        .branch-content {
-            display: none;
-        }
-
-        .branch-content.active {
-            display: block;
-        }
-
-        .branch-selector {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
-            margin: 10px 0;
-            padding: 12px;
-            background: var(--light);
-            border-radius: var(--radius-sm);
-            border: 1px solid var(--gray-light);
-        }
-
-        .branch-selector label {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-weight: 500;
-            font-size: 14px;
-            cursor: pointer;
-        }
-
-        .branch-selector label input[type="checkbox"] {
-            width: 18px;
-            height: 18px;
-            accent-color: var(--primary);
-        }
-
-        .multi-branch-checkbox {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 12px;
-        }
-
-        .multi-branch-checkbox input[type="checkbox"] {
-            width: 20px;
-            height: 20px;
-            accent-color: var(--primary);
-        }
-
-        .multi-branch-checkbox label {
-            font-weight: 600;
-            font-size: 15px;
-            color: var(--dark-secondary);
-        }
-
-        /* Dialog for adding product to multiple branches */
-        .branch-product-picker {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            margin: 12px 0;
-        }
-
-        .branch-product-picker .picker-level {
-            border: 1px solid var(--gray-light);
-            border-radius: var(--radius-sm);
-            padding: 12px;
-        }
-
-        .branch-product-picker .picker-level .level-title {
-            font-weight: 600;
-            font-size: 14px;
-            margin-bottom: 8px;
-            color: var(--dark-secondary);
-        }
-
-        .branch-product-picker .picker-level .level-items {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-        }
-
-        .branch-product-picker .picker-level .level-items button {
-            padding: 6px 14px;
-            border-radius: 30px;
-            border: 1px solid var(--gray-light);
-            background: white;
-            cursor: pointer;
-            font-size: 13px;
-            transition: var(--transition);
-        }
-
-        .branch-product-picker .picker-level .level-items button:hover {
-            border-color: var(--primary);
-            background: var(--info-light);
-        }
-
-        .branch-product-picker .picker-level .level-items button.selected {
-            background: var(--primary);
-            color: white;
-            border-color: var(--primary);
-        }
-
-        .branch-product-picker .size-qty-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
-            gap: 8px;
-            margin-top: 8px;
-        }
-
-        .branch-product-picker .size-qty-grid .size-qty-item {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            background: var(--light);
-            padding: 4px 10px;
-            border-radius: 30px;
-            justify-content: center;
-        }
-
-        .branch-product-picker .size-qty-grid .size-qty-item .size-label {
-            font-weight: 500;
-            font-size: 13px;
-            min-width: 30px;
-        }
-
-        .branch-product-picker .size-qty-grid .size-qty-item .qty-control {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-
-        .branch-product-picker .size-qty-grid .size-qty-item .qty-control button {
-            width: 28px;
-            height: 28px;
-            border: 1px solid var(--gray-light);
-            border-radius: 40px;
-            background: white;
-            cursor: pointer;
-            font-size: 13px;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: var(--transition);
-        }
-
-        .branch-product-picker .size-qty-grid .size-qty-item .qty-control button:hover {
-            border-color: var(--primary);
-            color: var(--primary);
-        }
-
-        .branch-product-picker .size-qty-grid .size-qty-item .qty-control .qty-val {
-            min-width: 24px;
-            text-align: center;
-            font-weight: 600;
-            font-size: 14px;
-        }
-
-        .branch-product-picker .picker-actions {
-            display: flex;
-            gap: 10px;
-            justify-content: flex-end;
-            margin-top: 12px;
         }
     </style>
 </head>
@@ -1959,24 +1891,26 @@
         ========================================================= -->
         <div class="container">
 
-            <!-- MULTI-BRANCH CHECKBOX & SELECTOR -->
-            <div class="card">
-                <div class="multi-branch-checkbox">
-                    <input type="checkbox" id="multiBranchToggle" />
-                    <label for="multiBranchToggle"><i class="fas fa-layer-group"></i> تعدد فروع</label>
-                </div>
-                <div id="branchSelectorContainer" style="display:none;">
-                    <div class="branch-selector" id="branchSelector">
-                        <label><input type="checkbox" class="branch-check" value="مكرم عبيد" /> مكرم عبيد</label>
-                        <label><input type="checkbox" class="branch-check" value="الرحاب" /> الرحاب</label>
-                        <label><input type="checkbox" class="branch-check" value="الشيخ زايد" /> الشيخ زايد</label>
-                        <label><input type="checkbox" class="branch-check" value="شرم الشيخ" /> شرم الشيخ</label>
-                    </div>
+            <!-- MULTI-BRANCH CONTROLS -->
+            <div class="multi-branch-controls">
+                <label>
+                    <input type="checkbox" id="multiBranchCheck" />
+                    <i class="fas fa-layer-group"></i> تعدد فروع
+                </label>
+                <div id="branchCheckboxesContainer" style="display:none;" class="branch-checkboxes">
+                    <label><input type="checkbox" value="مكرم عبيد" /> مكرم عبيد</label>
+                    <label><input type="checkbox" value="مكرم عبيد" /> مكرم عبيد</label>
+                    <label><input type="checkbox" value="الرحاب" /> الرحاب</label>
+                    <label><input type="checkbox" value="الشيخ زايد" /> الشيخ زايد</label>
+                    <label><input type="checkbox" value="شرم الشيخ" /> شرم الشيخ</label>
                 </div>
             </div>
 
+            <!-- TABS -->
+            <div id="tabsContainer" style="display:none;" class="tabs-container"></div>
+
             <!-- PRODUCT INPUT -->
-            <section class="card">
+            <section class="card" id="productInputCard">
                 <div class="product-info-grid">
                     <div class="floating-group">
                         <input type="url" id="productUrl" placeholder=" " />
@@ -1985,9 +1919,9 @@
                     <div class="floating-group" id="branchSelectWrapper">
                         <select id="branchSelect">
                             <option value="">اختر الفرع</option>
+                            <option value="الشيخ زايد">الشيخ زايد</option>
                             <option value="مكرم عبيد">مكرم عبيد</option>
                             <option value="الرحاب">الرحاب</option>
-                            <option value="الشيخ زايد">الشيخ زايد</option>
                             <option value="شرم الشيخ">شرم الشيخ</option>
                         </select>
                         <label><i class="fas fa-store"></i> الفرع</label>
@@ -2019,8 +1953,8 @@
                 </div>
             </section>
 
-            <!-- INVOICE TABLE (MULTI-BRANCH TABS) -->
-            <section class="card">
+            <!-- INVOICE TABLE (will be rendered per tab) -->
+            <section class="card" id="invoiceTableCard">
                 <div class="invoice-header-actions">
                     <div class="left-actions">
                         <button class="btn btn-secondary btn-sm" id="expandAllColors">
@@ -2045,11 +1979,6 @@
                         </button>
                     </div>
                 </div>
-                <!-- Tabs -->
-                <div id="branchTabsContainer" style="display:none;" class="branch-tabs"></div>
-                <!-- Branch contents -->
-                <div id="branchContents"></div>
-                <!-- Fallback empty -->
                 <div id="invoiceContainer">
                     <div class="empty-state" id="emptyInvoiceMsg">
                         <i class="fas fa-box-open"></i>
@@ -2195,63 +2124,39 @@
             <img id="modalImage" src="" alt="Product" onclick="event.stopPropagation();" />
         </div>
 
-        <!-- MULTI-BRANCH ADD DIALOG -->
+        <!-- MULTI-BRANCH ADD DIALOG (اختيار الفرع والمنتج واللون والمقاس) -->
         <div class="dialog-overlay" id="multiBranchAddDialog">
             <div class="dialog-box" style="max-width: 700px;">
                 <button class="modal-close-btn" onclick="window.UI.closeMultiBranchAddDialog()"><i class="fas fa-times"></i></button>
-                <h3><i class="fas fa-plus-circle" style="color:var(--success);"></i> إضافة منتج لفروع متعددة</h3>
-                <p>اختر الفرع، ثم المنتج، ثم اللون، ثم حدد الكميات للمقاسات.</p>
-                <div class="branch-product-picker" id="branchProductPicker">
-                    <!-- المستوى 1: اختيار الفرع -->
-                    <div class="picker-level">
-                        <div class="level-title">اختر الفرع</div>
-                        <div class="level-items" id="pickerBranchItems"></div>
-                    </div>
-                    <!-- المستوى 2: اختيار المنتج (يظهر بعد اختيار الفرع) -->
-                    <div class="picker-level" id="pickerProductLevel" style="display:none;">
-                        <div class="level-title">اختر المنتج</div>
-                        <div class="level-items" id="pickerProductItems"></div>
-                    </div>
-                    <!-- المستوى 3: اختيار اللون (يظهر بعد اختيار المنتج) -->
-                    <div class="picker-level" id="pickerColorLevel" style="display:none;">
-                        <div class="level-title">اختر اللون</div>
-                        <div class="level-items" id="pickerColorItems"></div>
-                    </div>
-                    <!-- المستوى 4: تعديل الكميات حسب المقاسات (يظهر بعد اختيار اللون) -->
-                    <div class="picker-level" id="pickerQtyLevel" style="display:none;">
-                        <div class="level-title">حدد الكميات للمقاسات</div>
-                        <div class="size-qty-grid" id="pickerQtyGrid"></div>
-                    </div>
-                </div>
-                <div class="dialog-actions">
-                    <button class="btn btn-secondary" id="multiBranchAddCancel"><i class="fas fa-times"></i> إلغاء</button>
-                    <button class="btn btn-success" id="multiBranchAddConfirm" disabled><i class="fas fa-check"></i> تأكيد الإضافة</button>
+                <h3><i class="fas fa-plus-circle" style="color:var(--primary);"></i> إضافة لمنتجات متعددة</h3>
+                <div id="multiBranchAddContent">
+                    <!-- سيتم تعبئته ديناميكياً -->
                 </div>
             </div>
         </div>
 
-        <!-- CLOSE INVOICE CONFIRM DIALOG -->
-        <div class="dialog-overlay" id="closeInvoiceConfirmDialog">
+        <!-- CONFIRM CLOSE INVOICE DIALOG -->
+        <div class="dialog-overlay" id="confirmCloseDialog">
             <div class="dialog-box">
-                <button class="modal-close-btn" onclick="window.UI.closeCloseInvoiceDialog()"><i class="fas fa-times"></i></button>
-                <h3><i class="fas fa-check-double" style="color:var(--success);"></i> تأكيد تقفيل الفاتورة</h3>
-                <div id="closeInvoiceDetails"></div>
+                <button class="modal-close-btn" onclick="window.UI.closeConfirmCloseDialog()"><i class="fas fa-times"></i></button>
+                <h3><i class="fas fa-check-circle" style="color:var(--success);"></i> تأكيد تقفيل الفاتورة</h3>
+                <div id="confirmCloseContent"></div>
                 <div class="dialog-actions">
-                    <button class="btn btn-secondary" id="closeInvoiceCancel"><i class="fas fa-arrow-right"></i> رجوع</button>
-                    <button class="btn btn-success" id="closeInvoiceConfirm"><i class="fas fa-check"></i> تأكيد التقفيل</button>
+                    <button class="btn btn-secondary" id="confirmCloseCancel"><i class="fas fa-times"></i> رجوع</button>
+                    <button class="btn btn-success" id="confirmCloseConfirm"><i class="fas fa-check"></i> تأكيد التقفيل</button>
                 </div>
             </div>
         </div>
 
-        <!-- WARNING DIALOG FOR REMOVING BRANCH -->
-        <div class="dialog-overlay" id="removeBranchWarningDialog">
+        <!-- WARNING DIALOG (عند إلغاء اختيار فرع به بيانات) -->
+        <div class="dialog-overlay" id="warningDialog">
             <div class="dialog-box">
-                <button class="modal-close-btn" onclick="window.UI.closeRemoveBranchWarning()"><i class="fas fa-times"></i></button>
+                <button class="modal-close-btn" onclick="window.UI.closeWarningDialog()"><i class="fas fa-times"></i></button>
                 <h3><i class="fas fa-exclamation-triangle" style="color:var(--warning);"></i> تحذير</h3>
-                <p id="removeBranchWarningMsg"></p>
+                <div id="warningContent"></div>
                 <div class="dialog-actions">
-                    <button class="btn btn-secondary" id="removeBranchCancel"><i class="fas fa-times"></i> إلغاء</button>
-                    <button class="btn btn-danger" id="removeBranchConfirm"><i class="fas fa-trash"></i> حذف والمتابعة</button>
+                    <button class="btn btn-secondary" id="warningCancel"><i class="fas fa-times"></i> إلغاء</button>
+                    <button class="btn btn-danger" id="warningConfirm"><i class="fas fa-trash"></i> حذف والمتابعة</button>
                 </div>
             </div>
         </div>
@@ -2288,7 +2193,7 @@
             }
 
             // ================================================================
-            //  STORAGE
+            //  STORAGE (مع دعم الفروع)
             // ================================================================
             const Storage = {
                 get(key, fallback = '') {
@@ -2363,7 +2268,7 @@
             };
 
             // ================================================================
-            //  UTILITIES
+            //  UTILITIES (معدلة لدعم الفروع)
             // ================================================================
             const Utils = {
                 cleanText(t) { return t ? t.replace(/\s+/g, ' ').trim() : ''; },
@@ -2496,46 +2401,67 @@
                     return this.getTotalPieces(product.colorsSizes) * product.unitPrice;
                 },
 
-                // Multi-branch: load current table for a specific branch (user + branch)
+                // تحميل جدول فرع معين من Firebase
                 loadBranchTable(userId, branch, callback) {
                     if (!database) {
                         if (callback) callback(null);
                         return;
                     }
-                    const path = 'currentTables/' + userId + '/' + branch;
-                    database.ref(path).once('value', (snapshot) => {
+                    database.ref('currentTables/' + userId + '/' + branch).once('value', (snapshot) => {
                         const data = snapshot.val();
-                        if (data && Array.isArray(data)) {
-                            console.log(`✅ Loaded branch ${branch} for user ${userId}:`, data.length, 'items');
-                            if (callback) callback(data);
+                        if (data && data.data && Array.isArray(data.data)) {
+                            console.log('✅ تم تحميل currentTable للفرع:', branch, data.data.length, 'عنصر');
+                            if (callback) callback(data.data);
                         } else {
+                            console.log('ℹ️ لا توجد بيانات للفرع:', branch);
                             if (callback) callback(null);
                         }
                     }, (error) => {
-                        console.error('❌ Error loading branch:', error);
+                        console.error('❌ خطأ في تحميل currentTable للفرع:', branch, error);
                         if (callback) callback(null);
                     });
                 },
 
+                // حفظ جدول فرع معين في Firebase
                 saveBranchTable(userId, branch, tableData, callback) {
                     if (!database || !tableData) {
                         if (callback) callback('Firebase not ready');
                         return;
                     }
-                    const path = 'currentTables/' + userId + '/' + branch;
-                    database.ref(path).set(tableData, (error) => {
+                    database.ref('currentTables/' + userId + '/' + branch).set({
+                        data: tableData,
+                        updatedAt: firebase.database.ServerValue.TIMESTAMP,
+                        userId: userId,
+                        branch: branch
+                    }, (error) => {
                         if (error) {
-                            console.error('❌ Error saving branch:', error);
+                            console.error('❌ خطأ في حفظ currentTable للفرع:', branch, error);
                             if (callback) callback(error);
                         } else {
-                            console.log(`✅ Saved branch ${branch} for user ${userId}:`, tableData.length,
-                            'items');
+                            console.log('✅ تم حفظ currentTable للفرع:', branch, tableData.length, 'عنصر');
                             if (callback) callback(null);
                         }
                     });
                 },
 
-                // Save invoice (same structure as before)
+                // حذف بيانات فرع معين
+                deleteBranchTable(userId, branch, callback) {
+                    if (!database) {
+                        if (callback) callback('Firebase not ready');
+                        return;
+                    }
+                    database.ref('currentTables/' + userId + '/' + branch).remove((error) => {
+                        if (error) {
+                            console.error('❌ خطأ في حذف بيانات الفرع:', branch, error);
+                            if (callback) callback(error);
+                        } else {
+                            console.log('✅ تم حذف بيانات الفرع:', branch);
+                            if (callback) callback(null);
+                        }
+                    });
+                },
+
+                // حفظ فاتورة مع فرع محدد (نفس الهيكل القديم)
                 saveInvoiceToFirebase(branchName, tableData, productUrl, callback) {
                     if (!database) {
                         if (callback) callback('⚠️ Firebase not ready');
@@ -2544,6 +2470,7 @@
                     const userId = Storage.getUserId();
                     const userName = Storage.getUserName();
 
+                    // Filter out products with zero total pieces
                     const filtered = tableData.filter(p => this.getTotalPieces(p.colorsSizes) > 0);
 
                     const invoice = {
@@ -2583,7 +2510,8 @@
                     });
                 },
 
-                loadOldInvoices(callback) {
+                // تحميل الفواتير القديمة للمستخدم الحالي (يمكن تصفيتها حسب الفرع)
+                loadOldInvoices(callback, branchFilter = null) {
                     if (!database) {
                         if (callback) callback([]);
                         return;
@@ -2602,6 +2530,7 @@
                         for (const key in data) {
                             const inv = data[key];
                             if (inv.userId === userId) {
+                                if (branchFilter && inv.branch !== branchFilter) continue;
                                 invoices.push({ id: key, ...inv, createdAt: inv.createdAt || 0 });
                             }
                         }
@@ -2633,6 +2562,83 @@
                             });
                         }
                     });
+                },
+
+                exportSingleInvoice(invoice) {
+                    const wb = XLSX.utils.book_new();
+                    const headers = ['#', 'Name', 'Color', 'Size', 'SKU', 'Qty', 'Unit Price', 'Total'];
+                    const data = [headers];
+                    let idx = 1;
+                    invoice.items.forEach(item => {
+                        const colorsSizes = item.colorsSizes || {};
+                        for (const color in colorsSizes) {
+                            const sizes = colorsSizes[color];
+                            for (const size in sizes) {
+                                const qty = sizes[size] || 0;
+                                if (qty > 0) {
+                                    data.push([idx++, item.name || '', color, size,
+                                        item.sku || '', qty, item.unitPrice || 0, qty * (item
+                                            .unitPrice || 0)
+                                    ]);
+                                }
+                            }
+                        }
+                    });
+                    data.push(['', '', '', '', '', invoice.totalPieces || 0, '', invoice.totalValue || 0]);
+                    const ws = XLSX.utils.aoa_to_sheet(data);
+                    XLSX.utils.book_append_sheet(wb, ws, 'Invoice');
+                    const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+                    const blob = new Blob([wbout], { type: 'application/octet-stream' });
+                    const link = document.createElement('a');
+                    link.href = URL.createObjectURL(blob);
+                    const dateStr = new Date(invoice.createdAt).toISOString().slice(0, 10);
+                    link.download = `invoice_${invoice.branch}_${dateStr}.xlsx`;
+                    link.click();
+                    URL.revokeObjectURL(link.href);
+                },
+
+                exportAllInvoices(invoices) {
+                    const wb = XLSX.utils.book_new();
+                    invoices.forEach((invoice, idx) => {
+                        const headers = ['#', 'Name', 'Color', 'Size', 'SKU', 'Qty', 'Unit Price', 'Total'];
+                        const data = [
+                            [`Invoice: ${invoice.branch || 'Branch not set'}`],
+                            [`Date: ${new Date(invoice.createdAt).toLocaleDateString('ar-EG')}`],
+                            [`User: ${invoice.userName || '—'}`],
+                            [`URL: ${invoice.productUrl || '—'}`],
+                            [],
+                            headers
+                        ];
+                        let counter = 1;
+                        invoice.items.forEach(item => {
+                            const colorsSizes = item.colorsSizes || {};
+                            for (const color in colorsSizes) {
+                                const sizes = colorsSizes[color];
+                                for (const size in sizes) {
+                                    const qty = sizes[size] || 0;
+                                    if (qty > 0) {
+                                        data.push([counter++, item.name || '', color, size,
+                                            item.sku || '', qty, item.unitPrice || 0, qty * (item
+                                                .unitPrice || 0)
+                                        ]);
+                                    }
+                                }
+                            }
+                        });
+                        data.push(['', '', '', '', '', invoice.totalPieces || 0, '', invoice
+                            .totalValue || 0
+                        ]);
+                        const ws = XLSX.utils.aoa_to_sheet(data);
+                        const sheetName = `Invoice_${idx+1}`.slice(0, 31);
+                        XLSX.utils.book_append_sheet(wb, ws, sheetName);
+                    });
+                    const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+                    const blob = new Blob([wbout], { type: 'application/octet-stream' });
+                    const link = document.createElement('a');
+                    link.href = URL.createObjectURL(blob);
+                    link.download = `all_invoices_${new Date().toISOString().slice(0,10)}.xlsx`;
+                    link.click();
+                    URL.revokeObjectURL(link.href);
                 },
 
                 flattenProductToRows(product) {
@@ -2774,7 +2780,7 @@
             };
 
             // ================================================================
-            //  EXCEL GENERATOR
+            //  EXCEL GENERATOR (نفس الهيكل القديم)
             // ================================================================
             const ExcelGenerator = {
                 generateProductsFromProduct(product, seriesQty) {
@@ -2959,12 +2965,12 @@
             };
 
             // ================================================================
-            //  UI CONTROLLER (Multi-Branch)
+            //  UI CONTROLLER (معدل لدعم تعدد الفروع)
             // ================================================================
             const UI = {
                 elements: {
                     url: document.getElementById('productUrl'),
-                    branchSelect: document.getElementById('branchSelect'),
+                    branch: document.getElementById('branchSelect'),
                     series: document.getElementById('seriesQty'),
                     fetchBtn: document.getElementById('fetchProductBtn'),
                     addBtn: document.getElementById('addToTableBtn'),
@@ -3014,59 +3020,42 @@
                     closeInvoicePreview: document.getElementById('closeInvoicePreview'),
                     exportInvoicePreviewBtn: document.getElementById('exportInvoicePreviewBtn'),
                     stickyWrapper: document.getElementById('stickyWrapper'),
-                    multiBranchToggle: document.getElementById('multiBranchToggle'),
-                    branchSelectorContainer: document.getElementById('branchSelectorContainer'),
-                    branchSelector: document.getElementById('branchSelector'),
+                    multiBranchCheck: document.getElementById('multiBranchCheck'),
+                    branchCheckboxesContainer: document.getElementById('branchCheckboxesContainer'),
+                    tabsContainer: document.getElementById('tabsContainer'),
                     branchSelectWrapper: document.getElementById('branchSelectWrapper'),
-                    branchTabsContainer: document.getElementById('branchTabsContainer'),
-                    branchContents: document.getElementById('branchContents'),
-                    // Multi-branch add dialog
                     multiBranchAddDialog: document.getElementById('multiBranchAddDialog'),
-                    pickerBranchItems: document.getElementById('pickerBranchItems'),
-                    pickerProductLevel: document.getElementById('pickerProductLevel'),
-                    pickerProductItems: document.getElementById('pickerProductItems'),
-                    pickerColorLevel: document.getElementById('pickerColorLevel'),
-                    pickerColorItems: document.getElementById('pickerColorItems'),
-                    pickerQtyLevel: document.getElementById('pickerQtyLevel'),
-                    pickerQtyGrid: document.getElementById('pickerQtyGrid'),
-                    multiBranchAddCancel: document.getElementById('multiBranchAddCancel'),
-                    multiBranchAddConfirm: document.getElementById('multiBranchAddConfirm'),
-                    // Close invoice confirm dialog
-                    closeInvoiceConfirmDialog: document.getElementById('closeInvoiceConfirmDialog'),
-                    closeInvoiceDetails: document.getElementById('closeInvoiceDetails'),
-                    closeInvoiceCancel: document.getElementById('closeInvoiceCancel'),
-                    closeInvoiceConfirm: document.getElementById('closeInvoiceConfirm'),
-                    // Remove branch warning
-                    removeBranchWarningDialog: document.getElementById('removeBranchWarningDialog'),
-                    removeBranchWarningMsg: document.getElementById('removeBranchWarningMsg'),
-                    removeBranchCancel: document.getElementById('removeBranchCancel'),
-                    removeBranchConfirm: document.getElementById('removeBranchConfirm'),
+                    multiBranchAddContent: document.getElementById('multiBranchAddContent'),
+                    confirmCloseDialog: document.getElementById('confirmCloseDialog'),
+                    confirmCloseContent: document.getElementById('confirmCloseContent'),
+                    confirmCloseCancel: document.getElementById('confirmCloseCancel'),
+                    confirmCloseConfirm: document.getElementById('confirmCloseConfirm'),
+                    warningDialog: document.getElementById('warningDialog'),
+                    warningContent: document.getElementById('warningContent'),
+                    warningCancel: document.getElementById('warningCancel'),
+                    warningConfirm: document.getElementById('warningConfirm'),
                 },
+
                 _lastProduct: null,
                 _lastProductUrl: '',
-                _tableData: {}, // { branchName: [products] }
-                _activeBranch: null,
-                _branchOrder: [], // for tabs order
+                _tableData: {}, // { branchName: [ products ] }
+                _selectedBranches: [], // الفروع المختارة حالياً
+                _activeBranch: null, // الفرع النشط (Tab)
+                _productCardStates: {}, // { branch_productId: { ... } }
                 _oldInvoices: [],
-                _productCardStates: {}, // key: branch_productId_colorId
                 _fetchTimer: null,
                 _syncTimer: null,
                 _isDirty: false,
+                _pendingAddData: null,
+                _isLoadingFromFirebase: false,
+                _previewInvoiceIndex: -1,
                 _currentUser: 'مستخدم غير معروف',
                 _currentUserId: 'unknown',
-                _isMultiBranch: false,
-                _pendingRemoveBranch: null,
-                _closeInvoiceBranch: null,
-
-                // Multi-branch add dialog state
-                _pickerSelectedBranch: null,
-                _pickerSelectedProduct: null,
-                _pickerSelectedColor: null,
-                _pickerProductData: null, // the product object from fetch
-                _pickerQtyData: {}, // { size: qty }
+                _multiBranchMode: false,
+                _pendingBranchRemoval: null, // للتحذير عند إلغاء فرع
 
                 init() {
-                    console.log('🚀 Initializing Create Order UI (Multi-Branch v5)...');
+                    console.log('🚀 Initializing Create Order UI (Multi-Branch v2)...');
 
                     this._currentUser = Storage.getUserName();
                     this._currentUserId = Storage.getUserId();
@@ -3075,153 +3064,65 @@
                         userNameEl.textContent = `مرحباً، ${this._currentUser}`;
                     }
 
-                    // Restore multi-branch state
-                    const savedMulti = Storage.get('multiBranch', 'false') === 'true';
-                    this.elements.multiBranchToggle.checked = savedMulti;
-                    this._isMultiBranch = savedMulti;
-                    this.updateBranchUI();
+                    // استعادة الوضع من localStorage
+                    const savedMulti = Storage.get('multiBranchMode', false);
+                    this._multiBranchMode = savedMulti === true || savedMulti === 'true';
+                    this.elements.multiBranchCheck.checked = this._multiBranchMode;
 
-                    // Restore selected branches
+                    // استعادة الفروع المختارة
                     const savedBranches = Storage.get('selectedBranches', []);
-                    const checks = this.elements.branchSelector.querySelectorAll('.branch-check');
-                    checks.forEach(cb => {
-                        cb.checked = savedBranches.includes(cb.value);
-                    });
+                    if (Array.isArray(savedBranches) && savedBranches.length) {
+                        this._selectedBranches = savedBranches;
+                    } else {
+                        this._selectedBranches = ['مكرم عبيد']; // افتراضي
+                    }
+                    this.updateBranchCheckboxes();
 
-                    // Restore branch select
-                    const savedBranch = Storage.get('branch', '');
-                    if (savedBranch) {
-                        this.elements.branchSelect.value = savedBranch;
+                    // استعادة الفرع النشط
+                    const savedActive = Storage.get('activeBranch', null);
+                    if (savedActive && this._selectedBranches.includes(savedActive)) {
+                        this._activeBranch = savedActive;
+                    } else if (this._selectedBranches.length) {
+                        this._activeBranch = this._selectedBranches[0];
                     }
 
+                    // استعادة بيانات الفروع من localStorage
+                    const savedTables = Storage.get('tableDataMulti', {});
+                    if (savedTables && typeof savedTables === 'object') {
+                        this._tableData = savedTables;
+                    } else {
+                        this._tableData = {};
+                    }
+
+                    // استعادة حالات الـ accordion
+                    const savedStates = Storage.get('cardStatesMulti', {});
+                    if (savedStates && typeof savedStates === 'object') {
+                        this._productCardStates = savedStates;
+                    }
+
+                    // استعادة رابط المنتج والكمية
                     this.elements.url.value = Storage.get('url', '');
                     this.elements.series.value = Storage.get('series', '1');
 
-                    // Event listeners
-                    this.elements.multiBranchToggle.addEventListener('change', () => {
-                        this._isMultiBranch = this.elements.multiBranchToggle.checked;
-                        Storage.set('multiBranch', this._isMultiBranch ? 'true' : 'false');
-                        this.updateBranchUI();
-                        this.renderAllBranches();
-                        this.updateStats();
-                    });
-
-                    // Branch checkbox changes
-                    this.elements.branchSelector.addEventListener('change', (e) => {
-                        if (e.target.classList.contains('branch-check')) {
-                            const branch = e.target.value;
-                            const checked = e.target.checked;
-                            this.handleBranchToggle(branch, checked);
+                    this.elements.branch.addEventListener('change', () => {
+                        if (!this._multiBranchMode) {
+                            Storage.set('branch', this.elements.branch.value);
                         }
                     });
 
-                    this.elements.branchSelect.addEventListener('change', () => {
-                        Storage.set('branch', this.elements.branchSelect.value);
+                    this.updateStickyPosition();
+                    this.updateUI();
+
+                    // تحميل بيانات الفروع من Firebase (لكل فرع مختار)
+                    this._isLoadingFromFirebase = true;
+                    this.loadAllBranchesFromFirebase(() => {
+                        this._isLoadingFromFirebase = false;
+                        this.renderInvoice();
+                        // حفظ في localStorage
+                        Storage.set('tableDataMulti', this._tableData);
                     });
 
-                    this.elements.url.addEventListener('input', () => {
-                        clearTimeout(this._fetchTimer);
-                        const url = this.elements.url.value.trim();
-                        if (url) {
-                            this._fetchTimer = setTimeout(() => {
-                                this.handleFetch(true);
-                            }, 600);
-                        } else {
-                            this.elements.previewSection.classList.remove('show');
-                            this._lastProduct = null;
-                            Storage.remove('cachedProduct');
-                        }
-                    });
-
-                    this.elements.fetchBtn.addEventListener('click', () => this.handleFetch(false));
-                    this.elements.addBtn.addEventListener('click', () => this.handleAdd());
-
-                    this.elements.closeInvoiceBtn.addEventListener('click', () => this.openCloseInvoiceDialog());
-
-                    this.elements.exportDialogBtn.addEventListener('click', () => this.openExportDialog());
-                    this.elements.dialogCancel.addEventListener('click', () => this.closeExportDialog());
-                    this.elements.dialogExport.addEventListener('click', () => this.handleExport());
-
-                    this.elements.clearAllBtn.addEventListener('click', () => this.clearAllData());
-
-                    this.elements.exportDialog.addEventListener('click', (e) => {
-                        if (e.target === this.elements.exportDialog) this.closeExportDialog();
-                    });
-                    this.elements.imageModal.addEventListener('click', (e) => {
-                        if (e.target === this.elements.imageModal) this.closeModal();
-                    });
-                    this.elements.duplicateDialog.addEventListener('click', (e) => {
-                        if (e.target === this.elements.duplicateDialog) this.closeDuplicateDialog();
-                    });
-
-                    this.elements.showOldOrdersBtn.addEventListener('click', () => this.toggleOldOrders());
-                    this.elements.refreshOldOrdersBtn.addEventListener('click', () => this.loadOldInvoices());
-                    this.elements.exportAllOldOrdersBtn.addEventListener('click', () => this.exportAllInvoices());
-
-                    this.elements.expandAllColors.addEventListener('click', () => {
-                        this.expandAllColors(true);
-                    });
-                    this.elements.collapseAllColors.addEventListener('click', () => {
-                        this.expandAllColors(false);
-                    });
-                    this.elements.expandAllProducts.addEventListener('click', () => {
-                        this.expandAllProducts(true);
-                    });
-                    this.elements.collapseAllProducts.addEventListener('click', () => {
-                        this.expandAllProducts(false);
-                    });
-
-                    this.elements.dupCancel.addEventListener('click', () => this.closeDuplicateDialog());
-                    this.elements.dupAddQty.addEventListener('click', () => this.confirmAddDuplicate());
-
-                    this.elements.closeInvoicePreview.addEventListener('click', () => {
-                        this.elements.invoicePreviewDialog.classList.remove('show');
-                    });
-                    this.elements.invoicePreviewDialog.addEventListener('click', (e) => {
-                        if (e.target === this.elements.invoicePreviewDialog) {
-                            this.elements.invoicePreviewDialog.classList.remove('show');
-                        }
-                    });
-                    this.elements.exportInvoicePreviewBtn.addEventListener('click', () => {
-                        if (this._previewInvoiceIndex >= 0 && this._oldInvoices[this._previewInvoiceIndex]) {
-                            const inv = this._oldInvoices[this._previewInvoiceIndex];
-                            this.openExportOldInvoice(inv);
-                        }
-                    });
-
-                    // Multi-branch add dialog events
-                    this.elements.multiBranchAddCancel.addEventListener('click', () => this.closeMultiBranchAddDialog());
-                    this.elements.multiBranchAddConfirm.addEventListener('click', () => this.confirmMultiBranchAdd());
-                    this.elements.multiBranchAddDialog.addEventListener('click', (e) => {
-                        if (e.target === this.elements.multiBranchAddDialog) this.closeMultiBranchAddDialog();
-                    });
-
-                    // Close invoice confirm dialog
-                    this.elements.closeInvoiceCancel.addEventListener('click', () => this.closeCloseInvoiceDialog());
-                    this.elements.closeInvoiceConfirm.addEventListener('click', () => this.confirmCloseInvoice());
-                    this.elements.closeInvoiceConfirmDialog.addEventListener('click', (e) => {
-                        if (e.target === this.elements.closeInvoiceConfirmDialog) this.closeCloseInvoiceDialog();
-                    });
-
-                    // Remove branch warning
-                    this.elements.removeBranchCancel.addEventListener('click', () => this.closeRemoveBranchWarning());
-                    this.elements.removeBranchConfirm.addEventListener('click', () => this.confirmRemoveBranch());
-                    this.elements.removeBranchWarningDialog.addEventListener('click', (e) => {
-                        if (e.target === this.elements.removeBranchWarningDialog) this.closeRemoveBranchWarning();
-                    });
-
-                    // Keyboard shortcut
-                    document.addEventListener('keydown', (e) => {
-                        if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
-                            e.preventDefault();
-                            this.handleAdd();
-                        }
-                    });
-
-                    // Load data for all branches
-                    this.loadAllBranches();
-
-                    // Load cached product
+                    // تحميل المنتج المخبأ
                     const cached = Storage.get('cachedProduct', null);
                     if (cached && cached.name) {
                         this._lastProduct = {
@@ -3243,12 +3144,244 @@
 
                     Utils.cleanOldInvoices();
 
-                    this.updateStickyPosition();
+                    // ===== Event Listeners =====
+
+                    // تعدد الفروع
+                    this.elements.multiBranchCheck.addEventListener('change', () => {
+                        this._multiBranchMode = this.elements.multiBranchCheck.checked;
+                        Storage.set('multiBranchMode', this._multiBranchMode);
+                        if (this._multiBranchMode) {
+                            this.elements.branchSelectWrapper.style.display = 'none';
+                            this.elements.branchCheckboxesContainer.style.display = 'flex';
+                            this.elements.tabsContainer.style.display = 'flex';
+                            // إذا لم تكن هناك فروع مختارة، نختار الكل
+                            if (!this._selectedBranches.length) {
+                                this._selectedBranches = ['مكرم عبيد', 'الرحاب', 'الشيخ زايد', 'شرم الشيخ'];
+                                this.updateBranchCheckboxes();
+                            }
+                        } else {
+                            this.elements.branchSelectWrapper.style.display = 'block';
+                            this.elements.branchCheckboxesContainer.style.display = 'none';
+                            this.elements.tabsContainer.style.display = 'none';
+                            // تصفية بيانات الفروع: الاحتفاظ بفرع واحد فقط (المفعل)
+                            const singleBranch = this.elements.branch.value || 'مكرم عبيد';
+                            const singleData = this._tableData[singleBranch] || [];
+                            this._tableData = {};
+                            this._tableData[singleBranch] = singleData;
+                            this._selectedBranches = [singleBranch];
+                            this._activeBranch = singleBranch;
+                            this.updateBranchCheckboxes();
+                            this.renderInvoice();
+                            this.saveAll();
+                        }
+                        this.updateUI();
+                        this.renderInvoice();
+                        Storage.set('selectedBranches', this._selectedBranches);
+                        Storage.set('activeBranch', this._activeBranch);
+                    });
+
+                    // Checkboxes الفروع
+                    const branchCheckboxes = this.elements.branchCheckboxesContainer.querySelectorAll(
+                    'input[type="checkbox"]');
+                    branchCheckboxes.forEach(cb => {
+                        cb.addEventListener('change', () => {
+                            const branch = cb.value;
+                            if (cb.checked) {
+                                // إضافة الفرع
+                                if (!this._selectedBranches.includes(branch)) {
+                                    this._selectedBranches.push(branch);
+                                    // تحميل بياناته من Firebase
+                                    this.loadBranchFromFirebase(branch, () => {
+                                        this.renderInvoice();
+                                        this.saveAll();
+                                        this.updateUI();
+                                    });
+                                }
+                            } else {
+                                // إلغاء اختيار فرع - تحذير إذا كان به بيانات
+                                const data = this._tableData[branch] || [];
+                                const hasData = data.some(p => Utils.getTotalPieces(p.colorsSizes) > 0);
+                                if (hasData) {
+                                    this._pendingBranchRemoval = branch;
+                                    this.showWarningDialog(
+                                        `الفرع "${branch}" يحتوي على بيانات.`,
+                                        `إلغاء اختيار الفرع سيؤدي إلى حذف البيانات الموجودة الخاصة به.`,
+                                        () => {
+                                            // تأكيد الحذف
+                                            this.removeBranch(branch);
+                                            this._pendingBranchRemoval = null;
+                                        },
+                                        () => {
+                                            // إلغاء: إعادة تحديد الـ checkbox
+                                            cb.checked = true;
+                                            this._pendingBranchRemoval = null;
+                                        }
+                                    );
+                                } else {
+                                    this.removeBranch(branch);
+                                }
+                            }
+                        });
+                    });
+
+                    // ربط أحداث الـ Tabs (يتم إنشاؤها ديناميكياً)
+                    this.elements.tabsContainer.addEventListener('click', (e) => {
+                        const btn = e.target.closest('.tab-btn');
+                        if (btn) {
+                            const branch = btn.dataset.branch;
+                            if (branch && this._selectedBranches.includes(branch)) {
+                                this._activeBranch = branch;
+                                Storage.set('activeBranch', branch);
+                                this.renderInvoice();
+                                this.updateUI();
+                                this.updateStats();
+                            }
+                        }
+                    });
+
+                    // جلب المنتج
+                    this.elements.url.addEventListener('input', () => {
+                        clearTimeout(this._fetchTimer);
+                        const url = this.elements.url.value.trim();
+                        if (url) {
+                            this._fetchTimer = setTimeout(() => {
+                                this.handleFetch(true);
+                            }, 600);
+                        } else {
+                            this.elements.previewSection.classList.remove('show');
+                            this._lastProduct = null;
+                            Storage.remove('cachedProduct');
+                        }
+                    });
+
+                    this.elements.fetchBtn.addEventListener('click', () => this.handleFetch(false));
+
+                    // إضافة المنتج
+                    this.elements.addBtn.addEventListener('click', () => {
+                        if (this._multiBranchMode) {
+                            this.openMultiBranchAddDialog();
+                        } else {
+                            this.handleAddWithDuplicateCheck();
+                        }
+                    });
+
+                    // تقفيل الفاتورة
+                    this.elements.closeInvoiceBtn.addEventListener('click', () => {
+                        if (this._multiBranchMode) {
+                            this.openConfirmCloseDialog();
+                        } else {
+                            this.closeFullInvoice();
+                        }
+                    });
+
+                    // تصدير
+                    this.elements.exportDialogBtn.addEventListener('click', () => this.openExportDialog());
+                    this.elements.dialogCancel.addEventListener('click', () => this.closeExportDialog());
+                    this.elements.dialogExport.addEventListener('click', () => this.handleExport());
+
+                    // مسح الكل
+                    this.elements.clearAllBtn.addEventListener('click', () => this.clearAllData());
+
+                    // إغلاق الـ dialogs
+                    this.elements.exportDialog.addEventListener('click', (e) => {
+                        if (e.target === this.elements.exportDialog) this.closeExportDialog();
+                    });
+                    this.elements.imageModal.addEventListener('click', (e) => {
+                        if (e.target === this.elements.imageModal) this.closeModal();
+                    });
+                    this.elements.duplicateDialog.addEventListener('click', (e) => {
+                        if (e.target === this.elements.duplicateDialog) this.closeDuplicateDialog();
+                    });
+                    this.elements.multiBranchAddDialog.addEventListener('click', (e) => {
+                        if (e.target === this.elements.multiBranchAddDialog) this.closeMultiBranchAddDialog();
+                    });
+                    this.elements.confirmCloseDialog.addEventListener('click', (e) => {
+                        if (e.target === this.elements.confirmCloseDialog) this.closeConfirmCloseDialog();
+                    });
+                    this.elements.warningDialog.addEventListener('click', (e) => {
+                        if (e.target === this.elements.warningDialog) this.closeWarningDialog();
+                    });
+
+                    // أزرار التأكيد
+                    this.elements.confirmCloseCancel.addEventListener('click', () => this.closeConfirmCloseDialog());
+                    this.elements.confirmCloseConfirm.addEventListener('click', () => this.confirmCloseInvoice());
+                    this.elements.warningCancel.addEventListener('click', () => {
+                        this.closeWarningDialog();
+                        // إعادة تحديد checkbox إذا كان هناك فرع معلق
+                        if (this._pendingBranchRemoval) {
+                            const cbs = this.elements.branchCheckboxesContainer.querySelectorAll(
+                            'input[type="checkbox"]');
+                            cbs.forEach(cb => {
+                                if (cb.value === this._pendingBranchRemoval) {
+                                    cb.checked = true;
+                                }
+                            });
+                            this._pendingBranchRemoval = null;
+                        }
+                    });
+                    this.elements.warningConfirm.addEventListener('click', () => {
+                        if (this._pendingBranchRemoval) {
+                            this.removeBranch(this._pendingBranchRemoval);
+                            this._pendingBranchRemoval = null;
+                        }
+                        this.closeWarningDialog();
+                    });
+
+                    // الفواتير السابقة
+                    this.elements.showOldOrdersBtn.addEventListener('click', () => this.toggleOldOrders());
+                    this.elements.refreshOldOrdersBtn.addEventListener('click', () => this.loadOldInvoices());
+                    this.elements.exportAllOldOrdersBtn.addEventListener('click', () => this.exportAllInvoices());
+
+                    // توسيع/غلق الألوان والمنتجات
+                    this.elements.expandAllColors.addEventListener('click', () => {
+                        this.expandAllColors(true);
+                    });
+                    this.elements.collapseAllColors.addEventListener('click', () => {
+                        this.expandAllColors(false);
+                    });
+                    this.elements.expandAllProducts.addEventListener('click', () => {
+                        this.expandAllProducts(true);
+                    });
+                    this.elements.collapseAllProducts.addEventListener('click', () => {
+                        this.expandAllProducts(false);
+                    });
+
+                    // تكرار المنتج
+                    this.elements.dupCancel.addEventListener('click', () => this.closeDuplicateDialog());
+                    this.elements.dupAddQty.addEventListener('click', () => this.confirmAddDuplicate());
+
+                    // معاينة الفاتورة
+                    this.elements.closeInvoicePreview.addEventListener('click', () => {
+                        this.elements.invoicePreviewDialog.classList.remove('show');
+                    });
+                    this.elements.invoicePreviewDialog.addEventListener('click', (e) => {
+                        if (e.target === this.elements.invoicePreviewDialog) {
+                            this.elements.invoicePreviewDialog.classList.remove('show');
+                        }
+                    });
+                    this.elements.exportInvoicePreviewBtn.addEventListener('click', () => {
+                        if (this._previewInvoiceIndex >= 0 && this._oldInvoices[this._previewInvoiceIndex]) {
+                            const inv = this._oldInvoices[this._previewInvoiceIndex];
+                            this.openExportOldInvoice(inv);
+                        }
+                    });
+
+                    // Keyboard shortcut
+                    document.addEventListener('keydown', (e) => {
+                        if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                            e.preventDefault();
+                            if (this._multiBranchMode) {
+                                this.openMultiBranchAddDialog();
+                            } else {
+                                this.handleAddWithDuplicateCheck();
+                            }
+                        }
+                    });
 
                     // Auto-sync timer
                     this._syncTimer = setInterval(() => {
-                        if (this._isDirty) {
-                            this.saveAllBranches();
+                        if (this._isDirty && !this._isLoadingFromFirebase) {
+                            this.saveAllToFirebase();
                             this._isDirty = false;
                         }
                     }, 2000);
@@ -3258,658 +3391,103 @@
                     }
                 },
 
-                updateBranchUI() {
-                    const container = this.elements.branchSelectorContainer;
-                    const wrapper = this.elements.branchSelectWrapper;
-                    const tabsContainer = this.elements.branchTabsContainer;
-                    if (this._isMultiBranch) {
-                        container.style.display = 'block';
-                        wrapper.style.display = 'none';
-                        tabsContainer.style.display = 'flex';
-                    } else {
-                        container.style.display = 'none';
-                        wrapper.style.display = 'block';
-                        tabsContainer.style.display = 'none';
-                        // Reset active branch
-                        this._activeBranch = null;
-                        this._branchOrder = [];
-                        // Show single branch content in invoiceContainer
-                        this.elements.invoiceContainer.style.display = 'block';
-                        this.elements.branchContents.innerHTML = '';
-                    }
-                    this.renderAllBranches();
+                // ===== دوال إدارة الفروع =====
+
+                updateBranchCheckboxes() {
+                    const container = this.elements.branchCheckboxesContainer;
+                    const cbs = container.querySelectorAll('input[type="checkbox"]');
+                    cbs.forEach(cb => {
+                        cb.checked = this._selectedBranches.includes(cb.value);
+                    });
                 },
 
-                handleBranchToggle(branch, checked) {
-                    // Save selected branches
-                    const checks = this.elements.branchSelector.querySelectorAll('.branch-check');
-                    const selected = [];
-                    checks.forEach(cb => {
-                        if (cb.checked) selected.push(cb.value);
-                    });
-                    Storage.set('selectedBranches', selected);
+                updateUI() {
+                    const isMulti = this._multiBranchMode;
+                    this.elements.branchSelectWrapper.style.display = isMulti ? 'none' : 'block';
+                    this.elements.branchCheckboxesContainer.style.display = isMulti ? 'flex' : 'none';
+                    this.elements.tabsContainer.style.display = isMulti ? 'flex' : 'none';
 
-                    if (!checked) {
-                        // Check if branch has data
+                    // تحديث الـ Tabs
+                    this.renderTabs();
+
+                    // إظهار/إخفاء زر تقفيل الفاتورة حسب وجود بيانات
+                    this.updateCloseButton();
+                },
+
+                renderTabs() {
+                    const container = this.elements.tabsContainer;
+                    container.innerHTML = '';
+                    if (!this._multiBranchMode || !this._selectedBranches.length) {
+                        return;
+                    }
+                    this._selectedBranches.forEach(branch => {
+                        const btn = document.createElement('button');
+                        btn.className = 'tab-btn' + (branch === this._activeBranch ? ' active' : '');
+                        btn.dataset.branch = branch;
                         const data = this._tableData[branch] || [];
-                        const hasData = data.some(p => Utils.getTotalPieces(p.colorsSizes) > 0);
-                        if (hasData) {
-                            // Show warning
-                            this._pendingRemoveBranch = branch;
-                            this.elements.removeBranchWarningMsg.textContent =
-                                `الفرع "${branch}" يحتوي على بيانات. إلغاء اختيار الفرع سيؤدي إلى حذف البيانات الموجودة الخاصة به. هل تريد المتابعة؟`;
-                            this.elements.removeBranchWarningDialog.classList.add('show');
-                            // Uncheck temporarily
-                            const cb = this.elements.branchSelector.querySelector(`.branch-check[value="${branch}"]`);
-                            if (cb) cb.checked = true;
-                            return;
-                        }
-                        // No data, just remove
-                        this.removeBranchData(branch);
-                    } else {
-                        // Add branch, load its data
-                        this.loadBranchData(branch);
-                    }
-                },
-
-                confirmRemoveBranch() {
-                    if (this._pendingRemoveBranch) {
-                        const branch = this._pendingRemoveBranch;
-                        // Remove data
-                        this.removeBranchData(branch);
-                        this._pendingRemoveBranch = null;
-                        this.closeRemoveBranchWarning();
-                    }
-                },
-
-                closeRemoveBranchWarning() {
-                    this.elements.removeBranchWarningDialog.classList.remove('show');
-                    this._pendingRemoveBranch = null;
-                },
-
-                removeBranchData(branch) {
-                    // Remove from tableData
-                    delete this._tableData[branch];
-                    // Remove from branchOrder
-                    const idx = this._branchOrder.indexOf(branch);
-                    if (idx !== -1) this._branchOrder.splice(idx, 1);
-                    // Clear card states for this branch
-                    for (const key in this._productCardStates) {
-                        if (key.startsWith(branch + '_')) {
-                            delete this._productCardStates[key];
-                        }
-                    }
-                    // Save to Firebase
-                    const path = 'currentTables/' + this._currentUserId + '/' + branch;
-                    if (database) {
-                        database.ref(path).set(null);
-                    }
-                    this.renderAllBranches();
-                    this.updateStats();
-                    this.markDirty();
-                    this.showAlert(`🗑️ تم حذف بيانات الفرع "${branch}"`, 'info');
-                },
-
-                loadAllBranches() {
-                    if (!database) {
-                        // Fallback to local storage
-                        const saved = Storage.get('tableDataMulti', {});
-                        if (typeof saved === 'object' && !Array.isArray(saved)) {
-                            this._tableData = saved;
-                        } else {
-                            this._tableData = {};
-                        }
-                        // Restore branch order
-                        const order = Storage.get('branchOrder', []);
-                        if (Array.isArray(order)) {
-                            this._branchOrder = order.filter(b => this._tableData[b] !== undefined);
-                        } else {
-                            this._branchOrder = Object.keys(this._tableData);
-                        }
-                        this.renderAllBranches();
-                        return;
-                    }
-
-                    const userId = this._currentUserId;
-                    const selectedBranches = Storage.get('selectedBranches', []);
-                    if (!selectedBranches.length && !this._isMultiBranch) {
-                        // Single branch mode: load default branch from select
-                        const defaultBranch = this.elements.branchSelect.value || 'مكرم عبيد';
-                        this.loadBranchData(defaultBranch);
-                        return;
-                    }
-
-                    // Load each selected branch
-                    const branchesToLoad = this._isMultiBranch ? selectedBranches : [this.elements.branchSelect.value ||
-                        'مكرم عبيد'
-                    ];
-                    // Remove duplicates
-                    const uniqueBranches = [...new Set(branchesToLoad.filter(Boolean))];
-                    if (!uniqueBranches.length) {
-                        this._tableData = {};
-                        this._branchOrder = [];
-                        this.renderAllBranches();
-                        return;
-                    }
-
-                    let loadedCount = 0;
-                    const total = uniqueBranches.length;
-                    const results = {};
-
-                    uniqueBranches.forEach(branch => {
-                        Utils.loadBranchTable(userId, branch, (data) => {
-                            if (data && Array.isArray(data)) {
-                                results[branch] = data;
-                            } else {
-                                // Try localStorage
-                                const saved = Storage.get('tableDataMulti_' + branch, []);
-                                if (Array.isArray(saved) && saved.length) {
-                                    results[branch] = saved;
-                                } else {
-                                    results[branch] = [];
-                                }
-                            }
-                            loadedCount++;
-                            if (loadedCount === total) {
-                                this._tableData = results;
-                                // Ensure branchOrder matches
-                                const order = Storage.get('branchOrder', []);
-                                if (Array.isArray(order)) {
-                                    this._branchOrder = order.filter(b => results[b] !== undefined);
-                                } else {
-                                    this._branchOrder = Object.keys(results);
-                                }
-                                // Ensure all branches in results are in order
-                                Object.keys(results).forEach(b => {
-                                    if (!this._branchOrder.includes(b)) {
-                                        this._branchOrder.push(b);
-                                    }
-                                });
-                                this.renderAllBranches();
-                                this.updateStats();
-                            }
-                        });
+                        const totalPieces = data.reduce((s, p) => s + Utils.getTotalPieces(p.colorsSizes), 0);
+                        const badge = totalPieces > 0 ? `<span class="tab-badge">${totalPieces}</span>` : '';
+                        btn.innerHTML = `<i class="fas fa-store"></i> ${branch} ${badge}`;
+                        container.appendChild(btn);
                     });
                 },
 
-                loadBranchData(branch) {
-                    if (!database) {
-                        const saved = Storage.get('tableDataMulti_' + branch, []);
-                        if (Array.isArray(saved)) {
-                            this._tableData[branch] = saved;
-                        } else {
-                            this._tableData[branch] = [];
-                        }
-                        if (!this._branchOrder.includes(branch)) {
-                            this._branchOrder.push(branch);
-                        }
-                        this.renderAllBranches();
-                        this.updateStats();
-                        return;
-                    }
-
-                    Utils.loadBranchTable(this._currentUserId, branch, (data) => {
+                loadBranchFromFirebase(branch, callback) {
+                    const userId = this._currentUserId;
+                    Utils.loadBranchTable(userId, branch, (data) => {
                         if (data && Array.isArray(data)) {
                             this._tableData[branch] = data;
                         } else {
-                            const saved = Storage.get('tableDataMulti_' + branch, []);
-                            if (Array.isArray(saved) && saved.length) {
-                                this._tableData[branch] = saved;
-                            } else {
-                                this._tableData[branch] = [];
-                            }
+                            this._tableData[branch] = [];
                         }
-                        if (!this._branchOrder.includes(branch)) {
-                            this._branchOrder.push(branch);
-                        }
-                        // Sort branch order by selected order
-                        const selected = Storage.get('selectedBranches', []);
-                        if (selected.length) {
-                            this._branchOrder = selected.filter(b => this._tableData[b] !== undefined);
-                        }
-                        this.renderAllBranches();
-                        this.updateStats();
-                        this.markDirty();
-                    });
-                },
-
-                saveAllBranches() {
-                    if (!database) {
-                        // Save to localStorage
                         Storage.set('tableDataMulti', this._tableData);
-                        Storage.set('branchOrder', this._branchOrder);
-                        for (const branch in this._tableData) {
-                            Storage.set('tableDataMulti_' + branch, this._tableData[branch]);
-                        }
-                        return;
-                    }
-
-                    const userId = this._currentUserId;
-                    for (const branch in this._tableData) {
-                        const data = this._tableData[branch];
-                        if (data && data.length) {
-                            Utils.saveBranchTable(userId, branch, data, () => {});
-                        } else {
-                            // Remove empty branch from firebase
-                            const path = 'currentTables/' + userId + '/' + branch;
-                            database.ref(path).set(null);
-                        }
-                    }
-                    Storage.set('branchOrder', this._branchOrder);
-                },
-
-                markDirty() {
-                    this._isDirty = true;
-                },
-
-                renderAllBranches() {
-                    const tabsContainer = this.elements.branchTabsContainer;
-                    const contentsContainer = this.elements.branchContents;
-                    const invoiceContainer = this.elements.invoiceContainer;
-
-                    // Determine which branches to show
-                    let branches = [];
-                    if (this._isMultiBranch) {
-                        const selected = Storage.get('selectedBranches', []);
-                        branches = selected.filter(b => this._tableData[b] !== undefined);
-                        // Also include any in tableData not in selected? keep selected order
-                        if (!branches.length && Object.keys(this._tableData).length) {
-                            branches = Object.keys(this._tableData);
-                        }
-                    } else {
-                        const singleBranch = this.elements.branchSelect.value || 'مكرم عبيد';
-                        if (this._tableData[singleBranch] !== undefined) {
-                            branches = [singleBranch];
-                        } else {
-                            // Initialize if not exists
-                            this._tableData[singleBranch] = [];
-                            branches = [singleBranch];
-                        }
-                    }
-
-                    if (!branches.length) {
-                        tabsContainer.style.display = 'none';
-                        invoiceContainer.style.display = 'block';
-                        invoiceContainer.innerHTML = `
-                            <div class="empty-state">
-                                <i class="fas fa-box-open"></i>
-                                <p>لا توجد فروع محددة. اختر فرعاً لإضافة منتجات.</p>
-                            </div>
-                        `;
-                        this.elements.branchContents.innerHTML = '';
-                        this.updateStats();
-                        return;
-                    }
-
-                    // Update branch order
-                    this._branchOrder = branches;
-
-                    // Render tabs
-                    let tabsHtml = '';
-                    branches.forEach((branch, idx) => {
-                        const isActive = (this._activeBranch === branch) || (this._activeBranch === null && idx ===
-                            0);
-                        if (this._activeBranch === null && idx === 0) {
-                            this._activeBranch = branch;
-                        }
-                        const totalPieces = this.getBranchTotalPieces(branch);
-                        tabsHtml += `
-                            <div class="branch-tab ${isActive ? 'active' : ''}" data-branch="${branch}" onclick="window.UI.switchBranch('${branch}')">
-                                ${branch} <span style="font-size:11px;opacity:0.7;">(${totalPieces})</span>
-                                ${this._isMultiBranch ? `<span class="tab-close" onclick="event.stopPropagation();window.UI.handleBranchToggle('${branch}', false)"><i class="fas fa-times"></i></span>` : ''}
-                            </div>
-                        `;
+                        if (callback) callback();
                     });
-                    tabsContainer.innerHTML = tabsHtml;
-                    tabsContainer.style.display = 'flex';
-
-                    // Render contents
-                    let contentsHtml = '';
-                    branches.forEach((branch) => {
-                        const isActive = (this._activeBranch === branch);
-                        const data = this._tableData[branch] || [];
-                        contentsHtml += `
-                            <div class="branch-content ${isActive ? 'active' : ''}" data-branch="${branch}">
-                                ${this.renderBranchInvoice(branch, data)}
-                            </div>
-                        `;
-                    });
-                    contentsContainer.innerHTML = contentsHtml;
-                    invoiceContainer.style.display = 'none';
-
-                    this.updateStats();
-                    this.saveAllBranches();
                 },
 
-                renderBranchInvoice(branch, data) {
-                    if (!data || !data.length) {
-                        return `
-                            <div class="empty-state">
-                                <i class="fas fa-box-open"></i>
-                                <p>لا توجد منتجات في هذا الفرع</p>
-                            </div>
-                            <div style="margin-top:12px;">
-                                <button class="btn btn-success btn-sm" onclick="window.UI.closeBranchInvoice('${branch}')">
-                                    <i class="fas fa-check-double"></i> تقفيل فاتورة ${branch}
-                                </button>
-                            </div>
-                        `;
-                    }
-
-                    let html = '';
-                    let productIdx = 0;
-                    const branchPrefix = branch + '_';
-
-                    for (const product of data) {
-                        const productId = branchPrefix + 'prod_' + productIdx;
-                        const totalPieces = Utils.getTotalPieces(product.colorsSizes);
-                        const totalValue = totalPieces * product.unitPrice;
-
-                        if (this._productCardStates[productId] === undefined) {
-                            this._productCardStates[productId] = false;
-                        }
-                        const isProductOpen = this._productCardStates[productId];
-
-                        const imgSrc = product.image || '';
-
-                        html += `
-                            <div class="product-card" data-product-id="${productId}">
-                                <div class="product-card-header" onclick="window.UI.toggleProduct('${productId}')">
-                                    <img class="thumb" src="${imgSrc}" alt="${this.escapeHtml(product.name)}" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2260%22 height=%2260%22/%3E'" onclick="event.stopPropagation();window.openModal('${imgSrc}')" />
-                                    <div class="meta">
-                                        <span class="name">${this.escapeHtml(product.name)}</span>
-                                        <span class="sku">SKU: ${this.escapeHtml(product.sku)}</span>
-                                        <span class="price">${Utils.formatCurrency(product.unitPrice)} LE</span>
-                                        <span class="total-pieces"><i class="fas fa-boxes"></i> ${totalPieces}</span>
-                                    </div>
-                                    <span class="chevron ${isProductOpen ? 'open' : ''}"><i class="fas fa-chevron-down"></i></span>
-                                </div>
-                                <div class="product-card-body ${isProductOpen ? 'open' : ''}">
-                                    ${this.renderProductColors(product, productId, branch)}
-                                </div>
-                                <div class="product-card-footer">
-                                    <button class="btn btn-danger btn-sm" onclick='window.UI.deleteProductFromBranch("${branch}", ${JSON.stringify(productId)})'>
-                                        <i class="fas fa-trash"></i> حذف المنتج
-                                    </button>
-                                </div>
-                            </div>
-                        `;
-                        productIdx++;
-                    }
-
-                    // Add close button for this branch
-                    html += `
-                        <div style="margin-top:16px;text-align:center;">
-                            <button class="btn btn-success" onclick="window.UI.closeBranchInvoice('${branch}')">
-                                <i class="fas fa-check-double"></i> تقفيل فاتورة ${branch}
-                            </button>
-                        </div>
-                    `;
-
-                    return html;
-                },
-
-                renderProductColors(product, productId, branch) {
-                    const colorsSizes = product.colorsSizes || {};
-                    const colorKeys = Object.keys(colorsSizes);
-                    if (colorKeys.length === 0) {
-                        return `<div style="color:var(--gray);padding:8px 0;">لا توجد ألوان</div>`;
-                    }
-
-                    let html = '';
-                    let colorIdx = 0;
-                    colorKeys.sort();
-
-                    for (const color of colorKeys) {
-                        const sizes = colorsSizes[color];
-                        const colorId = productId + '_color_' + colorIdx;
-
-                        if (this._productCardStates[colorId] === undefined) {
-                            this._productCardStates[colorId] = true;
-                        }
-                        const isColorOpen = this._productCardStates[colorId];
-
-                        const totalQty = Utils.getTotalPieces({ [color]: sizes });
-
-                        let sizeHtml = '';
-                        const sizeKeys = Object.keys(sizes);
-                        if (sizeKeys.length === 0) {
-                            sizeHtml = `<div style="color:var(--gray);font-size:13px;padding:8px 0;">لا توجد مقاسات</div>`;
-                        } else {
-                            const sortedSizes = Utils.sortSizes(sizeKeys);
-                            for (const size of sortedSizes) {
-                                const qty = sizes[size] || 0;
-                                const isZero = qty === 0;
-                                const escapedSize = this.escapeHtml(size);
-                                const escapedColor = this.escapeHtml(color);
-                                const escapedSku = this.escapeHtml(product.sku);
-                                const escapedName = this.escapeHtml(product.name);
-
-                                sizeHtml += `
-                                    <div class="size-row ${isZero ? 'zero-qty' : ''}" data-product="${productId}" data-color="${color}" data-size="${size}" data-sku="${product.sku}" data-name="${product.name}" data-branch="${branch}">
-                                        <span class="size-label">${escapedSize}</span>
-                                        <div class="qty-control">
-                                            <button onclick='window.UI.changeQtyInBranch("${branch}", ${JSON.stringify(productId)}, ${JSON.stringify(color)}, ${JSON.stringify(size)}, -1, ${JSON.stringify(product.sku)}, ${JSON.stringify(product.name)})'>
-                                                <i class="fas fa-minus"></i>
-                                            </button>
-                                            <span class="qty-val">${qty}</span>
-                                            <button onclick='window.UI.changeQtyInBranch("${branch}", ${JSON.stringify(productId)}, ${JSON.stringify(color)}, ${JSON.stringify(size)}, 1, ${JSON.stringify(product.sku)}, ${JSON.stringify(product.name)})'>
-                                                <i class="fas fa-plus"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-                                `;
-                            }
-                        }
-
-                        const colorLabel = color || 'بدون لون';
-                        const escapedColorLabel = this.escapeHtml(colorLabel);
-
-                        html += `
-                            <div class="color-accordion">
-                                <div class="color-header" onclick="window.UI.toggleColor('${colorId}')">
-                                    <span class="chevron-sm ${isColorOpen ? 'open' : ''}"><i class="fas fa-chevron-down"></i></span>
-                                    <span><i class="fas fa-palette" style="color:var(--primary);"></i> ${escapedColorLabel}</span>
-                                    <span class="color-total">${totalQty} قطعة</span>
-                                    <button class="delete-color-btn"
-                                        onclick='event.stopPropagation();window.UI.deleteColorFromBranch("${branch}", ${JSON.stringify(productId)}, ${JSON.stringify(color)}, ${JSON.stringify(product.sku)}, ${JSON.stringify(product.name)})'
-                                        title="حذف اللون">
-                                        <i class="fas fa-times"></i>
-                                    </button>
-                                </div>
-                                <div class="color-sizes ${isColorOpen ? 'open' : ''}">
-                                    ${sizeHtml}
-                                </div>
-                            </div>
-                        `;
-                        colorIdx++;
-                    }
-
-                    return html;
-                },
-
-                switchBranch(branch) {
-                    this._activeBranch = branch;
-                    this.renderAllBranches();
-                },
-
-                toggleProduct(productId) {
-                    const state = this._productCardStates[productId];
-                    this._productCardStates[productId] = state === false ? true : false;
-                    this.renderAllBranches();
-                },
-
-                toggleColor(colorId) {
-                    const state = this._productCardStates[colorId];
-                    this._productCardStates[colorId] = state === false ? true : false;
-                    this.renderAllBranches();
-                },
-
-                expandAllColors(open) {
-                    for (const key in this._productCardStates) {
-                        if (key.includes('_color_')) this._productCardStates[key] = open;
-                    }
-                    this.renderAllBranches();
-                },
-
-                expandAllProducts(open) {
-                    for (const key in this._productCardStates) {
-                        if (!key.includes('_color_')) this._productCardStates[key] = open;
-                    }
-                    this.renderAllBranches();
-                },
-
-                changeQtyInBranch(branch, productId, color, size, delta, sku, name) {
-                    const data = this._tableData[branch] || [];
-                    let targetIndex = -1;
-                    for (let i = 0; i < data.length; i++) {
-                        const p = data[i];
-                        if (p.name === name && p.sku === sku) {
-                            targetIndex = i;
-                            break;
-                        }
-                    }
-
-                    if (targetIndex === -1) {
-                        console.warn('⚠️ Could not find product:', { name, sku, branch });
+                loadAllBranchesFromFirebase(callback) {
+                    let loaded = 0;
+                    const total = this._selectedBranches.length;
+                    if (total === 0) {
+                        if (callback) callback();
                         return;
                     }
-
-                    const product = data[targetIndex];
-                    if (!product.colorsSizes[color]) {
-                        product.colorsSizes[color] = {};
-                    }
-                    const currentQty = product.colorsSizes[color][size] || 0;
-                    const newQty = Math.max(0, currentQty + delta);
-
-                    // Set new quantity (keep zero to not delete)
-                    product.colorsSizes[color][size] = newQty;
-
-                    // If quantity is zero, we keep the entry (do not delete)
-                    // Remove only if the entire color object is empty? We'll keep it.
-
-                    this._tableData[branch] = data;
-                    this.renderAllBranches();
-                    this.saveAllBranches();
-                    this.markDirty();
-                },
-
-                deleteColorFromBranch(branch, productId, color, sku, name) {
-                    const data = this._tableData[branch] || [];
-                    let targetIndex = -1;
-                    for (let i = 0; i < data.length; i++) {
-                        const p = data[i];
-                        if (p.name === name && p.sku === sku) {
-                            targetIndex = i;
-                            break;
-                        }
-                    }
-
-                    if (targetIndex === -1) {
-                        this.showAlert('⚠️ لم يتم العثور على المنتج', 'error');
-                        return;
-                    }
-
-                    const product = data[targetIndex];
-                    const totalQty = Utils.getTotalPieces({ [color]: product.colorsSizes[color] || {} });
-
-                    if (totalQty > 0) {
-                        if (!confirm(`هل أنت متأكد من حذف اللون "${color}"؟ (لديه ${totalQty} قطعة)`)) {
-                            return;
-                        }
-                    }
-
-                    delete product.colorsSizes[color];
-                    // Keep product even if no colors left (with empty colorsSizes)
-                    this._tableData[branch] = data;
-                    this.renderAllBranches();
-                    this.saveAllBranches();
-                    this.markDirty();
-                    this.showAlert(`🗑️ تم حذف اللون ${color} من ${branch}`, 'info');
-                },
-
-                deleteProductFromBranch(branch, productId) {
-                    const data = this._tableData[branch] || [];
-                    const idx = parseInt(productId.replace(/.*prod_/, ''));
-                    if (isNaN(idx) || idx >= data.length) {
-                        this.showAlert('⚠️ لم يتم العثور على المنتج', 'error');
-                        return;
-                    }
-                    const name = data[idx].name;
-                    if (!confirm(`هل أنت متأكد من حذف المنتج "${name}" من ${branch}؟`)) return;
-                    data.splice(idx, 1);
-                    this._tableData[branch] = data;
-                    this.renderAllBranches();
-                    this.saveAllBranches();
-                    this.markDirty();
-                    this.showAlert(`🗑️ تم حذف المنتج ${name} من ${branch}`, 'info');
-                },
-
-                getBranchTotalPieces(branch) {
-                    const data = this._tableData[branch] || [];
-                    let total = 0;
-                    data.forEach(p => {
-                        total += Utils.getTotalPieces(p.colorsSizes);
-                    });
-                    return total;
-                },
-
-                updateStats() {
-                    let totalPiecesAll = 0;
-                    let totalValueAll = 0;
-                    let productCount = 0;
-                    let branchCount = 0;
-
-                    for (const branch in this._tableData) {
-                        const data = this._tableData[branch] || [];
-                        let hasData = false;
-                        data.forEach(p => {
-                            const pieces = Utils.getTotalPieces(p.colorsSizes);
-                            if (pieces > 0) {
-                                totalPiecesAll += pieces;
-                                totalValueAll += pieces * p.unitPrice;
-                                productCount++;
-                                hasData = true;
-                            }
+                    this._selectedBranches.forEach(branch => {
+                        this.loadBranchFromFirebase(branch, () => {
+                            loaded++;
+                            if (loaded >= total && callback) callback();
                         });
-                        if (hasData) branchCount++;
-                    }
-
-                    this.elements.statCurrentOrder.textContent = productCount;
-                    this.elements.statTotalPieces.textContent = totalPiecesAll;
-                    this.elements.statTotalValue.textContent = Utils.formatCurrency(totalValueAll) + ' LE';
-                    this.elements.bottomPieces.textContent = totalPiecesAll;
-                    this.elements.bottomProducts.textContent = productCount;
-                    this.elements.bottomValue.textContent = Utils.formatCurrency(totalValueAll) + ' LE';
-
-                    // Update stat today orders
-                    this.elements.statTodayOrders.textContent = this._oldInvoices ? this._oldInvoices.length : 0;
+                    });
                 },
 
-                updateStickyPosition() {
-                    const sidebar = document.getElementById('sidebar');
-                    const wrapper = this.elements.stickyWrapper;
-                    if (!wrapper || !sidebar) return;
+                removeBranch(branch) {
+                    // حذف بيانات الفرع من الذاكرة و Firebase
+                    delete this._tableData[branch];
+                    this._selectedBranches = this._selectedBranches.filter(b => b !== branch);
+                    Storage.set('tableDataMulti', this._tableData);
+                    Storage.set('selectedBranches', this._selectedBranches);
 
-                    const isHidden = sidebar.classList.contains('hidden');
-                    const isMobile = window.innerWidth <= 992;
-
-                    if (isMobile) {
-                        wrapper.classList.add('sidebar-hidden');
-                        wrapper.style.paddingRight = '15px';
-                        wrapper.style.paddingLeft = '15px';
-                    } else if (isHidden) {
-                        wrapper.classList.add('sidebar-hidden');
-                        wrapper.style.paddingRight = '25px';
-                        wrapper.style.paddingLeft = '25px';
-                    } else {
-                        wrapper.classList.remove('sidebar-hidden');
-                        wrapper.style.paddingRight = '305px';
-                        wrapper.style.paddingLeft = '25px';
+                    // إذا كان الفرع النشط هو المحذوف، نختار أول فرع متبقي
+                    if (this._activeBranch === branch) {
+                        this._activeBranch = this._selectedBranches.length ? this._selectedBranches[0] : null;
+                        Storage.set('activeBranch', this._activeBranch);
                     }
+
+                    // حذف من Firebase
+                    Utils.deleteBranchTable(this._currentUserId, branch, () => {
+                        console.log('✅ تم حذف بيانات الفرع من Firebase:', branch);
+                    });
+
+                    this.updateBranchCheckboxes();
+                    this.renderTabs();
+                    this.renderInvoice();
+                    this.updateStats();
+                    this.updateCloseButton();
+                    this.showAlert(`🗑️ تم حذف الفرع "${branch}"`, 'info');
                 },
 
-                // ===== FETCH =====
+                // ===== دوال المنتج =====
+
                 async handleFetch(silent = false) {
                     const url = this.elements.url.value.trim();
                     if (!url) {
@@ -3976,8 +3554,7 @@
                     }
                 },
 
-                // ===== ADD PRODUCT =====
-                handleAdd() {
+                handleAddWithDuplicateCheck() {
                     if (!this._lastProduct) {
                         this.showAlert('⚠️ لا توجد بيانات منتج. قم بجلب منتج أولاً.', 'error');
                         return;
@@ -3988,215 +3565,59 @@
                         return;
                     }
 
-                    if (this._isMultiBranch) {
-                        // Open multi-branch add dialog
-                        this.openMultiBranchAddDialog();
-                    } else {
-                        // Single branch mode: add to selected branch
-                        const branch = this.elements.branchSelect.value || 'مكرم عبيد';
-                        if (!branch) {
-                            this.showAlert('⚠️ الرجاء اختيار فرع', 'error');
-                            return;
-                        }
-                        this.addProductToBranch(branch, this._lastProduct, seriesQty);
-                    }
-                },
+                    const product = this._lastProduct;
+                    const sku = product.sku || '';
+                    const branch = this.elements.branch.value.trim() || 'مكرم عبيد';
 
-                openMultiBranchAddDialog() {
-                    // Populate branch options from selected branches
-                    const selected = Storage.get('selectedBranches', []);
-                    if (!selected.length) {
-                        this.showAlert('⚠️ الرجاء اختيار فرع واحد على الأقل', 'error');
-                        return;
-                    }
+                    // التأكد من وجود الفرع في البيانات
+                    if (!this._tableData[branch]) this._tableData[branch] = [];
 
-                    const container = this.elements.pickerBranchItems;
-                    container.innerHTML = '';
-                    selected.forEach(branch => {
-                        const btn = document.createElement('button');
-                        btn.textContent = branch;
-                        btn.dataset.branch = branch;
-                        btn.addEventListener('click', () => {
-                            this.selectPickerBranch(branch);
-                        });
-                        container.appendChild(btn);
-                    });
-
-                    // Reset picker state
-                    this._pickerSelectedBranch = null;
-                    this._pickerSelectedProduct = null;
-                    this._pickerSelectedColor = null;
-                    this._pickerProductData = null;
-                    this._pickerQtyData = {};
-                    this.elements.pickerProductLevel.style.display = 'none';
-                    this.elements.pickerColorLevel.style.display = 'none';
-                    this.elements.pickerQtyLevel.style.display = 'none';
-                    this.elements.multiBranchAddConfirm.disabled = true;
-
-                    this.elements.multiBranchAddDialog.classList.add('show');
-                },
-
-                selectPickerBranch(branch) {
-                    this._pickerSelectedBranch = branch;
-                    // Show product selection level
-                    this.elements.pickerProductLevel.style.display = 'block';
-                    const productContainer = this.elements.pickerProductItems;
-                    productContainer.innerHTML = '';
-                    // Use the currently fetched product
-                    if (this._lastProduct) {
-                        const btn = document.createElement('button');
-                        btn.textContent = this._lastProduct.name;
-                        btn.dataset.product = JSON.stringify(this._lastProduct);
-                        btn.addEventListener('click', () => {
-                            this.selectPickerProduct(this._lastProduct);
-                        });
-                        productContainer.appendChild(btn);
-                    } else {
-                        productContainer.innerHTML =
-                            '<span style="color:var(--gray);font-size:13px;">الرجاء جلب منتج أولاً</span>';
-                    }
-                    this.elements.pickerColorLevel.style.display = 'none';
-                    this.elements.pickerQtyLevel.style.display = 'none';
-                    this.elements.multiBranchAddConfirm.disabled = true;
-                },
-
-                selectPickerProduct(product) {
-                    this._pickerSelectedProduct = product;
-                    this._pickerProductData = product;
-                    // Show color selection
-                    this.elements.pickerColorLevel.style.display = 'block';
-                    const colorContainer = this.elements.pickerColorItems;
-                    colorContainer.innerHTML = '';
-                    const colors = product.colors && product.colors.length ? product.colors : [''];
-                    colors.forEach(color => {
-                        const btn = document.createElement('button');
-                        btn.textContent = color || 'بدون لون';
-                        btn.dataset.color = color;
-                        btn.addEventListener('click', () => {
-                            this.selectPickerColor(color);
-                        });
-                        colorContainer.appendChild(btn);
-                    });
-                    this.elements.pickerQtyLevel.style.display = 'none';
-                    this.elements.multiBranchAddConfirm.disabled = true;
-                },
-
-                selectPickerColor(color) {
-                    this._pickerSelectedColor = color;
-                    // Show size qty grid
-                    this.elements.pickerQtyLevel.style.display = 'block';
-                    const grid = this.elements.pickerQtyGrid;
-                    grid.innerHTML = '';
-                    const product = this._pickerProductData;
-                    const sizes = product.sizes && product.sizes.length ? product.sizes : ['No Size'];
-                    const seriesQty = parseInt(this.elements.series.value) || 1;
-
-                    this._pickerQtyData = {};
-                    sizes.forEach(size => {
-                        const div = document.createElement('div');
-                        div.className = 'size-qty-item';
-                        const label = document.createElement('span');
-                        label.className = 'size-label';
-                        label.textContent = size;
-                        div.appendChild(label);
-
-                        const control = document.createElement('div');
-                        control.className = 'qty-control';
-                        const minusBtn = document.createElement('button');
-                        minusBtn.textContent = '-';
-                        minusBtn.addEventListener('click', () => {
-                            const val = parseInt(control.querySelector('.qty-val').textContent) || 0;
-                            const newVal = Math.max(0, val - 1);
-                            control.querySelector('.qty-val').textContent = newVal;
-                            this._pickerQtyData[size] = newVal;
-                            this.updatePickerConfirm();
-                        });
-                        control.appendChild(minusBtn);
-
-                        const valSpan = document.createElement('span');
-                        valSpan.className = 'qty-val';
-                        valSpan.textContent = seriesQty;
-                        control.appendChild(valSpan);
-                        this._pickerQtyData[size] = seriesQty;
-
-                        const plusBtn = document.createElement('button');
-                        plusBtn.textContent = '+';
-                        plusBtn.addEventListener('click', () => {
-                            const val = parseInt(control.querySelector('.qty-val').textContent) || 0;
-                            const newVal = val + 1;
-                            control.querySelector('.qty-val').textContent = newVal;
-                            this._pickerQtyData[size] = newVal;
-                            this.updatePickerConfirm();
-                        });
-                        control.appendChild(plusBtn);
-
-                        div.appendChild(control);
-                        grid.appendChild(div);
-                    });
-
-                    this.elements.multiBranchAddConfirm.disabled = false;
-                },
-
-                updatePickerConfirm() {
-                    // Check if any qty > 0
-                    let hasQty = false;
-                    for (const size in this._pickerQtyData) {
-                        if (this._pickerQtyData[size] > 0) {
-                            hasQty = true;
+                    // التحقق من التكرار داخل نفس الفرع
+                    let exists = false;
+                    for (const p of this._tableData[branch]) {
+                        if (p.name === product.name && p.sku === sku) {
+                            exists = true;
                             break;
                         }
                     }
-                    this.elements.multiBranchAddConfirm.disabled = !hasQty;
-                },
 
-                confirmMultiBranchAdd() {
-                    if (!this._pickerSelectedBranch || !this._pickerProductData || !this._pickerSelectedColor) {
-                        this.showAlert('⚠️ الرجاء اختيار الفرع والمنتج واللون', 'error');
-                        return;
-                    }
+                    if (exists) {
+                        this._pendingAddData = { product, seriesQty, sku, branch };
+                        const img = product.mainImage || product.image || (product.images && product.images
+                            .length ? product.images[0] : '');
+                        this.elements.dupImg.src = img || '';
+                        this.elements.dupName.textContent = product.name;
 
-                    // Build product with colorsSizes
-                    const product = this._pickerProductData;
-                    const color = this._pickerSelectedColor;
-                    const sizes = this._pickerQtyData;
-                    const colorsSizes = {};
-                    colorsSizes[color] = sizes;
-
-                    const newProduct = {
-                        name: product.name,
-                        sku: product.sku || '',
-                        unitPrice: product.price || 0,
-                        image: product.mainImage || (product.images && product.images.length ? product.images[0] :
-                            ''),
-                        productId: product.productId || '',
-                        colorsSizes: colorsSizes
-                    };
-
-                    const branch = this._pickerSelectedBranch;
-                    this.addProductToBranch(branch, newProduct, null, true); // skip seriesQty because already in sizes
-
-                    // Reset picker
-                    this.closeMultiBranchAddDialog();
-                    this.showAlert(`✅ تم إضافة المنتج إلى ${branch}`, 'success');
-                },
-
-                addProductToBranch(branch, product, seriesQty, useExistingQty = false) {
-                    let newProduct;
-                    if (useExistingQty) {
-                        newProduct = product; // already has colorsSizes
+                        let totalQty = 0;
+                        for (const p of this._tableData[branch]) {
+                            if (p.name === product.name && p.sku === sku) {
+                                totalQty += Utils.getTotalPieces(p.colorsSizes);
+                            }
+                        }
+                        this.elements.dupDetails.textContent =
+                            `SKU: ${sku || '—'} | الكمية الحالية: ${totalQty} (فرع: ${branch})`;
+                        this.elements.duplicateDialog.classList.add('show');
                     } else {
-                        newProduct = ExcelGenerator.generateProductsFromProduct(product, seriesQty);
+                        this.addProductToTable(product, seriesQty, sku, branch);
                     }
+                },
 
-                    if (!this._tableData[branch]) {
-                        this._tableData[branch] = [];
+                confirmAddDuplicate() {
+                    if (this._pendingAddData) {
+                        const { product, seriesQty, sku, branch } = this._pendingAddData;
+                        this.addProductToTable(product, seriesQty, sku, branch);
+                        this.closeDuplicateDialog();
                     }
+                },
 
-                    // Check if product exists in this branch (by name+sku)
+                addProductToTable(product, seriesQty, sku, branch) {
+                    const newProduct = ExcelGenerator.generateProductsFromProduct(product, seriesQty);
+
+                    if (!this._tableData[branch]) this._tableData[branch] = [];
+
                     let found = false;
                     for (const p of this._tableData[branch]) {
                         if (p.name === newProduct.name && p.sku === newProduct.sku) {
-                            // Merge colorsSizes
                             const cs = newProduct.colorsSizes || {};
                             for (const color in cs) {
                                 if (!p.colorsSizes[color]) p.colorsSizes[color] = {};
@@ -4215,19 +3636,179 @@
                         this._tableData[branch].push({ ...newProduct });
                     }
 
-                    if (!this._branchOrder.includes(branch)) {
-                        this._branchOrder.push(branch);
-                    }
-
-                    this.renderAllBranches();
-                    this.saveAllBranches();
+                    this.renderInvoice();
+                    this.saveAll();
                     this.markDirty();
-                    if (!useExistingQty) {
-                        const colorCount = Object.keys(newProduct.colorsSizes).length;
-                        this.showAlert(`✅ تم إضافة ${colorCount} لون إلى ${branch}`, 'success');
+                    const colorCount = Object.keys(newProduct.colorsSizes).length;
+                    this.showAlert(`✅ تم إضافة ${colorCount} لون في فرع "${branch}"`, 'success');
+
+                    this.elements.url.value = '';
+                    this.elements.series.value = '1';
+                    this._lastProduct = null;
+                    this._lastProductUrl = '';
+                    Storage.remove('cachedProduct');
+                    this.elements.previewSection.classList.remove('show');
+                    Storage.set('url', '');
+                    Storage.set('series', '1');
+                },
+
+                // ===== Multi-Branch Add Dialog =====
+
+                openMultiBranchAddDialog() {
+                    if (!this._lastProduct) {
+                        this.showAlert('⚠️ لا توجد بيانات منتج. قم بجلب منتج أولاً.', 'error');
+                        return;
+                    }
+                    const seriesQty = parseInt(this.elements.series.value);
+                    if (!seriesQty || seriesQty <= 0) {
+                        this.showAlert('⚠️ أدخل كمية صحيحة', 'error');
+                        return;
                     }
 
-                    // Reset form
+                    // بناء محتوى الـ Popup
+                    const content = this.elements.multiBranchAddContent;
+                    const product = this._lastProduct;
+                    const colors = product.colors.length ? product.colors : ['بدون لون'];
+                    const sizes = product.sizes.length ? product.sizes : ['No Size'];
+
+                    let html = `
+                        <div style="margin-bottom:12px;">
+                            <strong>المنتج:</strong> ${this.escapeHtml(product.name)}
+                            <span style="display:block;font-size:12px;color:var(--gray);">SKU: ${this.escapeHtml(product.sku)}</span>
+                        </div>
+                        <div style="margin-bottom:12px;">
+                            <label style="font-weight:600;">اختر الفروع:</label>
+                            <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:6px;">
+                    `;
+
+                    this._selectedBranches.forEach(branch => {
+                        html += `
+                            <label style="display:flex;align-items:center;gap:4px;font-size:13px;cursor:pointer;">
+                                <input type="checkbox" class="multi-branch-add-branch" value="${this.escapeHtml(branch)}" checked />
+                                ${this.escapeHtml(branch)}
+                            </label>
+                        `;
+                    });
+
+                    html += `
+                            </div>
+                        </div>
+                        <div style="margin-bottom:12px;">
+                            <label style="font-weight:600;">اللون:</label>
+                            <select id="multiBranchColorSelect" style="width:100%;padding:8px;border:1px solid var(--gray-light);border-radius:8px;margin-top:4px;">
+                    `;
+
+                    colors.forEach(color => {
+                        html += `<option value="${this.escapeHtml(color)}">${this.escapeHtml(color)}</option>`;
+                    });
+
+                    html += `
+                            </select>
+                        </div>
+                        <div style="margin-bottom:12px;">
+                            <label style="font-weight:600;">المقاسات والكميات:</label>
+                            <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:8px;margin-top:6px;">
+                    `;
+
+                    sizes.forEach(size => {
+                        html += `
+                            <div style="display:flex;align-items:center;gap:4px;font-size:13px;">
+                                <span style="min-width:30px;">${this.escapeHtml(size)}</span>
+                                <input type="number" class="multi-branch-size-qty" data-size="${this.escapeHtml(size)}" value="${seriesQty}" min="0" style="width:60px;padding:4px;border:1px solid var(--gray-light);border-radius:6px;text-align:center;" />
+                            </div>
+                        `;
+                    });
+
+                    html += `
+                            </div>
+                        </div>
+                        <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:12px;">
+                            <button class="btn btn-secondary" id="multiBranchAddCancel">إلغاء</button>
+                            <button class="btn btn-success" id="multiBranchAddConfirm"><i class="fas fa-plus"></i> إضافة للفروع المختارة</button>
+                        </div>
+                    `;
+
+                    content.innerHTML = html;
+
+                    // ربط الأحداث
+                    content.querySelector('#multiBranchAddCancel').addEventListener('click', () => {
+                        this.closeMultiBranchAddDialog();
+                    });
+                    content.querySelector('#multiBranchAddConfirm').addEventListener('click', () => {
+                        this.confirmMultiBranchAdd(product);
+                    });
+
+                    this.elements.multiBranchAddDialog.classList.add('show');
+                },
+
+                confirmMultiBranchAdd(product) {
+                    const content = this.elements.multiBranchAddContent;
+                    const selectedBranches = [];
+                    content.querySelectorAll('.multi-branch-add-branch:checked').forEach(cb => {
+                        selectedBranches.push(cb.value);
+                    });
+
+                    if (!selectedBranches.length) {
+                        this.showAlert('⚠️ اختر فرعاً واحداً على الأقل', 'error');
+                        return;
+                    }
+
+                    const color = content.querySelector('#multiBranchColorSelect').value;
+                    const sizeQtyInputs = content.querySelectorAll('.multi-branch-size-qty');
+                    const sizeQty = {};
+                    sizeQtyInputs.forEach(input => {
+                        const size = input.dataset.size;
+                        const qty = parseInt(input.value) || 0;
+                        if (qty > 0) sizeQty[size] = qty;
+                    });
+
+                    if (Object.keys(sizeQty).length === 0) {
+                        this.showAlert('⚠️ أدخل كمية صحيحة لمقاس واحد على الأقل', 'error');
+                        return;
+                    }
+
+                    // إضافة المنتج لكل فرع مختار
+                    selectedBranches.forEach(branch => {
+                        if (!this._tableData[branch]) this._tableData[branch] = [];
+
+                        // إنشاء منتج جديد بهذا اللون والمقاسات
+                        const newProduct = {
+                            name: product.name,
+                            sku: product.sku || '',
+                            unitPrice: product.price || 0,
+                            image: product.mainImage || (product.images && product.images.length ?
+                                product.images[0] : ''),
+                            productId: product.productId || '',
+                            colorsSizes: {}
+                        };
+                        newProduct.colorsSizes[color] = { ...sizeQty };
+
+                        // دمج مع المنتج الموجود إذا وجد
+                        let found = false;
+                        for (const p of this._tableData[branch]) {
+                            if (p.name === newProduct.name && p.sku === newProduct.sku) {
+                                if (!p.colorsSizes[color]) p.colorsSizes[color] = {};
+                                for (const size in sizeQty) {
+                                    p.colorsSizes[color][size] = (p.colorsSizes[color][size] || 0) + sizeQty[
+                                    size];
+                                }
+                                found = true;
+                                break;
+                            }
+                        }
+
+                        if (!found) {
+                            this._tableData[branch].push(newProduct);
+                        }
+                    });
+
+                    this.renderInvoice();
+                    this.saveAll();
+                    this.markDirty();
+                    this.closeMultiBranchAddDialog();
+                    this.showAlert(`✅ تم إضافة المنتج لـ ${selectedBranches.length} فرع`, 'success');
+
+                    // إعادة تعيين الحقول
                     this.elements.url.value = '';
                     this.elements.series.value = '1';
                     this._lastProduct = null;
@@ -4240,160 +3821,465 @@
 
                 closeMultiBranchAddDialog() {
                     this.elements.multiBranchAddDialog.classList.remove('show');
-                    this._pickerSelectedBranch = null;
-                    this._pickerSelectedProduct = null;
-                    this._pickerSelectedColor = null;
-                    this._pickerProductData = null;
-                    this._pickerQtyData = {};
                 },
 
-                // ===== CLOSE INVOICE =====
-                openCloseInvoiceDialog() {
-                    // Determine which branch to close
-                    let branch;
-                    if (this._isMultiBranch) {
-                        branch = this._activeBranch;
-                        if (!branch) {
-                            this.showAlert('⚠️ الرجاء اختيار فرع أولاً', 'error');
+                // ===== دوال عرض الفاتورة =====
+
+                renderInvoice() {
+                    const container = this.elements.invoiceContainer;
+
+                    if (this._multiBranchMode) {
+                        // عرض بيانات الفرع النشط فقط
+                        if (!this._activeBranch || !this._selectedBranches.includes(this._activeBranch)) {
+                            container.innerHTML = `
+                                <div class="empty-state">
+                                    <i class="fas fa-store"></i>
+                                    <p>اختر فرعاً لعرض بياناته</p>
+                                </div>
+                            `;
+                            this.updateStats();
                             return;
                         }
+                        const data = this._tableData[this._activeBranch] || [];
+                        this.renderBranchInvoice(container, data, this._activeBranch);
                     } else {
-                        branch = this.elements.branchSelect.value || 'مكرم عبيد';
+                        // وضع الفرع الواحد
+                        const branch = this.elements.branch.value.trim() || 'مكرم عبيد';
+                        if (!this._tableData[branch]) this._tableData[branch] = [];
+                        this.renderBranchInvoice(container, this._tableData[branch], branch);
                     }
 
-                    const data = this._tableData[branch] || [];
-                    const nonZero = data.filter(p => Utils.getTotalPieces(p.colorsSizes) > 0);
-                    if (!nonZero.length) {
-                        this.showAlert(`⚠️ لا توجد كميات لإقفال فاتورة ${branch}`, 'error');
+                    this.updateStats();
+                    this.updateCloseButton();
+                },
+
+                renderBranchInvoice(container, data, branchName) {
+                    if (!data || !data.length) {
+                        container.innerHTML = `
+                            <div class="empty-state">
+                                <i class="fas fa-box-open"></i>
+                                <p>لا توجد منتجات مضافة في فرع "${this.escapeHtml(branchName)}"</p>
+                            </div>
+                        `;
                         return;
                     }
 
-                    this._closeInvoiceBranch = branch;
+                    let html = '';
+                    let productIdx = 0;
 
-                    // Build details
-                    let detailsHtml = `<div style="font-size:14px;"><strong>الفرع:</strong> ${branch}</div>`;
-                    let totalPieces = 0,
-                        totalValue = 0;
+                    for (const product of data) {
+                        const productId = 'prod_' + branchName + '_' + productIdx;
+                        const totalPieces = Utils.getTotalPieces(product.colorsSizes);
+                        const totalValue = totalPieces * product.unitPrice;
+
+                        // حالة الـ product card
+                        const stateKey = productId;
+                        if (this._productCardStates[stateKey] === undefined) {
+                            this._productCardStates[stateKey] = false;
+                        }
+                        const isProductOpen = this._productCardStates[stateKey];
+
+                        const imgSrc = product.image || '';
+
+                        html += `
+                            <div class="product-card" data-product-id="${productId}">
+                                <div class="product-card-header" onclick="window.UI.toggleProduct('${productId}')">
+                                    <img class="thumb" src="${imgSrc}" alt="${this.escapeHtml(product.name)}" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2260%22 height=%2260%22/%3E'" onclick="event.stopPropagation();window.openModal('${imgSrc}')" />
+                                    <div class="meta">
+                                        <span class="name">${this.escapeHtml(product.name)}</span>
+                                        <span class="sku">SKU: ${this.escapeHtml(product.sku)}</span>
+                                        <span class="price">${Utils.formatCurrency(product.unitPrice)} LE</span>
+                                        <span class="total-pieces"><i class="fas fa-boxes"></i> ${totalPieces}</span>
+                                    </div>
+                                    <span class="chevron ${isProductOpen ? 'open' : ''}"><i class="fas fa-chevron-down"></i></span>
+                                </div>
+                                <div class="product-card-body ${isProductOpen ? 'open' : ''}">
+                                    ${this.renderProductColors(product, productId, branchName)}
+                                </div>
+                                <div class="product-card-footer">
+                                    <button class="btn btn-danger btn-sm" onclick='window.UI.deleteProduct(${JSON.stringify(productId)}, ${JSON.stringify(branchName)})'>
+                                        <i class="fas fa-trash"></i> حذف المنتج
+                                    </button>
+                                </div>
+                            </div>
+                        `;
+                        productIdx++;
+                    }
+
+                    container.innerHTML = html;
+                },
+
+                renderProductColors(product, productId, branchName) {
+                    const colorsSizes = product.colorsSizes || {};
+                    const colorKeys = Object.keys(colorsSizes);
+                    if (colorKeys.length === 0) {
+                        return `<div style="color:var(--gray);padding:8px 0;">لا توجد ألوان</div>`;
+                    }
+
+                    let html = '';
+                    let colorIdx = 0;
+                    colorKeys.sort();
+
+                    for (const color of colorKeys) {
+                        const sizes = colorsSizes[color];
+                        const colorId = productId + '_color_' + colorIdx;
+
+                        if (this._productCardStates[colorId] === undefined) {
+                            this._productCardStates[colorId] = true;
+                        }
+                        const isColorOpen = this._productCardStates[colorId];
+
+                        const totalQty = Utils.getTotalPieces({ [color]: sizes });
+
+                        let sizeHtml = '';
+                        const sizeKeys = Object.keys(sizes);
+                        if (sizeKeys.length === 0) {
+                            sizeHtml = `<div style="color:var(--gray);font-size:13px;padding:8px 0;">لا توجد مقاسات</div>`;
+                        } else {
+                            const sortedSizes = Utils.sortSizes(sizeKeys);
+                            for (const size of sortedSizes) {
+                                const qty = sizes[size] || 0;
+                                const isZero = qty === 0;
+                                const escapedSize = this.escapeHtml(size);
+                                const escapedColor = this.escapeHtml(color);
+                                const escapedSku = this.escapeHtml(product.sku);
+                                const escapedName = this.escapeHtml(product.name);
+
+                                sizeHtml += `
+                                    <div class="size-row ${isZero ? 'zero-qty' : ''}" data-product="${productId}" data-color="${color}" data-size="${size}" data-sku="${product.sku}" data-name="${product.name}">
+                                        <span class="size-label">${escapedSize}</span>
+                                        <div class="qty-control">
+                                            <button onclick='window.UI.changeQty(${JSON.stringify(productId)}, ${JSON.stringify(color)}, ${JSON.stringify(size)}, -1, ${JSON.stringify(product.sku)}, ${JSON.stringify(product.name)}, ${JSON.stringify(branchName)})'>
+                                                <i class="fas fa-minus"></i>
+                                            </button>
+                                            <span class="qty-val">${qty}</span>
+                                            <button onclick='window.UI.changeQty(${JSON.stringify(productId)}, ${JSON.stringify(color)}, ${JSON.stringify(size)}, 1, ${JSON.stringify(product.sku)}, ${JSON.stringify(product.name)}, ${JSON.stringify(branchName)})'>
+                                                <i class="fas fa-plus"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                `;
+                            }
+                        }
+
+                        const colorLabel = color || 'بدون لون';
+                        const escapedColorLabel = this.escapeHtml(colorLabel);
+
+                        html += `
+                            <div class="color-accordion">
+                                <div class="color-header" onclick="window.UI.toggleColor('${colorId}')">
+                                    <span class="chevron-sm ${isColorOpen ? 'open' : ''}"><i class="fas fa-chevron-down"></i></span>
+                                    <span><i class="fas fa-palette" style="color:var(--primary);"></i> ${escapedColorLabel}</span>
+                                    <span class="color-total">${totalQty} قطعة</span>
+                                    <button class="delete-color-btn"
+    onclick='event.stopPropagation();window.UI.deleteColor(${JSON.stringify(productId)}, ${JSON.stringify(color)}, ${JSON.stringify(product.sku)}, ${JSON.stringify(product.name)}, ${JSON.stringify(branchName)})'
+    title="حذف اللون">
+    <i class="fas fa-times"></i>
+</button>
+                                </div>
+                                <div class="color-sizes ${isColorOpen ? 'open' : ''}">
+                                    ${sizeHtml}
+                                </div>
+                            </div>
+                        `;
+                        colorIdx++;
+                    }
+
+                    return html;
+                },
+
+                // ===== دوال التعديل على الكميات (مع دعم الفرع) =====
+
+                changeQty(productId, color, size, delta, sku, name, branchName) {
+                    // Find the product entry in the specific branch
+                    const branchData = this._tableData[branchName];
+                    if (!branchData) return;
+
+                    let targetIndex = -1;
+                    for (let i = 0; i < branchData.length; i++) {
+                        const p = branchData[i];
+                        if (p.name === name && p.sku === sku) {
+                            targetIndex = i;
+                            break;
+                        }
+                    }
+
+                    if (targetIndex === -1) {
+                        console.warn('⚠️ Could not find product:', { name, sku, branchName });
+                        return;
+                    }
+
+                    const product = branchData[targetIndex];
+                    if (!product.colorsSizes[color]) {
+                        product.colorsSizes[color] = {};
+                    }
+                    const currentQty = product.colorsSizes[color][size] || 0;
+                    const newQty = Math.max(0, currentQty + delta);
+
+                    // نُبقي الصفر ولا نحذف (حسب المطلوب)
+                    product.colorsSizes[color][size] = newQty;
+
+                    // لا نحذف اللون أو المنتج حتى لو الكمية صفر
+
+                    this.renderInvoice();
+                    this.saveAll();
+                    this.markDirty();
+                },
+
+                deleteColor(productId, color, sku, name, branchName) {
+                    const branchData = this._tableData[branchName];
+                    if (!branchData) return;
+
+                    let targetIndex = -1;
+                    for (let i = 0; i < branchData.length; i++) {
+                        const p = branchData[i];
+                        if (p.name === name && p.sku === sku) {
+                            targetIndex = i;
+                            break;
+                        }
+                    }
+
+                    if (targetIndex === -1) {
+                        this.showAlert('⚠️ لم يتم العثور على المنتج', 'error');
+                        return;
+                    }
+
+                    const product = branchData[targetIndex];
+                    const totalQty = Utils.getTotalPieces({ [color]: product.colorsSizes[color] || {} });
+
+                    if (totalQty > 0) {
+                        if (!confirm(`هل أنت متأكد من حذف اللون "${color}"؟ (لديه ${totalQty} قطعة)`)) {
+                            return;
+                        }
+                    }
+
+                    delete product.colorsSizes[color];
+
+                    // حتى لو لم يتبق ألوان، نبقي المنتج (لا نحذفه)
+                    this.renderInvoice();
+                    this.saveAll();
+                    this.markDirty();
+                    this.showAlert(`🗑️ تم حذف اللون ${color} من فرع ${branchName}`, 'info');
+                },
+
+                deleteProduct(productId, branchName) {
+                    const branchData = this._tableData[branchName];
+                    if (!branchData) return;
+
+                    const idx = parseInt(productId.replace('prod_' + branchName + '_', ''));
+                    if (isNaN(idx) || idx >= branchData.length) {
+                        this.showAlert('⚠️ لم يتم العثور على المنتج', 'error');
+                        return;
+                    }
+                    const name = branchData[idx].name;
+                    if (!confirm(`هل أنت متأكد من حذف المنتج "${name}" من فرع "${branchName}"؟`)) return;
+                    branchData.splice(idx, 1);
+                    this.renderInvoice();
+                    this.saveAll();
+                    this.markDirty();
+                    this.showAlert(`🗑️ تم حذف المنتج ${name} من فرع ${branchName}`, 'info');
+                },
+
+                toggleProduct(productId) {
+                    const state = this._productCardStates[productId];
+                    this._productCardStates[productId] = state === false ? true : false;
+                    this.renderInvoice();
+                },
+
+                toggleColor(colorId) {
+                    const state = this._productCardStates[colorId];
+                    this._productCardStates[colorId] = state === false ? true : false;
+                    this.renderInvoice();
+                },
+
+                expandAllColors(open) {
+                    for (const key in this._productCardStates) {
+                        if (key.includes('_color_')) this._productCardStates[key] = open;
+                    }
+                    this.renderInvoice();
+                },
+
+                expandAllProducts(open) {
+                    for (const key in this._productCardStates) {
+                        if (!key.includes('_color_')) this._productCardStates[key] = open;
+                    }
+                    this.renderInvoice();
+                },
+
+                // ===== دوال الإحصاءات =====
+
+                updateStats() {
+                    let totalPieces = 0;
+                    let totalValue = 0;
+                    let productCount = 0;
+                    const productSet = new Set();
+
+                    if (this._multiBranchMode) {
+                        // إحصاءات الفرع النشط فقط
+                        const branch = this._activeBranch;
+                        if (branch && this._tableData[branch]) {
+                            const data = this._tableData[branch];
+                            for (const p of data) {
+                                const pieces = Utils.getTotalPieces(p.colorsSizes);
+                                if (pieces > 0) {
+                                    totalPieces += pieces;
+                                    totalValue += pieces * p.unitPrice;
+                                    productSet.add(p.name + '|' + p.sku);
+                                }
+                            }
+                            productCount = productSet.size;
+                        }
+                    } else {
+                        // وضع الفرع الواحد
+                        const branch = this.elements.branch.value.trim() || 'مكرم عبيد';
+                        if (this._tableData[branch]) {
+                            const data = this._tableData[branch];
+                            for (const p of data) {
+                                const pieces = Utils.getTotalPieces(p.colorsSizes);
+                                if (pieces > 0) {
+                                    totalPieces += pieces;
+                                    totalValue += pieces * p.unitPrice;
+                                    productSet.add(p.name + '|' + p.sku);
+                                }
+                            }
+                            productCount = productSet.size;
+                        }
+                    }
+
+                    this.elements.statCurrentOrder.textContent = productCount;
+                    this.elements.statTotalPieces.textContent = totalPieces;
+                    this.elements.statTotalValue.textContent = Utils.formatCurrency(totalValue) + ' LE';
+                    this.elements.bottomPieces.textContent = totalPieces;
+                    this.elements.bottomProducts.textContent = productCount;
+                    this.elements.bottomValue.textContent = Utils.formatCurrency(totalValue) + ' LE';
+                },
+
+                updateCloseButton() {
+                    // إظهار/إخفاء زر التقفيل حسب وجود بيانات في الفرع النشط
+                    const btn = this.elements.closeInvoiceBtn;
+                    if (this._multiBranchMode) {
+                        const branch = this._activeBranch;
+                        if (branch && this._tableData[branch]) {
+                            const data = this._tableData[branch];
+                            const hasData = data.some(p => Utils.getTotalPieces(p.colorsSizes) > 0);
+                            btn.style.display = hasData ? 'inline-flex' : 'none';
+                        } else {
+                            btn.style.display = 'none';
+                        }
+                    } else {
+                        const branch = this.elements.branch.value.trim() || 'مكرم عبيد';
+                        if (this._tableData[branch]) {
+                            const data = this._tableData[branch];
+                            const hasData = data.some(p => Utils.getTotalPieces(p.colorsSizes) > 0);
+                            btn.style.display = hasData ? 'inline-flex' : 'none';
+                        } else {
+                            btn.style.display = 'none';
+                        }
+                    }
+                },
+
+                // ===== دوال تقفيل الفاتورة =====
+
+                openConfirmCloseDialog() {
+                    const branch = this._activeBranch;
+                    if (!branch) {
+                        this.showAlert('⚠️ لا يوجد فرع نشط', 'error');
+                        return;
+                    }
+                    const data = this._tableData[branch] || [];
+                    const nonZero = data.filter(p => Utils.getTotalPieces(p.colorsSizes) > 0);
+                    if (!nonZero.length) {
+                        this.showAlert('⚠️ لا توجد كميات لإقفال الفاتورة', 'error');
+                        return;
+                    }
+
+                    const totalPieces = nonZero.reduce((s, p) => s + Utils.getTotalPieces(p.colorsSizes), 0);
+                    const totalValue = nonZero.reduce((s, p) => s + (Utils.getTotalPieces(p.colorsSizes) * p
+                        .unitPrice), 0);
+
+                    // بناء محتوى التأكيد
+                    let itemsHtml = '';
                     nonZero.forEach(p => {
-                        const pieces = Utils.getTotalPieces(p.colorsSizes);
-                        totalPieces += pieces;
-                        totalValue += pieces * p.unitPrice;
                         const cs = p.colorsSizes || {};
-                        let colorSizeStr = '';
+                        const parts = [];
                         for (const color in cs) {
                             const sizes = cs[color];
                             for (const size in sizes) {
                                 if (sizes[size] > 0) {
-                                    colorSizeStr += `${color} ${size}: ${sizes[size]}, `;
+                                    parts.push(`${color} ${size}: ${sizes[size]}`);
                                 }
                             }
                         }
-                        detailsHtml += `
-                            <div style="background:var(--light);border-radius:8px;padding:8px 12px;margin:6px 0;border:1px solid var(--gray-light);">
-                                <strong>${this.escapeHtml(p.name)}</strong> (SKU: ${this.escapeHtml(p.sku)}) - ${Utils.formatCurrency(p.unitPrice)} LE
-                                <div style="font-size:12px;color:var(--gray);">${colorSizeStr.slice(0,-2)}</div>
+                        itemsHtml += `
+                            <div style="background:var(--light);border-radius:8px;padding:6px 12px;margin-bottom:4px;font-size:13px;border:1px solid var(--gray-light);">
+                                <strong>${this.escapeHtml(p.name)}</strong> (${parts.join(', ')})
                             </div>
                         `;
                     });
-                    detailsHtml += `
-                        <div style="margin-top:12px;font-weight:600;font-size:16px;">
-                            إجمالي القطع: ${totalPieces} | القيمة: ${Utils.formatCurrency(totalValue)} LE
+
+                    const content = this.elements.confirmCloseContent;
+                    content.innerHTML = `
+                        <div style="margin-bottom:8px;font-size:15px;font-weight:600;">الفرع: ${this.escapeHtml(branch)}</div>
+                        <div style="margin-bottom:8px;">إجمالي القطع: <strong>${totalPieces}</strong></div>
+                        <div style="margin-bottom:12px;">إجمالي القيمة: <strong>${Utils.formatCurrency(totalValue)} LE</strong></div>
+                        <div style="border-top:1px solid var(--gray-light);padding-top:8px;max-height:200px;overflow-y:auto;">
+                            ${itemsHtml}
                         </div>
                     `;
 
-                    this.elements.closeInvoiceDetails.innerHTML = detailsHtml;
-                    this.elements.closeInvoiceConfirmDialog.classList.add('show');
+                    this.elements.confirmCloseDialog.classList.add('show');
                 },
 
                 confirmCloseInvoice() {
-                    const branch = this._closeInvoiceBranch;
-                    if (!branch) {
-                        this.closeCloseInvoiceDialog();
-                        return;
-                    }
-
+                    const branch = this._activeBranch;
+                    if (!branch) return;
                     const data = this._tableData[branch] || [];
                     const nonZero = data.filter(p => Utils.getTotalPieces(p.colorsSizes) > 0);
                     if (!nonZero.length) {
-                        this.showAlert(`⚠️ لا توجد كميات لإقفال فاتورة ${branch}`, 'error');
-                        this.closeCloseInvoiceDialog();
+                        this.showAlert('⚠️ لا توجد كميات', 'error');
                         return;
                     }
 
                     const productUrl = this._lastProductUrl || this.elements.url.value.trim() || '';
 
                     Utils.saveInvoiceToFirebase(branch, nonZero, productUrl, (error, key) => {
+                        this.closeConfirmCloseDialog();
                         if (error) {
                             this.showAlert('❌ ' + error, 'error');
                             return;
                         }
-                        // Clear data for this branch
+                        // حذف بيانات هذا الفرع بعد التقفيل
                         this._tableData[branch] = [];
-                        this.renderAllBranches();
-                        this.saveAllBranches();
+                        this.renderInvoice();
+                        this.saveAll();
                         this.markDirty();
-                        this.showAlert(`✅ تم تقفيل فاتورة ${branch} (ID: ${key})`, 'success');
-                        this.closeCloseInvoiceDialog();
+                        this.showAlert(`✅ تم تقفيل فاتورة فرع "${branch}" (ID: ${key})`, 'success');
                     });
                 },
 
-                closeCloseInvoiceDialog() {
-                    this.elements.closeInvoiceConfirmDialog.classList.remove('show');
-                    this._closeInvoiceBranch = null;
+                closeConfirmCloseDialog() {
+                    this.elements.confirmCloseDialog.classList.remove('show');
                 },
 
-                closeBranchInvoice(branch) {
-                    // Trigger close for a specific branch
-                    this._activeBranch = branch;
-                    this.openCloseInvoiceDialog();
-                },
+                // ===== دوال تصدير =====
 
-                // ===== CLEAR ALL =====
-                clearAllData() {
-                    let hasData = false;
-                    for (const branch in this._tableData) {
-                        const data = this._tableData[branch] || [];
-                        if (data.some(p => Utils.getTotalPieces(p.colorsSizes) > 0)) {
-                            hasData = true;
-                            break;
-                        }
-                    }
-                    if (!hasData) {
-                        this.showAlert('⚠️ لا توجد بيانات لمسحها', 'info');
-                        return;
-                    }
-                    if (confirm('هل أنت متأكد من حذف جميع البيانات من جميع الفروع؟')) {
-                        this._tableData = {};
-                        this._branchOrder = [];
-                        this._productCardStates = {};
-                        this.renderAllBranches();
-                        this.saveAllBranches();
-                        this.markDirty();
-                        this.showAlert('🗑️ تم مسح جميع البيانات', 'info');
-                    }
-                },
-
-                // ===== EXPORT =====
                 openExportDialog() {
-                    // Determine which branch to export
-                    let branch;
-                    if (this._isMultiBranch) {
-                        branch = this._activeBranch;
-                        if (!branch) {
-                            this.showAlert('⚠️ الرجاء اختيار فرع أولاً', 'error');
-                            return;
+                    let data = [];
+                    if (this._multiBranchMode) {
+                        const branch = this._activeBranch;
+                        if (branch && this._tableData[branch]) {
+                            data = this._tableData[branch].filter(p => Utils.getTotalPieces(p.colorsSizes) > 0);
                         }
                     } else {
-                        branch = this.elements.branchSelect.value || 'مكرم عبيد';
+                        const branch = this.elements.branch.value.trim() || 'مكرم عبيد';
+                        if (this._tableData[branch]) {
+                            data = this._tableData[branch].filter(p => Utils.getTotalPieces(p.colorsSizes) > 0);
+                        }
                     }
-
-                    const data = this._tableData[branch] || [];
-                    const nonZero = data.filter(p => Utils.getTotalPieces(p.colorsSizes) > 0);
-                    if (!nonZero.length) {
+                    if (!data.length) {
                         this.showAlert('⚠️ لا توجد كميات لتصديرها', 'error');
                         return;
                     }
-                    this._exportBranch = branch;
                     this.elements.exportDialog.classList.add('show');
                 },
 
@@ -4405,10 +4291,20 @@
                     const format = document.querySelector('input[name="exportFormat"]:checked')?.value || 'detail';
                     this.closeExportDialog();
 
-                    let branch = this._exportBranch || this._activeBranch || this.elements.branchSelect.value || 'مكرم عبيد';
-                    const data = this._tableData[branch] || [];
-                    const nonZero = data.filter(p => Utils.getTotalPieces(p.colorsSizes) > 0);
-                    const wb = ExcelGenerator.fromTableData(nonZero, format);
+                    let data = [];
+                    if (this._multiBranchMode) {
+                        const branch = this._activeBranch;
+                        if (branch && this._tableData[branch]) {
+                            data = this._tableData[branch].filter(p => Utils.getTotalPieces(p.colorsSizes) > 0);
+                        }
+                    } else {
+                        const branch = this.elements.branch.value.trim() || 'مكرم عبيد';
+                        if (this._tableData[branch]) {
+                            data = this._tableData[branch].filter(p => Utils.getTotalPieces(p.colorsSizes) > 0);
+                        }
+                    }
+
+                    const wb = ExcelGenerator.fromTableData(data, format);
                     const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
                     const blob = new Blob([wbout], { type: 'application/octet-stream' });
                     const link = document.createElement('a');
@@ -4419,14 +4315,92 @@
                         colorSummary: 'ملخص_بالألوان',
                         system: 'System'
                     };
+                    const branchName = this._multiBranchMode ? this._activeBranch : (this.elements.branch.value ||
+                    'مكرم عبيد');
                     link.download =
-                        `invoice_${branch}_${names[format] || 'export'}_${new Date().toISOString().slice(0,10)}.xlsx`;
+                        `invoice_${branchName}_${names[format] || 'export'}_${new Date().toISOString().slice(0,10)}.xlsx`;
                     link.click();
                     URL.revokeObjectURL(link.href);
-                    this.showAlert(`✅ تم تصدير XLSX (${names[format]}) للفرع ${branch}`, 'success');
+                    this.showAlert(`✅ تم تصدير XLSX (${names[format]})`, 'success');
                 },
 
-                // ===== OLD INVOICES =====
+                openExportOldInvoice(invoice) {
+                    const dialog = this.elements.exportDialog;
+                    dialog.classList.add('show');
+                    const originalExport = this.handleExport;
+                    this.elements.dialogExport.onclick = () => {
+                        const format = document.querySelector('input[name="exportFormat"]:checked')?.value || 'detail';
+                        this.closeExportDialog();
+                        const tableData = invoice.items.map(item => ({
+                            name: item.name,
+                            sku: item.sku || '',
+                            unitPrice: item.unitPrice || 0,
+                            image: item.image || '',
+                            productId: item.productId || '',
+                            colorsSizes: item.colorsSizes || {}
+                        }));
+                        const wb = ExcelGenerator.fromTableData(tableData, format);
+                        const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+                        const blob = new Blob([wbout], { type: 'application/octet-stream' });
+                        const link = document.createElement('a');
+                        link.href = URL.createObjectURL(blob);
+                        const names = {
+                            detail: 'تفصيل',
+                            summary: 'ملخص',
+                            colorSummary: 'ملخص_بالألوان',
+                            system: 'System'
+                        };
+                        link.download =
+                            `invoice_old_${names[format] || 'export'}_${new Date().toISOString().slice(0,10)}.xlsx`;
+                        link.click();
+                        URL.revokeObjectURL(link.href);
+                        this.showAlert(`✅ تم تصدير الفاتورة القديمة (${names[format]})`, 'success');
+                        this.elements.dialogExport.onclick = originalExport;
+                    };
+                    this.elements.dialogCancel.onclick = () => {
+                        this.closeExportDialog();
+                        this.elements.dialogExport.onclick = originalExport;
+                    };
+                },
+
+                // ===== دوال مسح الكل =====
+
+                clearAllData() {
+                    let hasData = false;
+                    if (this._multiBranchMode) {
+                        const branch = this._activeBranch;
+                        if (branch && this._tableData[branch]) {
+                            hasData = this._tableData[branch].some(p => Utils.getTotalPieces(p.colorsSizes) > 0);
+                        }
+                    } else {
+                        const branch = this.elements.branch.value.trim() || 'مكرم عبيد';
+                        if (this._tableData[branch]) {
+                            hasData = this._tableData[branch].some(p => Utils.getTotalPieces(p.colorsSizes) > 0);
+                        }
+                    }
+                    if (!hasData) {
+                        this.showAlert('⚠️ لا توجد بيانات لمسحها', 'info');
+                        return;
+                    }
+                    if (confirm('هل أنت متأكد من حذف جميع البيانات في هذا الفرع؟')) {
+                        if (this._multiBranchMode) {
+                            const branch = this._activeBranch;
+                            if (branch) {
+                                this._tableData[branch] = [];
+                            }
+                        } else {
+                            const branch = this.elements.branch.value.trim() || 'مكرم عبيد';
+                            this._tableData[branch] = [];
+                        }
+                        this.renderInvoice();
+                        this.saveAll();
+                        this.markDirty();
+                        this.showAlert('🗑️ تم مسح جميع البيانات', 'info');
+                    }
+                },
+
+                // ===== دوال الفواتير السابقة =====
+
                 toggleOldOrders() {
                     const sec = this.elements.oldOrdersSection;
                     if (sec.style.display === 'none') {
@@ -4444,6 +4418,8 @@
                     const list = this.elements.oldOrdersList;
                     list.innerHTML =
                         `<div style="text-align:center;padding:20px;color:var(--gray);"><i class="fas fa-spinner fa-spin"></i> جاري التحميل...</div>`;
+                    // إذا كان في وضع تعدد الفروع، نمرر الفرع النشط كفلتر
+                    const branchFilter = this._multiBranchMode ? this._activeBranch : null;
                     Utils.loadOldInvoices((invoices) => {
                         this._oldInvoices = invoices;
                         if (!invoices || !invoices.length) {
@@ -4467,8 +4443,7 @@
                                     for (const color in cs) {
                                         const sizes = cs[color];
                                         for (const size in sizes) {
-                                            if (sizes[size] > 0) parts.push(
-                                            `${color} ${size}:${sizes[size]}`);
+                                            if (sizes[size] > 0) parts.push(`${color} ${size}:${sizes[size]}`);
                                         }
                                     }
                                     return `${item.name} (${parts.join(' ')})`;
@@ -4496,7 +4471,7 @@
                         list.innerHTML = html;
                         this.elements.oldOrdersCount.textContent = `${invoices.length} فاتورة`;
                         this.elements.statTodayOrders.textContent = invoices.length;
-                    });
+                    }, branchFilter);
                 },
 
                 showInvoicePreview(idx) {
@@ -4557,82 +4532,68 @@
                     }
                 },
 
-                openExportOldInvoice(invoice) {
-                    const dialog = this.elements.exportDialog;
-                    dialog.classList.add('show');
-                    const originalExport = this.handleExport;
-                    this.elements.dialogExport.onclick = () => {
-                        const format = document.querySelector('input[name="exportFormat"]:checked')?.value || 'detail';
-                        this.closeExportDialog();
-                        const tableData = invoice.items.map(item => ({
-                            name: item.name,
-                            sku: item.sku || '',
-                            unitPrice: item.unitPrice || 0,
-                            image: item.image || '',
-                            productId: item.productId || '',
-                            colorsSizes: item.colorsSizes || {}
-                        }));
-                        const wb = ExcelGenerator.fromTableData(tableData, format);
-                        const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
-                        const blob = new Blob([wbout], { type: 'application/octet-stream' });
-                        const link = document.createElement('a');
-                        link.href = URL.createObjectURL(blob);
-                        const names = {
-                            detail: 'تفصيل',
-                            summary: 'ملخص',
-                            colorSummary: 'ملخص_بالألوان',
-                            system: 'System'
-                        };
-                        link.download =
-                            `invoice_old_${names[format] || 'export'}_${new Date().toISOString().slice(0,10)}.xlsx`;
-                        link.click();
-                        URL.revokeObjectURL(link.href);
-                        this.showAlert(`✅ تم تصدير الفاتورة القديمة (${names[format]})`, 'success');
-                        this.elements.dialogExport.onclick = originalExport;
-                    };
-                    this.elements.dialogCancel.onclick = () => {
-                        this.closeExportDialog();
-                        this.elements.dialogExport.onclick = originalExport;
-                    };
-                },
-
                 exportAllInvoices() {
                     if (!this._oldInvoices || !this._oldInvoices.length) {
                         this.showAlert('⚠️ لا توجد فواتير', 'error');
                         return;
                     }
-                    // Simple export: just concatenate all
-                    const wb = XLSX.utils.book_new();
-                    this._oldInvoices.forEach((inv, idx) => {
-                        const tableData = inv.items.map(item => ({
-                            name: item.name,
-                            sku: item.sku || '',
-                            unitPrice: item.unitPrice || 0,
-                            image: item.image || '',
-                            productId: item.productId || '',
-                            colorsSizes: item.colorsSizes || {}
-                        }));
-                        const ws = ExcelGenerator.fromTableData(tableData, 'detail');
-                        const sheetName = `${inv.branch || 'Invoice'}_${idx+1}`.slice(0, 31);
-                        XLSX.utils.book_append_sheet(wb, ws, sheetName);
-                    });
-                    const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
-                    const blob = new Blob([wbout], { type: 'application/octet-stream' });
-                    const link = document.createElement('a');
-                    link.href = URL.createObjectURL(blob);
-                    link.download = `all_invoices_${new Date().toISOString().slice(0,10)}.xlsx`;
-                    link.click();
-                    URL.revokeObjectURL(link.href);
+                    Utils.exportAllInvoices(this._oldInvoices);
                     this.showAlert(`✅ تم تصدير ${this._oldInvoices.length} فاتورة`, 'success');
                 },
 
-                // ===== DUPLICATE (not used in multi-branch but kept) =====
-                handleAddWithDuplicateCheck() {
-                    // Not used in multi-branch flow
-                    this.handleAdd();
+                // ===== دوال التحذير =====
+
+                showWarningDialog(title, message, onConfirm, onCancel) {
+                    const content = this.elements.warningContent;
+                    content.innerHTML = `
+                        <p style="font-size:15px;font-weight:500;">${this.escapeHtml(title)}</p>
+                        <p style="font-size:14px;color:var(--gray);">${this.escapeHtml(message)}</p>
+                    `;
+                    this.elements.warningDialog.classList.add('show');
+                    // ربط الأحداث مؤقتاً
+                    this.elements.warningConfirm.onclick = () => {
+                        if (onConfirm) onConfirm();
+                        this.closeWarningDialog();
+                    };
+                    this.elements.warningCancel.onclick = () => {
+                        if (onCancel) onCancel();
+                        this.closeWarningDialog();
+                    };
                 },
 
-                // ===== HELPERS =====
+                closeWarningDialog() {
+                    this.elements.warningDialog.classList.remove('show');
+                },
+
+                // ===== دوال الحفظ والمزامنة =====
+
+                saveAll() {
+                    Storage.set('tableDataMulti', this._tableData);
+                    Storage.set('selectedBranches', this._selectedBranches);
+                    Storage.set('activeBranch', this._activeBranch);
+                    Storage.set('cardStatesMulti', this._productCardStates);
+                    Storage.set('multiBranchMode', this._multiBranchMode);
+                    Storage.set('url', this.elements.url.value);
+                    Storage.set('series', this.elements.series.value);
+                },
+
+                saveAllToFirebase() {
+                    const userId = this._currentUserId;
+                    for (const branch in this._tableData) {
+                        if (this._selectedBranches.includes(branch)) {
+                            Utils.saveBranchTable(userId, branch, this._tableData[branch], (error) => {
+                                if (error) console.warn('⚠️ Error saving branch:', branch, error);
+                            });
+                        }
+                    }
+                },
+
+                markDirty() {
+                    this._isDirty = true;
+                },
+
+                // ===== دوال مساعدة =====
+
                 escapeHtml(text) {
                     const d = document.createElement('div');
                     d.textContent = text;
@@ -4672,11 +4633,72 @@
                     this.elements.modalImage.src = '';
                 },
 
-                // Dummy for duplicate dialog (kept for compatibility)
+                updateStickyPosition() {
+                    const sidebar = document.getElementById('sidebar');
+                    const wrapper = this.elements.stickyWrapper;
+                    if (!wrapper || !sidebar) return;
+
+                    const isHidden = sidebar.classList.contains('hidden');
+                    const isMobile = window.innerWidth <= 992;
+
+                    if (isMobile) {
+                        wrapper.classList.add('sidebar-hidden');
+                        wrapper.style.paddingRight = '15px';
+                        wrapper.style.paddingLeft = '15px';
+                    } else if (isHidden) {
+                        wrapper.classList.add('sidebar-hidden');
+                        wrapper.style.paddingRight = '25px';
+                        wrapper.style.paddingLeft = '25px';
+                    } else {
+                        wrapper.classList.remove('sidebar-hidden');
+                        wrapper.style.paddingRight = '305px';
+                        wrapper.style.paddingLeft = '25px';
+                    }
+                },
+
+                // ===== دوال الطريقة القديمة للتوافق =====
+
+                closeFullInvoice() {
+                    const branch = this.elements.branch.value.trim() || 'مكرم عبيد';
+                    const data = this._tableData[branch] || [];
+                    const nonZero = data.filter(p => Utils.getTotalPieces(p.colorsSizes) > 0);
+                    if (!nonZero.length) {
+                        this.showAlert('⚠️ لا توجد كميات لإقفال الفاتورة', 'error');
+                        return;
+                    }
+                    const productUrl = this._lastProductUrl || this.elements.url.value.trim() || '';
+                    const totalPieces = nonZero.reduce((s, p) => s + Utils.getTotalPieces(p.colorsSizes), 0);
+                    const totalValue = nonZero.reduce((s, p) => s + (Utils.getTotalPieces(p.colorsSizes) * p
+                        .unitPrice), 0);
+
+                    if (!confirm(`هل أنت متأكد من تقفيل الفاتورة؟\nالفرع: ${branch}\nالقطع: ${totalPieces}\nالقيمة: ${Utils.formatCurrency(totalValue)} LE`)) {
+                        return;
+                    }
+
+                    Utils.saveInvoiceToFirebase(branch, nonZero, productUrl, (error, key) => {
+                        if (error) {
+                            this.showAlert('❌ ' + error, 'error');
+                            return;
+                        }
+                        this._tableData[branch] = [];
+                        this.renderInvoice();
+                        this.saveAll();
+                        this.markDirty();
+                        this.showAlert(`✅ تم تقفيل الفاتورة (ID: ${key})`, 'success');
+                    });
+                },
+
                 closeDuplicateDialog() {
                     this.elements.duplicateDialog.classList.remove('show');
+                    this._pendingAddData = null;
                 },
-                confirmAddDuplicate() {}
+
+                // ===== دوال التوافق مع واجهة الصفحة =====
+
+                // دالة لتصدير فاتورة قديمة (تستخدم من الزر)
+                exportOldInvoice(idx) {
+                    this.exportSingleOldInvoice(idx);
+                }
             };
 
             window.UI = UI;
