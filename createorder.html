@@ -3869,7 +3869,7 @@
           for (const branch of branches) {
             const table = this._tables.find(t => t.branch === branch);
             if (table) {
-              const exists = table.data.some(p => p.name === product.name && p.sku === sku);
+              const exists = (table.data || []).some(p => p.name === product.name && p.sku === sku);
               if (exists) {
                 duplicateBranches.push(branch);
               } else {
