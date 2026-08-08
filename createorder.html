@@ -398,6 +398,112 @@
         }
 
         /* =========================================================
+           MULTI BRANCH
+           ========================================================= */
+        .multi-branch-section {
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-sm);
+            border: 1px solid rgba(0, 0, 0, 0.04);
+            padding: 16px 24px;
+            margin-bottom: 25px;
+        }
+
+        .multi-branch-section .branch-checkboxes {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px 30px;
+            margin-top: 10px;
+        }
+
+        .multi-branch-section .branch-checkboxes label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+            font-size: 14px;
+            color: var(--dark-secondary);
+            cursor: pointer;
+        }
+
+        .multi-branch-section .branch-checkboxes label input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--primary);
+            cursor: pointer;
+        }
+
+        .tabs-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            margin: 16px 0 20px;
+            border-bottom: 2px solid var(--gray-light);
+            padding-bottom: 2px;
+        }
+
+        .tab-item {
+            padding: 10px 20px;
+            border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+            background: var(--light);
+            color: var(--gray);
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: var(--transition);
+            border: 1px solid transparent;
+            border-bottom: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            user-select: none;
+        }
+
+        .tab-item:hover {
+            background: var(--info-light);
+            color: var(--primary);
+        }
+
+        .tab-item.active {
+            background: white;
+            color: var(--primary);
+            border-color: var(--gray-light);
+            border-bottom: 2px solid white;
+            margin-bottom: -2px;
+        }
+
+        .tab-item .tab-badge {
+            background: var(--primary-light);
+            color: white;
+            font-size: 10px;
+            padding: 1px 8px;
+            border-radius: 30px;
+            font-weight: 700;
+        }
+
+        .tab-item .tab-badge.zero {
+            background: var(--gray-light);
+            color: var(--gray);
+        }
+
+        .tab-item .tab-close {
+            background: none;
+            border: none;
+            color: var(--gray);
+            cursor: pointer;
+            font-size: 12px;
+            padding: 0 4px;
+            transition: var(--transition);
+            border-radius: 50%;
+            line-height: 1;
+        }
+
+        .tab-item .tab-close:hover {
+            color: var(--danger);
+            background: var(--danger-light);
+        }
+
+        /* =========================================================
            FORM — responsive for mobile
            ========================================================= */
         .floating-group {
@@ -609,140 +715,7 @@
         }
 
         /* =========================================================
-           MULTI-BRANCH TOGGLE & CHECKBOXES
-           ========================================================= */
-        .multi-branch-section {
-            background: var(--light);
-            border-radius: var(--radius-sm);
-            padding: 16px 20px;
-            margin-bottom: 16px;
-            border: 1px solid var(--gray-light);
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            gap: 16px;
-        }
-
-        .multi-branch-section .toggle-wrapper {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-weight: 600;
-            font-size: 14px;
-            color: var(--dark-secondary);
-            cursor: pointer;
-            user-select: none;
-        }
-
-        .multi-branch-section .toggle-wrapper input[type="checkbox"] {
-            width: 20px;
-            height: 20px;
-            accent-color: var(--primary);
-            cursor: pointer;
-        }
-
-        .multi-branch-section .branches-checkboxes {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px 20px;
-            flex: 1;
-        }
-
-        .multi-branch-section .branches-checkboxes label {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 14px;
-            font-weight: 500;
-            color: var(--dark-secondary);
-            cursor: pointer;
-        }
-
-        .multi-branch-section .branches-checkboxes label input[type="checkbox"] {
-            width: 18px;
-            height: 18px;
-            accent-color: var(--primary);
-            cursor: pointer;
-        }
-
-        /* =========================================================
-           TABS
-           ========================================================= */
-        .tabs-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 4px;
-            margin-bottom: 20px;
-            border-bottom: 2px solid var(--gray-light);
-            padding-bottom: 2px;
-            background: white;
-            border-radius: var(--radius-sm) var(--radius-sm) 0 0;
-        }
-
-        .tab-btn {
-            padding: 10px 20px;
-            font-size: 14px;
-            font-weight: 600;
-            background: transparent;
-            border: none;
-            border-bottom: 3px solid transparent;
-            cursor: pointer;
-            color: var(--gray);
-            transition: var(--transition);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            white-space: nowrap;
-        }
-
-        .tab-btn:hover {
-            color: var(--dark-secondary);
-            background: var(--light);
-        }
-
-        .tab-btn.active {
-            color: var(--primary);
-            border-bottom-color: var(--primary);
-        }
-
-        .tab-btn .badge {
-            background: var(--primary-light);
-            color: white;
-            font-size: 11px;
-            padding: 2px 8px;
-            border-radius: 30px;
-            font-weight: 700;
-        }
-
-        .tab-btn .close-tab {
-            background: var(--danger-light);
-            color: var(--danger);
-            border: none;
-            border-radius: 50%;
-            width: 20px;
-            height: 20px;
-            font-size: 12px;
-            cursor: pointer;
-            transition: var(--transition);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-right: 4px;
-        }
-        .tab-btn .close-tab:hover {
-            background: var(--danger);
-            color: white;
-        }
-
-        .tab-content {
-            display: none;
-        }
-        .tab-content.active {
-            display: block;
-        }
-
-        /* =========================================================
-           PRODUCT CARDS (same as before)
+           PRODUCT CARDS
            ========================================================= */
         .product-card {
             background: white;
@@ -985,12 +958,7 @@
             color: var(--dark-secondary);
         }
 
-        .size-row.zero-qty .qty-val {
-            color: #bcc8db;
-            opacity: 0.6;
-        }
-
-        .size-row.zero-qty .size-label {
+        .size-row .qty-val.zero {
             color: #bcc8db;
             opacity: 0.6;
         }
@@ -1585,39 +1553,6 @@
         }
 
         /* =========================================================
-           CLOSE INVOICE DIALOG (full preview)
-           ========================================================= */
-        .close-invoice-preview {
-            background: var(--light);
-            border-radius: var(--radius-sm);
-            padding: 14px;
-            margin: 10px 0;
-            border: 1px solid var(--gray-light);
-            max-height: 300px;
-            overflow-y: auto;
-        }
-
-        .close-invoice-preview .item-summary {
-            border-bottom: 1px dashed var(--gray-light);
-            padding: 6px 0;
-            font-size: 13px;
-        }
-
-        .close-invoice-preview .item-summary:last-child {
-            border-bottom: none;
-        }
-
-        .close-invoice-preview .item-summary .name {
-            font-weight: 600;
-        }
-
-        .close-invoice-preview .item-summary .detail {
-            color: var(--gray);
-            font-size: 12px;
-            margin-right: 12px;
-        }
-
-        /* =========================================================
            ANIMATIONS
            ========================================================= */
         @keyframes fadeSlide {
@@ -1914,17 +1849,20 @@
         ========================================================= -->
         <div class="container">
 
-            <!-- MULTI-BRANCH TOGGLE & CHECKBOXES -->
+            <!-- MULTI BRANCH SECTION -->
             <div class="multi-branch-section">
-                <div class="toggle-wrapper">
-                    <input type="checkbox" id="multiBranchToggle">
-                    <label for="multiBranchToggle"><i class="fas fa-layer-group"></i> تعدد فروع</label>
+                <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+                    <label style="display:flex;align-items:center;gap:8px;font-weight:600;font-size:14px;color:var(--dark-secondary);cursor:pointer;">
+                        <input type="checkbox" id="multiBranchToggle" />
+                        <i class="fas fa-store-alt"></i> تعدد فروع
+                    </label>
+                    <span style="font-size:12px;color:var(--gray);">فعّل لتقسيم الطلبية على عدة فروع</span>
                 </div>
-                <div class="branches-checkboxes" id="branchesCheckboxes">
-                    <label><input type="checkbox" value="مكرم عبيد" checked> مكرم عبيد</label>
-                    <label><input type="checkbox" value="الشيخ زايد"> الشيخ زايد</label>
-                    <label><input type="checkbox" value="الرحاب"> الرحاب</label>
-                    <label><input type="checkbox" value="شرم الشيخ"> شرم الشيخ</label>
+                <div class="branch-checkboxes" id="branchCheckboxes" style="display:none;">
+                    <label><input type="checkbox" value="الشيخ زايد" /> الشيخ زايد</label>
+                    <label><input type="checkbox" value="مكرم عبيد" /> مكرم عبيد</label>
+                    <label><input type="checkbox" value="الرحاب" /> الرحاب</label>
+                    <label><input type="checkbox" value="شرم الشيخ" /> شرم الشيخ</label>
                 </div>
             </div>
 
@@ -1939,14 +1877,14 @@
                         <label><i class="fas fa-link"></i> رابط المنتج</label>
                     </div>
                     <div class="floating-group">
-                        <select id="branchSelect">
+                        <select id="branchSelect" style="display:none;">
                             <option value="">اختر الفرع</option>
-                            <option value="مكرم عبيد">مكرم عبيد</option>
                             <option value="الشيخ زايد">الشيخ زايد</option>
+                            <option value="مكرم عبيد">مكرم عبيد</option>
                             <option value="الرحاب">الرحاب</option>
                             <option value="شرم الشيخ">شرم الشيخ</option>
                         </select>
-                        <label><i class="fas fa-store"></i> الفرع</label>
+                        <label id="branchLabel"><i class="fas fa-store"></i> الفرع</label>
                     </div>
                     <div class="floating-group">
                         <input type="number" id="seriesQty" placeholder=" " min="1" value="1" />
@@ -1975,7 +1913,7 @@
                 </div>
             </section>
 
-            <!-- INVOICE TABLE (per active tab) -->
+            <!-- INVOICE TABLE -->
             <section class="card">
                 <div class="invoice-header-actions">
                     <div class="left-actions">
@@ -2002,11 +1940,14 @@
                     </div>
                 </div>
                 <div id="invoiceContainer">
-                    <!-- will be filled per tab -->
+                    <div class="empty-state" id="emptyInvoiceMsg">
+                        <i class="fas fa-box-open"></i>
+                        <p>لا توجد منتجات مضافة بعد</p>
+                    </div>
                 </div>
             </section>
 
-            <!-- STATS (global for all tabs) -->
+            <!-- STATS -->
             <section class="stats-grid" id="statsGrid">
                 <div class="stat-card">
                     <div class="stat-label"><i class="fas fa-calendar-day"></i> طلبات اليوم</div>
@@ -2124,20 +2065,7 @@
             </div>
         </div>
 
-        <!-- CLOSE INVOICE PREVIEW DIALOG (per branch) -->
-        <div class="dialog-overlay" id="closeInvoiceDialog">
-            <div class="dialog-box" style="max-width: 700px;">
-                <button class="modal-close-btn" onclick="document.getElementById('closeInvoiceDialog').classList.remove('show')"><i class="fas fa-times"></i></button>
-                <h3><i class="fas fa-check-double" style="color:var(--success);"></i> تأكيد تقفيل الفاتورة</h3>
-                <div id="closeInvoiceContent"></div>
-                <div class="dialog-actions">
-                    <button class="btn btn-secondary" id="closeInvoiceCancel"><i class="fas fa-times"></i> إلغاء</button>
-                    <button class="btn btn-success" id="closeInvoiceConfirm"><i class="fas fa-check"></i> تأكيد التقفيل</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- INVOICE PREVIEW DIALOG (old) -->
+        <!-- INVOICE PREVIEW DIALOG -->
         <div class="dialog-overlay" id="invoicePreviewDialog">
             <div class="dialog-box" style="max-width: 700px;">
                 <button class="modal-close-btn" onclick="document.getElementById('invoicePreviewDialog').classList.remove('show')"><i class="fas fa-times"></i></button>
@@ -2366,7 +2294,7 @@
                         const u = val.toUpperCase().trim();
                         if (colors.includes(val) || colors.includes(u)) { color = val; } else if (sizes.includes(
                             val) || sizes.includes(u)) { size = val; } else if (u.match(
-                                /^(?:[0-9]+XL|[0-9]+X|XXXS|XXS|XS|S|M|L|XL|XXL|XXXL|XXXXL|ONE SIZE|FREE SIZE)$/
+                            /^(?:[0-9]+XL|[0-9]+X|XXXS|XXS|XS|S|M|L|XL|XXL|XXXL|XXXXL|ONE SIZE|FREE SIZE)$/
                             )) { size = val; } else { color = val; }
                     };
                     check(v.option1);
@@ -2396,83 +2324,72 @@
                     return this.getTotalPieces(product.colorsSizes) * product.unitPrice;
                 },
 
-                // Load all tables for current user (multi-branch)
-                loadAllTables(callback) {
+                // Each table is stored with its own Firebase Push ID
+                // Format: currentTables/[Push ID] = { data, branch, updatedAt, userId }
+                loadAllUserTables(callback) {
                     if (!database) {
-                        if (callback) callback(null);
+                        if (callback) callback({});
                         return;
                     }
                     const userId = Storage.getUserId();
-                    database.ref('currentTables').orderByChild('userId').equalTo(userId).once('value', (snapshot) => {
+                    database.ref('currentTables').once('value', (snapshot) => {
                         const data = snapshot.val();
-                        const tables = [];
-                        if (data) {
-                            for (const key in data) {
-                                const table = data[key];
-                                if (table && table.userId === userId) {
-                                    tables.push({
+                        if (!data) {
+                            if (callback) callback({});
+                            return;
+                        }
+                        const userTables = {};
+                        for (const key in data) {
+                            const table = data[key];
+                            if (table.userId === userId) {
+                                // Verify structure
+                                if (table.data && Array.isArray(table.data)) {
+                                    userTables[key] = {
                                         id: key,
-                                        ...table
-                                    });
+                                        data: table.data,
+                                        branch: table.branch || 'فرع غير معروف',
+                                        updatedAt: table.updatedAt || 0,
+                                        userId: table.userId || userId
+                                    };
                                 }
                             }
                         }
-                        console.log('✅ Loaded tables for user:', userId, tables.length);
-                        if (callback) callback(tables);
+                        if (callback) callback(userTables);
                     }, (error) => {
                         console.error('❌ Error loading tables:', error);
-                        if (callback) callback(null);
+                        if (callback) callback({});
                     });
                 },
 
-                // Save a table (new or update) - uses push for new
-                saveTable(tableData, branch, callback) {
+                saveTable(tableId, tableData, callback) {
                     if (!database) {
                         if (callback) callback('Firebase not ready');
                         return;
                     }
                     const userId = Storage.getUserId();
-                    const ref = database.ref('currentTables').push();
-                    const newTable = {
-                        data: tableData || [],
-                        branch: branch || '',
+                    const data = {
+                        data: tableData.data || [],
+                        branch: tableData.branch || 'فرع غير معروف',
                         updatedAt: firebase.database.ServerValue.TIMESTAMP,
                         userId: userId
                     };
-                    ref.set(newTable, (error) => {
+
+                    const ref = tableId ? database.ref('currentTables/' + tableId) : database.ref('currentTables')
+                        .push();
+                    const isNew = !tableId;
+
+                    ref.set(data, (error) => {
                         if (error) {
                             console.error('❌ Error saving table:', error);
                             if (callback) callback(error);
                         } else {
-                            console.log('✅ Table saved with ID:', ref.key, 'branch:', branch);
-                            if (callback) callback(null, ref.key);
+                            const id = isNew ? ref.key : tableId;
+                            console.log(`✅ Table saved: ${id} (${data.branch})`);
+                            if (callback) callback(null, id);
                         }
                     });
                 },
 
-                // Update existing table by ID
-                updateTable(tableId, tableData, branch, callback) {
-                    if (!database) {
-                        if (callback) callback('Firebase not ready');
-                        return;
-                    }
-                    const updates = {
-                        data: tableData || [],
-                        branch: branch || '',
-                        updatedAt: firebase.database.ServerValue.TIMESTAMP
-                    };
-                    database.ref('currentTables/' + tableId).update(updates, (error) => {
-                        if (error) {
-                            console.error('❌ Error updating table:', error);
-                            if (callback) callback(error);
-                        } else {
-                            console.log('✅ Table updated:', tableId);
-                            if (callback) callback(null);
-                        }
-                    });
-                },
-
-                // Delete a table by ID
                 deleteTable(tableId, callback) {
                     if (!database) {
                         if (callback) callback('Firebase not ready');
@@ -2483,13 +2400,12 @@
                             console.error('❌ Error deleting table:', error);
                             if (callback) callback(error);
                         } else {
-                            console.log('✅ Table deleted:', tableId);
+                            console.log(`✅ Table deleted: ${tableId}`);
                             if (callback) callback(null);
                         }
                     });
                 },
 
-                // Save invoice (same as before but with branch)
                 saveInvoiceToFirebase(branchName, tableData, productUrl, callback) {
                     if (!database) {
                         if (callback) callback('⚠️ Firebase not ready');
@@ -2530,7 +2446,7 @@
                             console.error('❌ Firebase save error:', error);
                             if (callback) callback('❌ فشل الحفظ: ' + error.message);
                         } else {
-                            console.log('✅ Invoice saved for user:', userId, 'branch:', branchName);
+                            console.log('✅ Invoice saved for user:', userId);
                             if (callback) callback(null, ref.key);
                         }
                     });
@@ -2768,7 +2684,7 @@
                     return {
                         name: Utils.cleanText(title) || 'Unknown',
                         price: price || 0,
-                        colors: Utils.unique(colors.filter(c => c && String(c).trim())),
+                        colors: Utils.unique(colors.length ? colors : ['']),
                         sizes: Utils.unique(sizes.length ? sizes : ['']),
                         sku: sku || '',
                         images: Utils.unique(images),
@@ -2791,8 +2707,8 @@
                     return {
                         name: Utils.cleanText(name) || 'Unknown',
                         price: price ? parseFloat(price) : 0,
-                        colors: [],
-sizes: [],
+                        colors: [''],
+                        sizes: [''],
                         sku: '',
                         images: image ? [image] : [],
                         mainImage: image || '',
@@ -2804,11 +2720,11 @@ sizes: [],
             };
 
             // ================================================================
-            //  EXCEL GENERATOR (unchanged)
+            //  EXCEL GENERATOR
             // ================================================================
             const ExcelGenerator = {
                 generateProductsFromProduct(product, seriesQty) {
-                    const colors = product.colors.length ? product.colors : ['بدون لون'];
+                    const colors = product.colors.length ? product.colors : [''];
                     const sizes = product.sizes.length ? product.sizes : ['No Size'];
                     const colorsSizes = {};
                     colors.forEach(color => {
@@ -2989,12 +2905,13 @@ sizes: [],
             };
 
             // ================================================================
-            //  UI CONTROLLER (NEW)
+            //  UI CONTROLLER — Multi-Branch with Firebase Push IDs
             // ================================================================
             const UI = {
                 elements: {
                     url: document.getElementById('productUrl'),
                     branchSelect: document.getElementById('branchSelect'),
+                    branchLabel: document.getElementById('branchLabel'),
                     series: document.getElementById('seriesQty'),
                     fetchBtn: document.getElementById('fetchProductBtn'),
                     addBtn: document.getElementById('addToTableBtn'),
@@ -3007,6 +2924,7 @@ sizes: [],
                     pSizes: document.getElementById('pSizes'),
                     storeStatus: document.getElementById('storeStatus'),
                     invoiceContainer: document.getElementById('invoiceContainer'),
+                    emptyMsg: document.getElementById('emptyInvoiceMsg'),
                     statTodayOrders: document.getElementById('statTodayOrders'),
                     statCurrentOrder: document.getElementById('statCurrentOrder'),
                     statTotalPieces: document.getElementById('statTotalPieces'),
@@ -3044,54 +2962,116 @@ sizes: [],
                     exportInvoicePreviewBtn: document.getElementById('exportInvoicePreviewBtn'),
                     stickyWrapper: document.getElementById('stickyWrapper'),
                     multiBranchToggle: document.getElementById('multiBranchToggle'),
-                    branchesCheckboxes: document.getElementById('branchesCheckboxes'),
+                    branchCheckboxes: document.getElementById('branchCheckboxes'),
                     tabsContainer: document.getElementById('tabsContainer'),
-                    closeInvoiceDialog: document.getElementById('closeInvoiceDialog'),
-                    closeInvoiceContent: document.getElementById('closeInvoiceContent'),
-                    closeInvoiceCancel: document.getElementById('closeInvoiceCancel'),
-                    closeInvoiceConfirm: document.getElementById('closeInvoiceConfirm'),
                 },
 
+                // State
                 _lastProduct: null,
                 _lastProductUrl: '',
-                _currentUser: 'مستخدم غير معروف',
-                _currentUserId: 'unknown',
-                _tables: [], // array of { id, branch, data: [...] }
-                _activeTab: null, // table id
-                _productCardStates: {}, // { tableId: { productId: bool, colorId: bool } }
-                _pendingAddData: null,
-                _isLoading: false,
-                _oldInvoices: [],
-                _previewInvoiceIndex: -1,
+                _tables: {}, // { tableId: { id, data, branch, updatedAt, userId } }
+                _activeTableId: null,
+                _isMultiBranch: false,
+                _selectedBranches: [],
+                _productCardStates: {},
                 _fetchTimer: null,
                 _syncTimer: null,
+                _isDirty: false,
+                _pendingAddData: null,
+                _isLoading: false,
+                _previewInvoiceIndex: -1,
+                _oldInvoices: [],
+                _currentUser: 'مستخدم غير معروف',
+                _currentUserId: 'unknown',
+                _savingQueue: false,
 
                 init() {
-                    console.log('🚀 Initializing Create Order UI (v6 - multi-branch with push IDs)');
+                    console.log('🚀 Initializing Multi-Branch Create Order UI...');
 
                     this._currentUser = Storage.getUserName();
                     this._currentUserId = Storage.getUserId();
-                    document.getElementById('currentAdminName').textContent = `مرحباً، ${this._currentUser}`;
+                    const userNameEl = document.getElementById('currentAdminName');
+                    if (userNameEl) {
+                        userNameEl.textContent = `مرحباً، ${this._currentUser}`;
+                    }
 
-                    // Load multi-branch state
-                    const multiEnabled = Storage.get('multiBranchEnabled', false);
-                    this.elements.multiBranchToggle.checked = multiEnabled === true || multiEnabled === 'true';
-                    this.toggleMultiBranchUI(multiEnabled);
+                    // Restore branch selection
+                    const savedBranches = Storage.get('selectedBranches', []);
+                    const savedMulti = Storage.get('multiBranch', false);
 
-                    // Load selected branches
-                    const savedBranches = Storage.get('selectedBranches', ['مكرم عبيد']);
-                    this.elements.branchesCheckboxes.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+                    // Restore multi-branch state
+                    if (savedMulti) {
+                        this.elements.multiBranchToggle.checked = true;
+                        this.elements.branchCheckboxes.style.display = 'flex';
+                        this.elements.branchSelect.style.display = 'none';
+                        this.elements.branchLabel.textContent = 'الفروع المختارة';
+                    } else {
+                        this.elements.multiBranchToggle.checked = false;
+                        this.elements.branchCheckboxes.style.display = 'none';
+                        this.elements.branchSelect.style.display = 'block';
+                        this.elements.branchLabel.textContent = 'الفرع';
+                    }
+
+                    // Restore selected branches
+                    const checkboxes = this.elements.branchCheckboxes.querySelectorAll('input[type="checkbox"]');
+                    checkboxes.forEach(cb => {
                         cb.checked = savedBranches.includes(cb.value);
                     });
 
-                    // Restore URL and series
+                    this._isMultiBranch = savedMulti;
+                    this.updateSelectedBranches();
+
                     this.elements.url.value = Storage.get('url', '');
                     this.elements.series.value = Storage.get('series', '1');
 
-                    // Load tables from Firebase
-                    this.loadAllTables();
-
                     // Event listeners
+                    this.elements.multiBranchToggle.addEventListener('change', () => {
+                        this._isMultiBranch = this.elements.multiBranchToggle.checked;
+                        Storage.set('multiBranch', this._isMultiBranch);
+
+                        if (this._isMultiBranch) {
+                            this.elements.branchCheckboxes.style.display = 'flex';
+                            this.elements.branchSelect.style.display = 'none';
+                            this.elements.branchLabel.textContent = 'الفروع المختارة';
+                            // Select all branches by default
+                            const checkboxes2 = this.elements.branchCheckboxes.querySelectorAll(
+                            'input[type="checkbox"]');
+                            checkboxes2.forEach(cb => cb.checked = true);
+                            this.updateSelectedBranches();
+                            // Load tables for selected branches
+                            this.loadAllTables();
+                        } else {
+                            this.elements.branchCheckboxes.style.display = 'none';
+                            this.elements.branchSelect.style.display = 'block';
+                            this.elements.branchLabel.textContent = 'الفرع';
+                            // Reset to single branch mode
+                            this._selectedBranches = [];
+                            // Keep only the active table if it exists, or create one
+                            if (this._activeTableId && this._tables[this._activeTableId]) {
+                                // Keep only this table
+                                const activeBranch = this._tables[this._activeTableId].branch;
+                                this._tables = {};
+                                // Load single table for this branch
+                                this.loadSingleTable(activeBranch);
+                            } else {
+                                this._tables = {};
+                                this._activeTableId = null;
+                                this.renderTabs();
+                                this.renderInvoice();
+                            }
+                            this.updateStickyPosition();
+                        }
+                    });
+
+                    // Branch checkbox changes
+                    this.elements.branchCheckboxes.addEventListener('change', (e) => {
+                        if (e.target.type === 'checkbox') {
+                            this.updateSelectedBranches();
+                            this.handleBranchSelectionChange();
+                        }
+                    });
+
+                    // URL input
                     this.elements.url.addEventListener('input', () => {
                         clearTimeout(this._fetchTimer);
                         const url = this.elements.url.value.trim();
@@ -3109,11 +3089,12 @@ sizes: [],
                     this.elements.fetchBtn.addEventListener('click', () => this.handleFetch(false));
                     this.elements.addBtn.addEventListener('click', () => this.handleAddWithDuplicateCheck());
 
-                    this.elements.closeInvoiceBtn.addEventListener('click', () => this.openCloseInvoiceDialog());
+                    this.elements.closeInvoiceBtn.addEventListener('click', () => this.closeFullInvoice());
                     this.elements.exportDialogBtn.addEventListener('click', () => this.openExportDialog());
                     this.elements.dialogCancel.addEventListener('click', () => this.closeExportDialog());
                     this.elements.dialogExport.addEventListener('click', () => this.handleExport());
-                    this.elements.clearAllBtn.addEventListener('click', () => this.clearActiveTable());
+
+                    this.elements.clearAllBtn.addEventListener('click', () => this.clearAllData());
 
                     this.elements.exportDialog.addEventListener('click', (e) => {
                         if (e.target === this.elements.exportDialog) this.closeExportDialog();
@@ -3160,35 +3141,6 @@ sizes: [],
                         }
                     });
 
-                    // Multi-branch toggle
-                    this.elements.multiBranchToggle.addEventListener('change', () => {
-                        const val = this.elements.multiBranchToggle.checked;
-                        Storage.set('multiBranchEnabled', val);
-                        this.toggleMultiBranchUI(val);
-                        this.loadAllTables();
-                    });
-
-                    // Branch checkboxes
-                    this.elements.branchesCheckboxes.addEventListener('change', (e) => {
-                        if (e.target.type === 'checkbox') {
-                            this.saveSelectedBranches();
-                            this.loadAllTables();
-                        }
-                    });
-
-                    // Close invoice dialog
-                    this.elements.closeInvoiceCancel.addEventListener('click', () => {
-                        this.elements.closeInvoiceDialog.classList.remove('show');
-                    });
-                    this.elements.closeInvoiceConfirm.addEventListener('click', () => {
-                        this.confirmCloseInvoice();
-                    });
-                    this.elements.closeInvoiceDialog.addEventListener('click', (e) => {
-                        if (e.target === this.elements.closeInvoiceDialog) {
-                            this.elements.closeInvoiceDialog.classList.remove('show');
-                        }
-                    });
-
                     // Keyboard shortcut
                     document.addEventListener('keydown', (e) => {
                         if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
@@ -3199,13 +3151,14 @@ sizes: [],
 
                     // Auto-sync timer
                     this._syncTimer = setInterval(() => {
-                        this.syncActiveTable();
+                        if (this._isDirty && !this._savingQueue) {
+                            this.saveAllTables();
+                        }
                     }, 3000);
 
-                    // Clean old invoices
-                    Utils.cleanOldInvoices();
+                    this.updateStickyPosition();
 
-                    // Restore cached product
+                    // Load cached product
                     const cached = Storage.get('cachedProduct', null);
                     if (cached && cached.name) {
                         this._lastProduct = {
@@ -3224,250 +3177,361 @@ sizes: [],
                         this.showPreview(this._lastProduct);
                     }
 
-                    this.updateStickyPosition();
+                    Utils.cleanOldInvoices();
+
+                    // Load tables based on mode
+                    if (this._isMultiBranch) {
+                        this.loadAllTables();
+                    } else {
+                        this.loadSingleTable(null);
+                    }
+
                     if (typeof loadLayout === 'function') {
                         loadLayout();
                     }
                 },
 
-                toggleMultiBranchUI(enabled) {
-                    const checkboxes = this.elements.branchesCheckboxes;
-                    if (enabled) {
-                        checkboxes.style.display = 'flex';
-                        checkboxes.querySelectorAll('label').forEach(l => l.style.display = 'flex');
-                    } else {
-                        checkboxes.style.display = 'none';
-                    }
-                    const branchSelect = this.elements.branchSelect;
-                    if (enabled) {
-                        branchSelect.style.display = 'none';
-                    } else {
-                        branchSelect.style.display = 'block';
-                    }
+                updateSelectedBranches() {
+                    const checkboxes = this.elements.branchCheckboxes.querySelectorAll('input[type="checkbox"]');
+                    this._selectedBranches = [];
+                    checkboxes.forEach(cb => {
+                        if (cb.checked) {
+                            this._selectedBranches.push(cb.value);
+                        }
+                    });
+                    Storage.set('selectedBranches', this._selectedBranches);
                 },
 
-                saveSelectedBranches() {
-                    const checkboxes = this.elements.branchesCheckboxes.querySelectorAll('input[type="checkbox"]:checked');
-                    const branches = Array.from(checkboxes).map(cb => cb.value);
-                    Storage.set('selectedBranches', branches);
-                    return branches;
-                },
+                handleBranchSelectionChange() {
+                    if (!this._isMultiBranch) return;
 
-                getSelectedBranches() {
-                    if (!this.elements.multiBranchToggle.checked) {
-                        const branch = this.elements.branchSelect.value;
-                        return branch ? [branch] : [];
+                    // Check if any branch was removed that has data
+                    const activeBranch = this._activeTableId ? this._tables[this._activeTableId]?.branch : null;
+                    const hasData = (tableId) => {
+                        const table = this._tables[tableId];
+                        if (!table) return false;
+                        return table.data.some(p => Utils.getTotalPieces(p.colorsSizes) > 0);
+                    };
+
+                    // For each table that is no longer selected, check if it has data
+                    const toRemove = [];
+                    for (const id in this._tables) {
+                        const table = this._tables[id];
+                        if (!this._selectedBranches.includes(table.branch)) {
+                            if (hasData(id)) {
+                                // Ask user
+                                if (confirm(`الفرع "${table.branch}" يحتوي على بيانات. سيتم حذف بيانات الفرع إذا أكملت. هل تريد المتابعة؟`)) {
+                                    toRemove.push(id);
+                                } else {
+                                    // Re-check the checkbox
+                                    const checkboxes = this.elements.branchCheckboxes.querySelectorAll(
+                                        'input[type="checkbox"]');
+                                    checkboxes.forEach(cb => {
+                                        if (cb.value === table.branch) {
+                                            cb.checked = true;
+                                        }
+                                    });
+                                    this.updateSelectedBranches();
+                                    return;
+                                }
+                            } else {
+                                toRemove.push(id);
+                            }
+                        }
                     }
-                    const checkboxes = this.elements.branchesCheckboxes.querySelectorAll('input[type="checkbox"]:checked');
-                    return Array.from(checkboxes).map(cb => cb.value);
+
+                    // Remove tables
+                    for (const id of toRemove) {
+                        Utils.deleteTable(id);
+                        delete this._tables[id];
+                        if (this._activeTableId === id) {
+                            this._activeTableId = null;
+                        }
+                    }
+
+                    // If active table was removed, switch to first available
+                    if (!this._activeTableId || !this._tables[this._activeTableId]) {
+                        const ids = Object.keys(this._tables);
+                        if (ids.length > 0) {
+                            this._activeTableId = ids[0];
+                        } else {
+                            this._activeTableId = null;
+                        }
+                    }
+
+                    // Create tables for newly selected branches
+                    for (const branch of this._selectedBranches) {
+                        const exists = Object.values(this._tables).some(t => t.branch === branch);
+                        if (!exists) {
+                            this.createTableForBranch(branch);
+                        }
+                    }
+
+                    this.renderTabs();
+                    this.renderInvoice();
+                    this.updateStats();
                 },
 
                 loadAllTables() {
-                    if (this._isLoading) return;
                     this._isLoading = true;
-                    const branches = this.getSelectedBranches();
-
-                    Utils.loadAllTables((tables) => {
+                    Utils.loadAllUserTables((tables) => {
                         this._isLoading = false;
-                        if (!tables) tables = [];
-                        console.log('📥 Tables loaded:', tables.length);
+                        this._tables = tables;
 
-                        const filtered = tables.filter(t => branches.includes(t.branch));
-                        this._tables = filtered;
-
-                        if (!this.elements.multiBranchToggle.checked) {
-                            const branch = this.elements.branchSelect.value;
-                            if (branch) {
-                                const existing = this._tables.find(t => t.branch === branch);
-                                if (!existing) {
-                                    Utils.saveTable([], branch, (err, id) => {
-                                        if (!err) {
-                                            this._tables.push({ id, branch, data: [] });
-                                            this.renderTabs();
-                                            this.setActiveTab(id);
-                                        }
-                                    });
-                                } else {
-                                    this.renderTabs();
-                                    this.setActiveTab(existing.id);
+                        // Filter by selected branches
+                        if (this._selectedBranches.length > 0) {
+                            const filtered = {};
+                            for (const id in tables) {
+                                if (this._selectedBranches.includes(tables[id].branch)) {
+                                    filtered[id] = tables[id];
                                 }
-                            } else {
-                                this._tables = [];
-                                this.renderTabs();
-                                this.renderInvoice();
-                                this.updateStats();
                             }
+                            this._tables = filtered;
+                        }
+
+                        // Create tables for selected branches that don't exist
+                        for (const branch of this._selectedBranches) {
+                            const exists = Object.values(this._tables).some(t => t.branch === branch);
+                            if (!exists) {
+                                this.createTableForBranch(branch);
+                            }
+                        }
+
+                        // Set active table
+                        const ids = Object.keys(this._tables);
+                        if (ids.length > 0) {
+                            this._activeTableId = ids[0];
                         } else {
-                            const existingBranches = this._tables.map(t => t.branch);
-                            const toCreate = branches.filter(b => !existingBranches.includes(b));
-                            if (toCreate.length) {
-                                let created = 0;
-                                toCreate.forEach(branch => {
-                                    Utils.saveTable([], branch, (err, id) => {
-                                        if (!err) {
-                                            this._tables.push({ id, branch, data: [] });
-                                            created++;
-                                            if (created === toCreate.length) {
-                                                this.renderTabs();
-                                                if (!this._activeTab && this._tables.length) {
-                                                    this.setActiveTab(this._tables[0].id);
-                                                } else {
-                                                    const activeExists = this._tables.some(t => t
-                                                        .id === this._activeTab);
-                                                    if (!activeExists && this._tables.length) {
-                                                        this.setActiveTab(this._tables[0].id);
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    });
-                                });
-                            } else {
-                                this.renderTabs();
-                                if (!this._activeTab && this._tables.length) {
-                                    this.setActiveTab(this._tables[0].id);
-                                } else {
-                                    const activeExists = this._tables.some(t => t.id === this._activeTab);
-                                    if (!activeExists && this._tables.length) {
-                                        this.setActiveTab(this._tables[0].id);
-                                    }
-                                }
-                            }
+                            this._activeTableId = null;
                         }
-                        if (this._tables.length && !this._activeTab) {
-                            this.setActiveTab(this._tables[0].id);
-                        }
-                        if (!this._tables.length) {
-                            this.renderTabs();
-                            this.renderInvoice();
-                            this.updateStats();
-                        }
-                        this.loadOldInvoices(false);
-                    });
-                },
 
-                renderTabs() {
-                    const container = this.elements.tabsContainer;
-                    if (!this.elements.multiBranchToggle.checked) {
-                        container.innerHTML = '';
-                        return;
-                    }
-                    if (!this._tables.length) {
-                        container.innerHTML =
-                            `<div style="padding:10px;color:var(--gray);font-size:14px;">لا توجد فروع محددة</div>`;
-                        return;
-                    }
-                    let html = '';
-                    this._tables.forEach(table => {
-                        const total = Utils.getTotalPieces(table.data ? table.data.reduce((acc, p) => {
-                            acc[p.name] = p.colorsSizes;
-                            return acc;
-                        }, {}) : {});
-                        const isActive = table.id === this._activeTab;
-                        html += `
-                            <button class="tab-btn ${isActive ? 'active' : ''}" data-table-id="${table.id}">
-                                <i class="fas fa-store"></i> ${table.branch}
-                                <span class="badge">${total}</span>
-                                <span class="close-tab" onclick="event.stopPropagation();window.UI.removeTab('${table.id}')"><i class="fas fa-times"></i></span>
-                            </button>
-                        `;
-                    });
-                    container.innerHTML = html;
-                    container.querySelectorAll('.tab-btn').forEach(btn => {
-                        btn.addEventListener('click', () => {
-                            const id = btn.dataset.tableId;
-                            this.setActiveTab(id);
-                        });
-                    });
-                },
-
-                setActiveTab(tableId) {
-                    if (this._activeTab === tableId) {
+                        this.renderTabs();
                         this.renderInvoice();
                         this.updateStats();
-                        return;
-                    }
-                    this._activeTab = tableId;
-                    Storage.set('activeTab', tableId);
-                    this.elements.tabsContainer.querySelectorAll('.tab-btn').forEach(btn => {
-                        btn.classList.toggle('active', btn.dataset.tableId === tableId);
+                        this.updateStickyPosition();
                     });
-                    this.renderInvoice();
-                    this.updateStats();
-                    this.syncActiveTable();
+                },
+
+                loadSingleTable(branchName) {
+                    this._isLoading = true;
+                    Utils.loadAllUserTables((tables) => {
+                        this._isLoading = false;
+
+                        // Find table by branch, or use first one
+                        let found = null;
+                        for (const id in tables) {
+                            if (branchName && tables[id].branch === branchName) {
+                                found = { id, ...tables[id] };
+                                break;
+                            }
+                        }
+                        if (!found && Object.keys(tables).length > 0) {
+                            const firstId = Object.keys(tables)[0];
+                            found = { id: firstId, ...tables[firstId] };
+                        }
+
+                        if (found) {
+                            this._tables = {};
+                            this._tables[found.id] = found;
+                            this._activeTableId = found.id;
+                            this.elements.branchSelect.value = found.branch;
+                        } else {
+                            // Create new table
+                            const branch = branchName || this.elements.branchSelect.value || 'مكرم عبيد';
+                            this.createTableForBranch(branch);
+                        }
+
+                        this.renderTabs();
+                        this.renderInvoice();
+                        this.updateStats();
+                        this.updateStickyPosition();
+                    });
+                },
+
+                createTableForBranch(branch) {
+                    const newTable = {
+                        data: [],
+                        branch: branch,
+                        updatedAt: Date.now(),
+                        userId: this._currentUserId
+                    };
+
+                    Utils.saveTable(null, newTable, (error, id) => {
+                        if (error) {
+                            console.error('❌ Error creating table:', error);
+                            return;
+                        }
+                        this._tables[id] = {
+                            id: id,
+                            data: [],
+                            branch: branch,
+                            updatedAt: Date.now(),
+                            userId: this._currentUserId
+                        };
+                        if (!this._activeTableId) {
+                            this._activeTableId = id;
+                        }
+                        this.renderTabs();
+                        this.renderInvoice();
+                        this.updateStats();
+                        this.showAlert(`✅ تم إنشاء جدول للفرع "${branch}"`, 'success');
+                    });
                 },
 
                 getActiveTable() {
-                    return this._tables.find(t => t.id === this._activeTab) || null;
+                    if (!this._activeTableId || !this._tables[this._activeTableId]) {
+                        return null;
+                    }
+                    return this._tables[this._activeTableId];
                 },
 
-                getActiveTableData() {
+                getActiveData() {
                     const table = this.getActiveTable();
                     return table ? table.data : [];
                 },
 
-                setActiveTableData(data) {
+                setActiveData(data) {
                     const table = this.getActiveTable();
                     if (table) {
                         table.data = data;
-                        this._tables = this._tables.map(t => t.id === table.id ? table : t);
-                        Utils.updateTable(table.id, data, table.branch, (err) => {
-                            if (err) console.error('Error updating table:', err);
-                        });
+                        table.updatedAt = Date.now();
                     }
                 },
 
-                syncActiveTable() {
-                    const table = this.getActiveTable();
-                    if (table && table.data !== undefined) {
-                        Utils.updateTable(table.id, table.data, table.branch, (err) => {
-                            if (err) console.warn('Sync error:', err);
-                        });
+                saveAllTables() {
+                    this._savingQueue = true;
+                    const promises = [];
+                    for (const id in this._tables) {
+                        const table = this._tables[id];
+                        promises.push(new Promise((resolve) => {
+                            Utils.saveTable(id, {
+                                data: table.data,
+                                branch: table.branch,
+                                updatedAt: table.updatedAt,
+                                userId: table.userId
+                            }, (error) => {
+                                if (!error) {
+                                    this._isDirty = false;
+                                }
+                                resolve();
+                            });
+                        }));
+                    }
+                    Promise.all(promises).then(() => {
+                        this._savingQueue = false;
+                    });
+                },
+
+                markDirty() {
+                    this._isDirty = true;
+                },
+
+                updateStickyPosition() {
+                    const sidebar = document.getElementById('sidebar');
+                    const wrapper = this.elements.stickyWrapper;
+                    if (!wrapper || !sidebar) return;
+
+                    const isHidden = sidebar.classList.contains('hidden');
+                    const isMobile = window.innerWidth <= 992;
+
+                    if (isMobile) {
+                        wrapper.classList.add('sidebar-hidden');
+                        wrapper.style.paddingRight = '15px';
+                        wrapper.style.paddingLeft = '15px';
+                    } else if (isHidden) {
+                        wrapper.classList.add('sidebar-hidden');
+                        wrapper.style.paddingRight = '25px';
+                        wrapper.style.paddingLeft = '25px';
+                    } else {
+                        wrapper.classList.remove('sidebar-hidden');
+                        wrapper.style.paddingRight = '305px';
+                        wrapper.style.paddingLeft = '25px';
                     }
                 },
 
-                removeTab(tableId) {
-                    const table = this._tables.find(t => t.id === tableId);
+                renderTabs() {
+                    const container = this.elements.tabsContainer;
+                    const ids = Object.keys(this._tables);
+
+                    if (ids.length === 0) {
+                        container.innerHTML = '';
+                        return;
+                    }
+
+                    let html = '';
+                    for (const id of ids) {
+                        const table = this._tables[id];
+                        const total = table.data.reduce((s, p) => s + Utils.getTotalPieces(p.colorsSizes), 0);
+                        const isActive = id === this._activeTableId;
+                        const badgeClass = total > 0 ? '' : 'zero';
+
+                        html += `
+                            <div class="tab-item ${isActive ? 'active' : ''}" data-table-id="${id}" onclick="window.UI.switchTab('${id}')">
+                                <i class="fas fa-store"></i>
+                                ${table.branch}
+                                <span class="tab-badge ${badgeClass}">${total}</span>
+                                ${ids.length > 1 ? `<button class="tab-close" onclick="event.stopPropagation();window.UI.closeTab('${id}')"><i class="fas fa-times"></i></button>` : ''}
+                            </div>
+                        `;
+                    }
+                    container.innerHTML = html;
+                },
+
+                switchTab(tableId) {
+                    if (this._activeTableId === tableId) return;
+                    // Save current table
+                    this.saveAllTables();
+                    this._activeTableId = tableId;
+                    this.renderTabs();
+                    this.renderInvoice();
+                    this.updateStats();
+                    this.updateStickyPosition();
+                },
+
+                closeTab(tableId) {
+                    const table = this._tables[tableId];
                     if (!table) return;
 
-                    const hasData = table.data && table.data.length > 0 && table.data.some(p => Utils.getTotalPieces(p
-                        .colorsSizes) > 0);
-
+                    const hasData = table.data.some(p => Utils.getTotalPieces(p.colorsSizes) > 0);
                     if (hasData) {
-                        if (!confirm(`الفرع "${table.branch}" يحتوي على بيانات.\nسيتم حذف بيانات الفرع إذا أكملت.\nهل تريد المتابعة?`)) {
+                        if (!confirm(`الفرع "${table.branch}" يحتوي على بيانات. هل تريد حذفها؟`)) {
                             return;
                         }
                     }
 
-                    Utils.deleteTable(tableId, (err) => {
-                        if (err) {
-                            this.showAlert('❌ فشل حذف الفرع', 'error');
-                            return;
+                    Utils.deleteTable(tableId);
+                    delete this._tables[tableId];
+
+                    // Uncheck the branch
+                    const checkboxes = this.elements.branchCheckboxes.querySelectorAll('input[type="checkbox"]');
+                    checkboxes.forEach(cb => {
+                        if (cb.value === table.branch) {
+                            cb.checked = false;
                         }
-                        this._tables = this._tables.filter(t => t.id !== tableId);
-                        this.renderTabs();
-                        if (this._activeTab === tableId) {
-                            this._activeTab = null;
-                            if (this._tables.length) {
-                                this.setActiveTab(this._tables[0].id);
-                            } else {
-                                this.renderInvoice();
-                                this.updateStats();
-                            }
-                        }
-                        this.showAlert(`✅ تم حذف الفرع "${table.branch}"`, 'success');
                     });
+                    this.updateSelectedBranches();
+
+                    if (this._activeTableId === tableId) {
+                        const ids = Object.keys(this._tables);
+                        this._activeTableId = ids.length > 0 ? ids[0] : null;
+                    }
+
+                    this.renderTabs();
+                    this.renderInvoice();
+                    this.updateStats();
+                    this.updateStickyPosition();
+                    this.showAlert(`🗑️ تم حذف جدول "${table.branch}"`, 'info');
                 },
 
                 renderInvoice() {
                     const container = this.elements.invoiceContainer;
-                    const data = this.getActiveTableData();
+                    const data = this.getActiveData();
 
-                    if (!data || !data.length) {
+                    if (!data || data.length === 0) {
                         container.innerHTML = `
                             <div class="empty-state">
                                 <i class="fas fa-box-open"></i>
-                                <p>لا توجد منتجات مضافة في هذا الفرع</p>
+                                <p>لا توجد منتجات مضافة بعد</p>
                             </div>
                         `;
                         this.updateStats();
@@ -3475,20 +3539,17 @@ sizes: [],
                     }
 
                     let html = '';
-                    const tableId = this._activeTab || 'default';
-                    if (!this._productCardStates[tableId]) {
-                        this._productCardStates[tableId] = {};
-                    }
-                    const states = this._productCardStates[tableId];
-
                     let productIdx = 0;
+
                     for (const product of data) {
-                        const productId = 'prod_' + productIdx;
+                        const productId = 'prod_' + productIdx + '_' + (this._activeTableId || '');
                         const totalPieces = Utils.getTotalPieces(product.colorsSizes);
                         const totalValue = totalPieces * product.unitPrice;
 
-                        if (states[productId] === undefined) states[productId] = false;
-                        const isProductOpen = states[productId];
+                        if (this._productCardStates[productId] === undefined) {
+                            this._productCardStates[productId] = false;
+                        }
+                        const isProductOpen = this._productCardStates[productId];
 
                         const imgSrc = product.image || '';
 
@@ -3519,6 +3580,7 @@ sizes: [],
 
                     container.innerHTML = html;
                     this.updateStats();
+                    this.markDirty();
                 },
 
                 renderProductColors(product, productId) {
@@ -3530,17 +3592,16 @@ sizes: [],
 
                     let html = '';
                     let colorIdx = 0;
-                    const tableId = this._activeTab || 'default';
-                    const states = this._productCardStates[tableId] || {};
-
                     colorKeys.sort();
 
                     for (const color of colorKeys) {
                         const sizes = colorsSizes[color];
                         const colorId = productId + '_color_' + colorIdx;
 
-                        if (states[colorId] === undefined) states[colorId] = true;
-                        const isColorOpen = states[colorId];
+                        if (this._productCardStates[colorId] === undefined) {
+                            this._productCardStates[colorId] = true;
+                        }
+                        const isColorOpen = this._productCardStates[colorId];
 
                         const totalQty = Utils.getTotalPieces({ [color]: sizes });
 
@@ -3552,20 +3613,16 @@ sizes: [],
                             const sortedSizes = Utils.sortSizes(sizeKeys);
                             for (const size of sortedSizes) {
                                 const qty = sizes[size] || 0;
-                                const isZero = qty === 0;
-                                const escapedSize = this.escapeHtml(size);
-                                const escapedColor = this.escapeHtml(color);
-                                const escapedSku = this.escapeHtml(product.sku);
-                                const escapedName = this.escapeHtml(product.name);
+                                const qtyClass = qty === 0 ? 'zero' : '';
 
                                 sizeHtml += `
-                                    <div class="size-row ${isZero ? 'zero-qty' : ''}" data-product="${productId}" data-color="${color}" data-size="${size}" data-sku="${product.sku}" data-name="${product.name}">
-                                        <span class="size-label">${escapedSize}</span>
+                                    <div class="size-row" data-product="${productId}" data-color="${color}" data-size="${size}" data-sku="${product.sku}" data-name="${product.name}">
+                                        <span class="size-label">${this.escapeHtml(size)}</span>
                                         <div class="qty-control">
                                             <button onclick='window.UI.changeQty(${JSON.stringify(productId)}, ${JSON.stringify(color)}, ${JSON.stringify(size)}, -1, ${JSON.stringify(product.sku)}, ${JSON.stringify(product.name)})'>
                                                 <i class="fas fa-minus"></i>
                                             </button>
-                                            <span class="qty-val">${qty}</span>
+                                            <span class="qty-val ${qtyClass}">${qty}</span>
                                             <button onclick='window.UI.changeQty(${JSON.stringify(productId)}, ${JSON.stringify(color)}, ${JSON.stringify(size)}, 1, ${JSON.stringify(product.sku)}, ${JSON.stringify(product.name)})'>
                                                 <i class="fas fa-plus"></i>
                                             </button>
@@ -3576,19 +3633,17 @@ sizes: [],
                         }
 
                         const colorLabel = color || 'بدون لون';
-                        const escapedColorLabel = this.escapeHtml(colorLabel);
-
                         html += `
                             <div class="color-accordion">
                                 <div class="color-header" onclick="window.UI.toggleColor('${colorId}')">
                                     <span class="chevron-sm ${isColorOpen ? 'open' : ''}"><i class="fas fa-chevron-down"></i></span>
-                                    <span><i class="fas fa-palette" style="color:var(--primary);"></i> ${escapedColorLabel}</span>
+                                    <span><i class="fas fa-palette" style="color:var(--primary);"></i> ${this.escapeHtml(colorLabel)}</span>
                                     <span class="color-total">${totalQty} قطعة</span>
                                     <button class="delete-color-btn"
-        onclick='event.stopPropagation();window.UI.deleteColor(${JSON.stringify(productId)}, ${JSON.stringify(color)}, ${JSON.stringify(product.sku)}, ${JSON.stringify(product.name)})'
-        title="حذف اللون">
-        <i class="fas fa-times"></i>
-    </button>
+    onclick='event.stopPropagation();window.UI.deleteColor(${JSON.stringify(productId)}, ${JSON.stringify(color)}, ${JSON.stringify(product.sku)}, ${JSON.stringify(product.name)})'
+    title="حذف اللون">
+    <i class="fas fa-times"></i>
+</button>
                                 </div>
                                 <div class="color-sizes ${isColorOpen ? 'open' : ''}">
                                     ${sizeHtml}
@@ -3602,99 +3657,33 @@ sizes: [],
                 },
 
                 toggleProduct(productId) {
-                    const tableId = this._activeTab || 'default';
-                    if (!this._productCardStates[tableId]) this._productCardStates[tableId] = {};
-                    const state = this._productCardStates[tableId][productId];
-                    this._productCardStates[tableId][productId] = state === false ? true : false;
+                    const state = this._productCardStates[productId];
+                    this._productCardStates[productId] = state === false ? true : false;
                     this.renderInvoice();
                 },
 
                 toggleColor(colorId) {
-                    const tableId = this._activeTab || 'default';
-                    if (!this._productCardStates[tableId]) this._productCardStates[tableId] = {};
-                    const state = this._productCardStates[tableId][colorId];
-                    this._productCardStates[tableId][colorId] = state === false ? true : false;
+                    const state = this._productCardStates[colorId];
+                    this._productCardStates[colorId] = state === false ? true : false;
                     this.renderInvoice();
                 },
 
                 expandAllColors(open) {
-                    const tableId = this._activeTab || 'default';
-                    if (!this._productCardStates[tableId]) this._productCardStates[tableId] = {};
-                    const states = this._productCardStates[tableId];
-                    for (const key in states) {
-                        if (key.includes('_color_')) states[key] = open;
+                    for (const key in this._productCardStates) {
+                        if (key.includes('_color_')) this._productCardStates[key] = open;
                     }
                     this.renderInvoice();
                 },
 
                 expandAllProducts(open) {
-                    const tableId = this._activeTab || 'default';
-                    if (!this._productCardStates[tableId]) this._productCardStates[tableId] = {};
-                    const states = this._productCardStates[tableId];
-                    for (const key in states) {
-                        if (!key.includes('_color_')) states[key] = open;
+                    for (const key in this._productCardStates) {
+                        if (!key.includes('_color_')) this._productCardStates[key] = open;
                     }
                     this.renderInvoice();
-                },
-
-                changeQty(productId, color, size, delta, sku, name) {
-                    const data = this.getActiveTableData();
-                    let targetIndex = -1;
-                    for (let i = 0; i < data.length; i++) {
-                        const p = data[i];
-                        if (p.name === name && p.sku === sku) {
-                            targetIndex = i;
-                            break;
-                        }
-                    }
-
-                    if (targetIndex === -1) {
-                        console.warn('⚠️ Could not find product:', { name, sku });
-                        return;
-                    }
-
-                    const product = data[targetIndex];
-                    if (!product.colorsSizes[color]) {
-                        product.colorsSizes[color] = {};
-                    }
-                    const currentQty = product.colorsSizes[color][size] || 0;
-                    const newQty = Math.max(0, currentQty + delta);
-
-                    if (newQty === 0) {
-                        delete product.colorsSizes[color][size];
-                        if (Object.keys(product.colorsSizes[color]).length === 0) {
-                            delete product.colorsSizes[color];
-                        }
-                    } else {
-                        product.colorsSizes[color][size] = newQty;
-                    }
-
-                    if (Object.keys(product.colorsSizes).length === 0) {
-                        data.splice(targetIndex, 1);
-                        this.showAlert('🗑️ تم حذف المنتج (جميع الألوان صفر)', 'info');
-                    }
-
-                    this.setActiveTableData(data);
-                    this.renderInvoice();
-                },
-
-                deleteProduct(productId) {
-                    const data = this.getActiveTableData();
-                    const idx = parseInt(productId.replace('prod_', ''));
-                    if (isNaN(idx) || idx >= data.length) {
-                        this.showAlert('⚠️ لم يتم العثور على المنتج', 'error');
-                        return;
-                    }
-                    const name = data[idx].name;
-                    if (!confirm(`هل أنت متأكد من حذف المنتج "${name}"؟`)) return;
-                    data.splice(idx, 1);
-                    this.setActiveTableData(data);
-                    this.renderInvoice();
-                    this.showAlert(`🗑️ تم حذف المنتج ${name}`, 'info');
                 },
 
                 deleteColor(productId, color, sku, name) {
-                    const data = this.getActiveTableData();
+                    const data = this.getActiveData();
                     let targetIndex = -1;
                     for (let i = 0; i < data.length; i++) {
                         const p = data[i];
@@ -3727,25 +3716,63 @@ sizes: [],
                         this.showAlert(`🗑️ تم حذف اللون ${color}`, 'info');
                     }
 
-                    this.setActiveTableData(data);
+                    this.setActiveData(data);
                     this.renderInvoice();
+                    this.markDirty();
                 },
 
-                clearActiveTable() {
-                    const data = this.getActiveTableData();
-                    if (!data.length) {
-                        this.showAlert('⚠️ لا توجد بيانات لمسحها', 'info');
+                changeQty(productId, color, size, delta, sku, name) {
+                    const data = this.getActiveData();
+                    let targetIndex = -1;
+                    for (let i = 0; i < data.length; i++) {
+                        const p = data[i];
+                        if (p.name === name && p.sku === sku) {
+                            targetIndex = i;
+                            break;
+                        }
+                    }
+
+                    if (targetIndex === -1) {
+                        console.warn('⚠️ Could not find product:', { name, sku });
                         return;
                     }
-                    if (confirm('هل أنت متأكد من حذف جميع البيانات في هذا الفرع؟')) {
-                        this.setActiveTableData([]);
-                        this.renderInvoice();
-                        this.showAlert('🗑️ تم مسح البيانات', 'info');
+
+                    const product = data[targetIndex];
+                    if (!product.colorsSizes[color]) {
+                        product.colorsSizes[color] = {};
                     }
+                    const currentQty = product.colorsSizes[color][size] || 0;
+                    const newQty = Math.max(0, currentQty + delta);
+
+                    // Keep zero values - don't delete
+                    product.colorsSizes[color][size] = newQty;
+
+                    // If the color has all zeros and we want to keep it, we keep it
+                    // But if user wants to clean up, we can keep as is
+
+                    this.setActiveData(data);
+                    this.renderInvoice();
+                    this.markDirty();
+                },
+
+                deleteProduct(productId) {
+                    const data = this.getActiveData();
+                    const idx = parseInt(productId.replace('prod_', '').split('_')[0]);
+                    if (isNaN(idx) || idx >= data.length) {
+                        this.showAlert('⚠️ لم يتم العثور على المنتج', 'error');
+                        return;
+                    }
+                    const name = data[idx].name;
+                    if (!confirm(`هل أنت متأكد من حذف المنتج "${name}"؟`)) return;
+                    data.splice(idx, 1);
+                    this.setActiveData(data);
+                    this.renderInvoice();
+                    this.markDirty();
+                    this.showAlert(`🗑️ تم حذف المنتج ${name}`, 'info');
                 },
 
                 updateStats() {
-                    const data = this.getActiveTableData();
+                    const data = this.getActiveData();
                     let totalPieces = 0;
                     let totalValue = 0;
                     const productSet = new Set();
@@ -3765,8 +3792,14 @@ sizes: [],
                     this.elements.bottomPieces.textContent = totalPieces;
                     this.elements.bottomProducts.textContent = productSet.size;
                     this.elements.bottomValue.textContent = Utils.formatCurrency(totalValue) + ' LE';
+
+                    // Update tab badges
+                    this.renderTabs();
                 },
 
+                // ============================================================
+                //  PRODUCT FETCHING
+                // ============================================================
                 async handleFetch(silent = false) {
                     const url = this.elements.url.value.trim();
                     if (!url) {
@@ -3832,6 +3865,9 @@ sizes: [],
                     }
                 },
 
+                // ============================================================
+                //  ADD PRODUCT
+                // ============================================================
                 handleAddWithDuplicateCheck() {
                     if (!this._lastProduct) {
                         this.showAlert('⚠️ لا توجد بيانات منتج. قم بجلب منتج أولاً.', 'error');
@@ -3845,40 +3881,56 @@ sizes: [],
 
                     const product = this._lastProduct;
                     const sku = product.sku || '';
-                    const branches = this.getSelectedBranches();
 
-                    if (!branches.length) {
+                    // Get target branches
+                    let targetBranches = [];
+                    if (this._isMultiBranch) {
+                        targetBranches = this._selectedBranches;
+                    } else {
+                        const branch = this.elements.branchSelect.value;
+                        if (!branch) {
+                            this.showAlert('⚠️ الرجاء اختيار الفرع', 'error');
+                            return;
+                        }
+                        targetBranches = [branch];
+                    }
+
+                    if (targetBranches.length === 0) {
                         this.showAlert('⚠️ الرجاء اختيار فرع واحد على الأقل', 'error');
                         return;
                     }
 
-                    let duplicateBranches = [];
-                    let nonDuplicateBranches = [];
+                    // For each target branch, check if product exists
+                    let allExist = true;
+                    let existingBranches = [];
 
-                    for (const branch of branches) {
-                        const table = this._tables.find(t => t.branch === branch);
+                    for (const branch of targetBranches) {
+                        const table = Object.values(this._tables).find(t => t.branch === branch);
                         if (table) {
-                            const exists = (table.data || []).some(p => p.name === product.name && p.sku === sku);
-                            if (exists) {
-                                duplicateBranches.push(branch);
+                            const exists = table.data.some(p => p.name === product.name && p.sku === sku);
+                            if (!exists) {
+                                allExist = false;
+                                break;
                             } else {
-                                nonDuplicateBranches.push(branch);
+                                existingBranches.push(branch);
                             }
                         } else {
-                            nonDuplicateBranches.push(branch);
+                            allExist = false;
+                            break;
                         }
                     }
 
-                    if (duplicateBranches.length > 0 && nonDuplicateBranches.length === 0) {
-                        this._pendingAddData = { product, seriesQty, sku, branches };
+                    if (allExist && existingBranches.length === targetBranches.length) {
+                        // All branches have this product - show duplicate dialog
+                        this._pendingAddData = { product, seriesQty, sku, targetBranches };
                         const img = product.mainImage || product.image || (product.images && product.images
                             .length ? product.images[0] : '');
                         this.elements.dupImg.src = img || '';
                         this.elements.dupName.textContent = product.name;
 
                         let totalQty = 0;
-                        for (const branch of duplicateBranches) {
-                            const table = this._tables.find(t => t.branch === branch);
+                        for (const branch of targetBranches) {
+                            const table = Object.values(this._tables).find(t => t.branch === branch);
                             if (table) {
                                 for (const p of table.data) {
                                     if (p.name === product.name && p.sku === sku) {
@@ -3888,17 +3940,18 @@ sizes: [],
                             }
                         }
                         this.elements.dupDetails.textContent =
-                            `SKU: ${sku || '—'} | الكمية الحالية في الفروع المختارة: ${totalQty}`;
+                            `SKU: ${sku || '—'} | الكمية الحالية: ${totalQty} (في ${targetBranches.length} فرع)`;
                         this.elements.duplicateDialog.classList.add('show');
                     } else {
-                        this.addProductToBranches(product, seriesQty, sku, branches);
+                        // Add to all branches
+                        this.addProductToBranches(product, seriesQty, sku, targetBranches);
                     }
                 },
 
                 confirmAddDuplicate() {
                     if (this._pendingAddData) {
-                        const { product, seriesQty, sku, branches } = this._pendingAddData;
-                        this.addProductToBranches(product, seriesQty, sku, branches);
+                        const { product, seriesQty, sku, targetBranches } = this._pendingAddData;
+                        this.addProductToBranches(product, seriesQty, sku, targetBranches);
                         this.closeDuplicateDialog();
                     }
                 },
@@ -3912,47 +3965,20 @@ sizes: [],
                     const newProduct = ExcelGenerator.generateProductsFromProduct(product, seriesQty);
 
                     for (const branch of branches) {
-                        let table = this._tables.find(t => t.branch === branch);
+                        // Find or create table for this branch
+                        let table = Object.values(this._tables).find(t => t.branch === branch);
                         if (!table) {
-                            Utils.saveTable([], branch, (err, id) => {
-                                if (!err) {
-                                    const newTable = { id, branch, data: [] };
-                                    this._tables.push(newTable);
-                                    this.addProductToTable(newTable, { ...newProduct });
-                                    this.renderTabs();
-                                    if (!this._activeTab) {
-                                        this.setActiveTab(id);
-                                    }
-                                } else {
-                                    this.showAlert(`❌ فشل إنشاء جدول للفرع ${branch}`, 'error');
-                                }
-                            });
-                            continue;
+                            // Create table
+                            this.createTableForBranch(branch);
+                            table = Object.values(this._tables).find(t => t.branch === branch);
+                            if (!table) continue;
                         }
-                        this.addProductToTable(table, { ...newProduct });
-                    }
 
-                    this.renderInvoice();
-                    this.updateStats();
-                    const colorCount = Object.keys(newProduct.colorsSizes).length;
-                    this.showAlert(`✅ تم إضافة ${colorCount} لون إلى ${branches.length} فرع`, 'success');
-
-                    this.elements.url.value = '';
-                    this.elements.series.value = '1';
-                    this._lastProduct = null;
-                    this._lastProductUrl = '';
-                    Storage.remove('cachedProduct');
-                    this.elements.previewSection.classList.remove('show');
-                    Storage.set('url', '');
-                    Storage.set('series', '1');
-                },
-
-                addProductToTable(table, newProduct) {
-                    let found = false;
-                    const exists = (table.data || []).some(p => p.name === newProduct.name && p.sku === newProduct.sku);
-                    if (exists) {
+                        // Check if product exists in this table
+                        let found = false;
                         for (const p of table.data) {
                             if (p.name === newProduct.name && p.sku === newProduct.sku) {
+                                // Merge colorsSizes
                                 const cs = newProduct.colorsSizes || {};
                                 for (const color in cs) {
                                     if (!p.colorsSizes[color]) p.colorsSizes[color] = {};
@@ -3966,87 +3992,182 @@ sizes: [],
                                 break;
                             }
                         }
+
+                        if (!found) {
+                            table.data.push({ ...newProduct });
+                        }
+                        table.updatedAt = Date.now();
                     }
 
-                    if (!found) {
-                        (table.data || (table.data = [])).push({ ...newProduct });
+                    // If current active table is one of the branches, update view
+                    if (this._activeTableId && this._tables[this._activeTableId]) {
+                        // Check if active table's branch is in the list
+                        const activeBranch = this._tables[this._activeTableId].branch;
+                        if (branches.includes(activeBranch)) {
+                            // Update view
+                            this.renderInvoice();
+                            this.updateStats();
+                        }
+                    } else {
+                        // If no active table, set first branch as active
+                        const firstBranch = branches[0];
+                        const firstTable = Object.values(this._tables).find(t => t.branch === firstBranch);
+                        if (firstTable) {
+                            this._activeTableId = firstTable.id;
+                            this.renderInvoice();
+                            this.updateStats();
+                        }
                     }
 
-                    Utils.updateTable(table.id, table.data, table.branch, (err) => {
-                        if (err) console.error('Error saving table after add:', err);
-                    });
+                    this.renderTabs();
+                    this.markDirty();
+                    this.saveAllTables();
+
+                    const colorCount = Object.keys(newProduct.colorsSizes).length;
+                    this.showAlert(`✅ تم إضافة ${colorCount} لون إلى ${branches.length} فرع`, 'success');
+
+                    // Reset form
+                    this.elements.url.value = '';
+                    this.elements.series.value = '1';
+                    this._lastProduct = null;
+                    this._lastProductUrl = '';
+                    Storage.remove('cachedProduct');
+                    this.elements.previewSection.classList.remove('show');
+                    Storage.set('url', '');
+                    Storage.set('series', '1');
                 },
 
-                openCloseInvoiceDialog() {
-                    const data = this.getActiveTableData();
-                    const filtered = data.filter(p => Utils.getTotalPieces(p.colorsSizes) > 0);
-                    if (!filtered.length) {
+                // ============================================================
+                //  CLEAR
+                // ============================================================
+                clearAllData() {
+                    const data = this.getActiveData();
+                    if (!data || data.length === 0) {
+                        this.showAlert('⚠️ لا توجد بيانات لمسحها', 'info');
+                        return;
+                    }
+                    if (confirm('هل أنت متأكد من حذف جميع البيانات في هذا الفرع؟')) {
+                        this.setActiveData([]);
+                        this.renderInvoice();
+                        this.markDirty();
+                        this.saveAllTables();
+                        this.showAlert('🗑️ تم مسح جميع البيانات', 'info');
+                    }
+                },
+
+                // ============================================================
+                //  CLOSE INVOICE
+                // ============================================================
+                closeFullInvoice() {
+                    const table = this.getActiveTable();
+                    if (!table) {
+                        this.showAlert('⚠️ لا يوجد فرع نشط', 'error');
+                        return;
+                    }
+
+                    const nonZeroProducts = table.data.filter(p => Utils.getTotalPieces(p.colorsSizes) > 0);
+                    if (!nonZeroProducts.length) {
                         this.showAlert('⚠️ لا توجد كميات لإقفال الفاتورة', 'error');
                         return;
                     }
 
-                    const table = this.getActiveTable();
-                    if (!table) return;
-
-                    const totalPieces = filtered.reduce((s, p) => s + Utils.getTotalPieces(p.colorsSizes), 0);
-                    const totalValue = filtered.reduce((s, p) => s + (Utils.getTotalPieces(p.colorsSizes) * p
-                    .unitPrice), 0);
-
-                    let itemsHtml = '';
-                    filtered.forEach(p => {
-                        const pieces = Utils.getTotalPieces(p.colorsSizes);
-                        const value = pieces * p.unitPrice;
-                        itemsHtml += `
-                            <div class="item-summary">
-                                <span class="name">${this.escapeHtml(p.name)}</span>
-                                <span class="detail">SKU: ${this.escapeHtml(p.sku)}</span>
-                                <span class="detail">قطع: ${pieces}</span>
-                                <span class="detail">قيمة: ${Utils.formatCurrency(value)} LE</span>
-                            </div>
-                        `;
-                    });
-
-                    this.elements.closeInvoiceContent.innerHTML = `
-                        <div style="margin-bottom:10px;">
-                            <strong>الفرع:</strong> ${table.branch}
-                        </div>
-                        <div style="margin-bottom:10px;">
-                            <strong>إجمالي القطع:</strong> ${totalPieces}
-                        </div>
-                        <div style="margin-bottom:10px;">
-                            <strong>إجمالي القيمة:</strong> ${Utils.formatCurrency(totalValue)} LE
-                        </div>
-                        <div class="close-invoice-preview">
-                            ${itemsHtml}
-                        </div>
-                    `;
-                    this.elements.closeInvoiceDialog.classList.add('show');
-                    this._closeInvoiceData = { table, filtered, totalPieces, totalValue };
-                },
-
-                confirmCloseInvoice() {
-                    const { table, filtered, totalPieces, totalValue } = this._closeInvoiceData || {};
-                    if (!table || !filtered) return;
-
+                    const branchName = table.branch;
                     const productUrl = this._lastProductUrl || this.elements.url.value.trim() || '';
 
-                    Utils.saveInvoiceToFirebase(table.branch, filtered, productUrl, (error, key) => {
+                    const totalPieces = nonZeroProducts.reduce((s, p) => s + Utils.getTotalPieces(p.colorsSizes), 0);
+                    const totalValue = nonZeroProducts.reduce((s, p) => s + (Utils.getTotalPieces(p.colorsSizes) * p
+                        .unitPrice), 0);
+
+                    // Build preview
+                    let previewHtml = `
+                        <div style="margin-bottom:12px;">
+                            <strong>الفرع:</strong> ${branchName}
+                        </div>
+                        <div style="margin-bottom:12px;">
+                            <strong>إجمالي القطع:</strong> ${totalPieces}
+                        </div>
+                        <div style="margin-bottom:16px;">
+                            <strong>إجمالي القيمة:</strong> ${Utils.formatCurrency(totalValue)} LE
+                        </div>
+                        <div style="border-top:1px solid var(--gray-light);padding-top:12px;max-height:200px;overflow-y:auto;">
+                    `;
+
+                    nonZeroProducts.forEach(p => {
+                        const pieces = Utils.getTotalPieces(p.colorsSizes);
+                        if (pieces > 0) {
+                            const cs = p.colorsSizes || {};
+                            const parts = [];
+                            for (const color in cs) {
+                                const sizes = cs[color];
+                                for (const size in sizes) {
+                                    if (sizes[size] > 0) {
+                                        parts.push(`${color} ${size}:${sizes[size]}`);
+                                    }
+                                }
+                            }
+                            previewHtml += `
+                                <div style="padding:4px 0;font-size:13px;border-bottom:1px solid var(--gray-light);">
+                                    <strong>${this.escapeHtml(p.name)}</strong>
+                                    <span style="color:var(--gray);font-size:11px;">${parts.join('، ')}</span>
+                                </div>
+                            `;
+                        }
+                    });
+
+                    previewHtml += `</div>`;
+
+                    // Show custom dialog
+                    const dialog = document.createElement('div');
+                    dialog.className = 'dialog-overlay show';
+                    dialog.style.display = 'flex';
+                    dialog.innerHTML = `
+                        <div class="dialog-box" style="max-width:500px;">
+                            <h3><i class="fas fa-file-invoice" style="color:var(--primary);"></i> تأكيد تقفيل الفاتورة</h3>
+                            ${previewHtml}
+                            <div class="dialog-actions">
+                                <button class="btn btn-secondary" id="closeInvoiceCancel">إلغاء</button>
+                                <button class="btn btn-success" id="closeInvoiceConfirm">تأكيد التقفيل</button>
+                            </div>
+                        </div>
+                    `;
+                    document.body.appendChild(dialog);
+
+                    dialog.querySelector('#closeInvoiceCancel').addEventListener('click', () => {
+                        dialog.remove();
+                    });
+                    dialog.querySelector('#closeInvoiceConfirm').addEventListener('click', () => {
+                        dialog.remove();
+                        this.executeCloseInvoice(table, nonZeroProducts, branchName, productUrl);
+                    });
+                    dialog.addEventListener('click', (e) => {
+                        if (e.target === dialog) dialog.remove();
+                    });
+                },
+
+                executeCloseInvoice(table, nonZeroProducts, branchName, productUrl) {
+                    Utils.saveInvoiceToFirebase(branchName, nonZeroProducts, productUrl, (error, key) => {
                         if (error) {
                             this.showAlert('❌ ' + error, 'error');
                             return;
                         }
-                        this.setActiveTableData([]);
+                        // Clear table data
+                        table.data = [];
+                        table.updatedAt = Date.now();
                         this.renderInvoice();
                         this.updateStats();
-                        this.elements.closeInvoiceDialog.classList.remove('show');
-                        this.showAlert(`✅ تم تقفيل فاتورة ${table.branch} (ID: ${key})`, 'success');
+                        this.markDirty();
+                        this.saveAllTables();
+                        this.showAlert(`✅ تم تقفيل فاتورة "${branchName}" (ID: ${key})`, 'success');
                     });
                 },
 
+                // ============================================================
+                //  EXPORT
+                // ============================================================
                 openExportDialog() {
-                    const data = this.getActiveTableData();
-                    const filtered = data.filter(p => Utils.getTotalPieces(p.colorsSizes) > 0);
-                    if (!filtered.length) {
+                    const data = this.getActiveData();
+                    const nonZero = data.filter(p => Utils.getTotalPieces(p.colorsSizes) > 0);
+                    if (!nonZero.length) {
                         this.showAlert('⚠️ لا توجد كميات لتصديرها', 'error');
                         return;
                     }
@@ -4061,9 +4182,9 @@ sizes: [],
                     const format = document.querySelector('input[name="exportFormat"]:checked')?.value || 'detail';
                     this.closeExportDialog();
 
-                    const data = this.getActiveTableData();
-                    const filtered = data.filter(p => Utils.getTotalPieces(p.colorsSizes) > 0);
-                    const wb = ExcelGenerator.fromTableData(filtered, format);
+                    const data = this.getActiveData();
+                    const nonZero = data.filter(p => Utils.getTotalPieces(p.colorsSizes) > 0);
+                    const wb = ExcelGenerator.fromTableData(nonZero, format);
                     const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
                     const blob = new Blob([wbout], { type: 'application/octet-stream' });
                     const link = document.createElement('a');
@@ -4075,7 +4196,7 @@ sizes: [],
                         system: 'System'
                     };
                     const table = this.getActiveTable();
-                    const branchName = table ? table.branch : 'unknown';
+                    const branchName = table ? table.branch : 'export';
                     link.download =
                         `invoice_${branchName}_${names[format] || 'export'}_${new Date().toISOString().slice(0,10)}.xlsx`;
                     link.click();
@@ -4088,8 +4209,7 @@ sizes: [],
                     dialog.classList.add('show');
                     const originalExport = this.handleExport;
                     this.elements.dialogExport.onclick = () => {
-                        const format = document.querySelector('input[name="exportFormat"]:checked')?.value ||
-                        'detail';
+                        const format = document.querySelector('input[name="exportFormat"]:checked')?.value || 'detail';
                         this.closeExportDialog();
                         const tableData = invoice.items.map(item => ({
                             name: item.name,
@@ -4123,80 +4243,76 @@ sizes: [],
                     };
                 },
 
+                // ============================================================
+                //  OLD ORDERS
+                // ============================================================
                 toggleOldOrders() {
                     const sec = this.elements.oldOrdersSection;
                     if (sec.style.display === 'none') {
                         sec.style.display = 'block';
                         this.elements.showOldOrdersBtn.innerHTML =
                             '<i class="fas fa-chevron-up"></i> إخفاء الفواتير السابقة';
-                        this.loadOldInvoices(true);
+                        this.loadOldInvoices();
                     } else {
                         sec.style.display = 'none';
                         this.elements.showOldOrdersBtn.innerHTML = '<i class="fas fa-history"></i> الفواتير السابقة';
                     }
                 },
 
-                loadOldInvoices(showList = true) {
+                loadOldInvoices() {
                     const list = this.elements.oldOrdersList;
-                    if (showList) {
-                        list.innerHTML =
-                            `<div style="text-align:center;padding:20px;color:var(--gray);"><i class="fas fa-spinner fa-spin"></i> جاري التحميل...</div>`;
-                    }
+                    list.innerHTML =
+                        `<div style="text-align:center;padding:20px;color:var(--gray);"><i class="fas fa-spinner fa-spin"></i> جاري التحميل...</div>`;
                     Utils.loadOldInvoices((invoices) => {
                         this._oldInvoices = invoices;
                         if (!invoices || !invoices.length) {
-                            if (showList) {
-                                list.innerHTML =
-                                    `<div style="text-align:center;padding:20px;color:var(--gray);">لا توجد فواتير سابقة لك</div>`;
-                            }
+                            list.innerHTML =
+                                `<div style="text-align:center;padding:20px;color:var(--gray);">لا توجد فواتير سابقة لك</div>`;
                             this.elements.oldOrdersCount.textContent = '0 فاتورة';
                             this.elements.statTodayOrders.textContent = '0';
                             return;
                         }
-                        if (showList) {
-                            let html = '';
-                            invoices.forEach((inv, idx) => {
-                                const date = new Date(inv.createdAt);
-                                const dateStr = date.toLocaleDateString('ar-EG') + ' ' + date
-                                    .toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
-                                let details = '';
-                                if (inv.items && inv.items.length) {
-                                    const items = inv.items.slice(0, 3);
-                                    details = items.map(item => {
-                                        const cs = item.colorsSizes || {};
-                                        const parts = [];
-                                        for (const color in cs) {
-                                            const sizes = cs[color];
-                                            for (const size in sizes) {
-                                                if (sizes[size] > 0) parts.push(
-                                                    `${color} ${size}:${sizes[size]}`
-                                                    );
-                                            }
+                        let html = '';
+                        invoices.forEach((inv, idx) => {
+                            const date = new Date(inv.createdAt);
+                            const dateStr = date.toLocaleDateString('ar-EG') + ' ' + date
+                                .toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
+                            let details = '';
+                            if (inv.items && inv.items.length) {
+                                const items = inv.items.slice(0, 3);
+                                details = items.map(item => {
+                                    const cs = item.colorsSizes || {};
+                                    const parts = [];
+                                    for (const color in cs) {
+                                        const sizes = cs[color];
+                                        for (const size in sizes) {
+                                            if (sizes[size] > 0) parts.push(
+                                                `${color} ${size}:${sizes[size]}`);
                                         }
-                                        return `${item.name} (${parts.join(' ')})`;
-                                    }).join('، ');
-                                    if (inv.items.length > 3) details += ` ... +${inv.items.length-3} أكثر`;
-                                }
-                                const urlDisplay = inv.productUrl ?
-                                    `<span class="order-url" title="${this.escapeHtml(inv.productUrl)}">${this.escapeHtml(inv.productUrl.substring(0, 40))}...</span>` :
-                                    '—';
-                                html += `
-                                    <div class="old-order-item" onclick="window.UI.showInvoicePreview(${idx})">
-                                        <span class="order-number">#${idx+1}</span>
-                                        <span class="order-branch">${this.escapeHtml(inv.branch||'الفرع')}</span>
-                                        <span class="order-date"><i class="far fa-calendar-alt"></i> ${dateStr}</span>
-                                        <span class="order-pieces">${inv.totalPieces||0}</span>
-                                        <span class="order-value">${Utils.formatCurrency(inv.totalValue||0)} LE</span>
-                                        ${urlDisplay}
-                                        <span class="order-details">${details||'—'}</span>
-                                        <button class="btn btn-secondary btn-sm" onclick="event.stopPropagation();window.UI.exportSingleOldInvoice(${idx})">
-                                            <i class="fas fa-file-excel"></i>
-                                        </button>
-                                    </div>
-                                `;
-                            });
-                            list.innerHTML = html;
-                        }
+                                    }
+                                    return `${item.name} (${parts.join(' ')})`;
+                                }).join('، ');
+                                if (inv.items.length > 3) details += ` ... +${inv.items.length-3} أكثر`;
+                            }
+                            const urlDisplay = inv.productUrl ?
+                                `<span class="order-url" title="${this.escapeHtml(inv.productUrl)}">${this.escapeHtml(inv.productUrl.substring(0, 40))}...</span>` :
+                                '—';
+                            html += `
+                                <div class="old-order-item" onclick="window.UI.showInvoicePreview(${idx})">
+                                    <span class="order-number">#${idx+1}</span>
+                                    <span class="order-branch">${this.escapeHtml(inv.branch||'الفرع')}</span>
+                                    <span class="order-date"><i class="far fa-calendar-alt"></i> ${dateStr}</span>
+                                    <span class="order-pieces">${inv.totalPieces||0}</span>
+                                    <span class="order-value">${Utils.formatCurrency(inv.totalValue||0)} LE</span>
+                                    ${urlDisplay}
+                                    <span class="order-details">${details||'—'}</span>
+                                    <button class="btn btn-secondary btn-sm" onclick="event.stopPropagation();window.UI.exportSingleOldInvoice(${idx})">
+                                        <i class="fas fa-file-excel"></i>
+                                    </button>
+                                </div>
+                            `;
+                        });
+                        list.innerHTML = html;
                         this.elements.oldOrdersCount.textContent = `${invoices.length} فاتورة`;
                         this.elements.statTodayOrders.textContent = invoices.length;
                     });
@@ -4269,6 +4385,9 @@ sizes: [],
                     this.showAlert(`✅ تم تصدير ${this._oldInvoices.length} فاتورة`, 'success');
                 },
 
+                // ============================================================
+                //  UTILITY
+                // ============================================================
                 escapeHtml(text) {
                     const d = document.createElement('div');
                     d.textContent = text;
@@ -4295,29 +4414,6 @@ sizes: [],
                     div.textContent = msg;
                     document.body.appendChild(div);
                     setTimeout(() => { if (div.parentNode) div.remove(); }, 3000);
-                },
-
-                updateStickyPosition() {
-                    const sidebar = document.getElementById('sidebar');
-                    const wrapper = this.elements.stickyWrapper;
-                    if (!wrapper || !sidebar) return;
-
-                    const isHidden = sidebar.classList.contains('hidden');
-                    const isMobile = window.innerWidth <= 992;
-
-                    if (isMobile) {
-                        wrapper.classList.add('sidebar-hidden');
-                        wrapper.style.paddingRight = '15px';
-                        wrapper.style.paddingLeft = '15px';
-                    } else if (isHidden) {
-                        wrapper.classList.add('sidebar-hidden');
-                        wrapper.style.paddingRight = '25px';
-                        wrapper.style.paddingLeft = '25px';
-                    } else {
-                        wrapper.classList.remove('sidebar-hidden');
-                        wrapper.style.paddingRight = '305px';
-                        wrapper.style.paddingLeft = '25px';
-                    }
                 },
 
                 openModal(imgSrc) {
@@ -4370,7 +4466,7 @@ sizes: [],
 
                 if (window.innerWidth <= 992) {
                     const isSidebarVisible = sidebar.classList.contains('visible') && !sidebar.classList.contains(
-                    'hidden');
+                        'hidden');
 
                     if (isSidebarVisible) {
                         const isClickInsideSidebar = sidebar.contains(event.target);
