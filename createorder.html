@@ -2721,26 +2721,69 @@
             // ================================================================
             const ExcelGenerator = {
                 generateProductsFromProduct(product, seriesQty) {
-                    const colors = product.colors.length ? product.colors : [''];
-                    const sizes = product.sizes.length ? product.sizes : ['No Size'];
-                    const colorsSizes = {};
-                    colors.forEach(color => {
-                        const sizeObj = {};
-                        sizes.forEach(size => {
-                            sizeObj[size] = seriesQty;
-                        });
-                        colorsSizes[color] = sizeObj;
-                    });
-                    return {
-                        name: product.name,
-                        sku: product.sku || '',
-                        unitPrice: product.price || 0,
-                        image: product.mainImage || (product.images && product.images.length ?
-                            product.images[0] : ''),
-                        productId: product.productId || '',
-                        colorsSizes: colorsSizes
-                    };
-                },
+    const colors = Array.isArray(product.colors)
+        ? product.colors.filter(c => c && String(c).trim())
+        : [];
+
+    const sizes = Array.isArray(product.sizes)
+        ? product.sizes.filter(s => s && String(s).trim())
+        : ['No Size'];
+
+    const colorsSizes = {};
+    const quantity = Number(seriesQty) || 0;
+
+    if (colors.length > 0) {
+
+        colors.forEach(color => {
+            const cleanColor = String(color).trim();
+
+            if (!cleanColor) return;
+
+            const sizeObj = {};
+
+            sizes.forEach(size => {
+                const cleanSize = String(size).trim();
+
+                if (!cleanSize) return;
+
+                sizeObj[cleanSize] = quantity;
+            });
+
+            if (Object.keys(sizeObj).length > 0) {
+                colorsSizes[cleanColor] = sizeObj;
+            }
+        });
+
+    } else {
+
+        const sizeObj = {};
+
+        sizes.forEach(size => {
+            const cleanSize = String(size).trim();
+
+            if (!cleanSize) return;
+
+            sizeObj[cleanSize] = quantity;
+        });
+
+        if (Object.keys(sizeObj).length > 0) {
+            colorsSizes['No Color'] = sizeObj;
+        }
+    }
+
+return {
+    name: product.name,
+    sku: product.sku || '',
+    unitPrice: product.price || 0,
+    image: product.mainImage || (
+        product.images && product.images.length
+            ? product.images[0]
+            : ''
+    ),
+    productId: product.productId || '',
+    colorsSizes: colorsSizes
+};
+},
 
                 fromTableData(tableData, mode) {
                     const wb = XLSX.utils.book_new();
