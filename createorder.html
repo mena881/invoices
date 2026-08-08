@@ -4044,7 +4044,7 @@ return {
                         }
 
                         if (!found) {
-                            table.data.push({ ...newProduct });
+                            table.data.push(JSON.parse(JSON.stringify(newProduct)));
                         }
                         table.updatedAt = Date.now();
                     }
