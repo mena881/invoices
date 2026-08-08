@@ -3969,7 +3969,7 @@
                     }
 
                     if (!found) {
-                        table.data.push({ ...newProduct });
+                        (table.data || (table.data = [])).push({ ...newProduct });
                     }
 
                     Utils.updateTable(table.id, table.data, table.branch, (err) => {
