@@ -2768,7 +2768,7 @@
                     return {
                         name: Utils.cleanText(title) || 'Unknown',
                         price: price || 0,
-                        colors: Utils.unique(colors.length ? colors : ['']),
+                        colors: Utils.unique(colors.filter(c => c && String(c).trim())),
                         sizes: Utils.unique(sizes.length ? sizes : ['']),
                         sku: sku || '',
                         images: Utils.unique(images),
@@ -2791,8 +2791,8 @@
                     return {
                         name: Utils.cleanText(name) || 'Unknown',
                         price: price ? parseFloat(price) : 0,
-                        colors: [''],
-                        sizes: [''],
+                        colors: [],
+sizes: [],
                         sku: '',
                         images: image ? [image] : [],
                         mainImage: image || '',
@@ -2808,7 +2808,7 @@
             // ================================================================
             const ExcelGenerator = {
                 generateProductsFromProduct(product, seriesQty) {
-                    const colors = product.colors.length ? product.colors : [''];
+                    const colors = product.colors.length ? product.colors : ['بدون لون'];
                     const sizes = product.sizes.length ? product.sizes : ['No Size'];
                     const colorsSizes = {};
                     colors.forEach(color => {
