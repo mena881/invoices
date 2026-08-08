@@ -2324,8 +2324,6 @@
                     return this.getTotalPieces(product.colorsSizes) * product.unitPrice;
                 },
 
-                // Each table is stored with its own Firebase Push ID
-                // Format: currentTables/[Push ID] = { data, branch, updatedAt, userId }
                 loadAllUserTables(callback) {
                     if (!database) {
                         if (callback) callback({});
@@ -2342,7 +2340,6 @@
                         for (const key in data) {
                             const table = data[key];
                             if (table.userId === userId) {
-                                // Verify structure
                                 if (table.data && Array.isArray(table.data)) {
                                     userTables[key] = {
                                         id: key,
@@ -3033,25 +3030,19 @@
                             this.elements.branchCheckboxes.style.display = 'flex';
                             this.elements.branchSelect.style.display = 'none';
                             this.elements.branchLabel.textContent = 'الفروع المختارة';
-                            // Select all branches by default
                             const checkboxes2 = this.elements.branchCheckboxes.querySelectorAll(
                             'input[type="checkbox"]');
                             checkboxes2.forEach(cb => cb.checked = true);
                             this.updateSelectedBranches();
-                            // Load tables for selected branches
                             this.loadAllTables();
                         } else {
                             this.elements.branchCheckboxes.style.display = 'none';
                             this.elements.branchSelect.style.display = 'block';
                             this.elements.branchLabel.textContent = 'الفرع';
-                            // Reset to single branch mode
                             this._selectedBranches = [];
-                            // Keep only the active table if it exists, or create one
                             if (this._activeTableId && this._tables[this._activeTableId]) {
-                                // Keep only this table
                                 const activeBranch = this._tables[this._activeTableId].branch;
                                 this._tables = {};
-                                // Load single table for this branch
                                 this.loadSingleTable(activeBranch);
                             } else {
                                 this._tables = {};
@@ -3063,7 +3054,6 @@
                         }
                     });
 
-                    // Branch checkbox changes
                     this.elements.branchCheckboxes.addEventListener('change', (e) => {
                         if (e.target.type === 'checkbox') {
                             this.updateSelectedBranches();
@@ -3071,7 +3061,6 @@
                         }
                     });
 
-                    // URL input
                     this.elements.url.addEventListener('input', () => {
                         clearTimeout(this._fetchTimer);
                         const url = this.elements.url.value.trim();
@@ -3141,7 +3130,6 @@
                         }
                     });
 
-                    // Keyboard shortcut
                     document.addEventListener('keydown', (e) => {
                         if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
                             e.preventDefault();
@@ -3149,7 +3137,6 @@
                         }
                     });
 
-                    // Auto-sync timer
                     this._syncTimer = setInterval(() => {
                         if (this._isDirty && !this._savingQueue) {
                             this.saveAllTables();
@@ -3158,7 +3145,6 @@
 
                     this.updateStickyPosition();
 
-                    // Load cached product
                     const cached = Storage.get('cachedProduct', null);
                     if (cached && cached.name) {
                         this._lastProduct = {
@@ -3179,7 +3165,6 @@
 
                     Utils.cleanOldInvoices();
 
-                    // Load tables based on mode
                     if (this._isMultiBranch) {
                         this.loadAllTables();
                     } else {
@@ -3205,7 +3190,6 @@
                 handleBranchSelectionChange() {
                     if (!this._isMultiBranch) return;
 
-                    // Check if any branch was removed that has data
                     const activeBranch = this._activeTableId ? this._tables[this._activeTableId]?.branch : null;
                     const hasData = (tableId) => {
                         const table = this._tables[tableId];
@@ -3213,17 +3197,14 @@
                         return table.data.some(p => Utils.getTotalPieces(p.colorsSizes) > 0);
                     };
 
-                    // For each table that is no longer selected, check if it has data
                     const toRemove = [];
                     for (const id in this._tables) {
                         const table = this._tables[id];
                         if (!this._selectedBranches.includes(table.branch)) {
                             if (hasData(id)) {
-                                // Ask user
                                 if (confirm(`الفرع "${table.branch}" يحتوي على بيانات. سيتم حذف بيانات الفرع إذا أكملت. هل تريد المتابعة؟`)) {
                                     toRemove.push(id);
                                 } else {
-                                    // Re-check the checkbox
                                     const checkboxes = this.elements.branchCheckboxes.querySelectorAll(
                                         'input[type="checkbox"]');
                                     checkboxes.forEach(cb => {
@@ -3240,7 +3221,6 @@
                         }
                     }
 
-                    // Remove tables
                     for (const id of toRemove) {
                         Utils.deleteTable(id);
                         delete this._tables[id];
@@ -3249,7 +3229,6 @@
                         }
                     }
 
-                    // If active table was removed, switch to first available
                     if (!this._activeTableId || !this._tables[this._activeTableId]) {
                         const ids = Object.keys(this._tables);
                         if (ids.length > 0) {
@@ -3259,7 +3238,6 @@
                         }
                     }
 
-                    // Create tables for newly selected branches
                     for (const branch of this._selectedBranches) {
                         const exists = Object.values(this._tables).some(t => t.branch === branch);
                         if (!exists) {
@@ -3278,7 +3256,6 @@
                         this._isLoading = false;
                         this._tables = tables;
 
-                        // Filter by selected branches
                         if (this._selectedBranches.length > 0) {
                             const filtered = {};
                             for (const id in tables) {
@@ -3289,7 +3266,6 @@
                             this._tables = filtered;
                         }
 
-                        // Create tables for selected branches that don't exist
                         for (const branch of this._selectedBranches) {
                             const exists = Object.values(this._tables).some(t => t.branch === branch);
                             if (!exists) {
@@ -3297,7 +3273,6 @@
                             }
                         }
 
-                        // Set active table
                         const ids = Object.keys(this._tables);
                         if (ids.length > 0) {
                             this._activeTableId = ids[0];
@@ -3317,7 +3292,6 @@
                     Utils.loadAllUserTables((tables) => {
                         this._isLoading = false;
 
-                        // Find table by branch, or use first one
                         let found = null;
                         for (const id in tables) {
                             if (branchName && tables[id].branch === branchName) {
@@ -3336,7 +3310,6 @@
                             this._activeTableId = found.id;
                             this.elements.branchSelect.value = found.branch;
                         } else {
-                            // Create new table
                             const branch = branchName || this.elements.branchSelect.value || 'مكرم عبيد';
                             this.createTableForBranch(branch);
                         }
@@ -3396,6 +3369,21 @@
                         table.data = data;
                         table.updatedAt = Date.now();
                     }
+                },
+
+                saveActiveTable(callback) {
+                    const table = this.getActiveTable();
+                    if (!table) {
+                        if (callback) callback('لا يوجد فرع نشط');
+                        return;
+                    }
+
+                    Utils.saveTable(table.id, {
+                        data: table.data,
+                        branch: table.branch,
+                        updatedAt: table.updatedAt,
+                        userId: table.userId
+                    }, callback);
                 },
 
                 saveAllTables() {
@@ -3479,8 +3467,10 @@
 
                 switchTab(tableId) {
                     if (this._activeTableId === tableId) return;
-                    // Save current table
-                    this.saveAllTables();
+                    // Save current table before switching
+                    if (this._isDirty) {
+                        this.saveActiveTable();
+                    }
                     this._activeTableId = tableId;
                     this.renderTabs();
                     this.renderInvoice();
@@ -3502,7 +3492,6 @@
                     Utils.deleteTable(tableId);
                     delete this._tables[tableId];
 
-                    // Uncheck the branch
                     const checkboxes = this.elements.branchCheckboxes.querySelectorAll('input[type="checkbox"]');
                     checkboxes.forEach(cb => {
                         if (cb.value === table.branch) {
@@ -3682,6 +3671,10 @@
                     this.renderInvoice();
                 },
 
+                // ============================================================
+                //  CRITICAL FIX: Save after every modification
+                // ============================================================
+
                 deleteColor(productId, color, sku, name) {
                     const data = this.getActiveData();
                     let targetIndex = -1;
@@ -3719,6 +3712,8 @@
                     this.setActiveData(data);
                     this.renderInvoice();
                     this.markDirty();
+                    // ✅ Save to Firebase immediately
+                    this.saveActiveTable();
                 },
 
                 changeQty(productId, color, size, delta, sku, name) {
@@ -3744,15 +3739,14 @@
                     const currentQty = product.colorsSizes[color][size] || 0;
                     const newQty = Math.max(0, currentQty + delta);
 
-                    // Keep zero values - don't delete
+                    // Keep the size even if qty becomes 0 (per requirement)
                     product.colorsSizes[color][size] = newQty;
-
-                    // If the color has all zeros and we want to keep it, we keep it
-                    // But if user wants to clean up, we can keep as is
 
                     this.setActiveData(data);
                     this.renderInvoice();
                     this.markDirty();
+                    // ✅ Save to Firebase immediately
+                    this.saveActiveTable();
                 },
 
                 deleteProduct(productId) {
@@ -3768,8 +3762,30 @@
                     this.setActiveData(data);
                     this.renderInvoice();
                     this.markDirty();
+                    // ✅ Save to Firebase immediately
+                    this.saveActiveTable();
                     this.showAlert(`🗑️ تم حذف المنتج ${name}`, 'info');
                 },
+
+                clearAllData() {
+                    const data = this.getActiveData();
+                    if (!data || data.length === 0) {
+                        this.showAlert('⚠️ لا توجد بيانات لمسحها', 'info');
+                        return;
+                    }
+                    if (confirm('هل أنت متأكد من حذف جميع البيانات في هذا الفرع؟')) {
+                        this.setActiveData([]);
+                        this.renderInvoice();
+                        this.markDirty();
+                        // ✅ Save to Firebase immediately
+                        this.saveActiveTable();
+                        this.showAlert('🗑️ تم مسح جميع البيانات', 'info');
+                    }
+                },
+
+                // ============================================================
+                //  END OF CRITICAL FIXES
+                // ============================================================
 
                 updateStats() {
                     const data = this.getActiveData();
@@ -3793,7 +3809,6 @@
                     this.elements.bottomProducts.textContent = productSet.size;
                     this.elements.bottomValue.textContent = Utils.formatCurrency(totalValue) + ' LE';
 
-                    // Update tab badges
                     this.renderTabs();
                 },
 
@@ -3882,7 +3897,6 @@
                     const product = this._lastProduct;
                     const sku = product.sku || '';
 
-                    // Get target branches
                     let targetBranches = [];
                     if (this._isMultiBranch) {
                         targetBranches = this._selectedBranches;
@@ -3900,7 +3914,6 @@
                         return;
                     }
 
-                    // For each target branch, check if product exists
                     let allExist = true;
                     let existingBranches = [];
 
@@ -3921,7 +3934,6 @@
                     }
 
                     if (allExist && existingBranches.length === targetBranches.length) {
-                        // All branches have this product - show duplicate dialog
                         this._pendingAddData = { product, seriesQty, sku, targetBranches };
                         const img = product.mainImage || product.image || (product.images && product.images
                             .length ? product.images[0] : '');
@@ -3943,7 +3955,6 @@
                             `SKU: ${sku || '—'} | الكمية الحالية: ${totalQty} (في ${targetBranches.length} فرع)`;
                         this.elements.duplicateDialog.classList.add('show');
                     } else {
-                        // Add to all branches
                         this.addProductToBranches(product, seriesQty, sku, targetBranches);
                     }
                 },
@@ -3965,20 +3976,16 @@
                     const newProduct = ExcelGenerator.generateProductsFromProduct(product, seriesQty);
 
                     for (const branch of branches) {
-                        // Find or create table for this branch
                         let table = Object.values(this._tables).find(t => t.branch === branch);
                         if (!table) {
-                            // Create table
                             this.createTableForBranch(branch);
                             table = Object.values(this._tables).find(t => t.branch === branch);
                             if (!table) continue;
                         }
 
-                        // Check if product exists in this table
                         let found = false;
                         for (const p of table.data) {
                             if (p.name === newProduct.name && p.sku === newProduct.sku) {
-                                // Merge colorsSizes
                                 const cs = newProduct.colorsSizes || {};
                                 for (const color in cs) {
                                     if (!p.colorsSizes[color]) p.colorsSizes[color] = {};
@@ -3999,17 +4006,13 @@
                         table.updatedAt = Date.now();
                     }
 
-                    // If current active table is one of the branches, update view
                     if (this._activeTableId && this._tables[this._activeTableId]) {
-                        // Check if active table's branch is in the list
                         const activeBranch = this._tables[this._activeTableId].branch;
                         if (branches.includes(activeBranch)) {
-                            // Update view
                             this.renderInvoice();
                             this.updateStats();
                         }
                     } else {
-                        // If no active table, set first branch as active
                         const firstBranch = branches[0];
                         const firstTable = Object.values(this._tables).find(t => t.branch === firstBranch);
                         if (firstTable) {
@@ -4026,7 +4029,6 @@
                     const colorCount = Object.keys(newProduct.colorsSizes).length;
                     this.showAlert(`✅ تم إضافة ${colorCount} لون إلى ${branches.length} فرع`, 'success');
 
-                    // Reset form
                     this.elements.url.value = '';
                     this.elements.series.value = '1';
                     this._lastProduct = null;
@@ -4035,24 +4037,6 @@
                     this.elements.previewSection.classList.remove('show');
                     Storage.set('url', '');
                     Storage.set('series', '1');
-                },
-
-                // ============================================================
-                //  CLEAR
-                // ============================================================
-                clearAllData() {
-                    const data = this.getActiveData();
-                    if (!data || data.length === 0) {
-                        this.showAlert('⚠️ لا توجد بيانات لمسحها', 'info');
-                        return;
-                    }
-                    if (confirm('هل أنت متأكد من حذف جميع البيانات في هذا الفرع؟')) {
-                        this.setActiveData([]);
-                        this.renderInvoice();
-                        this.markDirty();
-                        this.saveAllTables();
-                        this.showAlert('🗑️ تم مسح جميع البيانات', 'info');
-                    }
                 },
 
                 // ============================================================
@@ -4078,7 +4062,6 @@
                     const totalValue = nonZeroProducts.reduce((s, p) => s + (Utils.getTotalPieces(p.colorsSizes) * p
                         .unitPrice), 0);
 
-                    // Build preview
                     let previewHtml = `
                         <div style="margin-bottom:12px;">
                             <strong>الفرع:</strong> ${branchName}
@@ -4116,7 +4099,6 @@
 
                     previewHtml += `</div>`;
 
-                    // Show custom dialog
                     const dialog = document.createElement('div');
                     dialog.className = 'dialog-overlay show';
                     dialog.style.display = 'flex';
@@ -4150,13 +4132,12 @@
                             this.showAlert('❌ ' + error, 'error');
                             return;
                         }
-                        // Clear table data
                         table.data = [];
                         table.updatedAt = Date.now();
                         this.renderInvoice();
                         this.updateStats();
                         this.markDirty();
-                        this.saveAllTables();
+                        this.saveActiveTable();
                         this.showAlert(`✅ تم تقفيل فاتورة "${branchName}" (ID: ${key})`, 'success');
                     });
                 },
